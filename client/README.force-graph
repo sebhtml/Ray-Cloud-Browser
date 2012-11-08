@@ -1,0 +1,60 @@
+This is a force-directed graph viewer with HTML5 canvas and javascript.
+
+Author: Sébastien Boisvert
+
+== Demo ==
+
+http://sebhtml.github.com/force-graph/
+
+== Motivation ==
+
+I implemented this program while waiting for my jobs to complete on the super-computer.
+
+== Graphical interface ==
+
+Operations:
+
+- Start or stop the time
+
+- Reset the view
+
+- View or hide vertices
+- View or  hide edges
+
+- Increase or decrease attraction
+- Increase or decrease repulsion
+
+- Toggle the type between 'linear', 'star' and 'random'
+- Increase or decrease the number of vertices
+- Increase or decrease the degree
+
+- Increase or decrease the vertex radius
+- Increase or decrease the edge length
+
+- Add or remove a vertex
+- Add or remove a edge
+
+== Algorithms ==
+
+It uses Coulomb's law for repulsion 
+
+and 
+
+Hooke's law for attraction.
+
+
+== How to create a github page ===
+
+godzilla ] git branch -a
+* master
+  remotes/origin/master
+
+godzilla ] git symbolic-ref "refs/heads/gh-pages" "refs/heads/master"
+godzilla ] git branch -a
+
+  gh-pages -> master
+* master
+  remotes/origin/master
+
+godzilla ] git push --mirror
+

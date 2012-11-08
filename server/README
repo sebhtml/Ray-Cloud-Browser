@@ -1,0 +1,29 @@
+The server is in C++ 1998 and it uses a SQL 1999.
+The messaging is done with HTTP (rfc 2616).
+
+Compliant standards:
+
+C++ 1998:
+
+- ISO/IEC 14882:1998 Programming languages -- C++
+
+SQL 1999:
+
+- ISO/IEC 9075-1:1999 Information technology -- Database languages -- SQL -- Part 1: Framework (SQL/Framework)
+- ISO/IEC 9075-2:1999 Information technology -- Database languages -- SQL -- Part 2: Foundation (SQL/Foundation)
+- ISO/IEC 9075-3:1999 Information technology -- Database languages -- SQL -- Part 3: Call-Level Interface (SQL/CLI)
+- ISO/IEC 9075-4:1999 Information technology -- Database languages -- SQL -- Part 4: Persistent Stored Modules (SQL/PSM)
+- ISO/IEC 9075-4:1999 Information technology -- Database languages -- SQL -- Part 4: Persistent Stored Modules (SQL/PSM)
+
+HTTP 1.1:
+
+- rfc 2616 Hypertext Transfer Protocol -- HTTP/1.1  
+  http://www.w3.org/Protocols/rfc2616/rfc2616.html
+
+CGI 1.1   The Common Gateway Interface (CGI) Version 1.1
+  http://www.ietf.org/rfc/rfc3875
+
+The C++ compiler we use is GNU g++ and the SQL database server is sqlite.
+
+The messages are passed with the Hyper Text Transfer Protocol (method: GET).
+

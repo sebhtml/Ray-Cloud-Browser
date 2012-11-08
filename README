@@ -1,0 +1,31 @@
+Ray Cloud Browser: interactively skim processed genomics data with energy
+
+## Description
+
+This project is a de Bruijn graph browser in the cloud.
+
+## Demo:
+
+http://ec2-54-242-197-219.compute-1.amazonaws.com/Ray-Cloud-Browser
+
+
+## Official website
+	https://github.com/sebhtml/Ray-Cloud-Browser
+
+# Legal notice:
+	All the code is GPLv3, see LICENSE
+
+The client is a fork of the force-graph project (author: Sébastien Boisvert, license: GPLv3).
+  => https://github.com/sebhtml/force-graph
+
+## How it works
+
+It is a client-server application. The client runs in a browser with Javascript and HTML5.
+The server is in C++ and runs with Apache or any web server with CGI support.
+
+The server is in C++ 1998 and it uses a SQL 1999.
+The messaging is done with HTTP (rfc 2616).
+The client is in HTML5 and Javascript.
+
+see client/README and server/README for more detail.
+
