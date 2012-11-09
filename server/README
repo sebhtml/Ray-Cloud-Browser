@@ -1,11 +1,7 @@
-The server is in C++ 1998 and it uses a SQL 1999.
+The server is in php and it uses a SQL 1999.
 The messaging is done with HTTP (rfc 2616).
 
 Compliant standards:
-
-C++ 1998:
-
-- ISO/IEC 14882:1998 Programming languages -- C++
 
 SQL 1999:
 
@@ -23,7 +19,7 @@ HTTP 1.1:
 CGI 1.1   The Common Gateway Interface (CGI) Version 1.1
   http://www.ietf.org/rfc/rfc3875
 
-The C++ compiler we use is GNU g++ and the SQL database server is sqlite.
+The SQL database server is sqlite.
 
 The messages are passed with the Hyper Text Transfer Protocol (method: GET).
 
