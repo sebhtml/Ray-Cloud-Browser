@@ -2,7 +2,7 @@ First release:
 
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>
-- only one nucleotide per vertex for 1-1 vertices
+- only one nucleotide per vertex, full sequence on mouse over
 - colors for nucleotides
 
 Second release:
