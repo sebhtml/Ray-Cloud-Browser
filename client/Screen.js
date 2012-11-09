@@ -34,8 +34,12 @@ function Screen(){
 
 	body.appendChild(center);
 
-	this.canvas.width=1500;
-	this.canvas.height=800;
+/*
+ * Resolution.
+ *
+ */
+	this.canvas.width=1300;
+	this.canvas.height=600;
 
 	this.vertexRadius=20;
 
@@ -47,7 +51,11 @@ function Screen(){
 	/* Hooke's law */
 	this.sprintStep=0.005;
 	this.springConstant=0.05;
-	this.arcLength=100;
+
+/*
+ * The arc length.
+ */
+	this.arcLength=300;
 
 	this.range=5;
 	this.useGrid=false;
@@ -91,7 +99,7 @@ Screen.prototype.createButtons=function(){
 	this.buttons=new Array();
 
 	this.timeControlButton=new Button(30,35,40,50,"time",true);
-	this.buttons.push(this.timeControlButton);
+	//this.buttons.push(this.timeControlButton);
 	
 
 	this.repulsionBase=280;
@@ -107,74 +115,74 @@ Screen.prototype.createButtons=function(){
 	var smallButtonWidth=20;
 
 	this.showArcsButton=new Button(140,50,60,20,"edges",true);
-	this.buttons.push(this.showArcsButton);
+	//this.buttons.push(this.showArcsButton);
 
 	this.showVerticesButton=new Button(140,20,60,20,"vertices",true);
-	this.buttons.push(this.showVerticesButton);
+	//this.buttons.push(this.showVerticesButton);
 
 	this.increaseRepulsionButton=new Button(this.repulsionBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseRepulsionButton);
+	//this.buttons.push(this.increaseRepulsionButton);
 
 	this.decreaseRepulsionButton=new Button(this.repulsionBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseRepulsionButton);
+	//this.buttons.push(this.decreaseRepulsionButton);
 
 	this.increaseAttractionButton=new Button(this.attractionBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseAttractionButton);
+	//this.buttons.push(this.increaseAttractionButton);
 
 	this.decreaseAttractionButton=new Button(this.attractionBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseAttractionButton);
+	//this.buttons.push(this.decreaseAttractionButton);
 
 	this.resetButton=new Button(this.resetBase,45,40,30,"reset",false);
-	this.buttons.push(this.resetButton);
+	//this.buttons.push(this.resetButton);
 
 	this.increaseTypeButton=new Button(this.typeBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseTypeButton);
+	//this.buttons.push(this.increaseTypeButton);
 
 	this.decreaseTypeButton=new Button(this.typeBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseTypeButton);
+	//this.buttons.push(this.decreaseTypeButton);
 
 	this.increaseVerticesButton=new Button(this.verticesBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseVerticesButton);
+	//this.buttons.push(this.increaseVerticesButton);
 
 	this.decreaseVerticesButton=new Button(this.verticesBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseVerticesButton);
+	//this.buttons.push(this.decreaseVerticesButton);
 
 	this.increaseDegreeButton=new Button(this.degreeBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseDegreeButton);
+	//this.buttons.push(this.increaseDegreeButton);
 
 	this.decreaseDegreeButton=new Button(this.degreeBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseDegreeButton);
+	//this.buttons.push(this.decreaseDegreeButton);
 
 	this.increaseArcButton=new Button(this.arcBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseArcButton);
+	//this.buttons.push(this.increaseArcButton);
 
 	this.decreaseArcButton=new Button(this.arcBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseArcButton);
+	//this.buttons.push(this.decreaseArcButton);
 
 	this.increaseRadiusButton=new Button(this.radiusBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseRadiusButton);
+	//this.buttons.push(this.increaseRadiusButton);
 
 	this.decreaseRadiusButton=new Button(this.radiusBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseRadiusButton);
+	//this.buttons.push(this.decreaseRadiusButton);
 
 	this.increaseDampingButton=new Button(this.dampingBase+40,45,smallButtonWidth,smallButtonWidth,"+",false);
-	this.buttons.push(this.increaseDampingButton);
+	//this.buttons.push(this.increaseDampingButton);
 
 	this.decreaseDampingButton=new Button(this.dampingBase+20,45,smallButtonWidth,smallButtonWidth,"-",false);
-	this.buttons.push(this.decreaseDampingButton);
+	//this.buttons.push(this.decreaseDampingButton);
 
 	this.addVertexButton=new Button(950+40,25,100,smallButtonWidth,"add vertex",false);
-	this.buttons.push(this.addVertexButton);
+	//this.buttons.push(this.addVertexButton);
 
 	this.removeVertexButton=new Button(950+40,55,100,smallButtonWidth,"remove vertex",false);
-	this.buttons.push(this.removeVertexButton);
+	//this.buttons.push(this.removeVertexButton);
 
 
 	this.addArcButton=new Button(1070+40,25,100,smallButtonWidth,"add edge",false);
-	this.buttons.push(this.addArcButton);
+	//this.buttons.push(this.addArcButton);
 
 	this.removeArcButton=new Button(1070+40,55,100,smallButtonWidth,"remove edge",false);
-	this.buttons.push(this.removeArcButton);
+	//this.buttons.push(this.removeArcButton);
 }
 
 Screen.prototype.start=function(){
@@ -196,7 +204,8 @@ Screen.prototype.start=function(){
 	this.lastMouseX=0;
 	this.lastMouseY=0;
 
-	this.createGraph();
+	//this.createGraph();
+	this.createStartingGraph();
 
 	this.gameMilliseconds=0;
 	this.gameFrames=0;
@@ -408,6 +417,22 @@ Screen.prototype.createArcs=function(v1,v2){
 	v2.addArc(v1);
 }
 
+Screen.prototype.createStartingGraph=function(){
+	this.vertices=new Array();
+
+	var vertex1=new Vertex(400+50,200+50,"AATTGTAACTCCTAAAATAAG");
+	this.vertices.push(vertex1);
+
+	var vertex2=new Vertex(400+150,200+150,"ATTGTAACTCCTAAAATAAGC");
+	this.vertices.push(vertex2);
+
+	var vertex3=new Vertex(500+150,200+150,"TTGTAACTCCTAAAATAAGCG");
+	this.vertices.push(vertex3);
+
+	vertex1.addArc(vertex2);
+	vertex2.addArc(vertex3);
+}
+
 Screen.prototype.createGraph=function(){
 	this.vertices=new Array();
 
@@ -426,7 +451,6 @@ Screen.prototype.createGraph=function(){
 	}
 
 	i=0;
-
 
 	while(i<n){
 		var j=0;
@@ -666,6 +690,7 @@ Screen.prototype.drawControlPanel=function(){
 
 	this.context.fillStyle    = '#000000';
 	this.context.font         = 'bold 12px sans-serif';
+/*
 	this.context.fillText("Repulsion: "+this.forceConstant, this.repulsionBase, 25);
 	this.context.fillText("Attraction: "+this.springConstant, this.attractionBase, 25);
 	this.context.fillText("Type: "+this.type, this.typeBase, 25);
@@ -674,16 +699,19 @@ Screen.prototype.drawControlPanel=function(){
 	this.context.fillText("Damping: "+this.damping, this.dampingBase, 25);
 	this.context.fillText("Vertex radius: "+this.vertexRadius, this.radiusBase, 25);
 	this.context.fillText("Edge length: "+this.arcLength, this.arcBase, 25);
+*/
 
 	var offset=300;
-	this.context.fillText("Display: "+this.canvas.width+","+this.canvas.height+" Origin: "+this.originX+","+this.originY, 10, this.canvas.height-6);
+	//this.context.fillText("Display: "+this.canvas.width+","+this.canvas.height+" Origin: "+this.originX+","+this.originY, 10, this.canvas.height-6);
 
+/*
 	this.context.fillText("Frequency: "+this.gameFrequency+" Game frame: "+this.gameFrameLength,this.canvas.width-offset, this.canvas.height-34);
 
 	this.context.fillText("Game FPS: "+this.actualGameFrequency+" Game frame: "+this.actualGameFrameLength+
 		" ms",this.canvas.width-offset, this.canvas.height-20);
 	this.context.fillText("Rendering FPS: "+this.actualDrawingFrequency+" Rendering slice: "+this.actualDrawingFrameLength+
 		" ms",this.canvas.width-offset, this.canvas.height-6);
+*/
 }
 
 Screen.prototype.draw=function(){
@@ -695,6 +723,9 @@ Screen.prototype.draw=function(){
 
 	context.strokeStyle = "rgb(0,0,0)";
 
+/*
+ * Draw a line around the canvas.
+ */
 	context.beginPath();
 	context.moveTo(0,0);
 	context.lineTo(this.canvas.width,0);
@@ -724,7 +755,7 @@ Screen.prototype.draw=function(){
 Screen.prototype.drawVertices=function(){
 	for(i in this.vertices){
 		var vertex=this.vertices[i];
-		vertex.draw(this.context,this.originX,this.originY,this.vertexRadius,this.blitter);
+		vertex.draw(this.context,this.originX,this.originY/*,100,this.blitter*/);
 	}
 }
 

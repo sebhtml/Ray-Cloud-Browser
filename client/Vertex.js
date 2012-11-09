@@ -34,6 +34,7 @@ function Vertex(x,y,name){
 	this.updated=false;
 
 	this.canChangeColor=true;
+	this.radius=100;
 }
 
 Vertex.prototype.getColor=function(){
@@ -68,11 +69,13 @@ Vertex.prototype.getColor=function(){
 	return color;
 }
 
-Vertex.prototype.draw=function(context,originX,originY,radius,blitter){
+Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
 
+	var radius=this.radius;
 	var theColor= this.getColor();
-	var key=this.name+"-"+theColor+"-"+radius;
+	//var key=this.name+"-"+theColor+"-"+radius;
 
+/*
 	if(blitter.hasBlit(key)){
 		var blit=blitter.getBlit(key);
 
@@ -88,12 +91,13 @@ Vertex.prototype.draw=function(context,originX,originY,radius,blitter){
 	}
 	
 	var blit=blitter.allocateBlit(key,4+2*radius,4+2*radius);
+*/
 
-	var context2=blit.getCanvas().getContext("2d");
+	//var context2=blit.getCanvas().getContext("2d");
+	var context2=context;
 
-	var cacheWidth=blit.getWidth();
-	var x=blit.getX()+cacheWidth/2;
-	var y=blit.getY()+cacheWidth/2;
+	var x=this.getX()-originX;
+	var y=this.getY()-originY;
 
 	context2.beginPath();
 	context2.fillStyle = theColor;
@@ -106,11 +110,11 @@ Vertex.prototype.draw=function(context,originX,originY,radius,blitter){
 
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold 12px sans-serif';
-	context2.fillText(this.name,x-6,y+6);
+	context2.fillText(this.name,x-this.radius+30,y);
 
 	//console.log("Drawed something.");
 
-	this.draw(context,originX,originY,radius,blitter);
+	//this.draw(context,originX,originY,radius,blitter);
 }
 
 Vertex.prototype.getX=function(){
@@ -169,8 +173,9 @@ Vertex.prototype.printArcs=function(){
 	}
 }
 
-Vertex.prototype.isInside=function(x,y,radius){
+Vertex.prototype.isInside=function(x,y){
 
+	var radius=100;
 	var dx=x-this.x;
 	var dy=y-this.y;
 	
@@ -179,7 +184,7 @@ Vertex.prototype.isInside=function(x,y,radius){
 
 Vertex.prototype.handleMouseDown=function(x,y,radius){
 
-	if(this.isInside(x,y,radius)){
+	if(this.isInside(x,y,this.radius)){
 		//console.log(this.name+" follows");
 		this.followMouse=true;
 
