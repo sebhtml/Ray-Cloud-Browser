@@ -36,12 +36,12 @@ window.requestAnimFrame = (function(callback){
 
 var gameFrequency=60;
 
-var screen2=new Screen(gameFrequency);
+var screen=new Screen(gameFrequency);
 
 var periodInMilliSeconds=16;
 
 var a=function(){
-	screen2.iterate();
+	screen.iterate();
 }
 
 setInterval(a,periodInMilliSeconds);
@@ -49,7 +49,13 @@ setInterval(a,periodInMilliSeconds);
 function animate(){
 	requestAnimFrame(animate);
 
-	screen2.draw();
+	screen.draw();
 }
 
 window.onload=animate;
+
+// bind keyboard
+document.onkeydown=function(e){
+	screen.processKeyboardEvent(e);
+}
+

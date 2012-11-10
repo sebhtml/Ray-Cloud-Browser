@@ -821,3 +821,38 @@ Screen.prototype.isOutside=function(vertex){
 
 	return false;
 }
+
+/*
+ * \see http://stackoverflow.com/questions/5597060/detecting-arrow-keys-in-javascript
+ *
+ * accepted
+ * arrow keys are only triggered by onkeydown, not onkeypress
+ *
+ * keycodes are:
+ *
+ * left = 37
+ * up = 38
+ * right = 39
+ * down = 40
+ */
+Screen.prototype.processKeyboardEvent=function(e){
+	var key=e.which;
+
+	var leftKey=37;
+	var upKey=38;
+	var rightKey=39;
+	var downKey=40;
+
+	var shift=16;
+
+	if(key==leftKey){
+		this.originX-=shift;
+	}else if(key==rightKey){
+		this.originX+=shift;
+	}else if(key==downKey){
+		this.originY+=shift;
+	}else if(key==upKey){
+		this.originY-=shift;
+	}
+
+}
