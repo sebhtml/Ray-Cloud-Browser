@@ -438,7 +438,7 @@ Screen.prototype.createStartingGraph=function(){
 
 	var startingDistance=20;
 
-	for(var i=0;i<200 /*sequence.length*/;i++){
+	for(var i=0;i<100 /*sequence.length*/;i++){
 		var suffix=sequence.substr(i+1,this.kmerLength);
 		var vertex2=new Vertex(400+150+startingDistance*i,200+150+startingDistance*i,suffix,true);
 		var coverage=new Vertex(400+155+startingDistance*i,200+150+startingDistance*i,"99",false);
@@ -724,6 +724,22 @@ Screen.prototype.drawControlPanel=function(){
 		" ms",this.canvas.width-offset, this.canvas.height-6);
 }
 
+Screen.prototype.isOutside=function(vertex){
+
+	var x=vertex.getX()-this.originX;
+	var y=vertex.getY()-this.originY;
+
+/*
+ * The buffer region around the screen.
+ */
+	var buffer=50;
+
+	if(x<(0-buffer))
+		return true;
+
+	return false;
+}
+
 Screen.prototype.draw=function(){
 	
 	var start=this.getMilliseconds();
@@ -765,6 +781,10 @@ Screen.prototype.draw=function(){
 Screen.prototype.drawVertices=function(){
 	for(i in this.vertices){
 		var vertex=this.vertices[i];
+
+		if(this.isOutside(vertex))
+			continue;
+
 		vertex.draw(this.context,this.originX,this.originY/*,100,this.blitter*/);
 	}
 }
@@ -778,6 +798,9 @@ Screen.prototype.drawArcs=function(){
 		for(j in arcs){
 
 			var vertex2=arcs[j];
+
+			if(this.isOutside(vertex) && this.isOutside(vertex2))
+				continue;
 	
 			this.context.moveTo(vertex.getX()-this.originX,vertex.getY()-this.originY);
 			this.context.lineTo(vertex2.getX()-this.originX,vertex2.getY()-this.originY);
