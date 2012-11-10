@@ -719,7 +719,7 @@ Screen.prototype.drawControlPanel=function(){
 */
 
 	if(this.selectedVertex!=null){
-		var sequence=this.uselectedVertex.getSequence();
+		var sequence=this.selectedVertex.getSequence();
 		var toPrint=sequence.substr(0,this.kmerLength-1)+"["+sequence[sequence.length-1]+"]";
 		this.context.fillText("Ball: "+toPrint, 32, 32);
 	}
