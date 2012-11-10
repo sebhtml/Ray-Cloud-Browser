@@ -35,6 +35,7 @@ Renderer.prototype.drawVertices=function(vertices){
 }
 
 Renderer.prototype.drawArcs=function(vertices){
+
 	// draw arcs
 	for(i in vertices){
 		var vertex=vertices[i];
@@ -51,11 +52,67 @@ Renderer.prototype.drawArcs=function(vertices){
 			var originX=this.screen.getOriginX();
 			var originY=this.screen.getOriginY();
 
-			context.moveTo(vertex.getX()-originX,vertex.getY()-originY);
-			context.lineTo(vertex2.getX()-originX,vertex2.getY()-originY);
-			context.stroke();
+			this.drawArc(context,vertex.getX()-originX,vertex.getY()-originY,
+				vertex2.getX()-originX,vertex2.getY()-originY,
+				vertex2.getRadius());
+
 		}
 	}
+}
+
+Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
+	context.moveTo(ax,ay);
+	context.lineTo(bx,by);
+	context.stroke();
+}
+
+/*
+ * ball 1                        ball 2
+ *
+ *  A               G   C          B
+ *  .           |---|---|          .
+ *                     /
+ *                    /
+ *                   /
+ *                  .
+ */
+Renderer.prototype.drawArc=function(context,ax,ay,bx,by,radius){
+
+	this.drawLine(context,ax,ay,bx,by);
+
+	var arrowPartLength=5;
+	var ab_x=bx-ax;
+	var ab_y=by-ay;
+
+	var ab_length=Math.sqrt(ab_x*ab_x+ab_y*ab_y);
+
+/* G is a point, see above */
+
+
+	var pointRatioForC=(ab_length-radius)/(0.0+ab_length);
+	var cx=ax+pointRatioForC*ab_x;
+	var cy=ay+pointRatioForC*ab_y;
+	
+	var pointRatio=(ab_length-radius-arrowPartLength)/(0.0+ab_length);
+	var gx=ax+pointRatio*ab_x;
+	var gy=ay+pointRatio*ab_y;
+
+	var gc_x=cx-gx;
+	var gc_y=cy-gy;
+
+	var ge_x=gc_y;
+	var ge_y=-gc_x;
+
+	var gd_x=-gc_y;
+	var gd_y=gc_x;
+
+	var dx=gx+gd_x;
+	var dy=gy+gd_y;
+	var ex=gx+ge_x;
+	var ey=gy+ge_y;
+
+	this.drawLine(context,cx,cy,dx,dy);
+	this.drawLine(context,cx,cy,ex,ey);
 }
 
 Renderer.prototype.isOutside=function(vertex){
