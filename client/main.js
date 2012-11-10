@@ -19,6 +19,18 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/*
+ * Global settings for game and rendering frequencies.
+ */
+var renderingFrequency=24;
+var gameFrequency=32;
+
+var screen=new Screen(gameFrequency,renderingFrequency);
+
+/*
+ * Start the rendering.
+ */
+
 /**
  * \see http://www.html5canvastutorials.com/advanced/html5-canvas-animation-stage/
  */
@@ -29,32 +41,31 @@ window.requestAnimFrame = (function(callback){
     window.oRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
     function(callback){
-        window.setTimeout(callback, 1000 / 24);
+        window.setTimeout(callback, 1000 / renderingFrequency);
     };
 })();
 
-
-var gameFrequency=60;
-
-var screen=new Screen(gameFrequency);
-
-var periodInMilliSeconds=16;
-
-var a=function(){
-	screen.iterate();
-}
-
-setInterval(a,periodInMilliSeconds);
-
-function animate(){
-	requestAnimFrame(animate);
+function renderScene(){
+	requestAnimFrame(renderScene);
 
 	screen.draw();
 }
 
-window.onload=animate;
+window.onload=renderScene;
 
-// bind keyboard
+/*
+ * Start the game engine.
+ */
+
+var iterateGame=function(){
+	screen.iterate();
+}
+
+var periodInMilliSeconds=1000 / gameFrequency;
+
+setInterval(iterateGame,periodInMilliSeconds);
+
+// Bind keyboard events.
 document.onkeydown=function(e){
 	screen.processKeyboardEvent(e);
 }

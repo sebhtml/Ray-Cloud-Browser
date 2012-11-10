@@ -19,7 +19,7 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
-function Screen(gameFrequency){
+function Screen(gameFrequency,renderingFrequency){
 	this.selectedVertex=null;
 
 	this.renderer=new Renderer(this);
@@ -27,8 +27,10 @@ function Screen(gameFrequency){
 	this.kmerLength=31;
 
 	this.gameFrequency=gameFrequency;
+	this.renderingFrequency=renderingFrequency;
 
-	this.gameFrameLength=Math.floor(1000/this.gameFrequency);
+	this.gameFrameLength=this.roundNumber(1000/this.gameFrequency,2);
+	this.renderingFrameLength=this.roundNumber(1000/this.renderingFrequency,2);
 
 	this.canvas=document.createElement("canvas");
 
@@ -490,7 +492,7 @@ Screen.prototype.createGraph=function(){
 	while(i<n){
 		var j=0;
 		while(j<degree){
-
+Y
 			var next=Math.floor(Math.random()*(n-1));
 
 			if(this.type=="linear"){
@@ -717,21 +719,38 @@ Screen.prototype.drawControlPanel=function(){
 */
 
 	if(this.selectedVertex!=null){
-		var sequence=this.selectedVertex.getSequence();
+		var sequence=this.uselectedVertex.getSequence();
 		var toPrint=sequence.substr(0,this.kmerLength-1)+"["+sequence[sequence.length-1]+"]";
 		this.context.fillText("Ball: "+toPrint, 32, 32);
 	}
 
 
-	var offset=300;
-	this.context.fillText("Display: "+this.canvas.width+","+this.canvas.height+" Origin: "+this.originX+","+this.originY, 10, this.canvas.height-6);
+	var offsetX=10;
+	var offsetY=90;
+	var stepping=15;
 
-	this.context.fillText("Frequency: "+this.gameFrequency+" Game frame: "+this.gameFrameLength,this.canvas.width-offset, this.canvas.height-34);
+	this.context.fillText("Registered objects: "+this.vertices.length+"",offsetX,this.canvas.height-offsetY);
+	offsetY-=stepping;
 
-	this.context.fillText("Game FPS: "+this.actualGameFrequency+" Game frame: "+this.actualGameFrameLength+
-		" ms",this.canvas.width-offset, this.canvas.height-20);
-	this.context.fillText("Rendering FPS: "+this.actualDrawingFrequency+" Rendering slice: "+this.actualDrawingFrameLength+
-		" ms",this.canvas.width-offset, this.canvas.height-6);
+	this.context.fillText("View port: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+this.originX+","+this.originY+")",
+		offsetX,this.canvas.height-offsetY);
+	offsetY-=stepping;
+
+	this.context.fillText("Game (expected): frequency: "+this.gameFrequency+" Hz, frame length: "+this.gameFrameLength+" ms",
+		offsetX,this.canvas.height-offsetY);
+	offsetY-=stepping;
+
+	this.context.fillText("Game (actual): frequency: "+this.actualGameFrequency+" Hz, frame length: "+this.actualGameFrameLength+
+		" ms",offsetX, this.canvas.height-offsetY);
+	offsetY-=stepping;
+
+	this.context.fillText("Rendering (expected): frequency: "+this.renderingFrequency+" Hz, frame length: "+this.renderingFrameLength+" ms",
+		offsetX,this.canvas.height-offsetY);
+	offsetY-=stepping;
+
+	this.context.fillText("Rendering (actual): frequency: "+this.actualDrawingFrequency+" Hz, frame length: "+this.actualDrawingFrameLength+
+		" ms",offsetX, this.canvas.height-offsetY);
+	offsetY-=stepping;
 }
 
 

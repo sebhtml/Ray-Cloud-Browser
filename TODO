@@ -1,7 +1,5 @@
 First release:
 
-- use a one-level quad tree for physics
-- compute physics and draw collisions only for stuff on the screen
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>
 
@@ -12,3 +10,9 @@ Second release:
 - user-supplied graph
 - Change current sequence file
 - Change current graph file
+
+
+WONTFIX:
+
+- use a one-level quad tree for physics WONTFIX
+- compute physics and draw collisions only for stuff on the screen WONTFIX
