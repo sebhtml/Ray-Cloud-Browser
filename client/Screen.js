@@ -45,8 +45,6 @@ function Screen(gameFrequency){
 	this.canvas.width=1300;
 	this.canvas.height=600;
 
-
-
 	this.engine=new PhysicsEngine();
 
 	/* number of vertices */
@@ -438,7 +436,7 @@ Screen.prototype.createStartingGraph=function(){
 
 	var startingDistance=20;
 
-	for(var i=0;i<100 /*sequence.length*/;i++){
+	for(var i=0;i<200 /*sequence.length*/;i++){
 		var suffix=sequence.substr(i+1,this.kmerLength);
 		var vertex2=new Vertex(400+150+startingDistance*i,200+150+startingDistance*i,suffix,true);
 		var coverage=new Vertex(400+155+startingDistance*i,200+150+startingDistance*i,"99",false);
