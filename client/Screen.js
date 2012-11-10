@@ -436,10 +436,12 @@ Screen.prototype.createStartingGraph=function(){
 	this.vertices.push(vertex1);
 	this.vertices.push(coverage);
 
-	for(var i=0;i<30 /*sequence.length*/;i++){
-		var suffix=sequence.substr(i+1,i+1+this.kmerLength);
-		var vertex2=new Vertex(400+150+i,200+150+i,suffix,true);
-		var coverage=new Vertex(400+155+i,200+150+i,"99",false);
+	var startingDistance=20;
+
+	for(var i=0;i<200 /*sequence.length*/;i++){
+		var suffix=sequence.substr(i+1,this.kmerLength);
+		var vertex2=new Vertex(400+150+startingDistance*i,200+150+startingDistance*i,suffix,true);
+		var coverage=new Vertex(400+155+startingDistance*i,200+150+startingDistance*i,"99",false);
 
 		vertex2.addLinkedObject(coverage);
 		coverage.addLinkedObject(vertex2);

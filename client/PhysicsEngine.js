@@ -40,7 +40,7 @@ function PhysicsEngine(){
  */
 	this.sprintStep=0.005;
 	this.springConstant=0.05;
-	this.springLength=1;
+	this.springLength=5;
 
 	/* velocity update */
 	this.timeStep=1;
