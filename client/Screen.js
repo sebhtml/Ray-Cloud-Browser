@@ -413,11 +413,11 @@ Screen.prototype.createStartingGraph=function(){
 
 	var kmerLength=31;
 
-	var prefix=sequence.substr(i,i+kmerLength);
+	var prefix=sequence.substr(0,kmerLength);
 	var vertex1=new Vertex(400+50,200+50,prefix);
 	this.vertices.push(vertex1);
 
-	for(var i=0;i<4 /*sequence.length*/;i++){
+	for(var i=0;i<30 /*sequence.length*/;i++){
 		var suffix=sequence.substr(i+1,i+1+kmerLength);
 		var vertex2=new Vertex(400+150+i,200+150+i,suffix);
 		this.vertices.push(vertex2);

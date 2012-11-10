@@ -28,7 +28,7 @@ function PhysicsEngine(arcLength){
 	/* Coulomb's law */
 	this.forceStep=0.05;
 	this.charge=100;
-	this.forceConstant=0.05;
+	this.forceConstant=0.15;
 
 	/* Hooke's law */
 	this.sprintStep=0.005;

@@ -23,6 +23,7 @@ function Vertex(x,y,name){
 	this.x=x;
 	this.y=y;
 	this.name=name;
+	this.chiefNucleotide=name[name.length-1];
 
 	this.velocityX=0;
 	this.velocityY=0;
@@ -36,6 +37,10 @@ function Vertex(x,y,name){
 
 	this.canChangeColor=true;
 	this.radius=10;
+
+	this.redSeed=120;
+	this.greenSeed=150;
+	this.blueSeed=120;
 }
 
 Vertex.prototype.getRadius=function(){
@@ -52,9 +57,9 @@ Vertex.prototype.getColor=function(){
 	}
 
 	var seed=Math.floor(10*Math.sqrt(this.velocityX*this.velocityX+this.velocityY*this.velocityY+10));
-	var red=seed+120;
-	var green=seed+150; //Math.floor(10*this.velocityX*this.velocityX)+150;
-	var blue=seed+120; //Math.floor(10*this.velocityY*this.velocityY)+150;
+	var red=seed+this.redSeed;
+	var green=seed+this.greenSeed; //Math.floor(10*this.velocityX*this.velocityX)+150;
+	var blue=seed+this.blueSeed; //Math.floor(10*this.velocityY*this.velocityY)+150;
 
 	if(red>255){
 		red=255;
@@ -115,7 +120,7 @@ Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
 
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold 12px sans-serif';
-	context2.fillText(this.name,x-this.radius/2,y+this.radius/2);
+	context2.fillText(this.chiefNucleotide,x-this.radius/2,y+this.radius/2);
 
 	//console.log("Drawed something.");
 
@@ -189,12 +194,10 @@ Vertex.prototype.printArcs=function(){
 }
 
 Vertex.prototype.isInside=function(x,y){
-
-	var radius=100;
 	var dx=x-this.x;
 	var dy=y-this.y;
 	
-	return (dx*dx+dy*dy <= radius*radius);
+	return (dx*dx+dy*dy <= this.radius*this.radius);
 }
 
 Vertex.prototype.handleMouseDown=function(x,y,radius){
