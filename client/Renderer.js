@@ -74,5 +74,14 @@ Renderer.prototype.isOutside=function(vertex){
 	if(x<(0-buffer))
 		return true;
 
+	if(x>=(width+buffer))
+		return true;
+
+	if(y<(0-buffer))
+		return true;
+
+	if(y>=(height+buffer))
+		return true;
+
 	return false;
 }
