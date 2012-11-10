@@ -19,10 +19,11 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
-function Vertex(x,y,name){
+function Vertex(x,y,name,coverage){
 	this.x=x;
 	this.y=y;
 	this.name=name;
+	this.coverage=coverage;
 	this.chiefNucleotide=name[name.length-1];
 
 	this.velocityX=0;
@@ -143,6 +144,7 @@ Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold 12px sans-serif';
 	context2.fillText(this.chiefNucleotide,x-this.radius/2,y+this.radius/2);
+	context2.fillText(this.coverage,x-this.radius/2,y+3*this.radius);
 
 	//console.log("Drawed something.");
 
