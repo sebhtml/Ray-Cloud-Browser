@@ -222,7 +222,7 @@ Vertex.prototype.isInside=function(x,y){
 	return (dx*dx+dy*dy <= this.radius*this.radius);
 }
 
-Vertex.prototype.handleMouseDown=function(x,y,radius){
+Vertex.prototype.handleMouseDown=function(x,y){
 
 	if(this.isInside(x,y,this.radius)){
 		//console.log(this.name+" follows");
@@ -277,4 +277,12 @@ Vertex.prototype.removeArc=function(vertex){
 		}
 	}
 	this.arcs=newArcs;
+}
+
+Vertex.prototype.getSequence=function(){
+	return this.name;
+}
+
+Vertex.prototype.isFollower=function(){
+	return this.followMouse;
 }
