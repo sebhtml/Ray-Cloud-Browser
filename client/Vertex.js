@@ -28,13 +28,18 @@ function Vertex(x,y,name){
 	this.velocityY=0;
 
 	this.arcs=new Array();
+	this.linkedObjects=new Array();
 
 	this.followMouse=false;
 
 	this.updated=false;
 
 	this.canChangeColor=true;
-	this.radius=100;
+	this.radius=10;
+}
+
+Vertex.prototype.getRadius=function(){
+	return this.radius;
 }
 
 Vertex.prototype.getColor=function(){
@@ -110,7 +115,7 @@ Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
 
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold 12px sans-serif';
-	context2.fillText(this.name,x-this.radius+30,y);
+	context2.fillText(this.name,x-this.radius/2,y+this.radius/2);
 
 	//console.log("Drawed something.");
 
@@ -140,6 +145,10 @@ Vertex.prototype.updateVelocity=function(timeStep,force,damping){
 	this.updated=true;
 }
 
+Vertex.prototype.getLinkedObjects=function(){
+	return this.linkedObjects;
+}
+
 Vertex.prototype.getArcs=function(){
 	return this.arcs;
 }
@@ -157,8 +166,14 @@ Vertex.prototype.addArc=function(vertex){
 	}
 
 	this.arcs.push(vertex);
+	this.addLinkedObject(vertex);
+	vertex.addLinkedObject(this);
 
 	//this.printArcs();
+}
+
+Vertex.prototype.addLinkedObject=function(vertex){
+	this.linkedObjects.push(vertex)
 }
 
 Vertex.prototype.getName=function(){

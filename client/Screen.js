@@ -43,25 +43,13 @@ function Screen(){
 
 	this.vertexRadius=20;
 
-	/* Coulomb's law */
-	this.forceStep=0.05;
-	this.charge=100;
-	this.forceConstant=0.05;
-
-	/* Hooke's law */
-	this.sprintStep=0.005;
-	this.springConstant=0.05;
 
 /*
  * The arc length.
  */
-	this.arcLength=300;
+	this.arcLength=30;
 
-	this.range=5;
-	this.useGrid=false;
-	/* velocity update */
-	this.timeStep=1;
-	this.damping=0.5;
+	this.engine=new PhysicsEngine(this.arcLength);
 
 	/* number of vertices */
 	this.n=16;
@@ -188,7 +176,6 @@ Screen.prototype.createButtons=function(){
 Screen.prototype.start=function(){
 	
 	this.blitter=new Blitter();
-	this.grid=new Grid(100);
 
 	this.vertexSelected=null;
 	this.lastUpdate=this.getMilliseconds();
@@ -256,7 +243,7 @@ Screen.prototype.handleMouseDown=function(eventObject){
 				candidate.activateState();
 			}
 
-			this.processButtons();
+			//this.processButtons();
 
 			return;
 		}
@@ -278,10 +265,12 @@ Screen.prototype.handleMouseDown=function(eventObject){
 				var newTable=new Array();
 
 				for(j in this.vertices){
+/*
 					if(!this.useGrid){
 						break;
 					}
-					this.grid.removeEntry(j);
+*/
+					//this.grid.removeEntry(j);
 				}
 
 				for(j in this.vertices){
@@ -293,14 +282,14 @@ Screen.prototype.handleMouseDown=function(eventObject){
 
 				this.vertices=newTable;
 
-				var scale=this.range*this.vertexRadius;
+				//var scale=this.range*this.vertexRadius;
 
 				for(j in this.vertices){
 					var vertex=this.vertices[i];
 
-					if(this.useGrid){
-						this.grid.addEntry(i,vertex.getX(),vertex.getY(),scale,scale);
-					}
+					//if(this.useGrid){
+						//this.grid.addEntry(i,vertex.getX(),vertex.getY(),scale,scale);
+					//}
 				}
 
 
@@ -420,17 +409,21 @@ Screen.prototype.createArcs=function(v1,v2){
 Screen.prototype.createStartingGraph=function(){
 	this.vertices=new Array();
 
-	var vertex1=new Vertex(400+50,200+50,"AATTGTAACTCCTAAAATAAG");
+	var sequence="TCTTCGAAAATCTCTTCAAACCACGTCAGCTTCACCTTGCAGTATATATGTTACTGACTTCGTCAGTTCTATCCACAACCTCAAAACGGTGTTTTGAGCTGACTTCGTCAGTTCTATCTACAACCTCAAAACACTGTTTTGAGCAACCTGCGGCTAGCTTCCTAGTTTGCTCTTTGATTTTCATTGAGTATTAGAAGATACAATGGAGGTCGTCATGGACAATATCATCGATGTGTCAATTCCTGTTGCAGAAGTGGTGGACAAGCATCCAGAAGTCTTGGAAATTCTAGTGGAGTTGGGTTTTAAACCCCTTGCCAATCCCTTAATGCGCAATACAGTTGGTCGTAAAGTATCACTTAAACAGGGTTCTAAGCTAGCAGGAACTCCTATGGACAAGATTGTACGCACACTGGAAGCGAATGGCTACGAAGTGATTGGATTAGACTAATGACAGATGAACGGATTCATATCCTACGGGATATTTTGTTAGAATTGCACAATGGCGCCTCTCCTGAGTCGGTTCAAGATCGCTTTGATGCGACCTTTACGGGCGTGTCAGCCATCGAGATTTCCCTTATGGAGCACGAGCTGATGAACTCGGATTCGGGCGTCACTTTTGAAGATGTTATGGAACTCTGTGATGTCCATGCCAATCTTTTTAAAAATGCTATCAAAGGTGTCGAAGTTTTAGATACCGAACACCCTGGGCACCCAGTTCGTGTCTTTAAGGAAGAAAATTTGGCCCTCCGTGCAGCTTTGATTCGCATTCGTAGATTGTTAGATACCTATGAGTTGATGGAAGACGAGGAAATGCTGGCGGAGATGCGCAAGGGCTTGGTGCGTCAGATGGGACTTGTGGGGCAATTTGACATCCATTACCAACGTAAAGAAGAACTCTTCTTTCCTATCATGGAGCGCTATGGACACGATTCACCTCCCAAAGTTATGTGGGGAGTGGATGATCAGATTAGGGAACTCTTTCAAACAGCTCTAACGACAGCCAAGTCACTACCAGAAGTGTCAATTAGCAGTGTAAAGGAAGCTTTTGAAGCTTTTGCGACAGAGTTTGAAAGTATGATTTTCAAGGAAGAGTCCATCCTCCTCATGATTCTCCTTGAGTCTTTTACTCAGGATGACTGGATTCAGATTGCGGAGGAGAGCGATGCCTATGGCTATGCCATCATCCGTCCGTCAGAGAAATGGGTGCCAGAACGACAGAGCTTTATTGAGGAAAAGATTGCAGAGGAGCCTGTACAGCTAGATACGGCAGAAGGTCAAGTTCAACAAGTCATAGATACGCCAGAAGGCCATTTTACCATTACCTTTACCCCTAAGGAAAAGGAAGCTGTGCTGGACCGCCATAGTCAACAGGCTTTTGGTAATGGCTATCTTTCAGTCGAGCAGGCCAATCTCATCCTCAATCATCTCCCTATGGAGATTACCTTTGTCAATAAAGAAGATATTTTCCAGTATTACAATGACAATACGCCAGCTGATGAGATGATTTTCAAACGAACGCCGTCCCAAGTCGGGCGCAATGTCGAACTCTGTCATCCGCCTAAGTATTTGGACAAGGTCAAGGCTATCATGAAGGGACTTCGTGAGGGGACCAAGGACAAGTATGAAATGTGGTTCAAGTCTGAGTCGCGAGGCAAGTTTGTCCACATCACCTATGCTGCAGTACACGATGAAGACGGAGAATTCCAAGGAGTGTTGGAGTATGTTCAGGATATCCAGCCCTACCGTGAGATTGATACGGACTATTTCCGTGGATTAGAATAAGGAGAAAAAATGAGTTACGAACAAGAATTTATGAAGGAATTTGAAGCTTGGGTCAATACCCAAATCATGATTAACGATATGGCGCACAAGGAAAGTCAAAAAGTTTACGAAGAAGACCAGGACGAGCGTGCCAAAGATGCCATGATTCGCTACGAGAGTCGCTTGGATGCTTATCAGTTCTTGCTTGGTAAGTTTGAAAACTTCAAAGCAGGCAAGGGATTCCATGATTTGCCAGAAGGCTTGTTTGGTGAGCGAAATTATTAAACGAGAAAGATTCTTGATTTTTCACTAAAATCTTGATAGAATGTTTATGTTAAATCCTTGTCAGAGCAGGGATTTTTTATTGAAAGGATTTTATCATGTCAAAGAAACTCAATCGTAAAAAACAATTACGAAATGGCCTCCGTCGCTCAGGTGCCTTTTCAAGTACTGTGACTAAGGTTGTAGATGAGACAAAAAAAGTCGTGAAGCGTGCAGAACAGTCAGCAAGCGCAGCTGGTAAGGCTGTTTCTAAAAAAGTTGAACAAGCAGTAGAAGCTACCAAAGAGCAAGCTCAAAAAGTAGCTAATTCTGTAGAAGATTTTGCAGCAAACTTGGGTGGACTTCCACTTGATCGTGCCAAGACTTTCTATGATGAAGGAATCAAGTCTGCTTCAGATTTCAAAAACTGGACTGAAAAAGAACTCCTTGACTTGAAAGGAATCGGCCCAGCTACCATCAAGAAATTGAAAGAAAATGGCATCAAGTTCAAGTAATTTTTCTTGAGCCTTGCATTTCCGAGAAAAACTTGCTACAATAGAGCCATTAGAGGTGTTTTGAATCCCACATTTTACAGAAAGTGGCGGCGCTGAGAAGTCCACAAATGTGTCAAAACTGGTTGCTAATGACTGAAAAAATGAAATATTTCTGTCTTTTTATTTTAAAGACTAAAGATGCGGGCTTGGCCCGAAATTGGGTGGTACCGCGGATAAACACATTCGTCCCTGTCATGTAGATGGCAGGGCTTTTCTTTTGTGTCTTAGTCAAAGGAGGTTGTTATAAAACAATCATTTAAAACTAATAAACTATATTATGGTTTTCCTGTTTTTATTTTAGGATATCAAGATTAGAATTTTGGCTATAACATCACGACCTGTAGTTCCTCTTATAGTCTAGGAGATTGGGTTGTGATTGGAGTCGTTGCGAGAGAGAATGCCGCAGAGCAGATCAAACAGTATCAAAAATTTACTGTGAATATTTCTGATGAAACTTCTATGCTTGCGATGGAGCAGGCTGGTTTTATCAGTCATCAGGAGAAATTGGAACGTTTGGGAGTGCATTATGAAATTTCTGAACGAACTCAGATTCCTATTTTAGACGCCTGTCCACTTGTTTTAGATTGTCGGGTAGATAGGATTGTTGAGGAAGACGGTATTTGCCACATCTTTGCCAAGATTCTTGAGCGACTTGTTGCCCCAGAACTCCTGGATGAAAAGGGACATTTTAAAAATCAACTGTTTGCCCCAACCTATTTCATGGGAGATGGATATCAGCGCGTTTATCGCTATCTGGATAAGCGTGTAGATATGAAGGGCAGTTTCATCAAAAAAGCGAGGAAGAAGGATGGCAAGAACTGAGCTGCCAGATAAAATCGAAACAGAACGTCTCGTTTTACGAGTCCGTACTGTGGCGGATGCTGAGGATATCTTTGACTATGCTAGTTTGCCAGAGGTCGCCTATCCAGCAGGTTTTCCTCCAGTCAAGACCTTGGAAGATGAGATTTATTATCTGGAGCACATTCTTCCGGAGCGTAATCAAAAGGAAAATCTCCCAGCAGGCTACGGGATTGTCGTCAAAGGAACGGATAAGATCGTTGGCTCTGTCGATTTCAACCATCGCCATGAAGATGATGTGCTGGAAATCGGCTATACCTTACACCCAGACTATTGGGGGCGAGGTTATGTGCCAGAAGCTGCGCGTGCCTTGATTGACTTAGCCTTTAAAGATTTGGGTCTTCACAAGATTGAACTAACTTGCTTTGGATATAACCTTCAAAGTAAACGAGTCGCGGAAAAGCTTGGCTTTACCCTCGAAGCTCGCATAAGAGACCGAAAGGATGTTCAAGGAAACCGCTGTGACAGTCTGATATATGGCTTGCTGAAGAGCGAGTGGGAGGAATAAGATGAGCGATGTAAAAGA";
+
+	var kmerLength=31;
+
+	var prefix=sequence.substr(i,i+kmerLength);
+	var vertex1=new Vertex(400+50,200+50,prefix);
 	this.vertices.push(vertex1);
 
-	var vertex2=new Vertex(400+150,200+150,"ATTGTAACTCCTAAAATAAGC");
-	this.vertices.push(vertex2);
-
-	var vertex3=new Vertex(500+150,200+150,"TTGTAACTCCTAAAATAAGCG");
-	this.vertices.push(vertex3);
-
-	vertex1.addArc(vertex2);
-	vertex2.addArc(vertex3);
+	for(var i=0;i<4 /*sequence.length*/;i++){
+		var suffix=sequence.substr(i+1,i+1+kmerLength);
+		var vertex2=new Vertex(400+150+i,200+150+i,suffix);
+		this.vertices.push(vertex2);
+		vertex1.addArc(vertex2);
+		vertex1=vertex2;
+	}
 }
 
 Screen.prototype.createGraph=function(){
@@ -497,6 +490,7 @@ Screen.prototype.roundNumber=function(number,precision){
 	return Math.round(number*multiplier)/multiplier;
 }
 
+/*
 Screen.prototype.processButtons=function(){
 	if(this.increaseRepulsionButton.getState()){
 		this.forceConstant+=this.forceStep;
@@ -629,6 +623,7 @@ Screen.prototype.processButtons=function(){
 		this.damping=this.roundNumber(this.damping,2);
 	}
 }
+*/
 
 Screen.prototype.iterate=function(){
 	
@@ -648,8 +643,8 @@ Screen.prototype.iterate=function(){
 		this.lastUpdate=start;
 	}
 
-	this.applyForces();
-	this.moveObjects();
+	this.engine.applyForces(this.vertices);
+	this.engine.moveObjects(this.vertices);
 
 	var end=this.getMilliseconds();
 	this.gameMilliseconds+=(end-start);
@@ -659,28 +654,6 @@ Screen.prototype.iterate=function(){
 
 Screen.prototype.getMilliseconds=function(){
 	return new Date()*1;
-}
-
-Screen.prototype.moveObjects=function(){
-	// move objects
-
-	var i=0;
-	while(i<this.vertices.length){
-		var vertex=this.vertices[i];
-		
-		vertex.update(this.timeStep,this.timeControlButton.getState());
-
-		var scale=this.range*this.vertexRadius;
-
-		if(this.useGrid){
-			this.grid.removeEntry(i);
-
-			//console.log("vertices "+this.vertices.length+" i= "+i+" name= "+vertex.getName());
-			this.grid.addEntry(i,vertex.getX(),vertex.getY(),scale,scale);
-		}
-
-		i++;
-	}
 }
 
 Screen.prototype.drawControlPanel=function(){
@@ -774,122 +747,6 @@ Screen.prototype.drawArcs=function(){
 			this.context.stroke();
 		}
 	}
-}
-
-/**
- * \see http://en.wikipedia.org/wiki/Force-based_algorithms_(graph_drawing)
- */
-Screen.prototype.applyForces=function(){
-
-	var i=0;
-
-	while(i<this.vertices.length){
-		var force=[0,0];
-
-		var vertex1=this.vertices[i];
-
-		var hits=this.vertices;
-
-		if(this.useGrid){
-			hits=this.grid.getEntries(vertex1.getX(),vertex1.getY(),this.range*this.vertexRadius,this.range*this.vertexRadius);
-		}
-
-		var k=0;
-		//console.log("Self= "+i);
-		while(this.forceConstant!=0 && k<hits.length){
-			var j=k;
-			if(this.useGrid){
-				var j=hits[k];
-			}
-
-			if(i==j){
-				k++;
-				continue;
-			}
-
-			//console.log("self= "+i+" hit= "+j);
-			var vertex2=this.vertices[j];
-
-			var force2=this.getRepulsionForce(vertex1,vertex2);
-
-			force=this.addForces(force,force2);
-		
-			k++;
-		}
-
-		var arcs=vertex1.getArcs();
-
-		for(j in arcs){
-
-			var vertex2=arcs[j];
-
-			var force2=this.getAttractionForce(vertex1,vertex2);
-
-
-			force=this.addForces(force,force2);
-		}
-
-		vertex1.updateVelocity(this.timeStep,force,this.damping);
-
-		i++;
-	}
-
-}
-
-/**
- * \see http://en.wikipedia.org/wiki/Hooke%27s_law
- */
-Screen.prototype.getAttractionForce=function(vertex1,vertex2){
-
-
-	var dx=vertex2.getX()-vertex1.getX();
-	var dy=vertex2.getY()-vertex1.getY();
-
-	var distance=Math.sqrt(dx*dx+dy*dy);
-
-	var displacement=distance-this.arcLength;
-
-
-	var force=this.springConstant*displacement;
-
-	// get a unit vector 
-	dx=dx/distance;
-	dy=dy/distance;
-
-
-	dx=dx*force;
-	dy=dy*force;
-
-	return [dx,dy];
-}
-
-/**
- * \see http://en.wikipedia.org/wiki/Coulomb's_law
- */
-Screen.prototype.getRepulsionForce=function(vertex1,vertex2){
-
-	var dx=(vertex1.getX() - vertex2.getX());
-	var dy=(vertex1.getY() - vertex2.getY());
-	
-	var length=Math.sqrt(dx*dx+dy*dy);
-
-	dx=dx/length;
-	dy=dy/length;
-
-	var charge1=this.charge;
-	var charge2=this.charge;
-	var force=(this.forceConstant*charge1*charge2)/(length*length);
-
-	dx=dx*force;
-	dy=dy*force;
-
-	return [dx,dy];
-}
-
-
-
-Screen.prototype.addForces=function(force,force2){
-	return [force[0]+force2[0], force[1]+force2[1]]
 }
 
 Screen.prototype.getRandomX=function(){
