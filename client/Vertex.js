@@ -41,6 +41,28 @@ function Vertex(x,y,name){
 	this.redSeed=120;
 	this.greenSeed=150;
 	this.blueSeed=120;
+
+	if(this.chiefNucleotide=="A"){
+		this.redSeed=170;
+		this.greenSeed=120;
+		this.blueSeed=120;
+	}else if(this.chiefNucleotide=="T"){
+
+		this.redSeed=120;
+		this.greenSeed=120;
+		this.blueSeed=170;
+	}else if(this.chiefNucleotide=="C"){
+
+		this.redSeed=120;
+		this.greenSeed=170;
+		this.blueSeed=120;
+	}else if(this.chiefNucleotide=="G"){
+
+		this.redSeed=170;
+		this.greenSeed=170;
+		this.blueSeed=100;
+	}
+
 }
 
 Vertex.prototype.getRadius=function(){
@@ -56,7 +78,7 @@ Vertex.prototype.getColor=function(){
 		return "rgb(235,225,240)";
 	}
 
-	var seed=Math.floor(10*Math.sqrt(this.velocityX*this.velocityX+this.velocityY*this.velocityY+10));
+	var seed=Math.floor(10*Math.sqrt(this.velocityX*this.velocityX+10*this.velocityY*this.velocityY+10));
 	var red=seed+this.redSeed;
 	var green=seed+this.greenSeed; //Math.floor(10*this.velocityX*this.velocityX)+150;
 	var blue=seed+this.blueSeed; //Math.floor(10*this.velocityY*this.velocityY)+150;

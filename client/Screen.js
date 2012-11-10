@@ -44,12 +44,7 @@ function Screen(){
 	this.vertexRadius=20;
 
 
-/*
- * The arc length.
- */
-	this.arcLength=30;
-
-	this.engine=new PhysicsEngine(this.arcLength);
+	this.engine=new PhysicsEngine();
 
 	/* number of vertices */
 	this.n=16;

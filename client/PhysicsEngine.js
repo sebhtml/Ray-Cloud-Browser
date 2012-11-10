@@ -19,20 +19,28 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
-function PhysicsEngine(arcLength){
+function PhysicsEngine(){
 
-	this.arcLength=arcLength;
+
 	this.useGrid=false;
 	this.range=5;
 
-	/* Coulomb's law */
+/* 
+ * Coulomb's law
+ * This is for the repulsion.
+ */
 	this.forceStep=0.05;
 	this.charge=100;
-	this.forceConstant=0.15;
+	this.forceConstant=0.05;
 
-	/* Hooke's law */
+/* 
+ * Hooke's law 
+ * This is for the springs, they keep everything together.
+ * if it is too weak, the repulsion may win.
+ */
 	this.sprintStep=0.005;
 	this.springConstant=0.05;
+	this.springLength=1;
 
 	/* velocity update */
 	this.timeStep=1;
@@ -116,8 +124,7 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 
 	var distance=Math.sqrt(dx*dx+dy*dy);
 
-	var displacement=distance-this.arcLength;
-
+	var displacement=distance-this.springLength;
 
 	var force=this.springConstant*displacement;
 
