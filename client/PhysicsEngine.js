@@ -30,17 +30,18 @@ function PhysicsEngine(){
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=100;
-	this.forceConstant=0.05;
+	this.charge=160;
+	this.labelCharge=50;
+	this.forceConstant=0.15;
 
 /* 
  * Hooke's law 
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
-	this.sprintStep=0.005;
-	this.springConstant=0.05;
-	this.springLength=5;
+	this.sprintStep=0.05;
+	this.springConstant=0.10;
+	this.springLength=10;
 
 	/* velocity update */
 	this.timeStep=1;
@@ -154,6 +155,12 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var charge1=this.charge;
 	var charge2=this.charge;
+
+	if(vertex1.isColored() || vertex2.isColored()){
+		charge1=this.labelCharge;
+		charge2=this.labelCharge;
+	}
+
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
 
 	dx=dx*force;

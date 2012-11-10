@@ -139,6 +139,7 @@ Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
 		context2.beginPath();
 		context2.fillStyle = theColor;
 		context2.strokeStyle = "rgb(0,0,0)";
+		context2.lineWidth=2;
 		context2.arc(x,y,radius, 0, Math.PI*2, true);
 	
 		context2.fill();
@@ -316,4 +317,8 @@ Vertex.prototype.getSequence=function(){
 
 Vertex.prototype.isFollower=function(){
 	return this.followMouse;
+}
+
+Vertex.prototype.isColored=function(){
+	return this.colored;
 }
