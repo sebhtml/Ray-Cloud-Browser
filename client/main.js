@@ -25,7 +25,11 @@
 var renderingFrequency=24;
 var gameFrequency=32;
 
-var screen=new Screen(gameFrequency,renderingFrequency);
+/*
+ * The variable can not be called screen because
+ * of a bug in Microsoft Internet Explorer 9.
+ */
+var programScreen=new Screen(gameFrequency,renderingFrequency);
 
 /*
  * Start the rendering.
@@ -48,7 +52,7 @@ window.requestAnimFrame = (function(callback){
 function renderScene(){
 	requestAnimFrame(renderScene);
 
-	screen.draw();
+	programScreen.draw();
 }
 
 window.onload=renderScene;
@@ -58,7 +62,7 @@ window.onload=renderScene;
  */
 
 var iterateGame=function(){
-	screen.iterate();
+	programScreen.iterate();
 }
 
 var periodInMilliSeconds=1000 / gameFrequency;
@@ -67,6 +71,6 @@ setInterval(iterateGame,periodInMilliSeconds);
 
 // Bind keyboard events.
 document.onkeydown=function(e){
-	screen.processKeyboardEvent(e);
+	programScreen.processKeyboardEvent(e);
 }
 
