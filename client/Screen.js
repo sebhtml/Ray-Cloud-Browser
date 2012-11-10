@@ -696,16 +696,14 @@ Screen.prototype.drawControlPanel=function(){
 
 
 	var offset=300;
-	//this.context.fillText("Display: "+this.canvas.width+","+this.canvas.height+" Origin: "+this.originX+","+this.originY, 10, this.canvas.height-6);
+	this.context.fillText("Display: "+this.canvas.width+","+this.canvas.height+" Origin: "+this.originX+","+this.originY, 10, this.canvas.height-6);
 
-/*
 	this.context.fillText("Frequency: "+this.gameFrequency+" Game frame: "+this.gameFrameLength,this.canvas.width-offset, this.canvas.height-34);
 
 	this.context.fillText("Game FPS: "+this.actualGameFrequency+" Game frame: "+this.actualGameFrameLength+
 		" ms",this.canvas.width-offset, this.canvas.height-20);
 	this.context.fillText("Rendering FPS: "+this.actualDrawingFrequency+" Rendering slice: "+this.actualDrawingFrameLength+
 		" ms",this.canvas.width-offset, this.canvas.height-6);
-*/
 }
 
 Screen.prototype.draw=function(){

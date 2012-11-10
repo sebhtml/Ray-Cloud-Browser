@@ -2,7 +2,6 @@ First release:
 
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>
-- full sequence on mouse over
 
 Second release:
 
