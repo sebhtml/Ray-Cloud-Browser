@@ -19,12 +19,15 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
-function Vertex(x,y,name,coverage){
+function Vertex(x,y,name,colored){
 	this.x=x;
 	this.y=y;
+	this.colored=colored;
 	this.name=name;
-	this.coverage=coverage;
-	this.chiefNucleotide=name[name.length-1];
+
+	if(this.colored){
+		this.chiefNucleotide=name[name.length-1];
+	}
 
 	this.velocityX=0;
 	this.velocityY=0;
@@ -132,19 +135,25 @@ Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
 	var x=this.getX()-originX;
 	var y=this.getY()-originY;
 
-	context2.beginPath();
-	context2.fillStyle = theColor;
-	context2.strokeStyle = "rgb(0,0,0)";
-	context2.arc(x,y,radius, 0, Math.PI*2, true);
+	if(this.colored){
+		context2.beginPath();
+		context2.fillStyle = theColor;
+		context2.strokeStyle = "rgb(0,0,0)";
+		context2.arc(x,y,radius, 0, Math.PI*2, true);
 	
-	context2.fill();
-	context2.stroke();
-	context2.closePath();
+		context2.fill();
+		context2.stroke();
+		context2.closePath();
+	}
 
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold 12px sans-serif';
-	context2.fillText(this.chiefNucleotide,x-this.radius/2,y+this.radius/2);
-	context2.fillText(this.coverage,x-this.radius/2,y+3*this.radius);
+
+	if(this.colored){
+		context2.fillText(this.chiefNucleotide,x-this.radius/2,y+this.radius/2);
+	}else{
+		context2.fillText(this.name,x-this.radius/2,y+this.radius/2);
+	}
 
 	//console.log("Drawed something.");
 
@@ -195,13 +204,19 @@ Vertex.prototype.addArc=function(vertex){
 	}
 
 	this.arcs.push(vertex);
-	this.addLinkedObject(vertex);
-	vertex.addLinkedObject(this);
-
-	//this.printArcs();
 }
 
 Vertex.prototype.addLinkedObject=function(vertex){
+	if(this.getName()==vertex.getName()){
+		return;
+	}
+
+	for(i in this.linkedObjects){
+		if(this.linkedObjects[i].getName()==vertex.getName()){
+			return;
+		}
+	}
+
 	this.linkedObjects.push(vertex)
 }
 
@@ -218,6 +233,9 @@ Vertex.prototype.printArcs=function(){
 }
 
 Vertex.prototype.isInside=function(x,y){
+	if(!this.colored)
+		return false;
+
 	var dx=x-this.x;
 	var dy=y-this.y;
 	
@@ -225,6 +243,9 @@ Vertex.prototype.isInside=function(x,y){
 }
 
 Vertex.prototype.handleMouseDown=function(x,y){
+
+	if(!this.colored)
+		return false;
 
 	if(this.isInside(x,y,this.radius)){
 		//console.log(this.name+" follows");
@@ -237,6 +258,10 @@ Vertex.prototype.handleMouseDown=function(x,y){
 }
 
 Vertex.prototype.handleMouseUp=function(x,y){
+
+	if(!this.colored)
+		return false;
+
 	if(this.followMouse){
 		this.followMouse=false;
 
@@ -247,6 +272,10 @@ Vertex.prototype.handleMouseUp=function(x,y){
 }
 
 Vertex.prototype.handleMouseMove=function(x,y){
+
+	if(!this.colored)
+		return false;
+
 	if(this.followMouse && this.updated){
 /*
 		console.log("mouse "+x+" "+y);
