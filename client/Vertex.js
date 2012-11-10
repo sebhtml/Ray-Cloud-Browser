@@ -176,10 +176,16 @@ Vertex.prototype.update=function(timeStep,timeState){
 	}
 }
 
-Vertex.prototype.updateVelocity=function(timeStep,force,damping){
+Vertex.prototype.updateVelocity=function(forceX,forceY){
 
-	this.velocityX=(this.velocityX + timeStep*force[0])*damping;
-	this.velocityY=(this.velocityX + timeStep*force[1])*damping;
+	this.velocityX+=forceX;
+	this.velocityY+=forceY;
+}
+
+Vertex.prototype.applyDamping=function(damping){
+
+	this.velocityX*=damping;
+	this.velocityY*=damping;
 
 	this.updated=true;
 }

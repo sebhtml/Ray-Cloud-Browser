@@ -19,19 +19,19 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
-function PhysicsEngine(){
+function PhysicsEngine(screen){
 
-
+	this.screen=screen;
 	this.useGrid=false;
-	this.range=5;
+	this.range=10;
 
 /* 
  * Coulomb's law
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=160;
-	this.labelCharge=50;
+	this.charge=200;
+	this.labelCharge=30;
 	this.forceConstant=0.15;
 
 /* 
@@ -39,9 +39,9 @@ function PhysicsEngine(){
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
-	this.sprintStep=0.05;
-	this.springConstant=0.10;
-	this.springLength=10;
+	this.sprintStep=0.5;
+	this.springConstant=0.35;
+	this.springLength=20;
 
 	/* velocity update */
 	this.timeStep=1;
@@ -57,43 +57,73 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 
 	var i=0;
 
+/*
+ * Build an index.
+ */
+	var index=new Object();
+
+	while(i<vertices.length){
+		var vertex1=vertices[i];
+		index[vertex1.getSequence()]=vertex1;
+		i++;
+	}
+
+	i=0;
 	while(i<vertices.length){
 		var force=[0,0];
 
 		var vertex1=vertices[i];
+		i++;
 
+		if(this.screen.isOutside(vertex1))
+			continue;
 /*
  * Actually, hits should be obtained with the grid.
  */
-		var hits=vertices;
+		var hits=new Array();
 
 		var vertexRadius=vertex1.getRadius();
+		var boxSize=this.range;
 
 		if(this.useGrid){
-			hits=this.grid.getEntries(vertex1.getX(),vertex1.getY(),this.range*vertexRadius,this.range*vertexRadius);
+			var keys=this.grid.getEntries(vertex1.getX(),vertex1.getY(),boxSize,boxSize);
+			
+			var keyNumber=0;
+			while(keyNumber<keys.length){
+				var keyValue=keys[keyNumber];
+				keyNumber++;
+				var vertex2=index[keyValue];
+				hits.push(vertex2);
+			}
+		}else{
+			hits=vertices;
 		}
 
-		var k=0;
-		//console.log("Self= "+i);
-		while(this.forceConstant!=0 && k<hits.length){
-			var j=k;
-			if(this.useGrid){
-				var j=hits[k];
-			}
+		console.log("Hits= "+hits.length);
 
-			if(i==j){
-				k++;
-				continue;
-			}
+		var hitNumber=0;
+		//console.log("Self= "+i);
+		while(this.forceConstant!=0 && hitNumber<hits.length){
 
 			//console.log("self= "+i+" hit= "+j);
-			var vertex2=vertices[j];
+			var vertex2=hits[hitNumber];
+
+			hitNumber++;
+/*
+ * We don't want to compute forces against the same
+ * object.
+ */
+			if(vertex2.getSequence()==vertex1.getSequence())
+				continue;
+
+/*
+			if(this.screen.isOutside(vertex2))
+				continue;
+*/
 
 			var force2=this.getRepulsionForce(vertex1,vertex2);
 
 			force=this.addForces(force,force2);
-		
-			k++;
 		}
 
 		var arcs=vertex1.getLinkedObjects();
@@ -107,11 +137,18 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			force=this.addForces(force,force2);
 		}
 
-		vertex1.updateVelocity(this.timeStep,force,this.damping);
-
-		i++;
+		vertex1.updateVelocity(this.timeStep*force[0],this.timeStep*force[1]);
 	}
 
+/*
+ * Apply damping on every object.
+ */
+	var i=0;
+	while(i<vertices.length){
+		var vertex1=vertices[i];
+		vertex1.applyDamping(this.damping);
+		i++;
+	}
 }
 
 /**
@@ -156,7 +193,10 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 	var charge1=this.charge;
 	var charge2=this.charge;
 
-	if(vertex1.isColored() || vertex2.isColored()){
+/*
+ * Annotation are less charged with energy.
+ */
+	if(!vertex1.isColored() || !vertex2.isColored()){
 		charge1=this.labelCharge;
 		charge2=this.labelCharge;
 	}
@@ -184,13 +224,14 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 		
 		vertex.update(this.timeStep,true);
 
-		var scale=this.range*vertex.getRadius();
+		var boxSize=this.range;
 
 		if(this.useGrid){
-			this.grid.removeEntry(i);
+			var objectKey=vertex.getSequence();
+			this.grid.removeEntry(objectKey);
 
 			//console.log("vertices "+this.vertices.length+" i= "+i+" name= "+vertex.getName());
-			this.grid.addEntry(i,vertex.getX(),vertex.getY(),scale,scale);
+			this.grid.addEntry(objectKey,vertex.getX(),vertex.getY(),boxSize,boxSize);
 		}
 
 		i++;

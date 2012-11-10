@@ -35,10 +35,16 @@ Grid.prototype.removeEntry=function(key){
 
 	var cells=this.keyCells[key];
 
+/*
+ * The object can be in more than 1 cell.
+ */
 	for(i in cells){
 		delete cells[i][key];
 	}
 
+/*
+ * The object is not stored anymore.
+ */
 	this.keyCells[key]=new Array();
 }
 
@@ -52,6 +58,11 @@ Grid.prototype.addEntry=function(key,centerX,centerY,width,height){
 	//console.log(cells.length+" cells to process");
 	for(i in cells){
 		var cell=cells[i];
+
+/*
+ * Store the fact that the object with key is in the
+ * cell.
+ */
 		cell[key]=4096;
 
 		//console.log("Added "+key);
@@ -64,7 +75,7 @@ Grid.prototype.addEntry=function(key,centerX,centerY,width,height){
 Grid.prototype.getEntries=function(centerX,centerY,width,height){
 
 
-	var cells2=this.getCells(centerX,centerY,width,height);
+	var cells=this.getCells(centerX,centerY,width,height);
 	var entries=new Object();
 
 	//console.log(cells.length+" cells to scan");
@@ -73,8 +84,8 @@ Grid.prototype.getEntries=function(centerX,centerY,width,height){
 
 	//console.log(cells2);
 
-	while(i<cells2.length){
-		var cell=cells2[i];
+	while(i<cells.length){
+		var cell=cells[i];
 		for(key in cell){
 			if(!(key in entries) && cell.hasOwnProperty(key) && cell[key]==4096){
 				entries[key]=1;
@@ -88,13 +99,16 @@ Grid.prototype.getEntries=function(centerX,centerY,width,height){
 
 	//console.log("Got "+added+" hits");
 
-	var value=new Array();
+/* 
+ * Convert the result in an array.
+ */
+	var values=new Array();
 
 	for(i in entries){
-		value.push(i);
+		values.push(i);
 	}
 
-	return value;
+	return values;
 }
 
 Grid.prototype.getCells=function(centerX,centerY,width,height){

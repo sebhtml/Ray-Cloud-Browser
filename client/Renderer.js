@@ -27,7 +27,7 @@ Renderer.prototype.drawVertices=function(vertices){
 	for(i in vertices){
 		var vertex=vertices[i];
 
-		if(this.isOutside(vertex))
+		if(this.screen.isOutside(vertex))
 			continue;
 
 		vertex.draw(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY());
@@ -45,7 +45,7 @@ Renderer.prototype.drawArcs=function(vertices){
 
 			var vertex2=arcs[j];
 
-			if(this.isOutside(vertex) && this.isOutside(vertex2))
+			if(this.screen.isOutside(vertex) && this.screen.isOutside(vertex2))
 				continue;
 	
 			var context=this.screen.getContext();
@@ -115,30 +115,4 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,radius){
 	this.drawLine(context,cx,cy,ex,ey);
 }
 
-Renderer.prototype.isOutside=function(vertex){
 
-	var x=vertex.getX()-this.screen.getOriginX();
-	var y=vertex.getY()-this.screen.getOriginY();
-
-	var width=this.screen.getWidth();
-	var height=this.screen.getHeight();
-
-/*
- * The buffer region around the screen.
- */
-	var buffer=50;
-
-	if(x<(0-buffer))
-		return true;
-
-	if(x>=(width+buffer))
-		return true;
-
-	if(y<(0-buffer))
-		return true;
-
-	if(y>=(height+buffer))
-		return true;
-
-	return false;
-}

@@ -47,7 +47,7 @@ function Screen(gameFrequency){
 	this.canvas.width=1300;
 	this.canvas.height=600;
 
-	this.engine=new PhysicsEngine();
+	this.engine=new PhysicsEngine(this);
 
 	/* number of vertices */
 	this.n=16;
@@ -448,7 +448,7 @@ Screen.prototype.createStartingGraph=function(){
 
 	var startingDistance=20;
 
-	for(var i=0;i<200 /*sequence.length*/;i++){
+	for(var i=0;i<600 /*sequence.length*/;i++){
 		var suffix=sequence.substr(i+1,this.kmerLength);
 		var vertex2=new Vertex(400+150+startingDistance*i,200+150+startingDistance*i,suffix,true);
 		var coverage=new Vertex(400+155+startingDistance*i,200+150+startingDistance*i,"99",false);
@@ -794,3 +794,30 @@ Screen.prototype.getHeight=function(){
 	return this.canvas.height;
 }
 
+Screen.prototype.isOutside=function(vertex){
+
+	var x=vertex.getX()-this.getOriginX();
+	var y=vertex.getY()-this.getOriginY();
+
+	var width=this.getWidth();
+	var height=this.getHeight();
+
+/*
+ * The buffer region around the screen.
+ */
+	var buffer=100;
+
+	if(x<(0-buffer))
+		return true;
+
+	if(x>=(width+buffer))
+		return true;
+
+	if(y<(0-buffer))
+		return true;
+
+	if(y>=(height+buffer))
+		return true;
+
+	return false;
+}
