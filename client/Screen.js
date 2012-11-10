@@ -22,6 +22,8 @@
 function Screen(gameFrequency){
 	this.selectedVertex=null;
 
+	this.renderer=new Renderer(this);
+
 	this.kmerLength=31;
 
 	this.gameFrequency=gameFrequency;
@@ -78,6 +80,16 @@ function Screen(gameFrequency){
 
 	this.start();
 }
+
+Screen.prototype.getOriginX=function(){
+	return this.originX;
+}
+
+Screen.prototype.getOriginY=function(){
+	return this.originY;
+}
+
+
 
 Screen.prototype.createButtons=function(){
 	this.buttons=new Array();
@@ -722,21 +734,7 @@ Screen.prototype.drawControlPanel=function(){
 		" ms",this.canvas.width-offset, this.canvas.height-6);
 }
 
-Screen.prototype.isOutside=function(vertex){
 
-	var x=vertex.getX()-this.originX;
-	var y=vertex.getY()-this.originY;
-
-/*
- * The buffer region around the screen.
- */
-	var buffer=50;
-
-	if(x<(0-buffer))
-		return true;
-
-	return false;
-}
 
 Screen.prototype.draw=function(){
 	
@@ -761,11 +759,11 @@ Screen.prototype.draw=function(){
 
 
 	if(this.showArcsButton.getState()){
-		this.drawArcs();
+		this.renderer.drawArcs(this.vertices);
 	}
 
 	if(this.showVerticesButton.getState()){
-		this.drawVertices();
+		this.renderer.drawVertices(this.vertices);
 	}
 
 	this.drawControlPanel();
@@ -776,42 +774,23 @@ Screen.prototype.draw=function(){
 	this.drawingFrames++;
 }
 
-Screen.prototype.drawVertices=function(){
-	for(i in this.vertices){
-		var vertex=this.vertices[i];
-
-		if(this.isOutside(vertex))
-			continue;
-
-		vertex.draw(this.context,this.originX,this.originY/*,100,this.blitter*/);
-	}
-}
-
-Screen.prototype.drawArcs=function(){
-	// draw arcs
-	for(i in this.vertices){
-		var vertex=this.vertices[i];
-
-		var arcs=vertex.getArcs();
-		for(j in arcs){
-
-			var vertex2=arcs[j];
-
-			if(this.isOutside(vertex) && this.isOutside(vertex2))
-				continue;
-	
-			this.context.moveTo(vertex.getX()-this.originX,vertex.getY()-this.originY);
-			this.context.lineTo(vertex2.getX()-this.originX,vertex2.getY()-this.originY);
-			this.context.stroke();
-		}
-	}
-}
-
 Screen.prototype.getRandomX=function(){
 	return Math.random()*(this.canvas.width-1);
 }
 
 Screen.prototype.getRandomY=function(){
 	return Math.random()*(this.canvas.height-1);
+}
+
+Screen.prototype.getContext=function(){
+	return this.context;
+}
+
+Screen.prototype.getWidth=function(){
+	return this.canvas.width;
+}
+
+Screen.prototype.getHeight=function(){
+	return this.canvas.height;
 }
 
