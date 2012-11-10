@@ -1,6 +1,5 @@
 First release:
 
-- increase energy of labels
 - debug information must be show even on mouse over of vertices
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>

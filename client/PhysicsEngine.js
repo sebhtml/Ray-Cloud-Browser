@@ -31,7 +31,7 @@ function PhysicsEngine(screen){
  */
 	this.forceStep=0.05;
 	this.charge=200;
-	this.labelCharge=30;
+	this.labelCharge=60;
 	this.forceConstant=0.15;
 
 /* 
