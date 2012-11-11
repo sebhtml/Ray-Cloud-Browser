@@ -105,61 +105,6 @@ Vertex.prototype.getColor=function(){
 	return color;
 }
 
-Vertex.prototype.draw=function(context,originX,originY/*,radius,blitter*/){
-
-	var radius=this.radius;
-	var theColor= this.getColor();
-	//var key=this.name+"-"+theColor+"-"+radius;
-
-/*
-	if(blitter.hasBlit(key)){
-		var blit=blitter.getBlit(key);
-
-		var width=blit.getWidth();
-		var height=blit.getHeight();
-
-		//blit.print();
-
-		context.drawImage(blit.getCanvas(),blit.getX(),blit.getY(),width,height,
-			this.x-originX-width/2,this.y-originY-height/2,width,height);
-
-		return;
-	}
-	
-	var blit=blitter.allocateBlit(key,4+2*radius,4+2*radius);
-*/
-
-	//var context2=blit.getCanvas().getContext("2d");
-	var context2=context;
-
-	var x=this.getX()-originX;
-	var y=this.getY()-originY;
-
-	if(this.colored){
-		context2.beginPath();
-		context2.fillStyle = theColor;
-		context2.strokeStyle = "rgb(0,0,0)";
-		context2.lineWidth=1;
-		context2.arc(x,y,radius, 0, Math.PI*2, true);
-	
-		context2.fill();
-		context2.stroke();
-		context2.closePath();
-	}
-
-	context2.fillStyle    = '#000000';
-	context2.font         = 'bold 12px sans-serif';
-
-	if(this.colored){
-		context2.fillText(this.chiefNucleotide,x-this.radius/2,y+this.radius/2);
-	}else{
-		context2.fillText(this.name,x-this.radius/2,y+this.radius/2);
-	}
-
-	//console.log("Drawed something.");
-
-	//this.draw(context,originX,originY,radius,blitter);
-}
 
 Vertex.prototype.getX=function(){
 	return this.x;
@@ -327,4 +272,11 @@ Vertex.prototype.isFollower=function(){
 
 Vertex.prototype.isColored=function(){
 	return this.colored;
+}
+
+Vertex.prototype.getLabel=function(){
+	if(this.colored)
+		return this.chiefNucleotide;
+	else
+		return this.name;
 }
