@@ -824,7 +824,7 @@ Screen.prototype.isOutside=function(vertex){
 /*
  * The buffer region around the screen.
  */
-	var buffer=100;
+	var buffer=20;
 
 	if(x<(0-buffer))
 		return true;

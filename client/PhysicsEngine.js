@@ -30,7 +30,7 @@ function PhysicsEngine(screen){
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=200;
+	this.charge=150;
 	this.labelCharge=60;
 	this.forceConstant=0.15;
 
@@ -113,14 +113,15 @@ PhysicsEngine.prototype.applyForces=function(vertices){
  * We don't want to compute forces against the same
  * object.
  */
-			if(vertex2.getSequence()==vertex1.getSequence())
+			if(vertex1.getSequence()==vertex2.getSequence())
 				continue;
 
+			if(vertex1.isColored() && !vertex2.isColored())
+				continue;
 /*
 			if(this.screen.isOutside(vertex2))
 				continue;
 */
-
 			var force2=this.getRepulsionForce(vertex1,vertex2);
 
 			force=this.addForces(force,force2);
