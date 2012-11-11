@@ -86,7 +86,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var vertex1=vertices[i];
 		i++;
 
-		if(this.screen.isOutside(vertex1))
+		if(this.screen.isOutside(vertex1,100))
 			continue;
 
 		var force=[0,0];

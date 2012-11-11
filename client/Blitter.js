@@ -20,13 +20,16 @@
 /* author: Sébastien Boisvert */
 
 function Blitter(){
-	this.showBlits=true;
+/*
+ * This shows blitting information.
+ */
+	this.showBlits=false;
 	this.debug=false;
 
 /* 
  * Set to true to have framed blits.
  */
-	this.framedBlits=true;
+	this.framedBlits=false;
 
 	this.clear();
 }

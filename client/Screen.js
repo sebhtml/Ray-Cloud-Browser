@@ -749,7 +749,7 @@ Screen.prototype.getHeight=function(){
 	return this.canvas.height;
 }
 
-Screen.prototype.isOutside=function(vertex){
+Screen.prototype.isOutside=function(vertex,buffer){
 
 	var x=vertex.getX()-this.getOriginX();
 	var y=vertex.getY()-this.getOriginY();
@@ -760,8 +760,6 @@ Screen.prototype.isOutside=function(vertex){
 /*
  * The buffer region around the screen.
  */
-	var buffer=300;
-
 	if(x<(0-buffer))
 		return true;
 
@@ -816,12 +814,13 @@ Screen.prototype.getActiveObjects=function(){
 
 	var quantum=100;
 	var vertices=this.graph.getVertices();
+	var bufferForActiveObjects=300;
 
 	var i=0;
 	while(i<quantum && this.activeIndex<vertices.length){
 		var vertex=vertices[this.activeIndex];
 
-		if(!this.isOutside(vertex))
+		if(!this.isOutside(vertex,bufferForActiveObjects))
 			this.nextActiveObjects.push(vertex);
 
 		i++;

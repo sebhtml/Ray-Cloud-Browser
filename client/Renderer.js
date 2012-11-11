@@ -22,6 +22,7 @@
 function Renderer(screen){
 	this.screen=screen;
 	this.blitter=new Blitter();
+	this.renderingBuffer=10;
 
 /*
  * Enable the blitter for better graphics.
@@ -33,7 +34,7 @@ Renderer.prototype.drawVertices=function(vertices){
 	for(i in vertices){
 		var vertex=vertices[i];
 
-		if(this.screen.isOutside(vertex))
+		if(this.screen.isOutside(vertex,this.renderingBuffer))
 			continue;
 
 		this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
@@ -52,8 +53,10 @@ Renderer.prototype.drawArcs=function(vertices){
 
 			var vertex2=arcs[j];
 
-			if(this.screen.isOutside(vertex) && this.screen.isOutside(vertex2))
+			if(this.screen.isOutside(vertex,this.renderingBuffer)
+				 && this.screen.isOutside(vertex2,this.renderingBuffer)){
 				continue;
+			}
 	
 			var context=this.screen.getContext();
 			var originX=this.screen.getOriginX();
