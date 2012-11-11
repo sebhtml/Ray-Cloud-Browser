@@ -11,8 +11,3 @@ Second release:
 - Change current sequence file
 - Change current graph file
 
-
-WONTFIX:
-
-- use a one-level quad tree for physics WONTFIX
-- compute physics and draw collisions only for stuff on the screen WONTFIX

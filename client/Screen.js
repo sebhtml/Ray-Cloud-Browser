@@ -22,6 +22,10 @@
 function Screen(gameFrequency,renderingFrequency){
 	this.selectedVertex=null;
 
+	this.activeObjects=new Array();
+	this.activeIndex=0;
+	this.nextActiveObjects=new Array();
+
 	this.renderer=new Renderer(this);
 
 	this.kmerLength=31;
@@ -212,8 +216,8 @@ Screen.prototype.start=function(){
 
 	this.drawingMilliseconds=0;
 	this.drawingFrames=0;
-	this.actualDrawingFrequency=0;
-	this.actualDrawingFrameLength=0;
+	this.actualRenderingFrequency=0;
+	this.actualRenderingFrameLength=0;
 }
 
 Screen.prototype.handleMouseMove=function(eventObject){
@@ -430,7 +434,7 @@ Screen.prototype.createGraph=function(){
 	var prefix=sequence.substr(0,this.kmerLength);
 	var vertex1=this.graph.addVertex(prefix,99);
 
-	for(var i=0;i<512 /*sequence.length*/;i++){
+	for(var i=0;i<2024 ;i++){
 		var suffix=sequence.substr(i+1,this.kmerLength);
 		var vertex2=this.graph.addVertex(suffix,99);
 
@@ -595,16 +599,16 @@ Screen.prototype.iterate=function(){
 		this.gameMilliseconds=0;
 		this.gameFrames=0;
 
-		this.actualDrawingFrequency=this.roundNumber(this.drawingFrames*1000/(start-this.lastUpdate),2);
-		this.actualDrawingFrameLength=this.roundNumber(this.drawingMilliseconds/this.drawingFrames,2);
+		this.actualRenderingFrequency=this.roundNumber(this.drawingFrames*1000/(start-this.lastUpdate),2);
+		this.actualRenderingFrameLength=this.roundNumber(this.drawingMilliseconds/this.drawingFrames,2);
 		this.drawingMilliseconds=0;
 		this.drawingFrames=0;
 
 		this.lastUpdate=start;
 	}
 
-	this.engine.applyForces(this.graph.getVertices());
-	this.engine.moveObjects(this.graph.getVertices());
+	this.engine.applyForces(this.getActiveObjects());
+	this.engine.moveObjects(this.getActiveObjects());
 
 	var end=this.getMilliseconds();
 	this.gameMilliseconds+=(end-start);
@@ -645,7 +649,8 @@ Screen.prototype.drawControlPanel=function(){
 	var offsetY=90;
 	var stepping=15;
 
-	this.context.fillText("Registered objects: "+this.graph.getVertices().length+"",offsetX,this.canvas.height-offsetY);
+	this.context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
+		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
 	this.context.fillText("View port: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+this.originX+","+this.originY+")",
@@ -656,16 +661,26 @@ Screen.prototype.drawControlPanel=function(){
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
+	var warning="";
+
+	if(this.actualGameFrameLength>this.gameFrameLength)
+		warning=" EXCEEDED!";
+
 	this.context.fillText("Game (actual): frequency: "+this.actualGameFrequency+" Hz, frame length: "+this.actualGameFrameLength+
-		" ms",offsetX, this.canvas.height-offsetY);
+		" ms"+warning,offsetX, this.canvas.height-offsetY);
 	offsetY-=stepping;
 
 	this.context.fillText("Rendering (expected): frequency: "+this.renderingFrequency+" Hz, frame length: "+this.renderingFrameLength+" ms",
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	this.context.fillText("Rendering (actual): frequency: "+this.actualDrawingFrequency+" Hz, frame length: "+this.actualDrawingFrameLength+
-		" ms",offsetX, this.canvas.height-offsetY);
+	warning="";
+
+	if(this.actualRenderingFrameLength>this.renderingFrameLength)
+		warning=" EXCEEDED!";
+
+	this.context.fillText("Rendering (actual): frequency: "+this.actualRenderingFrequency+" Hz, frame length: "+this.actualRenderingFrameLength+
+		" ms"+warning,offsetX, this.canvas.height-offsetY);
 	offsetY-=stepping;
 }
 
@@ -694,11 +709,11 @@ Screen.prototype.draw=function(){
 
 
 	if(this.showArcsButton.getState()){
-		this.renderer.drawArcs(this.graph.getVertices());
+		this.renderer.drawArcs(this.getActiveObjects());
 	}
 
 	if(this.showVerticesButton.getState()){
-		this.renderer.drawVertices(this.graph.getVertices());
+		this.renderer.drawVertices(this.getActiveObjects());
 	}
 
 	this.drawControlPanel();
@@ -740,7 +755,7 @@ Screen.prototype.isOutside=function(vertex){
 /*
  * The buffer region around the screen.
  */
-	var buffer=20;
+	var buffer=300;
 
 	if(x<(0-buffer))
 		return true;
@@ -790,4 +805,32 @@ Screen.prototype.processKeyboardEvent=function(e){
 		this.originY-=shift;
 	}
 
+}
+
+Screen.prototype.getActiveObjects=function(){
+
+	var quantum=100;
+	var vertices=this.graph.getVertices();
+
+	var i=0;
+	while(i<quantum && this.activeIndex<vertices.length){
+		var vertex=vertices[this.activeIndex];
+
+		if(!this.isOutside(vertex))
+			this.nextActiveObjects.push(vertex);
+
+		i++;
+		this.activeIndex++;
+	}
+
+/*
+ * We tested all objects.
+ */
+	if(this.activeIndex>=vertices.length){
+		this.activeObjects=this.nextActiveObjects;
+		this.nextActiveObjects=new Array();
+		this.activeIndex=0;
+	}
+
+	return this.activeObjects;
 }

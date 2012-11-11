@@ -22,8 +22,16 @@
 function PhysicsEngine(screen){
 
 	this.screen=screen;
+
+/*
+ * We can not use the grid along with
+ * active objects.
+ */
 	this.useGrid=false;
-	this.range=10;
+	this.useProximity=false;
+	this.useFullMap=true;
+
+	this.range=50;
 
 /* 
  * Coulomb's law
@@ -31,7 +39,7 @@ function PhysicsEngine(screen){
  */
 	this.forceStep=0.05;
 	this.charge=120;
-	this.labelCharge=60;
+	this.labelCharge=64;
 	this.forceConstant=0.15;
 
 /* 
@@ -64,19 +72,25 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 
 	while(i<vertices.length){
 		var vertex1=vertices[i];
+		vertex1.getSequence();
 		index[vertex1.getSequence()]=vertex1;
 		i++;
 	}
 
 	i=0;
 	while(i<vertices.length){
-		var force=[0,0];
+
+		if(this.forceConstant==0)
+			break;
 
 		var vertex1=vertices[i];
 		i++;
 
 		if(this.screen.isOutside(vertex1))
 			continue;
+
+		var force=[0,0];
+
 /*
  * Actually, hits should be obtained with the grid.
  */
@@ -95,7 +109,11 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 				var vertex2=index[keyValue];
 				hits.push(vertex2);
 			}
-		}else{
+		}else if(this.useProximity){
+
+			hits=vertex1.getLinkedObjects();
+
+		}else if(this.useFullMap){
 			hits=vertices;
 		}
 
@@ -103,17 +121,19 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 
 		var hitNumber=0;
 		//console.log("Self= "+i);
-		while(this.forceConstant!=0 && hitNumber<hits.length){
+		while(hitNumber<hits.length){
 
-			//console.log("self= "+i+" hit= "+j);
 			var vertex2=hits[hitNumber];
+
+			//console.log(vertex2);
 
 			hitNumber++;
 /*
  * We don't want to compute forces against the same
  * object.
  */
-			if(vertex1.getSequence()==vertex2.getSequence())
+			if(vertex1.getSequence()==
+				vertex2.getSequence())
 				continue;
 
 			if(vertex1.isColored() && !vertex2.isColored())
@@ -142,7 +162,8 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 	}
 
 /*
- * Apply damping on every object.
+ * Apply damping on every object,
+ * not just those on the screen.
  */
 	var i=0;
 	while(i<vertices.length){

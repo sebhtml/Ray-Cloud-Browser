@@ -48,7 +48,7 @@ Graph.prototype.getNextY=function(){
 }
 
 Graph.prototype.nextPlace=function(){
-	var stepping=100;
+	var stepping=120;
 	this.nextX+=stepping;
 	if(this.nextX>=this.width){
 		this.nextY+=stepping;
