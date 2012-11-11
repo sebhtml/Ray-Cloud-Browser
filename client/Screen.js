@@ -65,8 +65,10 @@ function Screen(gameFrequency,renderingFrequency){
  * Resolution.
  *
  */
-	this.canvas.width=1300;
-	this.canvas.height=600;
+	this.width=1300;
+	this.height=600;
+	this.canvas.width=this.width;
+	this.canvas.height=this.height;
 
 	this.engine=new PhysicsEngine(this);
 
@@ -701,13 +703,18 @@ Screen.prototype.drawControlPanel=function(){
 
 
 Screen.prototype.draw=function(){
-	
+/*
+ * Setting dimensions clear the content.
+ */
+	this.canvas.width=this.width;
+	this.canvas.height=this.height;
+
 	var start=this.getMilliseconds();
 
 	var context=this.context;
-	context.clearRect(0,0,this.canvas.width,this.canvas.height);
+	//context.clearRect(0,0,this.canvas.width,this.canvas.height);
 
-	context.strokeStyle = "rgb(0,0,0)";
+	//context.strokeStyle = "rgb(0,0,0)";
 
 /*
  * Draw a line around the canvas.
