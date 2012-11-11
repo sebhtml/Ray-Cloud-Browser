@@ -30,7 +30,7 @@ function PhysicsEngine(screen){
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=150;
+	this.charge=120;
 	this.labelCharge=60;
 	this.forceConstant=0.15;
 
@@ -99,7 +99,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			hits=vertices;
 		}
 
-		console.log("Hits= "+hits.length);
+		//console.log("Hits= "+hits.length);
 
 		var hitNumber=0;
 		//console.log("Self= "+i);
