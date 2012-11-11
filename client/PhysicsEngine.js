@@ -21,6 +21,14 @@
 
 function PhysicsEngine(screen){
 
+/*
+ * Simulate DNA annealing.
+ * The annealing code is buggy.
+ */
+	this.simulatedAnnealing=false;
+
+	this.maximumRawForce=40;
+
 	this.screen=screen;
 
 /*
@@ -38,8 +46,8 @@ function PhysicsEngine(screen){
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=120;
-	this.labelCharge=120;
+	this.charge=128;
+	this.labelCharge=96;
 	this.forceConstant=0.15;
 
 /* 
@@ -56,6 +64,9 @@ function PhysicsEngine(screen){
 	this.damping=0.5;
 
 	this.grid=new Grid(100);
+
+	if(this.simulatedAnnealing)
+		this.charge=300;
 }
 
 /**
@@ -189,10 +200,12 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 
 	var force=this.springConstant*displacement;
 
+	if(force>this.maximumRawForce)
+		force=this.maximumRawForce;
+
 	// get a unit vector 
 	dx=dx/distance;
 	dy=dy/distance;
-
 
 	dx=dx*force;
 	dy=dy*force;
@@ -225,6 +238,29 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 	}
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
+
+	if(force>this.maximumRawForce)
+		force=this.maximumRawForce;
+
+	if(this.simulatedAnnealing && vertex1.isColored() && vertex2.isColored()){
+		var nucleotide1=vertex1.getLabel();
+		var nucleotide2=vertex2.getLabel();
+
+		var force2=force;
+		force=0;
+
+		if(nucleotide1=="A" && nucleotide2=="T")
+			force=-force2;
+
+		if(nucleotide1=="T" && nucleotide2=="A")
+			force=-force2;
+
+		if(nucleotide1=="G" && nucleotide2=="C")
+			force=-force2;
+
+		if(nucleotide1=="C" && nucleotide2=="G")
+			force=-force2;
+	}
 
 	dx=dx*force;
 	dy=dy*force;
