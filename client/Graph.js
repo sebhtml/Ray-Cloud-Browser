@@ -23,20 +23,39 @@ function Graph(width,height){
 
 	this.nextX=60;
 	this.nextY=60;
+
+	this.index=new Object();
+	this.objectsWithCoverage=new Object();
 }
 
-Graph.prototype.addVertex=function(sequence,coverage){
+Graph.prototype.addVertex=function(sequence){
+
+	if(sequence in this.index){
+		return this.index[sequence];
+	}
 
 	var vertex1=new Vertex(this.getNextX(),this.getNextY(),sequence,true);
-	var coverage=new Vertex(this.getNextX(),this.getNextY()+40,"99",false);
+	this.nextPlace();
+	this.vertices.push(vertex1);
+	this.index[sequence]=vertex1;
+
+	return vertex1;
+}
+
+Graph.prototype.addCoverage=function(sequence,coverage){
+
+	if(sequence in this.objectsWithCoverage)
+		return;
+
+	var vertex1=this.addVertex(sequence);
+	var coverage=new Vertex(this.getNextX(),this.getNextY()+40,coverage,false);
 	this.nextPlace();
 	vertex1.addLinkedObject(coverage);
 	coverage.addLinkedObject(vertex1);
 
-	this.vertices.push(vertex1);
 	this.vertices.push(coverage);
 
-	return vertex1;
+	this.objectsWithCoverage[sequence]=true;
 }
 
 Graph.prototype.getNextX=function(){
@@ -53,6 +72,26 @@ Graph.prototype.nextPlace=function(){
 	if(this.nextX>=this.width){
 		this.nextY+=stepping;
 		this.nextX=stepping;
+	}
+}
+
+Graph.prototype.addParents=function(sequence,parents){
+
+	if(sequence in this.objectsWithCoverage)
+		return;
+
+	for(var i=0;i<parents.length;i++){
+		this.addArc(this.addVertex(parents[i]),this.addVertex(sequence));
+	}
+}
+
+Graph.prototype.addChildren=function(sequence,children){
+
+	if(sequence in this.objectsWithCoverage)
+		return;
+
+	for(var i=0;i<children.length;i++){
+		this.addArc(this.addVertex(sequence),this.addVertex(children[i]));
 	}
 }
 

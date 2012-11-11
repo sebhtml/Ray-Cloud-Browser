@@ -39,7 +39,7 @@ function PhysicsEngine(screen){
  */
 	this.forceStep=0.05;
 	this.charge=120;
-	this.labelCharge=64;
+	this.labelCharge=120;
 	this.forceConstant=0.15;
 
 /* 
@@ -135,9 +135,10 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			if(vertex1.getSequence()==
 				vertex2.getSequence())
 				continue;
-
+/*
 			if(vertex1.isColored() && !vertex2.isColored())
 				continue;
+*/
 /*
 			if(this.screen.isOutside(vertex2))
 				continue;
