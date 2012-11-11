@@ -74,6 +74,11 @@ Vertex.prototype.getRadius=function(){
 }
 
 Vertex.prototype.getColor=function(){
+
+	if(!this.colored){
+		return "NULL";
+	}
+
 	if(this.followMouse){
 		return "rgb(255,255,255)";
 	}

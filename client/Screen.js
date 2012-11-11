@@ -21,12 +21,11 @@
 
 function Screen(gameFrequency,renderingFrequency){
 	this.selectedVertex=null;
+	this.numberOfElements=2000;
 
 	this.activeObjects=new Array();
 	this.activeIndex=0;
 	this.nextActiveObjects=new Array();
-
-	this.renderer=new Renderer(this);
 
 	this.kmerLength=31;
 
@@ -40,11 +39,27 @@ function Screen(gameFrequency,renderingFrequency){
 
 	this.canvas.style.position="relative";
 
+	var link=document.createElement("div");
+	var hrefLink=document.createElement("a");
+	hrefLink.href="https://github.com/sebhtml/Ray-Cloud-Browser";
+	var linkText=document.createTextNode("Ray Cloud Browser: interactively skim processed genomics data with energy (DEBUG BUILD)");
+	hrefLink.appendChild(linkText);
+	link.appendChild(hrefLink);
+
 	var body=document.getElementsByTagName("body")[0];
+	body.appendChild(link);
 	var center=document.createElement("center");
 	center.appendChild(this.canvas);
 
 	body.appendChild(center);
+
+	var footer=document.createElement("div");
+	var linkTextBottom=document.createTextNode("This project is Copyright (C) 2012 Sébastien Boisvert and distributed under the GNU General Public License, version 3.");
+	footer.appendChild(linkTextBottom);
+	body.appendChild(footer);
+
+
+	this.renderer=new Renderer(this);
 
 /*
  * Resolution.
@@ -191,7 +206,6 @@ Screen.prototype.createButtons=function(){
 
 Screen.prototype.start=function(){
 	
-	this.blitter=new Blitter();
 
 	this.vertexSelected=null;
 	this.lastUpdate=this.getMilliseconds();
@@ -434,7 +448,7 @@ Screen.prototype.createGraph=function(){
 	var prefix=sequence.substr(0,this.kmerLength);
 	var vertex1=this.graph.addVertex(prefix,99);
 
-	for(var i=0;i<2024 ;i++){
+	for(var i=0;i<this.numberOfElements;i++){
 		var suffix=sequence.substr(i+1,this.kmerLength);
 		var vertex2=this.graph.addVertex(suffix,99);
 

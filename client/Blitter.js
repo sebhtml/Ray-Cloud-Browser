@@ -20,11 +20,13 @@
 /* author: Sébastien Boisvert */
 
 function Blitter(){
-	this.showBlits=false;
+	this.showBlits=true;
 	this.debug=false;
 
-	/* set to true to have framed blits */
-	this.framedBlits=false;
+/* 
+ * Set to true to have framed blits.
+ */
+	this.framedBlits=true;
 
 	this.clear();
 }
@@ -134,6 +136,10 @@ Blitter.prototype.createCanvas=function(){
 		var body=document.getElementsByTagName("body")[0];
 
 		body.appendChild(document.createElement("br"));
+		var title=document.createElement('h1');
+		var text=document.createTextNode("Blitter");
+		title.appendChild(text);
+		body.appendChild(title);
 		body.appendChild(this.canvas);
 	}
 }
