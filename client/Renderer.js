@@ -27,8 +27,6 @@
 function Renderer(screen){
 
 	this.lineWidth=2;
-	this.zoomFactorForLines=1.5;
-	this.zoomLevel=1;
 
 	this.screen=screen;
 	this.blitter=new Blitter();
@@ -48,7 +46,7 @@ Renderer.prototype.drawVertices=function(vertices){
 			continue;
 
 		this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
-			vertex);
+			this.screen.getZoomValue(),vertex);
 	}
 }
 
@@ -76,6 +74,7 @@ Renderer.prototype.drawArcs=function(vertices){
 
 			this.drawArc(context,vertex.getX()-originX,vertex.getY()-originY,
 				vertex2.getX()-originX,vertex2.getY()-originY,
+				this.screen.getZoomValue(),
 				vertex2.getRadius());
 
 		}
@@ -105,9 +104,9 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
  *                   /
  *                  .
  */
-Renderer.prototype.drawArc=function(context,ax,ay,bx,by,radius){
+Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius){
 
-	this.drawLine(context,ax,ay,bx,by);
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by);
 
 	var arrowPartLength=5;
 	var ab_x=bx-ax;
@@ -141,13 +140,13 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,radius){
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	this.drawLine(context,cx,cy,dx,dy);
-	this.drawLine(context,cx,cy,ex,ey);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey);
 }
 
-Renderer.prototype.drawVertex=function(context,originX,originY,vertex){
+Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
 
-	if(this.zoomLevel<1 && !vertex.isColored())
+	if(zoomValue<1 && !vertex.isColored())
 		return;
 
 	var radius=vertex.getRadius();
@@ -166,7 +165,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,vertex){
 		//blit.print();
 
 		context.drawImage(blit.getCanvas(),blit.getX(),blit.getY(),width,height,
-			x-width/2,y-height/2,width,height);
+			(x-width/2)*zoomValue,(y-height/2)*zoomValue,width*zoomValue,height*zoomValue);
 
 		return;
 	}
@@ -202,20 +201,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,vertex){
 	//console.log("Drawed something.");
 
 	if(this.useBlitter)
-		this.drawVertex(context,originX,originY,vertex);
+		this.drawVertex(context,originX,originY,zoomValue,vertex);
 }
 
-Renderer.prototype.increaseLineWidth=function(){
-	this.lineWidth*=this.zoomFactorForLines;
-	this.zoomLevel/=2;
-}
-
-Renderer.prototype.decreaseLineWidth=function(){
-	this.lineWidth/=this.zoomFactorForLines;
-
-	if(this.lineWidth<1)
-		this.lineWidth=1;
-
-	this.zoomLevel*=2;
-}
 

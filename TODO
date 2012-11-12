@@ -1,5 +1,4 @@
 - show explicitely repeat k-mers
-- enable the grid 
 
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>

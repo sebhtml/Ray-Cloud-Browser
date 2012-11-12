@@ -51,10 +51,6 @@ function Screen(gameFrequency,renderingFrequency){
 	this.webDocument=new WebDocument();
 	this.canvas=this.webDocument.getCanvas();
 	
-	this.renderingCanvas=document.createElement("canvas");
-	this.renderingCanvas.width=1300/this.zoomValue;
-	this.renderingCanvas.height=600/this.zoomValue;
-
 	this.renderer=new Renderer(this);
 
 /*
@@ -77,7 +73,6 @@ function Screen(gameFrequency,renderingFrequency){
 	this.types=["linear","random","star"];
 	this.type=this.types[this.typeIndex];
 
-	this.renderingContext=this.renderingCanvas.getContext("2d");
 	this.context=this.canvas.getContext("2d");
 
 	var _this=this;
@@ -740,9 +735,6 @@ Screen.prototype.draw=function(){
 	this.canvas.width=this.width;
 	this.canvas.height=this.height;
 
-	this.renderingCanvas.width=1300/this.zoomValue;
-	this.renderingCanvas.height=600/this.zoomValue;
-
 	var start=this.getMilliseconds();
 
 	var context=this.context;
@@ -776,9 +768,11 @@ Screen.prototype.draw=function(){
 /*
  * \see http://www.w3schools.com/tags/canvas_drawimage.asp
  */
+/*
 	this.context.drawImage(this.renderingCanvas,
 		0,0,this.renderingCanvas.width,this.renderingCanvas.height,
 		0,0,this.canvas.width,this.canvas.height);
+*/
 
 
 	var end=this.getMilliseconds();
@@ -798,7 +792,7 @@ Screen.prototype.getRandomY=function(){
 }
 
 Screen.prototype.getContext=function(){
-	return this.renderingContext;
+	return this.context;
 }
 
 Screen.prototype.getWidth=function(){
@@ -814,8 +808,8 @@ Screen.prototype.isOutside=function(vertex,buffer){
 	var x=vertex.getX()-this.getOriginX();
 	var y=vertex.getY()-this.getOriginY();
 
-	var width=this.renderingCanvas.width;
-	var height=this.renderingCanvas.height;
+	var width=this.width/this.zoomValue;
+	var height=this.height/this.zoomValue;
 
 /*
  * The buffer region around the screen.
@@ -872,25 +866,23 @@ Screen.prototype.processKeyboardEvent=function(e){
 	}else if(key==upKey){
 		this.originYSpeed-=shift;
 	}else if(key==enter){
+/*
+ * Re-center the origin too.
+ */
+		this.originX+=this.width/this.zoomValue/zoomingChange/2;
+		this.originY+=this.height/this.zoomValue/zoomingChange/2;
+
 		this.zoomValue*=zoomingChange;
 
+	}else if(key==backspace){
 /*
  * Re-center the origin too.
  */
-		this.originX+=this.renderingCanvas.width/zoomingChange/2;
-		this.originY+=this.renderingCanvas.height/zoomingChange/2;
+		this.originX-=this.width/this.zoomValue/2;
+		this.originY-=this.height/this.zoomValue/2;
 
-		this.renderer.decreaseLineWidth();
-	}else if(key==backspace){
 		this.zoomValue/=zoomingChange;
 
-/*
- * Re-center the origin too.
- */
-		this.originX-=this.renderingCanvas.width/2;
-		this.originY-=this.renderingCanvas.height/2;
-
-		this.renderer.increaseLineWidth();
 	}
 
 /*
@@ -936,4 +928,8 @@ Screen.prototype.translateX=function(x){
 
 Screen.prototype.translateY=function(y){
 	return (y/this.zoomValue+this.originY);
+}
+
+Screen.prototype.getZoomValue=function(){
+	return this.zoomValue;
 }
