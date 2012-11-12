@@ -1,4 +1,3 @@
-- smooth slides
 - zoom
 
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>

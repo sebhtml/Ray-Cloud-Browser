@@ -32,6 +32,12 @@ function Screen(gameFrequency,renderingFrequency){
 	this.activeIndex=0;
 	this.nextActiveObjects=new Array();
 
+	this.originXSpeed=0;
+	this.originYSpeed=0;
+	this.originDamping=0.90;
+	this.originMoveSlices=2;
+	this.originMoveInProgress=false;
+
 	this.kmerLength=31;
 	this.graphOperator=new GraphOperator(this.kmerLength);
 
@@ -232,7 +238,8 @@ Screen.prototype.start=function(){
 	this.graphOperator.createGraph(this.graph);
 
 	this.gameMilliseconds=0;
-	this.gameFrames=0;
+	this.gameFrameNumber=0;
+	this.globalGameFrameNumber=0;
 	this.actualGameFrequency=0;
 	this.actualGameFrameLength=0;
 
@@ -244,8 +251,6 @@ Screen.prototype.start=function(){
 
 Screen.prototype.handleMouseMove=function(eventObject){
 	var position=this.getMousePosition(eventObject);
-
-
 
 	this.selectedVertex=null;
 /*
@@ -273,6 +278,14 @@ Screen.prototype.handleMouseMove=function(eventObject){
 
 		var dx=this.lastMouseX-position[0];
 		var dy=this.lastMouseY-position[1];
+
+		if(dx!=0 || dy!=0){
+			this.lastMouseGameFrame=this.globalGameFrameNumber;
+			console.log("Last move: "+this.lastMouseGameFrame);
+		}
+
+		this.originXSpeed=dx;
+		this.originYSpeed=dy;
 
 		this.originX=this.lastOriginX+dx;
 		this.originY=this.lastOriginY+dy;
@@ -407,6 +420,8 @@ Screen.prototype.handleMouseDown=function(eventObject){
 	this.lastMouseY=position[1];
 	this.lastOriginX=this.originX;
 	this.lastOriginY=this.originY;
+
+	this.originMoveInProgress=false;
 
 	//eventObject.target.style.cursor="default";
 }
@@ -600,10 +615,10 @@ Screen.prototype.iterate=function(){
 	var start=this.getMilliseconds();
 
 	if(start>= this.lastUpdate+1000){
-		this.actualGameFrequency=this.roundNumber(this.gameFrames*1000/(start-this.lastUpdate),2);
-		this.actualGameFrameLength=this.roundNumber(this.gameMilliseconds/this.gameFrames,2);
+		this.actualGameFrequency=this.roundNumber(this.gameFrameNumber*1000/(start-this.lastUpdate),2);
+		this.actualGameFrameLength=this.roundNumber(this.gameMilliseconds/this.gameFrameNumber,2);
 		this.gameMilliseconds=0;
-		this.gameFrames=0;
+		this.gameFrameNumber=0;
 
 		this.actualRenderingFrequency=this.roundNumber(this.drawingFrames*1000/(start-this.lastUpdate),2);
 		this.actualRenderingFrameLength=this.roundNumber(this.drawingMilliseconds/this.drawingFrames,2);
@@ -616,10 +631,44 @@ Screen.prototype.iterate=function(){
 	this.engine.applyForces(this.getActiveObjects());
 	this.engine.moveObjects(this.getActiveObjects());
 
+	var mouseFadeDelay=this.gameFrequency/8;
+
+/*
+ * Cancel sliding events.
+ */
+	if(this.globalGameFrameNumber>=this.lastMouseGameFrame+mouseFadeDelay
+		&& !this.originMoveInProgress){
+
+		this.originXSpeed=0;
+		this.originYSpeed=0;
+
+		this.lastMouseGameFrame=this.globalGameFrameNumber;
+	}
+
+/*
+ * To the crazy sliding thing.
+ */
+	if(!this.moveOrigin){
+		
+		this.originX=this.originX+this.originXSpeed/this.originMoveSlices;
+		this.originY=this.originY+this.originYSpeed/this.originMoveSlices;
+
+		this.originXSpeed*=this.originDamping;
+		this.originYSpeed*=this.originDamping;
+
+		this.originMoveInProgress=true;
+
+		var epsilon=0.01;
+		if(this.originXSpeed< epsilon && this.originYSpeed< epsilon){
+			this.originMoveInProgress=false;
+		}
+	}
+
 	var end=this.getMilliseconds();
 	this.gameMilliseconds+=(end-start);
 
-	this.gameFrames++;
+	this.gameFrameNumber++;
+	this.globalGameFrameNumber++;
 }
 
 Screen.prototype.getMilliseconds=function(){
