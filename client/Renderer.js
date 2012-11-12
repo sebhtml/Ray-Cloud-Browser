@@ -27,7 +27,7 @@
 function Renderer(screen){
 
 	this.lineWidth=2;
-	this.zoomFactorForLines=2;
+	this.zoomFactorForLines=1.5;
 	this.zoomLevel=1;
 
 	this.screen=screen;
