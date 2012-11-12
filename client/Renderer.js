@@ -44,6 +44,8 @@ Renderer.prototype.drawVertices=function(vertices){
 
 Renderer.prototype.drawArcs=function(vertices){
 
+	var context=this.screen.getContext();
+
 	// draw arcs
 	for(i in vertices){
 		var vertex=vertices[i];
@@ -58,7 +60,6 @@ Renderer.prototype.drawArcs=function(vertices){
 				continue;
 			}
 	
-			var context=this.screen.getContext();
 			var originX=this.screen.getOriginX();
 			var originY=this.screen.getOriginY();
 
@@ -68,12 +69,19 @@ Renderer.prototype.drawArcs=function(vertices){
 
 		}
 	}
+
+/*
+ * Only stroke once.
+ * \see http://gamedev.stackexchange.com/questions/5314/how-does-one-optimize-an-html5-canvas-and-javascript-web-application-for-mobile
+ * "In case of line drawing, combine as many lineTo commands before calling stroke."
+ * --Petteri Hietavirta
+ */
+	context.stroke();
 }
 
 Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
-	context.stroke();
 }
 
 /*
