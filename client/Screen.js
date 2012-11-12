@@ -35,7 +35,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.originXSpeed=0;
 	this.originYSpeed=0;
 	this.originDamping=0.90;
-	this.originMoveSlices=2;
+	this.originMoveSlices=3;
 	this.originMoveInProgress=false;
 	this.zoomValue=1;
 
