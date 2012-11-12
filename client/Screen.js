@@ -631,7 +631,7 @@ Screen.prototype.iterate=function(){
 	this.engine.applyForces(this.getActiveObjects());
 	this.engine.moveObjects(this.getActiveObjects());
 
-	var mouseFadeDelay=this.gameFrequency/8;
+	var mouseFadeDelay=this.gameFrequency/4;
 
 /*
  * Cancel sliding events.
@@ -851,16 +851,16 @@ Screen.prototype.processKeyboardEvent=function(e){
 	var rightKey=39;
 	var downKey=40;
 
-	var shift=16;
+	var shift=32;
 
 	if(key==leftKey){
-		this.originX-=shift;
+		this.originXSpeed-=shift;
 	}else if(key==rightKey){
-		this.originX+=shift;
+		this.originXSpeed+=shift;
 	}else if(key==downKey){
-		this.originY+=shift;
+		this.originYSpeed+=shift;
 	}else if(key==upKey){
-		this.originY-=shift;
+		this.originYSpeed-=shift;
 	}
 
 }
