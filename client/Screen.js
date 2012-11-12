@@ -880,6 +880,7 @@ Screen.prototype.processKeyboardEvent=function(e){
 		this.originX+=this.renderingCanvas.width/zoomingChange/2;
 		this.originY+=this.renderingCanvas.height/zoomingChange/2;
 
+		this.renderer.decreaseLineWidth();
 	}else if(key==backspace){
 		this.zoomValue/=zoomingChange;
 
@@ -888,6 +889,8 @@ Screen.prototype.processKeyboardEvent=function(e){
  */
 		this.originX-=this.renderingCanvas.width/2;
 		this.originY-=this.renderingCanvas.height/2;
+
+		this.renderer.increaseLineWidth();
 	}
 
 /*

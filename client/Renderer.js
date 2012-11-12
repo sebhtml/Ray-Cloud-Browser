@@ -25,6 +25,11 @@
  * \author Sébastien Boisvert
  */
 function Renderer(screen){
+
+	this.lineWidth=2;
+	this.zoomFactorForLines=2;
+	this.zoomLevel=1;
+
 	this.screen=screen;
 	this.blitter=new Blitter();
 	this.renderingBuffer=10;
@@ -50,6 +55,7 @@ Renderer.prototype.drawVertices=function(vertices){
 Renderer.prototype.drawArcs=function(vertices){
 
 	var context=this.screen.getContext();
+	context.lineWidth=this.lineWidth;
 
 	// draw arcs
 	for(i in vertices){
@@ -141,9 +147,12 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,radius){
 
 Renderer.prototype.drawVertex=function(context,originX,originY,vertex){
 
+	if(this.zoomLevel<1 && !vertex.isColored())
+		return;
+
 	var radius=vertex.getRadius();
 	var theColor= vertex.getColor();
-	var key=vertex.getLabel()+"-"+theColor+"-"+radius;
+	var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
 
 	var x=vertex.getX()-originX;
 	var y=vertex.getY()-originY;
@@ -177,7 +186,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,vertex){
 		context2.beginPath();
 		context2.fillStyle = theColor;
 		context2.strokeStyle = "rgb(0,0,0)";
-		context2.lineWidth=1;
+		context2.lineWidth=this.lineWidth;
 		context2.arc(blitX,blitY,radius, 0, Math.PI*2, true);
 	
 		context2.fill();
@@ -194,5 +203,19 @@ Renderer.prototype.drawVertex=function(context,originX,originY,vertex){
 
 	if(this.useBlitter)
 		this.drawVertex(context,originX,originY,vertex);
+}
+
+Renderer.prototype.increaseLineWidth=function(){
+	this.lineWidth*=this.zoomFactorForLines;
+	this.zoomLevel/=2;
+}
+
+Renderer.prototype.decreaseLineWidth=function(){
+	this.lineWidth/=this.zoomFactorForLines;
+
+	if(this.lineWidth<1)
+		this.lineWidth=1;
+
+	this.zoomLevel*=2;
 }
 
