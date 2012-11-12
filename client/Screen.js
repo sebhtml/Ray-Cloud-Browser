@@ -262,6 +262,9 @@ Screen.prototype.handleMouseMove=function(eventObject){
 		var dx=this.lastMouseX-position[0];
 		var dy=this.lastMouseY-position[1];
 
+		dx/=this.zoomValue;
+		dy/=this.zoomValue;
+
 		if(dx!=0 || dy!=0){
 			this.lastMouseGameFrame=this.globalGameFrameNumber;
 			//console.log("Last move: "+this.lastMouseGameFrame);
@@ -853,7 +856,7 @@ Screen.prototype.processKeyboardEvent=function(e){
 	var backspace=8;
 	var enter=13;
 
-	var shift=32;
+	var shift=32/this.zoomValue;
 
 	var zoomingChange=2;
 
