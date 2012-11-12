@@ -21,6 +21,7 @@
 
 function PhysicsEngine(screen){
 
+	this.physicsEntryLevel=500;
 /*
  * Simulate DNA annealing.
  * The annealing code is buggy.
@@ -97,7 +98,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var vertex1=vertices[i];
 		i++;
 
-		if(this.screen.isOutside(vertex1,100))
+		if(this.screen.isOutside(vertex1,this.physicsEntryLevel))
 			continue;
 
 		var force=[0,0];

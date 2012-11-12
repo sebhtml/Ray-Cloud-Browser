@@ -812,7 +812,7 @@ Screen.prototype.processKeyboardEvent=function(e){
 
 Screen.prototype.getActiveObjects=function(){
 
-	var quantum=100;
+	var quantum=200;
 	var vertices=this.graph.getVertices();
 	var bufferForActiveObjects=300;
 
