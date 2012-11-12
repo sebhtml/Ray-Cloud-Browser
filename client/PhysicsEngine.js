@@ -43,6 +43,7 @@ function PhysicsEngine(screen){
  * active objects.
  */
 	this.useGrid=false;
+
 	this.useProximity=false;
 	this.useFullMap=true;
 

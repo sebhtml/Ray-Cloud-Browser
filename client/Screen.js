@@ -37,6 +37,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.originDamping=0.90;
 	this.originMoveSlices=2;
 	this.originMoveInProgress=false;
+	this.zoomValue=1;
 
 	this.kmerLength=31;
 	this.graphOperator=new GraphOperator(this.kmerLength);
@@ -47,29 +48,12 @@ function Screen(gameFrequency,renderingFrequency){
 	this.gameFrameLength=this.roundNumber(1000/this.gameFrequency,2);
 	this.renderingFrameLength=this.roundNumber(1000/this.renderingFrequency,2);
 
-	this.canvas=document.createElement("canvas");
-
-	this.canvas.style.position="relative";
-
-	var link=document.createElement("div");
-	var hrefLink=document.createElement("a");
-	hrefLink.href="https://github.com/sebhtml/Ray-Cloud-Browser";
-	var linkText=document.createTextNode("Ray Cloud Browser: interactively skim processed genomics data with energy (DEBUG BUILD)");
-	hrefLink.appendChild(linkText);
-	link.appendChild(hrefLink);
-
-	var body=document.getElementsByTagName("body")[0];
-	body.appendChild(link);
-	var center=document.createElement("center");
-	center.appendChild(this.canvas);
-
-	body.appendChild(center);
-
-	var footer=document.createElement("div");
-	var linkTextBottom=document.createTextNode("This project is Copyright (C) 2012 Sébastien Boisvert and distributed under the GNU General Public License, version 3.");
-	footer.appendChild(linkTextBottom);
-	body.appendChild(footer);
-
+	this.webDocument=new WebDocument();
+	this.canvas=this.webDocument.getCanvas();
+	
+	this.renderingCanvas=document.createElement("canvas");
+	this.renderingCanvas.width=1300/this.zoomValue;
+	this.renderingCanvas.height=600/this.zoomValue;
 
 	this.renderer=new Renderer(this);
 
@@ -93,6 +77,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.types=["linear","random","star"];
 	this.type=this.types[this.typeIndex];
 
+	this.renderingContext=this.renderingCanvas.getContext("2d");
 	this.context=this.canvas.getContext("2d");
 
 	var _this=this;
@@ -708,7 +693,9 @@ Screen.prototype.drawControlPanel=function(){
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	this.context.fillText("View port: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+this.originX+","+this.originY+")",
+	this.context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
+		this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
+		"zoom: "+this.zoomValue,
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
@@ -748,6 +735,9 @@ Screen.prototype.draw=function(){
 	this.canvas.width=this.width;
 	this.canvas.height=this.height;
 
+	this.renderingCanvas.width=1300/this.zoomValue;
+	this.renderingCanvas.height=600/this.zoomValue;
+
 	var start=this.getMilliseconds();
 
 	var context=this.context;
@@ -778,10 +768,20 @@ Screen.prototype.draw=function(){
 
 	this.drawControlPanel();
 
+/*
+ * \see http://www.w3schools.com/tags/canvas_drawimage.asp
+ */
+	this.context.drawImage(this.renderingCanvas,
+		0,0,this.renderingCanvas.width,this.renderingCanvas.height,
+		0,0,this.canvas.width,this.canvas.height);
+
+
 	var end=this.getMilliseconds();
 
 	this.drawingMilliseconds+=(end-start);
+
 	this.drawingFrames++;
+
 }
 
 Screen.prototype.getRandomX=function(){
@@ -793,7 +793,7 @@ Screen.prototype.getRandomY=function(){
 }
 
 Screen.prototype.getContext=function(){
-	return this.context;
+	return this.renderingContext;
 }
 
 Screen.prototype.getWidth=function(){
@@ -809,8 +809,8 @@ Screen.prototype.isOutside=function(vertex,buffer){
 	var x=vertex.getX()-this.getOriginX();
 	var y=vertex.getY()-this.getOriginY();
 
-	var width=this.getWidth();
-	var height=this.getHeight();
+	var width=this.renderingCanvas.width;
+	var height=this.renderingCanvas.height;
 
 /*
  * The buffer region around the screen.
@@ -851,6 +851,9 @@ Screen.prototype.processKeyboardEvent=function(e){
 	var rightKey=39;
 	var downKey=40;
 
+	var backspace=8;
+	var enter=13;
+
 	var shift=32;
 
 	if(key==leftKey){
@@ -861,8 +864,14 @@ Screen.prototype.processKeyboardEvent=function(e){
 		this.originYSpeed+=shift;
 	}else if(key==upKey){
 		this.originYSpeed-=shift;
+	}else if(key==enter){
+		this.zoomValue*=2;
+	}else if(key==backspace){
+		this.zoomValue/=2;
 	}
 
+	if(this.zoomValue>=1)
+		this.zoomValue=1;
 }
 
 Screen.prototype.getActiveObjects=function(){
