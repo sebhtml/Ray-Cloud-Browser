@@ -27,6 +27,8 @@
 function Vertex(x,y,name,colored){
 	this.x=x;
 	this.y=y;
+	this.lastGridUpdateX=-9999;
+	this.lastGridUpdateY=-9999;
 	this.colored=colored;
 	this.name=name;
 
@@ -292,4 +294,21 @@ Vertex.prototype.getLabel=function(){
 		return this.chiefNucleotide;
 	else
 		return this.name;
+}
+
+Vertex.prototype.moved=function(threshold){
+
+	var minimum=threshold*threshold;
+
+	var dx=this.lastGridUpdateX-this.getX();
+	var dy=this.lastGridUpdateY-this.getY();
+	var actual=dx*dx+dy*dy;
+
+	//console.log("Actual: "+Math.sqrt(actual)+" Threshold= "+Math.sqrt(minimum));
+	return actual>=minimum;
+}
+
+Vertex.prototype.moveInGrid=function(){
+	this.lastGridUpdateX=this.getX();
+	this.lastGridUpdateY=this.getY();
 }

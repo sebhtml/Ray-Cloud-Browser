@@ -24,7 +24,7 @@
  * \author Sébastien Boisvert
  */
 function GraphOperator(kmerLength){
-	this.numberOfElements=2000;
+	this.numberOfElements=9999;
 
 	this.kmerLength=kmerLength;
 

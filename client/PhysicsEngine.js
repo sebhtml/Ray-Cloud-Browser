@@ -39,15 +39,14 @@ function PhysicsEngine(screen){
 	this.screen=screen;
 
 /*
- * We can not use the grid along with
+ * We can use the grid along with
  * active objects.
  */
-	this.useGrid=false;
+	this.useGrid=true;
 
 	this.useProximity=false;
 	this.useFullMap=true;
 
-	this.range=50;
 
 /* 
  * Coulomb's law
@@ -116,17 +115,24 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var hits=new Array();
 
 		var vertexRadius=vertex1.getRadius();
-		var boxSize=this.range;
 
 		if(this.useGrid){
-			var keys=this.grid.getEntries(vertex1.getX(),vertex1.getY(),boxSize,boxSize);
+			var keys=this.grid.getEntries(vertex1.getX(),vertex1.getY());
 			
+			//console.log("Keys with hit: "+keys.length);
+
 			var keyNumber=0;
 			while(keyNumber<keys.length){
 				var keyValue=keys[keyNumber];
 				keyNumber++;
-				var vertex2=index[keyValue];
-				hits.push(vertex2);
+				
+/*
+ * We can only pick up the object if it's in the active spot.
+ */
+				if(keyValue in index){
+					var vertex2=index[keyValue];
+					hits.push(vertex2);
+				}
 			}
 		}else if(this.useProximity){
 
@@ -285,20 +291,18 @@ PhysicsEngine.prototype.addForces=function(force,force2){
 PhysicsEngine.prototype.moveObjects=function(vertices){
 	// move objects
 
+	this.grid.resetUpdatedCount();
+
 	var i=0;
 	while(i<vertices.length){
 		var vertex=vertices[i];
 		
 		vertex.update(this.timeStep,true);
 
-		var boxSize=this.range;
-
 		if(this.useGrid){
-			var objectKey=vertex.getSequence();
-			this.grid.removeEntry(objectKey);
+			//console.log("Update entry");
+			this.grid.updateEntry(vertex);
 
-			//console.log("vertices "+this.vertices.length+" i= "+i+" name= "+vertex.getName());
-			this.grid.addEntry(objectKey,vertex.getX(),vertex.getY(),boxSize,boxSize);
 		}
 
 		i++;

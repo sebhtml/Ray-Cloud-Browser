@@ -25,11 +25,15 @@
  * \author Sébastien Boisvert
  */
 function Grid(step){
+	this.resetUpdatedCount();
+	this.maximumUpdatesInOneIteration=500;
 
 	this.cells=new Object();
 	this.step=step;
 
 	this.keyCells=new Object();
+
+	this.boxSize=100;
 }
 
 Grid.prototype.removeEntry=function(key){
@@ -53,7 +57,10 @@ Grid.prototype.removeEntry=function(key){
 	this.keyCells[key]=new Array();
 }
 
-Grid.prototype.addEntry=function(key,centerX,centerY,width,height){
+Grid.prototype.addEntry=function(key,centerX,centerY){
+
+	var width=this.boxSize;
+	var height=this.boxSize
 
 	//console.log("addEntry "+key+" "+centerX+" "+centerY+" "+width+" "+height);
 
@@ -77,7 +84,10 @@ Grid.prototype.addEntry=function(key,centerX,centerY,width,height){
 	this.keyCells[key]=keyCells;
 }
 
-Grid.prototype.getEntries=function(centerX,centerY,width,height){
+Grid.prototype.getEntries=function(centerX,centerY){
+
+	var width=this.boxSize;
+	var height=this.boxSize
 
 
 	var cells=this.getCells(centerX,centerY,width,height);
@@ -158,4 +168,26 @@ Grid.prototype.getCells=function(centerX,centerY,width,height){
 	}
 
 	return cells;
+}
+
+Grid.prototype.updateEntry=function(vertex){
+
+	if(!vertex.moved(this.boxSize))
+		return;
+
+	if(this.updates>=this.maximumUpdatesInOneIteration)
+		return;
+
+	var objectKey=vertex.getSequence();
+	this.removeEntry(objectKey);
+	//console.log("vertices "+this.vertices.length+" i= "+i+" name= "+vertex.getName());
+	this.addEntry(objectKey,vertex.getX(),vertex.getY());
+
+	this.maximumUpdatesInOneIteration++;
+
+	vertex.moveInGrid();
+}
+
+Grid.prototype.resetUpdatedCount=function(){
+	this.updates=0;
 }
