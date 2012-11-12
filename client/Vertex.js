@@ -206,11 +206,14 @@ Vertex.prototype.isInside=function(x,y){
 
 Vertex.prototype.handleMouseDown=function(x,y){
 
+	//console.log("handleMouseDown "+x+","+y)
+
 	if(!this.colored)
 		return false;
 
 	if(this.isInside(x,y,this.radius)){
 		//console.log(this.name+" follows");
+
 		this.followMouse=true;
 
 		return true;

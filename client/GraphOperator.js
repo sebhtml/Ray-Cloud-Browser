@@ -53,6 +53,8 @@ GraphOperator.prototype.createGraph=function(graph){
 		graph.addVertex(kmerData.getSequence());
 		//console.log(kmerData.getChildren().length);
 
+		//break;
+
 		graph.addParents(kmerData.getSequence(),kmerData.getParents());
 		graph.addChildren(kmerData.getSequence(),kmerData.getChildren());
 

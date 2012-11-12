@@ -118,7 +118,6 @@ Screen.prototype.createButtons=function(){
 
 	this.timeControlButton=new Button(30,35,40,50,"time",true);
 	//this.buttons.push(this.timeControlButton);
-	
 
 	this.repulsionBase=280;
 	this.attractionBase=180;
@@ -244,13 +243,17 @@ Screen.prototype.handleMouseMove=function(eventObject){
 
 	for(i in this.graph.getVertices()){
 		var vertexToCheck=this.graph.getVertices()[i];
-		if(vertexToCheck.isFollower() || vertexToCheck.isInside(position[0]+this.originX,position[1]+this.originY)){
+		if(vertexToCheck.isFollower() || 
+			vertexToCheck.isInside(this.translateX(position[0]),
+			this.translateY(position[1]))){
+
 			this.selectedVertex=vertexToCheck;
 		}
 	}
 
 	for(i in this.graph.getVertices()){
-		if(this.graph.getVertices()[i].handleMouseMove(position[0]+this.originX,position[1]+this.originY)){
+		if(this.graph.getVertices()[i].handleMouseMove(this.translateX(position[0]),
+			this.translateY(position[1]))){
 /* 
  * If we handle a object, we can not move the screen too.
  */
@@ -266,7 +269,7 @@ Screen.prototype.handleMouseMove=function(eventObject){
 
 		if(dx!=0 || dy!=0){
 			this.lastMouseGameFrame=this.globalGameFrameNumber;
-			console.log("Last move: "+this.lastMouseGameFrame);
+			//console.log("Last move: "+this.lastMouseGameFrame);
 		}
 
 		this.originXSpeed=dx;
@@ -395,7 +398,9 @@ Screen.prototype.handleMouseDown=function(eventObject){
 
 
 	for(i in this.graph.getVertices()){
-		if(this.graph.getVertices()[i].handleMouseDown(position[0]+this.originX,position[1]+this.originY)){
+		if(this.graph.getVertices()[i].handleMouseDown(this.translateX(position[0]),
+			this.translateY(position[1]))){
+
 			return;
 		}
 	}
@@ -433,7 +438,7 @@ Screen.prototype.handleMouseUp=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 
 	for(i in this.graph.getVertices()){
-		if(this.graph.getVertices()[i].handleMouseUp(position[0],position[1])){
+		if(this.graph.getVertices()[i].handleMouseUp(this.translateX(position[0]),this.translateY(position[1]))){
 			return;
 		}
 	}
@@ -870,8 +875,10 @@ Screen.prototype.processKeyboardEvent=function(e){
 		this.zoomValue/=2;
 	}
 
+/*
 	if(this.zoomValue>=1)
 		this.zoomValue=1;
+*/
 }
 
 Screen.prototype.getActiveObjects=function(){
@@ -901,4 +908,14 @@ Screen.prototype.getActiveObjects=function(){
 	}
 
 	return this.activeObjects;
+}
+
+Screen.prototype.translateX=function(x){
+	var result=(x/this.zoomValue+this.originX);
+	//console.log("x= "+x+" originX= "+this.originX+" zoom: "+this.zoomValue+" translated= "+result);
+	return result;
+}
+
+Screen.prototype.translateY=function(y){
+	return (y/this.zoomValue+this.originY);
 }
