@@ -19,6 +19,12 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * This class manages the screen, and calls the physics
+ * engine and the rendering engine.
+ *
+ * \author Sébastien Boisvert
+ */
 function Screen(gameFrequency,renderingFrequency){
 	this.selectedVertex=null;
 

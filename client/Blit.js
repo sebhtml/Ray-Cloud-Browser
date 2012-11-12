@@ -19,6 +19,12 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * A blit is a pre-rendered piece of artwork.
+ * Instead of re-drawing it, it is used directly.
+ *
+ * \author Sébastien Boisvert
+ */
 function Blit(x,y,width,height,canvas){
 	this.x=x;
 	this.y=y;

@@ -19,6 +19,11 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * A button can be clicked to change things.
+ *
+ * \author Sébastien Boisvert
+ */
 function Button(x,y,width,height,name,defaultState){
 	this.x=x;
 	this.y=y;

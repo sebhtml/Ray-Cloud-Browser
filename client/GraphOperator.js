@@ -15,6 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * The operator operates the graph. It is responsible
+ * for adding and removing vertices.
+ *
+ * It uses the data store for obtaining information.
+ *
+ * \author Sébastien Boisvert
+ */
 function GraphOperator(kmerLength){
 	this.numberOfElements=2000;
 

@@ -15,6 +15,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * This class is the graph.
+ *
+ * \author Sébastien Boisvert
+ */
 function Graph(width,height){
 
 	this.vertices=new Array();

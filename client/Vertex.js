@@ -19,6 +19,11 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * This class represents a k-mer vertex.
+ *
+ * \author Sébastien Boisvert
+ */
 function Vertex(x,y,name,colored){
 	this.x=x;
 	this.y=y;

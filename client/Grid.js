@@ -19,6 +19,11 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * This is the spacial indexing engine.
+ *
+ * \author Sébastien Boisvert
+ */
 function Grid(step){
 
 	this.cells=new Object();

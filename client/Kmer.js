@@ -15,6 +15,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * This class has information releated
+ * to a k-mer.
+ *
+ * \author Sébastien Boisvert
+ */
 function Kmer(sequence,coverage,parents,children){
 	this.sequence=sequence;
 	this.coverage=coverage;

@@ -19,6 +19,12 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * The physics engine does the repulsion and
+ * attraction routines.
+ *
+ * \author Sébastien Boisvert
+ */
 function PhysicsEngine(screen){
 
 	this.physicsEntryLevel=500;

@@ -19,6 +19,11 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * The renderer draws objects in a canvas.
+ *
+ * \author Sébastien Boisvert
+ */
 function Renderer(screen){
 	this.screen=screen;
 	this.blitter=new Blitter();

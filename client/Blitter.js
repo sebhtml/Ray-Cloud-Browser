@@ -19,6 +19,12 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+/**
+ * The blitter is a cache for graphics.
+ * It accelerate drawing.
+ *
+ * \author Sébastien Boisvert
+ */
 function Blitter(){
 /*
  * This shows blitting information.
