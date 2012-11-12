@@ -861,6 +861,8 @@ Screen.prototype.processKeyboardEvent=function(e){
 
 	var shift=32;
 
+	var zoomingChange=2;
+
 	if(key==leftKey){
 		this.originXSpeed-=shift;
 	}else if(key==rightKey){
@@ -870,9 +872,22 @@ Screen.prototype.processKeyboardEvent=function(e){
 	}else if(key==upKey){
 		this.originYSpeed-=shift;
 	}else if(key==enter){
-		this.zoomValue*=2;
+		this.zoomValue*=zoomingChange;
+
+/*
+ * Re-center the origin too.
+ */
+		this.originX+=this.renderingCanvas.width/zoomingChange/2;
+		this.originY+=this.renderingCanvas.height/zoomingChange/2;
+
 	}else if(key==backspace){
-		this.zoomValue/=2;
+		this.zoomValue/=zoomingChange;
+
+/*
+ * Re-center the origin too.
+ */
+		this.originX-=this.renderingCanvas.width/2;
+		this.originY-=this.renderingCanvas.height/2;
 	}
 
 /*
