@@ -1,9 +1,12 @@
-- show explicitely repeat k-mers (halo)
-- add callback in DataStore methods
-- rotate buttons
-- arrow buttons
+- page down / page up
+- clear canevas on Windows 7 IE9 fails
+- move buttons
 - zoom buttons
+- show explicitely repeat k-mers (halo)
+- add callback in DataStore methods (message passing)
 
+- a class for UI
+- rotate buttons
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>
 - user-supplied sequence

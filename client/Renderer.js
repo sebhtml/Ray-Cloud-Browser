@@ -26,6 +26,7 @@
  */
 function Renderer(screen){
 
+	this.zoomForLevelOfDetails=8;
 	this.lineWidth=2;
 
 	this.screen=screen;
@@ -41,10 +42,9 @@ function Renderer(screen){
 Renderer.prototype.drawVertices=function(vertices){
 
 	var zoomValue=this.screen.getZoomValue();
-
 	var inverseZoom=1/zoomValue;
 
-	if(inverseZoom>=64)
+	if(inverseZoom>=this.zoomForLevelOfDetails)
 		return;
 
 	for(i in vertices){
@@ -115,6 +115,12 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
 Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius){
 
 	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by);
+
+	var zoomValue=this.screen.getZoomValue();
+	var inverseZoom=1/zoomValue;
+
+	if(inverseZoom>=this.zoomForLevelOfDetails)
+		return;
 
 	var arrowPartLength=5;
 	var ab_x=bx-ax;

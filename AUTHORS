@@ -1,9 +1,33 @@
-Code (Programmers):
+## Programmers (alphabetical order):
 
-- Sébastien Boisvert
+* Sébastien Boisvert
+** Structures and their relationships
 
-User stories (Storytellers):
 
-- Frédéric Raymond
-- Charles Joly-Beauparlant
-- Sébastien Boisvert
+## Designers (alphabetical order):
+
+* Sébastien Boisvert
+** Spatial indexing
+** Algorithms for Hooke's law
+** Algorithms for Coulomb's law
+
+* Élénie Godzaridis
+** Level of details (rendering)
+** Transformation matrices
+** HTML5 guidance
+** Javascript guidance
+
+* Charles Joly-Beauparlant
+** Sliding experience
+** Aura around repeat k-mers
+
+* Frédéric Raymond
+** Use one nucleotide per k-mer
+** Zooming
+
+
+## Testers (alphabetical order):
+
+* Jacques Corbeil
+** On the IPad
+
