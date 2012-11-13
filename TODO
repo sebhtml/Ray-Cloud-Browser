@@ -7,7 +7,6 @@
 - add callback in DataStore methods (message passing)
 - zooming is bugger: sometimes it stops moving
 
-- a class for UI
 - rotate buttons
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>
@@ -16,3 +15,6 @@
 - Change current sequence file
 - Change current graph file
 
+--------------------------------------------------------
+Done:
+- a class for UI
