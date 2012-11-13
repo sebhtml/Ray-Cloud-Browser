@@ -27,6 +27,8 @@
  */
 function PhysicsEngine(screen){
 
+	this.resetActiveIndex();
+	this.maximumActiveObjectsToProcess=256;
 	this.physicsEntryLevel=500;
 /*
  * Simulate DNA annealing.
@@ -81,6 +83,11 @@ function PhysicsEngine(screen){
  */
 PhysicsEngine.prototype.applyForces=function(vertices){
 
+
+	if(this.activeIndex>=vertices.length){
+		this.resetActiveIndex();
+	}
+
 	var i=0;
 
 /*
@@ -96,13 +103,15 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 	}
 
 	i=0;
-	while(i<vertices.length){
+	var processed=0;
+
+	while(this.activeIndex<vertices.length && processed++<this.maximumActiveObjectsToProcess){
 
 		if(this.forceConstant==0)
 			break;
 
-		var vertex1=vertices[i];
-		i++;
+		var vertex1=vertices[this.activeIndex];
+		this.activeIndex++;
 
 		if(this.screen.isOutside(vertex1,this.physicsEntryLevel))
 			continue;
@@ -185,6 +194,10 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		}
 
 		vertex1.updateVelocity(this.timeStep*force[0],this.timeStep*force[1]);
+	}
+
+	if(this.activeIndex>=vertices.length){
+		this.resetActiveIndex();
 	}
 
 /*
@@ -309,4 +322,7 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 	}
 }
 
+PhysicsEngine.prototype.resetActiveIndex=function(){
+	this.activeIndex=0;
+}
 

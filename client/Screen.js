@@ -926,6 +926,7 @@ Screen.prototype.getActiveObjects=function(){
 		this.activeObjects=this.nextActiveObjects;
 		this.nextActiveObjects=new Array();
 		this.activeIndex=0;
+		//this.engine.resetActiveIndex();
 	}
 
 	return this.activeObjects;
