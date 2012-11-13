@@ -5,7 +5,6 @@
 - zoom buttons
 - show explicitely repeat k-mers (halo)
 - add callback in DataStore methods (message passing)
-- zooming is bugger: sometimes it stops moving
 
 - rotate buttons
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
@@ -18,3 +17,4 @@
 --------------------------------------------------------
 Done:
 - a class for UI
+- zooming is bugger: sometimes it stops moving

@@ -432,9 +432,12 @@ Screen.prototype.iterate=function(){
 
 		this.originMoveInProgress=true;
 
+/*
+ * TODO: the epsilon case is buggy.
+ */
 		var epsilon=0.01;
 		if(this.originXSpeed< epsilon && this.originYSpeed< epsilon){
-			this.originMoveInProgress=false;
+			//this.originMoveInProgress=false;
 		}
 	}
 
