@@ -24,7 +24,6 @@
  * \author Sébastien Boisvert
  */
 function GraphOperator(kmerLength){
-	this.numberOfElements=9999;
 
 	this.kmerLength=kmerLength;
 
@@ -40,8 +39,7 @@ GraphOperator.prototype.createGraph=function(graph){
 	var productionQueue=new Array();
 	productionQueue.push(firstKmer);
 
-	while(graph.getVertices().length<this.numberOfElements
-		 && head < productionQueue.length){
+	while(head < productionQueue.length){
 
 		var kmerObject=productionQueue[head++];
 
