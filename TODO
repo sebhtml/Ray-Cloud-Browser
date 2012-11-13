@@ -1,5 +1,4 @@
 - page down / page up
-- clear canevas on Windows 7 IE9 fails
 - move buttons
 - zoom buttons
 - show explicitely repeat k-mers (halo)
@@ -18,3 +17,4 @@ Done:
 - a class for UI
 - zooming is bugger: sometimes it stops moving
 - check zoom value only once per renderingFrame for drawing vertices and arcs
+- clear canevas on Windows 7 IE9 fails

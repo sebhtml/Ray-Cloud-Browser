@@ -62,8 +62,11 @@ function Screen(gameFrequency,renderingFrequency){
  */
 	this.width=1300;
 	this.height=600;
+
 	this.canvas.width=this.width;
 	this.canvas.height=this.height;
+	this.renderingCanvas.width=this.width;
+	this.renderingCanvas.height=this.height;
 
 	this.engine=new PhysicsEngine(this);
 
@@ -523,21 +526,25 @@ Screen.prototype.drawControlPanel=function(){
 	offsetY-=stepping;
 }
 
-
-
+/*
+ * TODO: move this in HumanInterface
+ */
 Screen.prototype.draw=function(){
 /*
  * Setting dimensions clear the content.
+ * 2012-11-13: IE9 does not support that.
  */
+/*
 	this.canvas.width=this.width;
 	this.canvas.height=this.height;
 	this.renderingCanvas.width=this.width;
 	this.renderingCanvas.height=this.height;
+*/
 
 	var start=this.getMilliseconds();
 
-	var context=this.context;
-	//context.clearRect(0,0,this.canvas.width,this.canvas.height);
+	var context=this.getContext();
+	context.clearRect(0,0,this.width,this.height);
 
 	//context.strokeStyle = "rgb(0,0,0)";
 
@@ -562,10 +569,11 @@ Screen.prototype.draw=function(){
 		this.renderer.drawVertices(this.getActiveObjects());
 	//}
 
-	this.context.drawImage(this.renderingCanvas,
-		0,0,this.renderingCanvas.width,this.renderingCanvas.height,
-		0,0,this.canvas.width,this.canvas.height);
+	this.context.clearRect(0,0,this.width,this.height);
 
+	this.context.drawImage(this.renderingCanvas,
+		0,0,this.width,this.height,
+		0,0,this.width,this.height);
 
 	this.drawControlPanel();
 
