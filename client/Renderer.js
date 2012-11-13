@@ -39,6 +39,14 @@ function Renderer(screen){
 }
 
 Renderer.prototype.drawVertices=function(vertices){
+
+	var zoomValue=this.screen.getZoomValue();
+
+	var inverseZoom=1/zoomValue;
+
+	if(inverseZoom>=64)
+		return;
+
 	for(i in vertices){
 		var vertex=vertices[i];
 
@@ -46,7 +54,7 @@ Renderer.prototype.drawVertices=function(vertices){
 			continue;
 
 		this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
-			this.screen.getZoomValue(),vertex);
+			zoomValue,vertex);
 	}
 }
 
