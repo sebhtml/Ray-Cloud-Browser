@@ -18,6 +18,7 @@
 function WebDocument(){
 
 	this.canvas=document.createElement("canvas");
+	this.renderingCanvas=document.createElement("canvas");
 
 	this.canvas.style.position="relative";
 
@@ -48,3 +49,6 @@ WebDocument.prototype.getCanvas=function(){
 	return this.canvas;
 }
 
+WebDocument.prototype.getRenderingCanvas=function(){
+	return this.renderingCanvas;
+}

@@ -50,6 +50,7 @@ function Screen(gameFrequency,renderingFrequency){
 
 	this.webDocument=new WebDocument();
 	this.canvas=this.webDocument.getCanvas();
+	this.renderingCanvas=this.webDocument.getRenderingCanvas();
 	
 	this.renderer=new Renderer(this);
 
@@ -74,6 +75,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.type=this.types[this.typeIndex];
 
 	this.context=this.canvas.getContext("2d");
+	this.renderingContext=this.renderingCanvas.getContext("2d");
 
 	var _this=this;
 
@@ -696,9 +698,14 @@ Screen.prototype.drawControlPanel=function(){
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
+	var printableZoom=this.zoomValue;
+	if(this.zoomValue<1){
+		printableZoom="1/"+(1/this.zoomValue);
+	}
+
 	this.context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
 		this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
-		"zoom: "+this.zoomValue,
+		"zoom: "+printableZoom,
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
@@ -737,6 +744,8 @@ Screen.prototype.draw=function(){
  */
 	this.canvas.width=this.width;
 	this.canvas.height=this.height;
+	this.renderingCanvas.width=this.width;
+	this.renderingCanvas.height=this.height;
 
 	var start=this.getMilliseconds();
 
@@ -766,17 +775,16 @@ Screen.prototype.draw=function(){
 		this.renderer.drawVertices(this.getActiveObjects());
 	}
 
+	this.context.drawImage(this.renderingCanvas,
+		0,0,this.renderingCanvas.width,this.renderingCanvas.height,
+		0,0,this.canvas.width,this.canvas.height);
+
+
 	this.drawControlPanel();
 
 /*
  * \see http://www.w3schools.com/tags/canvas_drawimage.asp
  */
-/*
-	this.context.drawImage(this.renderingCanvas,
-		0,0,this.renderingCanvas.width,this.renderingCanvas.height,
-		0,0,this.canvas.width,this.canvas.height);
-*/
-
 
 	var end=this.getMilliseconds();
 
@@ -795,7 +803,7 @@ Screen.prototype.getRandomY=function(){
 }
 
 Screen.prototype.getContext=function(){
-	return this.context;
+	return this.renderingContext;
 }
 
 Screen.prototype.getWidth=function(){

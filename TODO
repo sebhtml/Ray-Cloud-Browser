@@ -1,4 +1,3 @@
-- draw in a off-screen canvas, then writeImage on another
 - show explicitely repeat k-mers (halo)
 - physics engine: use an index in active objects, reset it when active objects are renewed
 - add callback in DataStore methods
