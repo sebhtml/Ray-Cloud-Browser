@@ -63,6 +63,14 @@ Renderer.prototype.drawArcs=function(vertices){
 	var context=this.screen.getContext();
 	context.lineWidth=this.lineWidth;
 
+	var zoomValue=this.screen.getZoomValue();
+	var inverseZoom=1/zoomValue;
+	
+	var fullDetails=true;
+
+	if(inverseZoom>=this.zoomForLevelOfDetails)
+		fullDetails=false;
+
 	// draw arcs
 	for(i in vertices){
 		var vertex=vertices[i];
@@ -83,7 +91,7 @@ Renderer.prototype.drawArcs=function(vertices){
 			this.drawArc(context,vertex.getX()-originX,vertex.getY()-originY,
 				vertex2.getX()-originX,vertex2.getY()-originY,
 				this.screen.getZoomValue(),
-				vertex2.getRadius());
+				vertex2.getRadius(),fullDetails);
 
 		}
 	}
@@ -112,14 +120,11 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
  *                   /
  *                  .
  */
-Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius){
+Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails){
 
 	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by);
 
-	var zoomValue=this.screen.getZoomValue();
-	var inverseZoom=1/zoomValue;
-
-	if(inverseZoom>=this.zoomForLevelOfDetails)
+	if(!fullDetails)
 		return;
 
 	var arrowPartLength=5;
