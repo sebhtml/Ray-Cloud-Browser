@@ -1,9 +1,11 @@
 - page down / page up
 - clear canevas on Windows 7 IE9 fails
+- check zoom value only once per renderingFrame for drawing vertices and arcs
 - move buttons
 - zoom buttons
 - show explicitely repeat k-mers (halo)
 - add callback in DataStore methods (message passing)
+- zooming is bugger: sometimes it stops moving
 
 - a class for UI
 - rotate buttons
