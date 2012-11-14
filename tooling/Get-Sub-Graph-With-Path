@@ -1,0 +1,155 @@
+#!/usr/bin/env python
+# encoding: UTF-8
+# Author: Sébastien Boisvert
+# Copyright: Copyright (C) 2012 Sébastien Boisvert
+# Project: Ray Cloud Browser
+# Milestone: development of the platform
+# Production: this script will not be used in production
+# Date: 2012-11-14
+# License: GPLv3
+
+import sys
+arguments=sys.argv
+
+if len(arguments)!=4:
+	print("Usage: "+arguments[0]+" kmers.txt Path.fasta OutputJavascriptFile")
+	sys.exit(1)
+
+graphFile=arguments[1]
+pathFile=arguments[2]
+javascriptClass=arguments[3]
+
+objectStore={}
+SLOT_COVERAGE=0
+SLOT_PARENTS=1
+SLOT_CHILDREN=2
+
+sequence=""
+
+stream=open(pathFile)
+
+print("Loading path")
+# TODO: this code should use a string buffer I think.
+for line in stream:
+	if line[0]!='>':
+		sequence+=line.strip()
+stream.close()
+
+# get the k-mer length
+# to do that, just pick up the first k-mer
+
+stream=open(graphFile)
+
+kmerLength=None
+
+print("Loading kmer length")
+for line in stream:
+	if line[0]=="#":
+		continue
+	tokens=line.split(";")
+	kmerLength=len(tokens[0])
+	break
+
+stream.close()
+
+# load the k-mers from the path
+
+print("Loading kmers from path")
+def addEntry(objectStore,kmerObject):
+	objectStore[kmerObject]=[0,[],[]]
+
+i=0
+while i<len(sequence):
+	kmerObject=sequence[i:i+kmerLength]
+	#print(kmerObject)
+
+	addEntry(objectStore,kmerObject)
+	i+=1
+
+
+# load parents and children
+
+print("Loading parents and children from graph")
+stream=open(graphFile)
+
+loaded=0
+
+for line in stream:
+
+	if loaded%1000000==0:
+		print("Loading parents and children from graph "+str(loaded))
+	loaded+=1
+
+	if line[0]=="#":
+		continue
+	tokens=line.split(";")
+	kmerObject=tokens[0]
+
+	if kmerObject not in objectStore:
+		continue
+
+	parentSymbols=tokens[2].split(" ")
+	childSymbols=tokens[3].split(" ")
+	#parents=[]
+	#children=[]
+
+	#print(kmerObject)
+
+	#print(parentSymbols)
+
+	for symbol in parentSymbols:
+		if len(symbol)!=1:
+			continue
+
+		otherObject=symbol+kmerObject[0:(kmerLength-1)]
+		#print(str(len(otherObject)))
+		#print(otherObject+" ->")
+		addEntry(objectStore,kmerObject)
+		objectStore[kmerObject][SLOT_PARENTS].append(otherObject)
+
+	for symbol in childSymbols:
+		if len(symbol)!=1:
+			continue
+
+		otherObject=kmerObject[1:(kmerLength-1)]+symbol
+		#print(str(len(otherObject)))
+		#print(" -> "+otherObject)
+		#children.append(otherObject)
+		addEntry(objectStore,kmerObject)
+		objectStore[kmerObject][SLOT_CHILDREN].append(otherObject)
+
+
+	#print("Parents:")
+	#print(parentSymbols)
+
+
+stream.close()
+
+
+
+# load coverage values
+
+print("Loading coverage values")
+
+stream=open(graphFile)
+
+loaded=0
+
+for line in stream:
+
+	if loaded%1000000==0:
+		print("Loading coverage values "+str(loaded))
+	loaded+=1
+
+	if line[0]=="#":
+		continue
+	tokens=line.split(";")
+	kmerObject=tokens[0]
+	coverage=tokens[1]
+
+	if kmerObject in objectStore:
+		objectStore[kmerObject][SLOT_COVERAGE]=coverage
+stream.close()
+
+
+
