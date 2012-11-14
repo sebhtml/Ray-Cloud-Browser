@@ -1,8 +1,9 @@
 - page down / page up
+- add callback in DataStore methods (message passing)
+
 - move buttons
 - zoom buttons
 - show explicitely repeat k-mers (halo)
-- add callback in DataStore methods (message passing)
 
 - rotate buttons
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
