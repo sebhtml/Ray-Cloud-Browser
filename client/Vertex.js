@@ -126,6 +126,15 @@ Vertex.prototype.getY=function(){
 	return this.y;
 }
 
+Vertex.prototype.setX=function(x){
+	this.x=x;
+}
+
+Vertex.prototype.setY=function(y){
+	this.y=y;
+}
+
+
 Vertex.prototype.update=function(timeStep,timeState){
 	if(!this.followMouse && timeState){
 		this.x=this.x+this.velocityX*timeStep;

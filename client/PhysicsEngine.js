@@ -78,6 +78,18 @@ function PhysicsEngine(screen){
 		this.charge=300;
 }
 
+PhysicsEngine.prototype.checkBounds=function(force){
+	if(force>this.maximumRawForce){
+		return this.maximumRawForce;
+	}
+
+	if(force<-this.maximumRawForce){
+		return -this.maximumRawForce;
+	}
+
+	return force;
+}
+
 /**
  * \see http://en.wikipedia.org/wiki/Force-based_algorithms_(graph_drawing)
  */
@@ -227,8 +239,7 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 
 	var force=this.springConstant*displacement;
 
-	if(force>this.maximumRawForce)
-		force=this.maximumRawForce;
+	force=this.checkBounds(force);
 
 	// get a unit vector 
 	dx=dx/distance;
@@ -250,6 +261,9 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 	
 	var length=Math.sqrt(dx*dx+dy*dy);
 
+	if(length<5)
+		length=5;
+
 	dx=dx/length;
 	dy=dy/length;
 
@@ -266,8 +280,7 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
 
-	if(force>this.maximumRawForce)
-		force=this.maximumRawForce;
+	force=this.checkBounds(force);
 
 	if(this.simulatedAnnealing && vertex1.isColored() && vertex2.isColored()){
 		var nucleotide1=vertex1.getLabel();

@@ -101,6 +101,9 @@ Graph.prototype.addArc=function(vertex1,vertex2){
 
 	vertex1.addArc(vertex2);
 
+	//vertex1.setX(vertex2.getX()+5);
+	//vertex1.setY(vertex2.getY()+5);
+
 	vertex1.addLinkedObject(vertex2);
 	vertex2.addLinkedObject(vertex1);
 }
