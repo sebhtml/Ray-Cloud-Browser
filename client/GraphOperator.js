@@ -23,11 +23,13 @@
  *
  * \author Sébastien Boisvert
  */
-function GraphOperator(kmerLength){
+function GraphOperator(){
 
-	this.kmerLength=kmerLength;
+	this.dataStore=new DataStore();
+}
 
-	this.dataStore=new DataStore(this.kmerLength);
+GraphOperator.prototype.getKmerLength=function(){
+	return this.dataStore.getKmerLength();
 }
 
 GraphOperator.prototype.createGraph=function(graph){

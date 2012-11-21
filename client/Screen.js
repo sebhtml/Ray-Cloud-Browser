@@ -41,8 +41,8 @@ function Screen(gameFrequency,renderingFrequency){
 
 	this.humanInterface=new HumanInterface(this);
 
-	this.kmerLength=31;
-	this.graphOperator=new GraphOperator(this.kmerLength);
+	this.graphOperator=new GraphOperator();
+	this.kmerLength=this.graphOperator.getKmerLength();
 
 	this.gameFrequency=gameFrequency;
 	this.renderingFrequency=renderingFrequency;
