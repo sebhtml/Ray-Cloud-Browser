@@ -72,12 +72,9 @@ Graph.prototype.getNextY=function(){
 }
 
 Graph.prototype.nextPlace=function(){
-	var stepping=120;
+	var stepping=40;
 	this.nextX+=stepping;
-	if(this.nextX>=this.width){
-		this.nextY+=stepping;
-		this.nextX=stepping;
-	}
+
 }
 
 Graph.prototype.addParents=function(sequence,parents){
