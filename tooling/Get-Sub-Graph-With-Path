@@ -107,7 +107,7 @@ for line in stream:
 		otherObject=symbol+kmerObject[0:(kmerLength-1)]
 		#print(str(len(otherObject)))
 		#print(otherObject+" -> "+kmerObject)
-		addEntry(objectStore,kmerObject)
+		addEntry(objectStore,otherObject)
 		objectStore[kmerObject][SLOT_PARENTS].append(otherObject)
 
 	for symbol in childSymbols:
@@ -118,7 +118,7 @@ for line in stream:
 		#print(str(len(otherObject)))
 		#print("child "+kmerObject+" -> "+otherObject)
 		#children.append(otherObject)
-		addEntry(objectStore,kmerObject)
+		addEntry(objectStore,otherObject)
 		objectStore[kmerObject][SLOT_CHILDREN].append(otherObject)
 
 
