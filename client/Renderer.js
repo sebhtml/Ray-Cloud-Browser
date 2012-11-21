@@ -215,7 +215,11 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold 12px sans-serif';
 
-	context2.fillText(vertex.getLabel(),blitX-radius/2,blitY+radius/2);
+	if(vertex.isColored()){
+		context2.fillText(vertex.getLabel(),blitX-radius/2,blitY+radius/2);
+	}else{
+		context2.fillText(vertex.getLabel(),blitX-radius,blitY+radius/2);
+	}
 
 	//console.log("Drawed something.");
 
