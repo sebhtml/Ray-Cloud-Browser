@@ -17,7 +17,7 @@ if len(arguments)!=4:
 
 graphFile=arguments[1]
 pathFile=arguments[2]
-javascriptClass=arguments[3]
+javascriptFile=arguments[3]
 
 objectStore={}
 SLOT_COVERAGE=0
@@ -56,6 +56,8 @@ stream.close()
 
 print("Loading kmers from path")
 def addEntry(objectStore,kmerObject):
+	if kmerObject in objectStore:
+		return;
 	objectStore[kmerObject]=[0,[],[]]
 
 i=0
@@ -89,13 +91,14 @@ for line in stream:
 		continue
 
 	parentSymbols=tokens[2].split(" ")
-	childSymbols=tokens[3].split(" ")
+	childSymbols=tokens[3].strip().split(" ")
 	#parents=[]
 	#children=[]
 
 	#print(kmerObject)
 
 	#print(parentSymbols)
+	#print(childSymbols)
 
 	for symbol in parentSymbols:
 		if len(symbol)!=1:
@@ -135,6 +138,8 @@ stream=open(graphFile)
 
 loaded=0
 
+output=open(javascriptFile,"w")
+
 for line in stream:
 
 	if loaded%1000000==0:
@@ -149,7 +154,19 @@ for line in stream:
 
 	if kmerObject in objectStore:
 		objectStore[kmerObject][SLOT_COVERAGE]=coverage
+
+		# print the javascript for it.
+		output.write("this.store[\""+kmerObject+"\"][this.VALUE_COVERAGE]="+coverage+";\n")
+
+		for item in objectStore[kmerObject][SLOT_PARENTS]:
+			output.write("this.store[\""+kmerObject+"\"][this.VALUE_PARENTS].push(\""+item+"\");\n")
+
+		for item in objectStore[kmerObject][SLOT_CHILDREN]:
+			output.write("this.store[\""+kmerObject+"\"][this.VALUE_CHILDREN].push(\""+item+"\");\n")
+
 stream.close()
+
+output.close()
 
 
 
