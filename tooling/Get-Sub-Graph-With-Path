@@ -106,7 +106,7 @@ for line in stream:
 
 		otherObject=symbol+kmerObject[0:(kmerLength-1)]
 		#print(str(len(otherObject)))
-		#print(otherObject+" ->")
+		#print(otherObject+" -> "+kmerObject)
 		addEntry(objectStore,kmerObject)
 		objectStore[kmerObject][SLOT_PARENTS].append(otherObject)
 
@@ -114,9 +114,9 @@ for line in stream:
 		if len(symbol)!=1:
 			continue
 
-		otherObject=kmerObject[1:(kmerLength-1)]+symbol
+		otherObject=kmerObject[1:(kmerLength)]+symbol
 		#print(str(len(otherObject)))
-		#print(" -> "+otherObject)
+		#print("child "+kmerObject+" -> "+otherObject)
 		#children.append(otherObject)
 		addEntry(objectStore,kmerObject)
 		objectStore[kmerObject][SLOT_CHILDREN].append(otherObject)
@@ -156,7 +156,7 @@ for line in stream:
 		objectStore[kmerObject][SLOT_COVERAGE]=coverage
 
 		# print the javascript for it.
-		output.write("this.store[\""+kmerObject+"\"][this.VALUE_COVERAGE]="+coverage+";\n")
+		output.write("this.store[\""+kmerObject+"\"]=["+coverage+",[],[]];\n")
 
 		for item in objectStore[kmerObject][SLOT_PARENTS]:
 			output.write("this.store[\""+kmerObject+"\"][this.VALUE_PARENTS].push(\""+item+"\");\n")
