@@ -55,7 +55,7 @@ function PhysicsEngine(screen){
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=1500;
+	this.charge=256;
 	this.labelCharge=96;
 	this.forceConstant=0.15;
 
@@ -239,7 +239,13 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 
 	var force=this.springConstant*displacement;
 
-	force=this.checkBounds(force);
+	var maximumRepulsion=1000;
+
+	if(force<-maximumRepulsion)
+		force=-maximumRepulsion;
+
+	if(force>maximumRepulsion)
+		force=maximumRepulsion;
 
 	// get a unit vector 
 	dx=dx/distance;
@@ -259,6 +265,11 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 	var dx=(vertex1.getX() - vertex2.getX());
 	var dy=(vertex1.getY() - vertex2.getY());
 	
+	if(dx==0 && dy==0){
+		var value=30;
+		return [Math.random()*value,Math.random()*value];
+	}
+
 	var length=Math.sqrt(dx*dx+dy*dy);
 
 	if(length<5)

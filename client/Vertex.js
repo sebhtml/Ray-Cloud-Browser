@@ -24,9 +24,10 @@
  *
  * \author Sébastien Boisvert
  */
-function Vertex(x,y,name,colored){
-	this.x=x;
-	this.y=y;
+function Vertex(name,colored){
+	this.x=0;
+	this.y=0;
+	this.positionIsSet=false;
 	this.lastGridUpdateX=-9999;
 	this.lastGridUpdateY=-9999;
 	this.colored=colored;
@@ -134,6 +135,13 @@ Vertex.prototype.setY=function(y){
 	this.y=y;
 }
 
+Vertex.prototype.hasPosition=function(){
+	return this.positionIsSet;
+}
+
+Vertex.prototype.setPosition=function(){
+	this.positionIsSet=true;
+}
 
 Vertex.prototype.update=function(timeStep,timeState){
 	if(!this.followMouse && timeState){

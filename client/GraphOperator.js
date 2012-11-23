@@ -41,6 +41,9 @@ GraphOperator.prototype.createGraph=function(graph){
 	var productionQueue=new Array();
 	productionQueue.push(firstKmer);
 
+	var processed=0;
+	var maximum=999999999;
+
 	while(head < productionQueue.length){
 
 		var kmerObject=productionQueue[head++];
@@ -50,10 +53,7 @@ GraphOperator.prototype.createGraph=function(graph){
 
 		var kmerData=this.dataStore.getKmerInformation(kmerObject);
 
-		graph.addVertex(kmerData.getSequence());
-		//console.log(kmerData.getChildren().length);
-
-		//break;
+		var vertex=graph.addVertex(kmerData.getSequence());
 
 		graph.addParents(kmerData.getSequence(),kmerData.getParents());
 		graph.addChildren(kmerData.getSequence(),kmerData.getChildren());
@@ -67,6 +67,11 @@ GraphOperator.prototype.createGraph=function(graph){
 
 		for(var i=0;i<kmerData.getChildren().length;i++)
 			productionQueue.push(kmerData.getChildren()[i]);
+		
+		if(processed>=maximum)
+			break;
+
+		processed++;
 	}
 }
 

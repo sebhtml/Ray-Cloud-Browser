@@ -159,10 +159,10 @@ for line in stream:
 		output.write("this.store[\""+kmerObject+"\"]=["+coverage+",[],[]];\n")
 
 		for item in objectStore[kmerObject][SLOT_PARENTS]:
-			output.write("this.store[\""+kmerObject+"\"][this.VALUE_PARENTS].push(\""+item+"\");\n")
+			output.write("this.store[\""+kmerObject+"\"][1].push(\""+item+"\");\n")
 
 		for item in objectStore[kmerObject][SLOT_CHILDREN]:
-			output.write("this.store[\""+kmerObject+"\"][this.VALUE_CHILDREN].push(\""+item+"\");\n")
+			output.write("this.store[\""+kmerObject+"\"][2].push(\""+item+"\");\n")
 
 stream.close()
 

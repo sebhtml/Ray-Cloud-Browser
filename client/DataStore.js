@@ -38,6 +38,11 @@ function DataStore(kmerLength){
 	this.graphFiles.push("mock-kmers.txt");
 	this.sequenceFiles.push("mock-Contigs.fasta");
 
+	for(key in this.store){
+		this.firstKmer=key;
+		break;
+	}
+
 /*
  * Pick up a starting key.
  */

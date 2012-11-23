@@ -26,6 +26,12 @@
  * \author Sébastien Boisvert
  */
 function Screen(gameFrequency,renderingFrequency){
+	
+/*
+ * Turn on the physics engine.
+ */
+	this.enableEngine=true;
+
 	this.selectedVertex=null;
 
 	this.activeObjects=new Array();
@@ -406,7 +412,10 @@ Screen.prototype.iterate=function(){
 	}
 
 	this.engine.applyForces(this.getActiveObjects());
-	this.engine.moveObjects(this.getActiveObjects());
+
+	if(this.enableEngine){
+		this.engine.moveObjects(this.getActiveObjects());
+	}
 
 	var mouseFadeDelay=this.gameFrequency/4;
 
