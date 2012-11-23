@@ -55,7 +55,7 @@ function PhysicsEngine(screen){
  * This is for the repulsion.
  */
 	this.forceStep=0.05;
-	this.charge=128;
+	this.charge=1500;
 	this.labelCharge=96;
 	this.forceConstant=0.15;
 

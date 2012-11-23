@@ -23,7 +23,11 @@
  */
 function DataStore(kmerLength){
 	
-	this.store=new Object();
+/*
+ * globalStore is a global variable.
+ */
+	this.store=globalStore;
+
 	this.VALUE_COVERAGE=0;
 	this.VALUE_PARENTS=1;
 	this.VALUE_CHILDREN=2;
@@ -33,14 +37,20 @@ function DataStore(kmerLength){
 
 	this.graphFiles.push("mock-kmers.txt");
 	this.sequenceFiles.push("mock-Contigs.fasta");
-	this.kmerLength=4;
 
-	this.store["ATCG"]=[-1,[],[]];
-	this.store["ATCG"][this.VALUE_COVERAGE]=99;
-	this.store["ATCG"][this.VALUE_PARENTS].push("CATC");
-	this.store["ATCG"][this.VALUE_CHILDREN].push("TCGA");
+/*
+ * Pick up a starting key.
+ */
+	for(key in this.store){
+		var entry=this.store[key];
+
+		if(entry[1].length>=1 && entry[2].length >=1 && entry[0]>=10){
+			this.firstKmer=key;
+			break;
+		}
+	}
 	
-	this.firstKmer="ATCG";
+	this.kmerLength=this.firstKmer.length;
 }
 
 DataStore.prototype.getSequenceFiles=function(){
