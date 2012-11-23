@@ -46,6 +46,9 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 	var backspace=8;
 	var enter=13;
 
+	var pageUp=33;
+	var pageDown=34;
+
 	var zoomValue=this.screen.getZoomValue();
 	var shift=32/zoomValue;
 
@@ -64,7 +67,7 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 		originYSpeed+=shift;
 	}else if(key==upKey){
 		originYSpeed-=shift;
-	}else if(key==enter){
+	}else if(key==pageDown){
 /*
  * Re-center the origin too.
  */
@@ -73,7 +76,7 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 
 		zoomValue*=zoomingChange;
 
-	}else if(key==backspace){
+	}else if(key==pageUp){
 /*
  * Re-center the origin too.
  */

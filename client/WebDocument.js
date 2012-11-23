@@ -37,7 +37,7 @@ function WebDocument(){
 	body.appendChild(center);
 
 	var footer=document.createElement("div");
-	var controls=document.createTextNode("Controls: move with mouse or arrows, zoom with enter/backspace.");
+	var controls=document.createTextNode("Controls: move with mouse or arrows, zoom with page down & page up.");
 	var linkTextBottom=document.createTextNode("This project is Copyright (C) 2012 Sébastien Boisvert and distributed under the GNU General Public License, version 3.");
 	footer.appendChild(controls);
 	footer.appendChild(document.createElement("br"));
