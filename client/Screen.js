@@ -647,9 +647,17 @@ Screen.prototype.isOutside=function(vertex,buffer){
 
 Screen.prototype.getActiveObjects=function(){
 
-	var quantum=200;
+/*
+ * Quantum value of the machine.
+ */
+	var quantum=8192;
 	var vertices=this.graph.getVertices();
-	var bufferForActiveObjects=300;
+
+/*
+ * Size of buffer for active objects within the
+ * activation engine.
+ */
+	var bufferForActiveObjects=512;
 
 	var i=0;
 	while(i<quantum && this.activeIndex<vertices.length){
