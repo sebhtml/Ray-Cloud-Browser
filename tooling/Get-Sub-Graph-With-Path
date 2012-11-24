@@ -8,165 +8,265 @@
 # Date: 2012-11-14
 # License: GPLv3
 
+# A vertex with coverage, parents and children
+class Vertex:
+	def __init__(self,sequence):
+
+		#print("Set seq= "+str(sequence))
+		self.sequence=sequence
+		self.parents=[]
+		self.children=[]
+		self.coverage=-1
+		self.distance=-1
+
+	def setCoverage(self,coverage):
+		self.coverage=coverage
+
+	def setDistance(self,distance):
+		self.distance=distance
+
+	def getDistance(self):
+		return self.distance
+
+	def addParent(self,parent):
+		self.parents.append(parent)
+
+	def addChild(self,child):
+		self.children.append(child)
+
+	def getSequence(self):
+		return self.sequence
+
+	def getCoverage(self):
+		return self.coverage
+
+	def getParents(self):
+		return self.parents
+
+	def getChildren(self):
+		return self.children
+
+# A reader for the kmers.txt file
+class GraphReader:
+
+	def __init__(self,dataFile):
+		self.dataFile=dataFile
+		self.stream=open(self.dataFile)
+		self.entries=0
+		self.comments=0
+		self.index=0
+
+		# get the k-mer length
+		self.kmerLength=-1
+
+		for line in self.stream:
+			if line[0]=="#":
+				continue
+			tokens=line.split(";")
+			self.kmerLength=len(tokens[0])
+			break
+
+		self.stream.close()
+		self.stream=open(self.dataFile)
+
+		for line in self.stream:
+			if line[0]=='#':
+				self.comments+=1
+				continue
+			if len(line.strip())==0:
+				continue
+			self.entries+=1
+
+		self.reset()
+
+	def getSize(self):
+		return self.entries
+
+	def reset(self):
+
+		print("Reset")
+
+		self.stream.close()
+		self.stream=open(self.dataFile)
+		
+		self.index=0
+
+	def getKmerLength(self):
+		return self.kmerLength
+
+	def hasNext(self):
+		return self.index < self.entries
+
+	def getNextLine(self):
+		line=None
+
+		for otherLine in self.stream:
+			if otherLine[0]=='#':
+				continue
+			line=otherLine
+			break
+
+		return line
+
+	def getNext(self):
+		if not self.hasNext():
+			return None
+
+		line=self.getNextLine()
+		
+		if line==None:
+			print("Error, None line "+str(self.index))
+			print("Line: "+line)
+
+		tokens=line.split(";")
+		kmerObject=tokens[0]
+
+		if 1 >= len(tokens):
+			print("index: "+str(self.index)+"/"+str(self.entries))
+			print("line: "+line)
+
+		coverage=tokens[1]
+	
+		vertex=Vertex(kmerObject)
+		vertex.setCoverage(coverage)
+
+		parentSymbols=tokens[2].split(" ")
+		childSymbols=tokens[3].strip().split(" ")
+
+		for symbol in parentSymbols:
+			if len(symbol)!=1:
+				continue
+	
+			otherObject=symbol+kmerObject[0:(self.kmerLength-1)]
+			vertex.addParent(otherObject)
+	
+		for symbol in childSymbols:
+			if len(symbol)!=1:
+				continue
+	
+			otherObject=kmerObject[1:(self.kmerLength)]+symbol
+			vertex.addChild(otherObject)
+
+		self.index+=1
+
+		if self.index == self.entries:
+			self.stream.close()
+
+		return vertex
+
+# A reader for the fasta sequence
+class SequenceReader:
+	def __init__(self,dataFile,kmerLength):
+		self.sequence=""
+		self.kmerLength=kmerLength
+
+		self.stream=open(dataFile)
+
+		# TODO: this code should use a string buffer I think.
+		for line in self.stream:
+			if line[0]!='>':
+				self.sequence+=line.strip()
+
+		self.stream.close()
+
+		self.entries=len(self.sequence)-self.kmerLength+1
+		self.index=0
+
+		#print("Sequence has "+str(self.entries))
+
+	def hasNext(self):
+		return self.index < self.entries
+
+	def getNext(self):
+
+		if not self.hasNext():
+			return None
+
+		
+		kmerObject=self.sequence[self.index:(self.index+self.kmerLength)]
+
+		self.index+=1
+
+		vertex=Vertex(kmerObject)
+
+		return vertex
+
 import sys
 arguments=sys.argv
 
-if len(arguments)!=4:
-	print("Usage: "+arguments[0]+" kmers.txt Path.fasta OutputJavascriptFile")
+if len(arguments)!=5:
+	print("Usage: "+arguments[0]+" kmers.txt Path.fasta MaximumDistance OutputJavascriptFile")
 	sys.exit(1)
+
+# Get the arguments
 
 graphFile=arguments[1]
 pathFile=arguments[2]
-javascriptFile=arguments[3]
+maximumDistance=int(arguments[3])
+javascriptFile=arguments[4]
+
+graph=GraphReader(graphFile)
 
 objectStore={}
-SLOT_COVERAGE=0
-SLOT_PARENTS=1
-SLOT_CHILDREN=2
 
-sequence=""
+sequence=SequenceReader(pathFile,graph.getKmerLength())
 
-stream=open(pathFile)
+# Load the k-mers from the input sequence
+while sequence.hasNext():
+	vertex=sequence.getNext()
+	vertex.setDistance(0)
+	aSequence=vertex.getSequence()
+	objectStore[aSequence]=vertex
 
-print("Loading path")
-# TODO: this code should use a string buffer I think.
-for line in stream:
-	if line[0]!='>':
-		sequence+=line.strip()
-stream.close()
+	#print("Seq= "+aSequence)
 
-# get the k-mer length
-# to do that, just pick up the first k-mer
+# Load related objects from the graph
+oldSize=0
+while oldSize < len(objectStore):
 
-stream=open(graphFile)
+	oldSize=len(objectStore)
 
-kmerLength=None
+	graph.reset()
 
-print("Loading kmer length")
-for line in stream:
-	if line[0]=="#":
-		continue
-	tokens=line.split(";")
-	kmerLength=len(tokens[0])
-	break
+	processed=0
 
-stream.close()
+	while graph.hasNext():
+		
+		if processed%100000==0:
+			print("Processed "+str(processed)+"/"+str(graph.getSize()))
 
-# load the k-mers from the path
+		vertex=graph.getNext()
 
-print("Loading kmers from path")
-def addEntry(objectStore,kmerObject):
-	if kmerObject in objectStore:
-		return;
-	objectStore[kmerObject]=[0,[],[]]
+		processed+=1
 
-i=0
-while i<len(sequence):
-	kmerObject=sequence[i:i+kmerLength]
-	#print(kmerObject)
-
-	addEntry(objectStore,kmerObject)
-	i+=1
+		sequence=vertex.getSequence()
 
 
-# load parents and children
+		if sequence in objectStore and objectStore[sequence].getDistance() <= maximumDistance:
+			distance=objectStore[sequence].getDistance()
 
-print("Loading parents and children from graph")
-stream=open(graphFile)
+			objectStore[sequence]=vertex
+			vertex.setDistance(distance)
 
-loaded=0
+			parents=vertex.getParents()
+			children=vertex.getChildren()
 
-for line in stream:
+			newDistance=distance+1
 
-	if loaded%1000000==0:
-		print("Loading parents and children from graph "+str(loaded))
-	loaded+=1
+			if newDistance <= maximumDistance:
+				for anObject in parents:
+					if anObject not in objectStore:
+						newVertex=Vertex(anObject)
+						newVertex.setDistance(newDistance)
+						objectStore[anObject]=newVertex
 
-	if line[0]=="#":
-		continue
-	tokens=line.split(";")
-	kmerObject=tokens[0]
+				for anObject in children:
+					if anObject not in objectStore:
+						newVertex=Vertex(anObject)
+						newVertex.setDistance(newDistance)
+						objectStore[anObject]=newVertex
 
-	if kmerObject not in objectStore:
-		continue
+	newSize=len(objectStore)
 
-	parentSymbols=tokens[2].split(" ")
-	childSymbols=tokens[3].strip().split(" ")
-	#parents=[]
-	#children=[]
-
-	#print(kmerObject)
-
-	#print(parentSymbols)
-	#print(childSymbols)
-
-	for symbol in parentSymbols:
-		if len(symbol)!=1:
-			continue
-
-		otherObject=symbol+kmerObject[0:(kmerLength-1)]
-		#print(str(len(otherObject)))
-		#print(otherObject+" -> "+kmerObject)
-		addEntry(objectStore,otherObject)
-		objectStore[kmerObject][SLOT_PARENTS].append(otherObject)
-
-	for symbol in childSymbols:
-		if len(symbol)!=1:
-			continue
-
-		otherObject=kmerObject[1:(kmerLength)]+symbol
-		#print(str(len(otherObject)))
-		#print("child "+kmerObject+" -> "+otherObject)
-		#children.append(otherObject)
-		addEntry(objectStore,otherObject)
-		objectStore[kmerObject][SLOT_CHILDREN].append(otherObject)
-
-
-	#print("Parents:")
-	#print(parentSymbols)
-
-
-stream.close()
-
-
-
-# load coverage values
-
-print("Loading coverage values")
-
-stream=open(graphFile)
-
-loaded=0
-
-output=open(javascriptFile,"w")
-
-for line in stream:
-
-	if loaded%1000000==0:
-		print("Loading coverage values "+str(loaded))
-	loaded+=1
-
-	if line[0]=="#":
-		continue
-	tokens=line.split(";")
-	kmerObject=tokens[0]
-	coverage=tokens[1]
-
-	if kmerObject in objectStore:
-		objectStore[kmerObject][SLOT_COVERAGE]=coverage
-
-		# print the javascript for it.
-		output.write("this.store[\""+kmerObject+"\"]=["+coverage+",[],[]];\n")
-
-		for item in objectStore[kmerObject][SLOT_PARENTS]:
-			output.write("this.store[\""+kmerObject+"\"][1].push(\""+item+"\");\n")
-
-		for item in objectStore[kmerObject][SLOT_CHILDREN]:
-			output.write("this.store[\""+kmerObject+"\"][2].push(\""+item+"\");\n")
-
-stream.close()
-
-output.close()
-
-
+	print("Change: "+str(oldSize)+" -> "+str(newSize))
 
