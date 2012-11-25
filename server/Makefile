@@ -1,5 +1,10 @@
 CXX=g++
-CXXFLAGS=-O3 -Wall -pipe -std=c++98 -march=native
+CXXFLAGS= -O3 -Wall -march=native -pipe
 
-all:
-	$(CXX) $(CXXFLAGS) server.cpp -o server.cgi
+all: creator client
+
+client:
+	$(CXX) $(CXXFLAGS) commandLineClient_main.cpp GraphDatabase.cpp VertexObject.cpp -o commandLineClient
+
+creator:
+	$(CXX) $(CXXFLAGS) createGraphDatabase_main.cpp -o createGraphDatabase
