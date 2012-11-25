@@ -23,6 +23,7 @@ using namespace std;
 
 /**
  * An object found in the database.
+ * \author Sébastien Boisvert
  */
 class VertexObject{
 	char m_sequence[256];

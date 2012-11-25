@@ -26,6 +26,10 @@
 #include <string.h>
 using namespace std;
 
+/**
+ * Create a graph database.
+ * \author Sébastien Boisvert
+ */
 int main(int argc,char**argv){
 
 	if(argc!=3){

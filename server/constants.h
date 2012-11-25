@@ -15,36 +15,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GraphDatabase_h
-#define _GraphDatabase_h
+#ifndef INDEX_A
 
-#include "VertexObject.h"
-#include "constants.h"
+#define INDEX_A 0
+#define INDEX_C 1
+#define INDEX_G 2
+#define INDEX_T 3
 
-#include <stdint.h>
+#define SYMBOL_A 'A'
+#define SYMBOL_C 'C'
+#define SYMBOL_G 'G'
+#define SYMBOL_T 'T'
 
-#define GRAPH_FORMAT_VERSION 2345678987
-
-/**
- * A class to search kmers in a database file.
- * \author Sébastien Boisvert
- */
-class GraphDatabase{
-
-	char m_map[4];
-
-	char*m_file;
-
-	int m_format;
-	int m_kmerLength;
-	uint64_t m_entries;
-
-public:
-	void setDataFile(char*file);
-	bool getObject(VertexObject*object,char*key);
-	int getKmerLength();
-	char getSymbol(int code);
-};
+#define MARKER_NO 0
+#define MARKER_YES 1
 
 #endif
 
