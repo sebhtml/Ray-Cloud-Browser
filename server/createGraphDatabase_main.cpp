@@ -17,12 +17,13 @@
 
 // TODO: maybe adding padding could enhance performance
 
+#include "GraphDatabase.h"
+
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "GraphDatabase.h"
 using namespace std;
 
 int main(int argc,char**argv){
@@ -90,8 +91,8 @@ int main(int argc,char**argv){
 	fwrite(&kmerLength,sizeof(int),1,output);
 	fwrite(&entries,sizeof(uint64_t),1,output);
 
-	int no=0;
-	int yes=1;
+	int no=MARKER_NO;
+	int yes=MARKER_YES;
 
 	for(uint64_t i=0;i<entries;i++){
 		char*value=fgets(buffer,1024,stream);

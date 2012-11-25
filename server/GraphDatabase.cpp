@@ -88,6 +88,15 @@ bool GraphDatabase::getObject(VertexObject*object,char*key){
 			object->setSequence(sequence);
 			object->setCoverage(coverage);
 
+			for(int i=0;i<4;i++){
+				if(parents[i]==MARKER_YES){
+					object->addParent(getSymbol(i));
+				}
+				if(children[i]==MARKER_YES){
+					object->addChild(getSymbol(i));
+				}
+			}
+
 			break;
 		}else if(comparisonResult>0){
 
@@ -120,8 +129,17 @@ void GraphDatabase::setDataFile(char*file){
 	fread(&m_entries,sizeof(int),1,stream);
 
 	fclose(stream);
+
+	m_map[INDEX_A]=SYMBOL_A;
+	m_map[INDEX_C]=SYMBOL_C;
+	m_map[INDEX_G]=SYMBOL_G;
+	m_map[INDEX_T]=SYMBOL_T;
 }
 
 int GraphDatabase::getKmerLength(){
 	return m_kmerLength;
+}
+
+char GraphDatabase::getSymbol(int code){
+	return m_map[code];
 }

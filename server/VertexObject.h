@@ -27,12 +27,19 @@ using namespace std;
 class VertexObject{
 	char m_sequence[256];
 	uint32_t m_coverage;
+	char m_parents[4];
+	char m_children[4];
+	
 public:
 
 	void setSequence(char*value);
 	void setCoverage(uint32_t value);
 	uint32_t getCoverage();
 	void writeContentInJSON(ostream*stream);
+	void addParent(char symbol);
+	void addChild(char symbol);
+	int getSymbolCode(char symbol);
+	char getCodeSymbol(int code);
 };
 
 #endif

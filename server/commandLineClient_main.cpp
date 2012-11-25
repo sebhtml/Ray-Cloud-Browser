@@ -39,10 +39,11 @@ int main(int argc,char**argv){
 	cout<<"{"<<endl;
 
 	if(found){
-		cout<<"\""<<key<<"\": "<<endl;
+		cout<<"\""<<key<<"\": ";
 		vertex.writeContentInJSON(&cout);
 	}
 
+	cout<<endl;
 	cout<<"}"<<endl;
 
 	return 0;
