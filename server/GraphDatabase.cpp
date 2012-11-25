@@ -18,6 +18,7 @@
 #include "GraphDatabase.h"
 #include <stdio.h>
 #include <string.h>
+#include <iostream>
 #include <sstream>
 #include <stdint.h>
 using namespace std;
@@ -26,6 +27,8 @@ using namespace std;
 
 bool GraphDatabase::getObject(char*file,VertexObject*object,char*key){
 	
+	//cout<<"Searching for: "<<key<<endl;
+
 	bool found=false;
 
 	FILE*stream=fopen(file,"r");
@@ -49,7 +52,9 @@ bool GraphDatabase::getObject(char*file,VertexObject*object,char*key){
 
 	while(first<=last){
 	
-		int middle=(last-first)/2;
+		int middle=first+(last-first)/2;
+
+		//cout<<"First: "<<first<<" Last: "<<last<<endl;
 
 		int middlePosition=startingPosition+middle*entrySize;
 
@@ -70,7 +75,11 @@ bool GraphDatabase::getObject(char*file,VertexObject*object,char*key){
 
 		sequence[kmerLength]='\0';
 
+		//cout<<"Entry: "<<sequence<<endl;
+
 		int comparisonResult=strcmp(key,sequence);
+
+
 		if(comparisonResult==0){
 			found=true;
 
@@ -80,9 +89,12 @@ bool GraphDatabase::getObject(char*file,VertexObject*object,char*key){
 			break;
 		}else if(comparisonResult>0){
 
+			//cout<<"On the right"<<endl;
 			first=middle+1;
 
 		}else if(comparisonResult<0){
+
+			//cout<<"On the left"<<endl;
 			last=middle-1;
 		}
 	}

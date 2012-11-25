@@ -25,3 +25,17 @@ void VertexObject::setSequence(char*value){
 void VertexObject::setCoverage(uint32_t value){
 	m_coverage=value;
 }
+
+uint32_t VertexObject::getCoverage(){
+	return m_coverage;
+}
+
+void VertexObject::writeContentInJSON(ostream*stream){
+	(*stream)<<"{"<<endl;
+	(*stream)<<"	\"sequence\": \""<<m_sequence<<"\","<<endl;
+	(*stream)<<"	\"coverage\": "<<m_coverage<<","<<endl;
+	(*stream)<<"	\"parents\": [],"<<endl;
+	(*stream)<<"	\"children\": []"<<endl;
+	(*stream)<<"}"<<endl;
+}
+

@@ -18,6 +18,8 @@
 #ifndef _VertexObject_h
 
 #include <stdint.h>
+#include <iostream>
+using namespace std;
 
 class VertexObject{
 	char m_sequence[256];
@@ -26,6 +28,8 @@ public:
 
 	void setSequence(char*value);
 	void setCoverage(uint32_t value);
+	uint32_t getCoverage();
+	void writeContentInJSON(ostream*stream);
 };
 
 #endif

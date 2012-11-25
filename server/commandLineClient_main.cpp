@@ -33,7 +33,16 @@ int main(int argc,char**argv){
 
 	VertexObject vertex;
 
-	database.getObject(dataFile,&vertex,key);
+	bool found = database.getObject(dataFile,&vertex,key);
+
+	cout<<"{"<<endl;
+
+	if(found){
+		cout<<"\""<<key<<"\": "<<endl;
+		vertex.writeContentInJSON(&cout);
+	}
+
+	cout<<"}"<<endl;
 
 	return 0;
 }

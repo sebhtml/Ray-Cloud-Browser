@@ -1,0 +1,4 @@
+To create a database, the kmers.txt must first be sorted and stripped from comments.
+
+
+cat kmers.txt|grep -v ^#|sort > kmers.txt.sort
