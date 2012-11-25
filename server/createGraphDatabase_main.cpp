@@ -30,6 +30,11 @@ int main(int argc,char**argv){
 
 	if(argc!=3){
 		cout<<"Usage: "<<argv[0]<<" kmers.txt.sorted kmers.txt.dat"<<endl;
+		cout<<endl;
+		cout<<"You must run Ray with -write-kmers, which will generate a kmers.txt file"<<endl;
+		cout<<"Then, you must create the kmers.txt.sorted file with:"<<endl;
+		cout<<" cat kmers.txt|grep -v ^#|sort > kmers.txt.sorted"<<endl;
+
 		return 0;
 	}
 
