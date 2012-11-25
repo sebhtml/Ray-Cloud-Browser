@@ -22,7 +22,7 @@ The client is a fork of the force-graph project (author: Sébastien Boisvert, li
 It is a client-server application. The client runs in a browser with Javascript and HTML5.
 The server is in C++ and runs with Apache or any web server with CGI support.
 
-The server is in C++ 1998 and it uses a SQL 1999.
+The server is in C++ 1998.
 The messaging is done with HTTP (rfc 2616).
 The client is in HTML5 and Javascript.
 
