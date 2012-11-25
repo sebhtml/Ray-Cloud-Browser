@@ -16,33 +16,84 @@
  */
 
 #include "GraphDatabase.h"
+
+#include <string.h>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 using namespace std;
 
 int main(int argc,char**argv){
 
 	if(argc!=3){
-		cout<<"Usage: "<<argv[0]<<" kmers.dat key"<<endl;
+		cout<<"Usage: "<<argv[0]<<" kmers.dat sequence.fasta"<<endl;
 		return 0;
 	}
 
 	char*dataFile=argv[1];
-	char*key=argv[2];
+	char*sequenceFile=argv[2];
 
 	GraphDatabase database;
 	database.setDataFile(dataFile);
 
-	VertexObject vertex;
+	int kmerLength=database.getKmerLength();
 
-	bool found = database.getObject(&vertex,key);
+	char buffer[1024];
 
-	cout<<"{"<<endl;
+	ostringstream bigSequence;
 
-	if(found){
-		cout<<"\""<<key<<"\": "<<endl;
-		vertex.writeContentInJSON(&cout);
+	ifstream input(sequenceFile);
+
+	while(!input.eof()){
+		input.getline(buffer,1024);
+
+		if(buffer[0]=='>')
+			continue;
+
+		bigSequence<<buffer;
 	}
 
+	input.close();
+
+	string mySequence=bigSequence.str();
+
+	const char*origin=mySequence.c_str();
+
+	//cout<<"Sequence: "<<mySequence<<endl;
+	//
+
+	int count=mySequence.length()-kmerLength+1;
+	cout<<"{"<<endl;
+
+	bool first=false;
+
+	for(int i=0;i<count;i++){
+
+		char key[300];
+
+		memcpy(key,origin+i,kmerLength);
+		key[kmerLength]='\0';
+
+	
+		VertexObject vertex;
+		bool found = database.getObject(&vertex,key);
+
+		if(found){
+
+			if(!first){
+				first=true;
+			}else{
+				cout<<",";
+			}
+
+			cout<<endl;
+
+			cout<<"\""<<key<<"\": ";
+			vertex.writeContentInJSON(&cout);
+		}
+	}
+
+	cout<<endl;
 	cout<<"}"<<endl;
 
 	return 0;

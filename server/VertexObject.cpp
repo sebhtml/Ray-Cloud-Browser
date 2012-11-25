@@ -36,6 +36,6 @@ void VertexObject::writeContentInJSON(ostream*stream){
 	(*stream)<<"	\"coverage\": "<<m_coverage<<","<<endl;
 	(*stream)<<"	\"parents\": [],"<<endl;
 	(*stream)<<"	\"children\": []"<<endl;
-	(*stream)<<"}"<<endl;
+	(*stream)<<"}";
 }
 

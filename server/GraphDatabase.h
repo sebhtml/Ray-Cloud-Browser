@@ -19,6 +19,7 @@
 #define _GraphDatabase_h
 
 #include "VertexObject.h"
+#include <stdint.h>
 
 #define GRAPH_FORMAT_VERSION 2345678987
 
@@ -37,8 +38,16 @@
  */
 class GraphDatabase{
 
+	char*m_file;
+
+	int m_format;
+	int m_kmerLength;
+	uint64_t m_entries;
+
 public:
-	bool getObject(char*file,VertexObject*object,char*key);
+	void setDataFile(char*file);
+	bool getObject(VertexObject*object,char*key);
+	int getKmerLength();
 };
 
 #endif

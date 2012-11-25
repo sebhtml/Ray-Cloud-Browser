@@ -25,8 +25,10 @@ using namespace std;
 
 // TODO add error management for file operations
 
-bool GraphDatabase::getObject(char*file,VertexObject*object,char*key){
-	
+bool GraphDatabase::getObject(VertexObject*object,char*key){
+
+	char*file=m_file;
+
 	//cout<<"Searching for: "<<key<<endl;
 
 	bool found=false;
@@ -102,4 +104,24 @@ bool GraphDatabase::getObject(char*file,VertexObject*object,char*key){
 	fclose(stream);
 
 	return found;
+}
+
+void GraphDatabase::setDataFile(char*file){
+	m_file=file;
+
+	FILE*stream=fopen(file,"r");
+
+	m_format=0;
+	m_kmerLength=0;
+	m_entries=0;
+
+	fread(&m_format,sizeof(int),1,stream);
+	fread(&m_kmerLength,sizeof(int),1,stream);
+	fread(&m_entries,sizeof(int),1,stream);
+
+	fclose(stream);
+}
+
+int GraphDatabase::getKmerLength(){
+	return m_kmerLength;
 }
