@@ -1,10 +1,29 @@
+# \see http://www.cprogramming.com/tutorial/makefiles_continued.html
+# \author Sébastien Boisvert
+# \author Sébastien Boisvert
+# \author Sébastien Boisvert
+# \author Sébastien Boisvert
+# \author Sébastien Boisvert
+# \author Sébastien Boisvert
+
 CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe
 
-all: creator client
+TARGETS=commandLineClient createGraphDatabase getSubgraphWithPath
 
-client:
-	$(CXX) $(CXXFLAGS) commandLineClient_main.cpp GraphDatabase.cpp VertexObject.cpp -o commandLineClient
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $? -o $@
 
-creator:
-	$(CXX) $(CXXFLAGS) createGraphDatabase_main.cpp -o createGraphDatabase
+all: $(TARGETS)
+
+commandLineClient: commandLineClient_main.o GraphDatabase.o VertexObject.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+createGraphDatabase: createGraphDatabase_main.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+getSubgraphWithPath: getSubgraphWithPath_main.o GraphDatabase.o VertexObject.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+clean:
+	rm -f *.o $(TARGETS)
