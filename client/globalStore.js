@@ -1,1 +1,1 @@
-globalStore.js-1000-contig
+globalStore.js-Cool

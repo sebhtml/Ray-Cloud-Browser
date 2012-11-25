@@ -49,7 +49,7 @@ function DataStore(kmerLength){
 	for(key in this.store){
 		var entry=this.store[key];
 
-		if(entry[1].length>=1 && entry[2].length >=1 && entry[0]>=10){
+		if(entry["parents"].length>=1 && entry["children"].length >=1 && entry["coverage"]>=10){
 			this.firstKmer=key;
 			break;
 		}
@@ -84,9 +84,19 @@ DataStore.prototype.getKmerInformation=function(kmerSequence){
 	var children=new Array();
 
 	if(kmerSequence in this.store){
-		coverage=this.store[kmerSequence][this.VALUE_COVERAGE];
-		parents=this.store[kmerSequence][this.VALUE_PARENTS];
-		children=this.store[kmerSequence][this.VALUE_CHILDREN];
+		coverage=this.store[kmerSequence]["coverage"];
+
+		for(var index in this.store[kmerSequence]["parents"]){
+			var symbol=this.store[kmerSequence]["parents"][index];
+			var otherSequence=symbol+kmerSequence.substr(0,this.kmerLength-1);
+			parents.push(otherSequence);
+		}
+
+		for(var index in this.store[kmerSequence]["children"]){
+			var symbol=this.store[kmerSequence]["children"][index];
+			var otherSequence=kmerSequence.substr(1,this.kmerLength-1)+symbol;
+			children.push(otherSequence);
+		}
 	}
 
 	var kmer=new Kmer(kmerSequence,coverage,parents,children);
