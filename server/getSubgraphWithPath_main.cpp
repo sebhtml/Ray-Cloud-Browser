@@ -21,8 +21,25 @@
 #include <string.h>
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <set>
+#include <string>
 #include <fstream>
 using namespace std;
+
+void addKey(map<string,int>*objectsToProcess,string*sequenceKey,int distance,int maximumDistance,set<string>*visited){
+
+	if(visited->count(*sequenceKey)>0)
+		return;
+
+	if(distance>maximumDistance)
+		return;
+
+	if(objectsToProcess->count(*sequenceKey)>0)
+		return;
+
+	(*objectsToProcess)[*sequenceKey]=distance;
+}
 
 int main(int argc,char**argv){
 
@@ -61,13 +78,10 @@ int main(int argc,char**argv){
 
 	const char*origin=mySequence.c_str();
 
-	//cout<<"Sequence: "<<mySequence<<endl;
-	//
-
 	int count=mySequence.length()-kmerLength+1;
-	cout<<"{"<<endl;
 
-	bool first=false;
+	map<string,int> objectsToProcess;
+	set<string> visited;
 
 	for(int i=0;i<count;i++){
 
@@ -86,6 +100,57 @@ int main(int argc,char**argv){
 
 		if(found){
 
+			string sequence;
+			vertex.getSequence(&sequence);
+
+			addKey(&objectsToProcess,&sequence,actualDistance,maximumDistance,&visited);
+
+			vector<string> parentKeys;
+			vertex.getParents(&parentKeys);
+
+			for(vector<string>::iterator i=parentKeys.begin();
+				i!=parentKeys.end();i++){
+
+				string sequenceKey=*i;
+
+				addKey(&objectsToProcess,&sequenceKey,actualDistance+1,maximumDistance,&visited);
+			}
+
+			vector<string> childKeys;
+			vertex.getChildren(&childKeys);
+
+			for(vector<string>::iterator i=childKeys.begin();
+				i!=childKeys.end();i++){
+
+				string sequenceKey=*i;
+
+				addKey(&objectsToProcess,&sequenceKey,actualDistance+1,maximumDistance,&visited);
+			}
+
+		}
+	}
+
+	cout<<"{"<<endl;
+
+	bool first=false;
+
+	while(objectsToProcess.size()>0){
+
+		map<string,int> nextObjectsToProcess;
+
+		for(map<string,int>::iterator i=objectsToProcess.begin();
+			i!=objectsToProcess.end();i++){
+
+			string myKey=i->first;
+			int actualDistance=i->second;
+			const char*key=myKey.c_str();
+
+			VertexObject vertex;
+			bool found = database.getObject(key,&vertex);
+
+			if(!found)
+				continue;
+
 			if(!first){
 				first=true;
 			}else{
@@ -96,7 +161,35 @@ int main(int argc,char**argv){
 
 			cout<<"\""<<key<<"\": ";
 			vertex.writeContentInJSON(&cout);
+
+			visited.insert(myKey);
+
+			vector<string> parentKeys;
+			vertex.getParents(&parentKeys);
+
+			for(vector<string>::iterator i=parentKeys.begin();
+				i!=parentKeys.end();i++){
+
+				string sequenceKey=*i;
+
+				addKey(&nextObjectsToProcess,&sequenceKey,actualDistance+1,maximumDistance,&visited);
+			}
+
+			vector<string> childKeys;
+			vertex.getChildren(&childKeys);
+
+			for(vector<string>::iterator i=childKeys.begin();
+				i!=childKeys.end();i++){
+
+				string sequenceKey=*i;
+
+				addKey(&nextObjectsToProcess,&sequenceKey,actualDistance+1,maximumDistance,&visited);
+			}
+
 		}
+
+		objectsToProcess=nextObjectsToProcess;
+
 	}
 
 	cout<<endl;

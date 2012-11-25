@@ -47,7 +47,7 @@ public:
 	GraphDatabase();
 	void open(char*file);
 	void close();
-	bool getObject(char*key,VertexObject*object);
+	bool getObject(const char*key,VertexObject*object);
 	int getKmerLength();
 	char getSymbol(int code);
 };

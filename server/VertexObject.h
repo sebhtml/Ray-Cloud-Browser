@@ -19,6 +19,8 @@
 
 #include <stdint.h>
 #include <iostream>
+#include <string>
+#include <vector>
 using namespace std;
 
 /**
@@ -36,6 +38,9 @@ public:
 	void setSequence(char*value);
 	void setCoverage(uint32_t value);
 	uint32_t getCoverage();
+	void getSequence(string*sequence);
+	void getParents(vector<string>*parents);
+	void getChildren(vector<string>*children);
 	void writeContentInJSON(ostream*stream);
 	void addParent(char symbol);
 	void addChild(char symbol);

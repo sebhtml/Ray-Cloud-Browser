@@ -28,7 +28,7 @@ int main(int argc,char**argv){
 	}
 
 	char*dataFile=argv[1];
-	char*key=argv[2];
+	const char*key=argv[2];
 
 	GraphDatabase database;
 	database.open(dataFile);

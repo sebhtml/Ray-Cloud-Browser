@@ -19,6 +19,8 @@
 #include "constants.h"
 
 #include <string.h>
+#include <string>
+using namespace std;
 
 void VertexObject::setSequence(char*value){
 	strcpy(m_sequence,value);
@@ -110,5 +112,35 @@ char VertexObject::getCodeSymbol(int code){
 		return SYMBOL_T;
 
 	return SYMBOL_A;
+}
+
+void VertexObject::getSequence(string*sequence){
+	*sequence=m_sequence;
+}
+
+void VertexObject::getParents(vector<string>*parents){
+	string sequence=m_sequence;
+	string base=sequence.substr(0,sequence.length()-1);
+
+	for(int i=0;i<4;i++){
+		if(m_parents[i]==MARKER_YES){
+			char symbol=getCodeSymbol(i);
+			string otherObject=symbol+base;
+			parents->push_back(otherObject);
+		}
+	}
+}
+
+void VertexObject::getChildren(vector<string>*children){
+	string sequence=m_sequence;
+	string base=sequence.substr(1,sequence.length()-1);
+
+	for(int i=0;i<4;i++){
+		if(m_parents[i]==MARKER_YES){
+			char symbol=getCodeSymbol(i);
+			string otherObject=base+symbol;
+			children->push_back(otherObject);
+		}
+	}
 }
 

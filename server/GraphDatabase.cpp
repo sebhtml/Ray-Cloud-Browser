@@ -26,7 +26,7 @@ using namespace std;
 
 // TODO add error management for file operations
 
-bool GraphDatabase::getObject(char*key,VertexObject*object){
+bool GraphDatabase::getObject(const char*key,VertexObject*object){
 
 	bool found=false;
 
