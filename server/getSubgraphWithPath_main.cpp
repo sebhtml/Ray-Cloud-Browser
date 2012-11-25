@@ -17,6 +17,7 @@
 
 #include "GraphDatabase.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -25,16 +26,17 @@ using namespace std;
 
 int main(int argc,char**argv){
 
-	if(argc!=3){
-		cout<<"Usage: "<<argv[0]<<" kmers.dat sequence.fasta"<<endl;
+	if(argc!=4){
+		cout<<"Usage: "<<argv[0]<<" kmers.dat sequence.fasta maximumDistance"<<endl;
 		return 0;
 	}
 
 	char*dataFile=argv[1];
 	char*sequenceFile=argv[2];
+	int maximumDistance=atoi(argv[3]);
 
 	GraphDatabase database;
-	database.setDataFile(dataFile);
+	database.open(dataFile);
 
 	int kmerLength=database.getKmerLength();
 
@@ -74,9 +76,13 @@ int main(int argc,char**argv){
 		memcpy(key,origin+i,kmerLength);
 		key[kmerLength]='\0';
 
+		int actualDistance=0;
+
+		if(actualDistance> maximumDistance)
+			continue;
 	
 		VertexObject vertex;
-		bool found = database.getObject(&vertex,key);
+		bool found = database.getObject(key,&vertex);
 
 		if(found){
 
@@ -95,6 +101,8 @@ int main(int argc,char**argv){
 
 	cout<<endl;
 	cout<<"}"<<endl;
+
+	database.close();
 
 	return 0;
 }

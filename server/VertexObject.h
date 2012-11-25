@@ -41,6 +41,8 @@ public:
 	void addChild(char symbol);
 	int getSymbolCode(char symbol);
 	char getCodeSymbol(int code);
+
+	
 };
 
 #endif

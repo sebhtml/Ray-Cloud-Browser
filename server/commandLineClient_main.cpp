@@ -31,11 +31,11 @@ int main(int argc,char**argv){
 	char*key=argv[2];
 
 	GraphDatabase database;
-	database.setDataFile(dataFile);
+	database.open(dataFile);
 
 	VertexObject vertex;
 
-	bool found = database.getObject(&vertex,key);
+	bool found = database.getObject(key,&vertex);
 
 	cout<<"{"<<endl;
 
@@ -46,6 +46,8 @@ int main(int argc,char**argv){
 
 	cout<<endl;
 	cout<<"}"<<endl;
+
+	database.close();
 
 	return 0;
 }

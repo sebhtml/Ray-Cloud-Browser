@@ -31,17 +31,23 @@
  */
 class GraphDatabase{
 
+	bool m_active;
 	char m_map[4];
 
 	char*m_file;
+	FILE*m_stream;
+	int m_entrySize;
+	int m_startingPosition;
 
 	int m_format;
 	int m_kmerLength;
 	uint64_t m_entries;
 
 public:
-	void setDataFile(char*file);
-	bool getObject(VertexObject*object,char*key);
+	GraphDatabase();
+	void open(char*file);
+	void close();
+	bool getObject(char*key,VertexObject*object);
 	int getKmerLength();
 	char getSymbol(int code);
 };

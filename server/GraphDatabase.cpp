@@ -26,42 +26,25 @@ using namespace std;
 
 // TODO add error management for file operations
 
-bool GraphDatabase::getObject(VertexObject*object,char*key){
-
-	char*file=m_file;
-
-	//cout<<"Searching for: "<<key<<endl;
+bool GraphDatabase::getObject(char*key,VertexObject*object){
 
 	bool found=false;
 
-	FILE*stream=fopen(file,"r");
-
-	int format=0;
-	int kmerLength=0;
-	uint64_t entries=0;
+	if(!m_active)
+		return found;
 
 	int errors=0;
 
-	fread(&format,sizeof(int),1,stream);
-	fread(&kmerLength,sizeof(int),1,stream);
-	fread(&entries,sizeof(int),1,stream);
-
-	int entrySize=kmerLength+sizeof(uint32_t)+4+4;
-
-	int startingPosition=sizeof(int)+sizeof(int)+sizeof(uint64_t);
-
-	int first=0;
-	int last=entries-1;
+	uint64_t first=0;
+	uint64_t last=m_entries-1;
 
 	while(first<=last){
 	
-		int middle=first+(last-first)/2;
+		uint64_t middle=first+(last-first)/2;
 
-		//cout<<"First: "<<first<<" Last: "<<last<<endl;
+		uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
 
-		int middlePosition=startingPosition+middle*entrySize;
-
-		int returnValue=fseek(stream,middlePosition,SEEK_SET);
+		int returnValue=fseek(m_stream,middlePosition,SEEK_SET);
 
 		if(returnValue!=0)
 			errors++;
@@ -71,17 +54,18 @@ bool GraphDatabase::getObject(VertexObject*object,char*key){
 		char parents[4];
 		char children[4];
 
-		fread(sequence,kmerLength,1,stream);
-		fread(&coverage,sizeof(uint32_t),1,stream);
-		fread(parents,4,1,stream);
-		fread(children,4,1,stream);
+/*
+ * TODO: to only 1 fread in a buffer, then do 4 operations on the buffer.
+ * Probably not necessary because fread is buffered.
+ */
+		fread(sequence,m_kmerLength,1,m_stream);
+		fread(&coverage,sizeof(uint32_t),1,m_stream);
+		fread(parents,4,1,m_stream);
+		fread(children,4,1,m_stream);
 
-		sequence[kmerLength]='\0';
-
-		//cout<<"Entry: "<<sequence<<endl;
+		sequence[m_kmerLength]='\0';
 
 		int comparisonResult=strcmp(key,sequence);
-
 
 		if(comparisonResult==0){
 			found=true;
@@ -101,40 +85,54 @@ bool GraphDatabase::getObject(VertexObject*object,char*key){
 			break;
 		}else if(comparisonResult>0){
 
-			//cout<<"On the right"<<endl;
 			first=middle+1;
 
 		}else if(comparisonResult<0){
 
-			//cout<<"On the left"<<endl;
 			last=middle-1;
 		}
 	}
 
-	fclose(stream);
-
 	return found;
 }
 
-void GraphDatabase::setDataFile(char*file){
+void GraphDatabase::open(char*file){
+	
+	if(m_active)
+		return;
+
 	m_file=file;
 
-	FILE*stream=fopen(file,"r");
+	m_stream=fopen(m_file,"r");
 
 	m_format=0;
 	m_kmerLength=0;
 	m_entries=0;
 
-	fread(&m_format,sizeof(int),1,stream);
-	fread(&m_kmerLength,sizeof(int),1,stream);
-	fread(&m_entries,sizeof(int),1,stream);
-
-	fclose(stream);
+	fread(&m_format,sizeof(int),1,m_stream);
+	fread(&m_kmerLength,sizeof(int),1,m_stream);
+	fread(&m_entries,sizeof(int),1,m_stream);
 
 	m_map[INDEX_A]=SYMBOL_A;
 	m_map[INDEX_C]=SYMBOL_C;
 	m_map[INDEX_G]=SYMBOL_G;
 	m_map[INDEX_T]=SYMBOL_T;
+
+	m_entrySize=m_kmerLength+sizeof(uint32_t)+4+4;
+
+	m_startingPosition=sizeof(int)+sizeof(int)+sizeof(uint64_t);
+
+	m_active=true;
+}
+
+void GraphDatabase::close(){
+
+	if(!m_active)
+		return;
+
+	fclose(m_stream);
+
+	m_active=false;
 }
 
 int GraphDatabase::getKmerLength(){
@@ -144,3 +142,8 @@ int GraphDatabase::getKmerLength(){
 char GraphDatabase::getSymbol(int code){
 	return m_map[code];
 }
+
+GraphDatabase::GraphDatabase(){
+	m_active=false;
+}
+
