@@ -4,17 +4,10 @@
 - zoom buttons
 - show explicitely repeat k-mers (halo)
 
-- rotate buttons
 - add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
-- add a python script PushGraphFile <DataStoreDirectory> <kmers.txt>
 - user-supplied sequence
 - user-supplied graph
 - Change current sequence file
 - Change current graph file
 
---------------------------------------------------------
-Done:
-- a class for UI
-- zooming is bugger: sometimes it stops moving
-- check zoom value only once per renderingFrame for drawing vertices and arcs
-- clear canevas on Windows 7 IE9 fails
+
