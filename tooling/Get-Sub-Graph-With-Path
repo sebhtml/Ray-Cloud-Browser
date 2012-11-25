@@ -270,3 +270,49 @@ while oldSize < len(objectStore):
 
 	print("Change: "+str(oldSize)+" -> "+str(newSize))
 
+output=open(javascriptFile,"w")
+
+output.write("{\n")
+
+objectNumber=0
+
+count=len(objectStore)
+
+for key in objectStore:
+	vertex=objectStore[key]
+
+	output.write("\""+vertex.getSequence()+"\": {\n")
+	output.write("	\"coverage\": "+str(vertex.getCoverage())+",\n")
+
+	output.write("	\"parents\": [")
+
+	i=0
+	for aObject in vertex.getParents():
+		if i!=0:
+			output.write(", ")
+		output.write("\""+aObject+"\"")
+		i+=1
+
+	output.write("],\n")
+
+	output.write("	\"children\": [")
+	i=0
+	for aObject in vertex.getChildren():
+		if i!=0:
+			output.write(", ")
+		output.write("\""+aObject+"\"")
+		i+=1
+
+	output.write("]\n")
+
+	if objectNumber!= count-1:
+		output.write("},\n")
+	else:
+		output.write("}\n")
+
+	objectNumber+=1
+
+
+output.write("}\n")
+output.close()
+
