@@ -55,15 +55,18 @@ bool GraphDatabase::getObject(char*key,VertexObject*object){
 		char children[4];
 
 /*
- * TODO: to only 1 fread in a buffer, then do 4 operations on the buffer.
+ * Do only 1 fread in a buffer, then do 4 operations on the buffer.
  * Probably not necessary because fread is buffered.
  */
-		fread(sequence,m_kmerLength,1,m_stream);
-		fread(&coverage,sizeof(uint32_t),1,m_stream);
-		fread(parents,4,1,m_stream);
-		fread(children,4,1,m_stream);
+		char myBuffer[512];
+		fread(myBuffer,m_entrySize,1,m_stream);
 
+		memcpy(sequence,myBuffer,m_kmerLength);
 		sequence[m_kmerLength]='\0';
+
+		memcpy(&coverage,myBuffer+m_kmerLength,sizeof(uint32_t));
+		memcpy(parents,myBuffer+m_kmerLength+sizeof(uint32_t),4);
+		memcpy(children,myBuffer+m_kmerLength+sizeof(uint32_t)+4,4);
 
 		int comparisonResult=strcmp(key,sequence);
 
