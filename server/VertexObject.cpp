@@ -136,7 +136,7 @@ void VertexObject::getChildren(vector<string>*children){
 	string base=sequence.substr(1,sequence.length()-1);
 
 	for(int i=0;i<4;i++){
-		if(m_parents[i]==MARKER_YES){
+		if(m_children[i]==MARKER_YES){
 			char symbol=getCodeSymbol(i);
 			string otherObject=base+symbol;
 			children->push_back(otherObject);
