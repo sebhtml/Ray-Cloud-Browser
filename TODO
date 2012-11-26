@@ -1,5 +1,3 @@
-- add callback in DataStore methods (message passing)
-
 - move buttons
 - zoom buttons
 - show explicitely repeat k-mers (halo)

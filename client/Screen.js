@@ -158,6 +158,10 @@ Screen.prototype.start=function(){
 	this.actualRenderingFrameLength=0;
 }
 
+Screen.prototype.pull=function(){
+	this.graphOperator.pullObjects();
+}
+
 Screen.prototype.handleMouseMove=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 

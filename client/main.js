@@ -24,6 +24,7 @@
  */
 var renderingFrequency=24;
 var gameFrequency=32;
+var pullFrequency=64;
 
 /*
  * The variable can not be called screen because
@@ -65,9 +66,14 @@ var iterateGame=function(){
 	programScreen.iterate();
 }
 
+var iterateCommunication=function(){
+	programScreen.pull();
+}
+
 var periodInMilliSeconds=1000 / gameFrequency;
 
 setInterval(iterateGame,periodInMilliSeconds);
+setInterval(iterateCommunication,1000/pullFrequency);
 
 // Bind keyboard events.
 document.onkeydown=function(e){

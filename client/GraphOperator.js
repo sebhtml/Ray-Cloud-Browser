@@ -20,59 +20,89 @@
  * for adding and removing vertices.
  *
  * It uses the data store for obtaining information.
+ * Everything is event-driven.
  *
  * \author Sébastien Boisvert
  */
 function GraphOperator(){
 
 	this.dataStore=new DataStore();
-}
 
-GraphOperator.prototype.getKmerLength=function(){
-	return this.dataStore.getKmerLength();
+	this.resetProductionQueue();
+
+	this.depth=0;
+
+	this.objectsPerQuantum=8;
 }
 
 GraphOperator.prototype.createGraph=function(graph){
 
-	var firstKmer=this.dataStore.getFirstKmer();
+	this.graph=graph;
+	this.dataStore.getFirstKmer(this);
+}
 
-	var head=0;
-	var added=new Object();
-	var productionQueue=new Array();
-	productionQueue.push(firstKmer);
+GraphOperator.prototype.receiveFirstKmer=function(firstKmer){
+	this.productionQueue.push(firstKmer);
+}
 
-	var processed=0;
-	var maximum=999999999;
+GraphOperator.prototype.pullObjects=function(){
 
-	while(head < productionQueue.length){
+	while(this.head < this.productionQueue.length){
 
-		var kmerObject=productionQueue[head++];
+		var kmerObject=this.productionQueue[this.head++];
 
-		if(kmerObject in added)
+		if(kmerObject in this.added){
 			continue;
+		}
 
-		var kmerData=this.dataStore.getKmerInformation(kmerObject);
-
-		var vertex=graph.addVertex(kmerData.getSequence());
-
-		graph.addParents(kmerData.getSequence(),kmerData.getParents());
-		graph.addChildren(kmerData.getSequence(),kmerData.getChildren());
-
-		graph.addCoverage(kmerData.getSequence(),kmerData.getCoverage());
-
-		added[kmerObject]=true;
-
-		for(var i=0;i<kmerData.getParents().length;i++)
-			productionQueue.push(kmerData.getParents()[i]);
-
-		for(var i=0;i<kmerData.getChildren().length;i++)
-			productionQueue.push(kmerData.getChildren()[i]);
-		
-		if(processed>=maximum)
-			break;
-
-		processed++;
+/*
+ * Only fetch one object everytime.
+ */
+		this.dataStore.getKmerInformation(kmerObject,this);
+		return;
 	}
+
+	this.resetProductionQueue();
+}
+
+GraphOperator.prototype.receiveObject=function(kmerData){
+
+	var vertex=this.graph.addVertex(kmerData.getSequence());
+
+	var kmerObject=kmerData.getSequence();
+	var parents=kmerData.getParents();
+	this.graph.addParents(kmerObject,parents);
+	var children=kmerData.getChildren();
+	this.graph.addChildren(kmerObject,children);
+
+	this.graph.addCoverage(kmerObject,kmerData.getCoverage());
+
+	this.added[kmerObject]=true;
+
+	for(var i=0;i<parents.length;i++)
+		this.productionQueue.push(parents[i]);
+
+	for(var i=0;i<children.length;i++)
+		this.productionQueue.push(children[i]);
+
+	this.depth++;
+
+	if(this.depth<this.objectsPerQuantum){
+		this.pullObjects();
+	}else{
+		this.depth=0;
+	}
+}
+
+GraphOperator.prototype.resetProductionQueue=function(){
+
+	this.added=new Object();
+	this.head=0;
+	this.productionQueue=new Array();
+}
+
+GraphOperator.prototype.getKmerLength=function(){
+	return this.dataStore.getKmerLength();
 }
 
 

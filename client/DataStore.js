@@ -70,14 +70,14 @@ DataStore.prototype.getGraphFiles=function(){
 	return this.graphFiles;
 }
 
-DataStore.prototype.getFirstKmer=function(){
+DataStore.prototype.getFirstKmer=function(graphOperator){
 
 	var prefix=this.firstKmer;
 
-	return prefix;
+	graphOperator.receiveFirstKmer(prefix);
 }
 
-DataStore.prototype.getKmerInformation=function(kmerSequence){
+DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
 	var coverage=0;
 	var parents=new Array();
@@ -101,6 +101,6 @@ DataStore.prototype.getKmerInformation=function(kmerSequence){
 
 	var kmer=new Kmer(kmerSequence,coverage,parents,children);
 
-	return kmer;
+	graphOperator.receiveObject(kmer);
 }
 
