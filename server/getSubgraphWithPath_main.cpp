@@ -142,6 +142,10 @@ int main(int argc,char**argv){
 			i!=objectsToProcess.end();i++){
 
 			string myKey=i->first;
+
+			if(visited.count(myKey)>0)
+				continue;
+
 			int actualDistance=i->second;
 			const char*key=myKey.c_str();
 
