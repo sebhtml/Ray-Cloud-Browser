@@ -53,7 +53,7 @@ int main(int argc,char**argv){
 	int maximumDistance=atoi(argv[3]);
 
 	GraphDatabase database;
-	database.open(dataFile);
+	database.openFile(dataFile);
 
 	int kmerLength=database.getKmerLength();
 
@@ -195,7 +195,7 @@ int main(int argc,char**argv){
 	cout<<endl;
 	cout<<"}"<<endl;
 
-	database.close();
+	database.closeFile();
 
 	return 0;
 }

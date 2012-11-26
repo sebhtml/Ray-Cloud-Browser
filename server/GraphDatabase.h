@@ -32,10 +32,12 @@
 class GraphDatabase{
 
 	bool m_active;
-	char m_map[4];
+	char m_codeSymbols[4];
+	void*m_content;
 
+	uint64_t m_fileSize;
 	char*m_file;
-	FILE*m_stream;
+	int m_stream;
 	int m_entrySize;
 	int m_startingPosition;
 
@@ -45,8 +47,8 @@ class GraphDatabase{
 
 public:
 	GraphDatabase();
-	void open(char*file);
-	void close();
+	void openFile(char*file);
+	void closeFile();
 	bool getObject(const char*key,VertexObject*object);
 	int getKmerLength();
 	char getSymbol(int code);

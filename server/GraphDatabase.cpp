@@ -22,6 +22,11 @@
 #include <iostream>
 #include <sstream>
 #include <stdint.h>
+
+/* POSIX stuff */
+#include <sys/mman.h> /* mmap and munmap */
+#include <sys/fcntl.h> /* open and close */
+#include <sys/unistd.h> /* lseek */
 using namespace std;
 
 // TODO add error management for file operations
@@ -33,8 +38,6 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	if(!m_active)
 		return found;
 
-	int errors=0;
-
 	uint64_t first=0;
 	uint64_t last=m_entries-1;
 
@@ -44,22 +47,12 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 
 		uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
 
-		int returnValue=fseek(m_stream,middlePosition,SEEK_SET);
-
-		if(returnValue!=0)
-			errors++;
-
 		char sequence[300];
 		uint32_t coverage;
 		char parents[4];
 		char children[4];
 
-/*
- * Do only 1 fread in a buffer, then do 4 operations on the buffer.
- * Probably not necessary because fread is buffered.
- */
-		char myBuffer[512];
-		fread(myBuffer,m_entrySize,1,m_stream);
+		char*myBuffer=((char*)m_content)+middlePosition;
 
 		memcpy(sequence,myBuffer,m_kmerLength);
 		sequence[m_kmerLength]='\0';
@@ -99,27 +92,34 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	return found;
 }
 
-void GraphDatabase::open(char*file){
+/**
+ * \see http://www.c.happycodings.com/Gnu-Linux/code6.html
+ */
+void GraphDatabase::openFile(char*file){
 	
 	if(m_active)
 		return;
 
 	m_file=file;
 
-	m_stream=fopen(m_file,"r");
+	m_stream=open(m_file,O_RDONLY);
+	m_fileSize=lseek(m_stream,0,SEEK_END);
+	
+	m_content=mmap(0,m_fileSize,PROT_READ,MAP_SHARED,m_stream,0);
 
-	m_format=0;
-	m_kmerLength=0;
-	m_entries=0;
+	if(m_content==MAP_FAILED){
+		cout<<"Error: can not map file."<<endl;
+		return;
+	}
 
-	fread(&m_format,sizeof(int),1,m_stream);
-	fread(&m_kmerLength,sizeof(int),1,m_stream);
-	fread(&m_entries,sizeof(int),1,m_stream);
+	memcpy(&m_format,(char*)m_content,sizeof(uint32_t));
+	memcpy(&m_kmerLength,((char*)m_content)+sizeof(uint32_t),sizeof(uint32_t));
+	memcpy(&m_entries,((char*)m_content)+sizeof(uint32_t)+sizeof(uint32_t),sizeof(uint64_t));
 
-	m_map[INDEX_A]=SYMBOL_A;
-	m_map[INDEX_C]=SYMBOL_C;
-	m_map[INDEX_G]=SYMBOL_G;
-	m_map[INDEX_T]=SYMBOL_T;
+	m_codeSymbols[INDEX_A]=SYMBOL_A;
+	m_codeSymbols[INDEX_C]=SYMBOL_C;
+	m_codeSymbols[INDEX_G]=SYMBOL_G;
+	m_codeSymbols[INDEX_T]=SYMBOL_T;
 
 	m_entrySize=m_kmerLength+sizeof(uint32_t)+4+4;
 
@@ -128,12 +128,13 @@ void GraphDatabase::open(char*file){
 	m_active=true;
 }
 
-void GraphDatabase::close(){
+void GraphDatabase::closeFile(){
 
 	if(!m_active)
 		return;
 
-	fclose(m_stream);
+	munmap(m_content,m_fileSize);
+	close(m_stream);
 
 	m_active=false;
 }
@@ -143,7 +144,7 @@ int GraphDatabase::getKmerLength(){
 }
 
 char GraphDatabase::getSymbol(int code){
-	return m_map[code];
+	return m_codeSymbols[code];
 }
 
 GraphDatabase::GraphDatabase(){

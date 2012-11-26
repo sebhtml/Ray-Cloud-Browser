@@ -31,7 +31,7 @@ int main(int argc,char**argv){
 	const char*key=argv[2];
 
 	GraphDatabase database;
-	database.open(dataFile);
+	database.openFile(dataFile);
 
 	VertexObject vertex;
 
@@ -47,7 +47,7 @@ int main(int argc,char**argv){
 	cout<<endl;
 	cout<<"}"<<endl;
 
-	database.close();
+	database.closeFile();
 
 	return 0;
 }
