@@ -18,6 +18,7 @@
 #ifndef _GraphDatabase_h
 #define _GraphDatabase_h
 
+#include "Mapper.h"
 #include "VertexObject.h"
 #include "constants.h"
 
@@ -31,13 +32,12 @@
  */
 class GraphDatabase{
 
+	Mapper m_mapper;
+
 	bool m_active;
 	char m_codeSymbols[4];
 	void*m_content;
 
-	uint64_t m_fileSize;
-	char*m_file;
-	int m_stream;
 	int m_entrySize;
 	int m_startingPosition;
 

@@ -19,14 +19,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <iostream>
-#include <sstream>
 #include <stdint.h>
 
-/* POSIX stuff */
-#include <sys/mman.h> /* mmap and munmap */
-#include <sys/fcntl.h> /* open and close */
-#include <sys/unistd.h> /* lseek */
+#include <iostream>
+#include <sstream>
 using namespace std;
 
 // TODO add error management for file operations
@@ -100,17 +96,7 @@ void GraphDatabase::openFile(char*file){
 	if(m_active)
 		return;
 
-	m_file=file;
-
-	m_stream=open(m_file,O_RDONLY);
-	m_fileSize=lseek(m_stream,0,SEEK_END);
-	
-	m_content=mmap(0,m_fileSize,PROT_READ,MAP_SHARED,m_stream,0);
-
-	if(m_content==MAP_FAILED){
-		cout<<"Error: can not map file."<<endl;
-		return;
-	}
+	m_content=m_mapper.mapFile(file);
 
 	memcpy(&m_format,(char*)m_content,sizeof(uint32_t));
 	memcpy(&m_kmerLength,((char*)m_content)+sizeof(uint32_t),sizeof(uint32_t));
@@ -133,8 +119,7 @@ void GraphDatabase::closeFile(){
 	if(!m_active)
 		return;
 
-	munmap(m_content,m_fileSize);
-	close(m_stream);
+	m_mapper.unmapFile();
 
 	m_active=false;
 }

@@ -15,23 +15,30 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _constants_h
-#define _constants_h
+#ifndef _Mapper
+#define _Mapper
 
-#define INDEX_A 0
-#define INDEX_C 1
-#define INDEX_G 2
-#define INDEX_T 3
+#include <stdint.h>
 
-#define SYMBOL_A 'A'
-#define SYMBOL_C 'C'
-#define SYMBOL_G 'G'
-#define SYMBOL_T 'T'
+/**
+ *
+ * A portable file mapper implementation.
+ *
+ * \author Sébastien Boisvert
+ */
+class Mapper{
 
-#define MARKER_NO 0
-#define MARKER_YES 1
+	bool m_mapped;
+	uint64_t m_fileSize;
+	char*m_file;
+	int m_stream;
+	void*m_content;
 
+public:
+	Mapper();
+	void*mapFile(char*file);
+	void unmapFile();
+};
 
 
 #endif
-
