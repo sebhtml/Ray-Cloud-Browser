@@ -36,8 +36,6 @@ function PhysicsEngine(screen){
  */
 	this.simulatedAnnealing=false;
 
-	this.maximumRawForce=40;
-
 	this.screen=screen;
 
 /*
@@ -49,7 +47,6 @@ function PhysicsEngine(screen){
 	this.useProximity=false;
 	this.useFullMap=true;
 
-
 /* 
  * Coulomb's law
  * This is for the repulsion.
@@ -58,6 +55,7 @@ function PhysicsEngine(screen){
 	this.charge=256;
 	this.labelCharge=96;
 	this.forceConstant=0.15;
+	this.maximumRepulsion=64;
 
 /* 
  * Hooke's law 
@@ -67,6 +65,7 @@ function PhysicsEngine(screen){
 	this.sprintStep=0.5;
 	this.springConstant=0.35;
 	this.springLength=20;
+	this.maximumAttraction=64;
 
 	/* velocity update */
 	this.timeStep=1;
@@ -78,13 +77,13 @@ function PhysicsEngine(screen){
 		this.charge=300;
 }
 
-PhysicsEngine.prototype.checkBounds=function(force){
-	if(force>this.maximumRawForce){
-		return this.maximumRawForce;
+PhysicsEngine.prototype.checkBounds=function(force, maximum){
+	if(force>maximum){
+		return maximum;
 	}
 
-	if(force<-this.maximumRawForce){
-		return -this.maximumRawForce;
+	if(force<-maximum){
+		return -maximum;
 	}
 
 	return force;
@@ -239,13 +238,7 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 
 	var force=this.springConstant*displacement;
 
-	var maximumRepulsion=1000;
-
-	if(force<-maximumRepulsion)
-		force=-maximumRepulsion;
-
-	if(force>maximumRepulsion)
-		force=maximumRepulsion;
+	force=this.checkBounds(force,this.maximumAttraction);
 
 	// get a unit vector 
 	dx=dx/distance;
@@ -291,7 +284,7 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
 
-	force=this.checkBounds(force);
+	force=this.checkBounds(force,this.maximumRepulsion);
 
 	if(this.simulatedAnnealing && vertex1.isColored() && vertex2.isColored()){
 		var nucleotide1=vertex1.getLabel();
