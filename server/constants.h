@@ -32,6 +32,27 @@
 #define MARKER_YES 1
 
 
+#if defined(__linux__)
+#define OS_POSIX
+
+#elif defined(__GNUC__)
+#define OS_POSIX
+
+#elif defined(__APPLE__) || defined(MACOSX)
+#define OS_POSIX
+
+#elif defined(__sparc__) || defined(__sun__)
+#define OS_POSIX
+
+#elif defined(__unix__)
+#define OS_POSIX
+
+#elif defined(__CYGWIN__)
+#define OS_POSIX
+
+#elif defined(__sgi)
+#define OS_POSIX
+#endif
 
 #endif
 

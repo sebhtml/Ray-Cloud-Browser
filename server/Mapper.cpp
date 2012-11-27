@@ -21,30 +21,6 @@
 #include <iostream>
 using namespace std;
 
-#if defined(__linux__)
-#define OS_POSIX
-
-#elif defined(__GNUC__)
-#define OS_POSIX
-
-#elif defined(__APPLE__) || defined(MACOSX)
-#define OS_POSIX
-
-#elif defined(__sparc__) || defined(__sun__)
-#define OS_POSIX
-
-#elif defined(__unix__)
-#define OS_POSIX
-
-#elif defined(__CYGWIN__)
-#define OS_POSIX
-
-#elif defined(__sgi)
-#define OS_POSIX
-
-#endif
-
-
 #ifdef OS_POSIX
 #include <unistd.h>
 #endif
@@ -61,6 +37,17 @@ using namespace std;
 Mapper::Mapper(){
 	m_mapped=false;
 	m_content=NULL;
+
+	m_write=false;
+	m_read=false;
+}
+
+void Mapper::enableWriteOperations(){
+	m_write=true;
+}
+
+void Mapper::enableReadOperations(){
+	m_read=true;
 }
 
 void*Mapper::mapFile(char*file){
@@ -68,12 +55,26 @@ void*Mapper::mapFile(char*file){
 	if(m_mapped)
 		return m_content;
 
+	#ifdef OS_POSIX
+
+	if(m_write && m_read){
+		m_protection=PROT_READ|PROT_WRITE;
+	}else if(m_write){
+		m_protection=PROT_WRITE;
+	}else if(m_read){
+		m_protection=PROT_READ;
+	}else{
+		m_protection=PROT_NONE;
+	}
+
 	m_file=file;
 
 	m_stream=open(m_file,O_RDONLY);
 	m_fileSize=lseek(m_stream,0,SEEK_END);
 	
-	m_content=mmap(NULL,m_fileSize,PROT_READ,MAP_SHARED,m_stream,0);
+	m_flags=MAP_SHARED;
+
+	m_content=mmap(NULL,m_fileSize,m_protection,m_flags,m_stream,0);
 
 	m_mapped=true;
 
@@ -81,6 +82,8 @@ void*Mapper::mapFile(char*file){
 		cout<<"Error: can not map file."<<endl;
 		return NULL;
 	}
+
+	#endif
 
 	return m_content;
 }

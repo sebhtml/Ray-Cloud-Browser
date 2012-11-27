@@ -96,6 +96,7 @@ void GraphDatabase::openFile(char*file){
 	if(m_active)
 		return;
 
+	m_mapper.enableReadOperations();
 	m_content=m_mapper.mapFile(file);
 
 	memcpy(&m_format,(char*)m_content,sizeof(uint32_t));

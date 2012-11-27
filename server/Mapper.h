@@ -18,6 +18,8 @@
 #ifndef _Mapper
 #define _Mapper
 
+#include "constants.h"
+
 #include <stdint.h>
 
 /**
@@ -28,14 +30,23 @@
  */
 class Mapper{
 
-	bool m_mapped;
+#ifdef OS_POSIX
+	int m_protection;
+	bool m_read;
+	bool m_write;
 	uint64_t m_fileSize;
-	char*m_file;
 	int m_stream;
+	int m_flags;
+#endif
+
+	bool m_mapped;
+	char*m_file;
 	void*m_content;
 
 public:
 	Mapper();
+	void enableReadOperations();
+	void enableWriteOperations();
 	void*mapFile(char*file);
 	void unmapFile();
 };
