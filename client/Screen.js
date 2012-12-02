@@ -506,10 +506,14 @@ Screen.prototype.drawControlPanel=function(){
 		return;
 
 	var offsetX=10;
-	var offsetY=90;
+	var offsetY=115;
 	var stepping=15;
 
 	this.context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
+		offsetX,this.canvas.height-offsetY);
+	offsetY-=stepping;
+
+	this.context.fillText("HTTP GET requests: "+this.graphOperator.getHTTPRequests(),
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
