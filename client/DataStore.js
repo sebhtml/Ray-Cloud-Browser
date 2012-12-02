@@ -24,6 +24,7 @@
 function DataStore(kmerLength){
 	
 	this.waiting=true;
+	this.httpRequests=0;
 
 	this.pullData();
 
@@ -31,7 +32,7 @@ function DataStore(kmerLength){
 }
 
 DataStore.prototype.pullData=function(){
-	var xmlHttp;
+	var xmlHttp=null;
 
 /*
  * This won't work with older browser, things before IE7.
@@ -55,6 +56,7 @@ DataStore.prototype.pullData=function(){
 
 	xmlHttp.open("GET","zone0.json",true);
 	xmlHttp.send(null);
+	this.httpRequests++;
 }
 
 DataStore.prototype.finishConstruction=function(){

@@ -46,6 +46,15 @@ GraphOperator.prototype.createGraph=function(graph){
 	this.dataStore.receiveMessage(message);
 }
 
+GraphOperator.prototype.receiveMessage=function(message){
+
+	if(message.getTag()==RAY_MESSAGE_TAG_GET_KMER_LENGTH){
+		var message=new Message(RAY_MESSAGE_TAG_GET_KMER_LENGTH_REPLY,this,message.getSource(),
+			this.kmerLength);
+		message.getSource().receiveMessage(message);
+	}
+}
+
 GraphOperator.prototype.receiveFirstKmer=function(firstKmer){
 	this.productionQueue.push(firstKmer);
 }

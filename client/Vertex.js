@@ -225,7 +225,7 @@ Vertex.prototype.isInside=function(x,y){
 
 Vertex.prototype.handleMouseDown=function(x,y){
 
-	//console.log("handleMouseDown "+x+","+y)
+	//console.log(this.getSequence()+" handleMouseDown "+x+","+y)
 
 	if(!this.colored)
 		return false;

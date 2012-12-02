@@ -48,7 +48,9 @@ function Screen(gameFrequency,renderingFrequency){
 	this.humanInterface=new HumanInterface(this);
 
 	this.graphOperator=new GraphOperator();
-	this.kmerLength=this.graphOperator.getKmerLength();
+
+	var message=new Message(RAY_MESSAGE_TAG_GET_KMER_LENGTH,this,this.graphOperator,null);
+	this.graphOperator.receiveMessage(message);
 
 	this.gameFrequency=gameFrequency;
 	this.renderingFrequency=renderingFrequency;
@@ -109,6 +111,13 @@ function Screen(gameFrequency,renderingFrequency){
 	//this.createButtons();
 
 	this.start();
+}
+
+Screen.prototype.receiveMessage=function(message){
+	if(message.getTag()==RAY_MESSAGE_TAG_GET_KMER_LENGTH_REPLY){
+		var graphOperator=message.getSource();
+		this.kmerLength=graphOperator.getKmerLength();
+	}
 }
 
 Screen.prototype.getOriginX=function(){
@@ -488,7 +497,7 @@ Screen.prototype.drawControlPanel=function(){
 
 	if(this.selectedVertex!=null){
 		var sequence=this.selectedVertex.getSequence();
-		var toPrint=sequence.substr(0,this.kmerLength-1)+"["+sequence[sequence.length-1]+"]";
+		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
 		this.context.fillText("Ball: "+toPrint, 32, 32);
 	}
 
