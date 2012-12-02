@@ -53,7 +53,7 @@ DataStore.prototype.pullData=function(){
 		}
 	}
 
-	xmlHttp.open("GET","test.json",true);
+	xmlHttp.open("GET","zone0.json",true);
 	xmlHttp.send(null);
 }
 
