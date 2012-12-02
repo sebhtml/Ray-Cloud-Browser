@@ -1,13 +1,16 @@
+Starting with most important
+
+1. Change sample (graph file)
+2. Change current sequence file
+3. select where to start (position)
+   see server/README
+
+- select part of graph to obtain DNA sequence
+
 - delete off-screen objects
 - user can change the minimum coverage to display
 
 - move buttons
 - zoom buttons
 - show explicitely repeat k-mers (halo)
-
-- user-supplied sequence
-- user-supplied graph
-- Change current sequence file
-- Change current graph file
-
 

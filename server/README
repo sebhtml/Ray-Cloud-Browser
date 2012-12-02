@@ -16,3 +16,12 @@ CGI 1.1   The Common Gateway Interface (CGI) Version 1.1
 
 The messages are passed with the Hyper Text Transfer Protocol (method: GET).
 
+For the store:
+
+DataStore/
+	SampleList.txt
+	sample1-Graph.dat
+	sample1-Paths.fasta
+	joe-Graph.dat
+	joe-Paths.fasta
+
