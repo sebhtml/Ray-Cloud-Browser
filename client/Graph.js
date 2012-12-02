@@ -42,7 +42,7 @@ Graph.prototype.addVertex=function(sequence){
 	this.vertices.push(vertex1);
 	this.index[sequence]=vertex1;
 
-	if(this.index.length == 1){
+	if(this.vertices.length == 1){
 		this.layout.setPositionOfFirstObject(vertex1);
 	}
 
