@@ -27,6 +27,7 @@
  */
 function Screen(gameFrequency,renderingFrequency){
 	
+	this.debugMode=false;
 /*
  * Turn on the physics engine.
  */
@@ -501,7 +502,8 @@ Screen.prototype.drawControlPanel=function(){
 		this.context.fillText("Ball: "+toPrint, 32, 32);
 	}
 
-	return;
+	if(!this.debugMode)
+		return;
 
 	var offsetX=10;
 	var offsetY=90;
@@ -723,3 +725,6 @@ Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed
 	this.zoomValue=zoomValue;
 }
 
+Screen.prototype.toggleDebugMode=function(){
+	this.debugMode=!this.debugMode;
+}

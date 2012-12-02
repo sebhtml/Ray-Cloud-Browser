@@ -48,6 +48,7 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 
 	var pageUp=33;
 	var pageDown=34;
+	var d=68;
 
 	var zoomValue=this.screen.getZoomValue();
 	var shift=32/zoomValue;
@@ -59,7 +60,9 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 	var originX=this.screen.getOriginX();
 	var originY=this.screen.getOriginY();
 
-	if(key==leftKey){
+	if(key==d){
+		this.screen.toggleDebugMode();
+	}else if(key==leftKey){
 		originXSpeed-=shift;
 	}else if(key==rightKey){
 		originXSpeed+=shift;

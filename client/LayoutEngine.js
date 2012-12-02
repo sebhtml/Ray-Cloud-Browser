@@ -45,6 +45,6 @@ LayoutEngine.prototype.applyGoodLayout=function(vertex1,vertex2){
 
 LayoutEngine.prototype.setPositionOfFirstObject=function(vertex1){
 
-	vertex1.setX(100);
+	vertex1.setX(400);
 	vertex1.setY(400);
 }
