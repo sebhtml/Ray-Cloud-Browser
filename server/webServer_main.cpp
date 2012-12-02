@@ -25,7 +25,8 @@
 #include <set>
 using namespace std;
 
-#define MAXIMUM_VALUE_LENGTH 256
+#define CONFIG_MAXIMUM_VALUE_LENGTH 256
+#define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 256
 
 bool getValue(const char*query,const char*name,char*value,int maximumValueLength){
 	for(int i=0;i<(int)strlen(query);i++){
@@ -85,8 +86,8 @@ int main(int argc,char**argv){
 
 	const char*dataFile="Database.dat";
 
-	char tag[MAXIMUM_VALUE_LENGTH];
-	bool foundTag=getValue(queryString,"tag",tag,MAXIMUM_VALUE_LENGTH);
+	char tag[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundTag=getValue(queryString,"tag",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundTag){
 		//cout<<"Object not found!"<<endl;
@@ -96,7 +97,7 @@ int main(int argc,char**argv){
 
 	const char*startingPoint="AAAAAAATTTCTGCATGAAAACGGGTTTTCC";
 
-	char requestedObject[MAXIMUM_VALUE_LENGTH];
+	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
 
 	const char*key=NULL;
 
@@ -107,7 +108,7 @@ int main(int argc,char**argv){
 
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==0){
 		
-		bool foundObject=getValue(queryString,"content",requestedObject,MAXIMUM_VALUE_LENGTH);
+		bool foundObject=getValue(queryString,"content",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
 		
 		if(!foundObject)
 			return 0;
@@ -121,7 +122,7 @@ int main(int argc,char**argv){
 	GraphDatabase database;
 	database.openFile(dataFile);
 
-	int maximumToVisit=64;
+	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
 	vector<string> productionQueue;
 	set<string> visited;
 	int head=0;
