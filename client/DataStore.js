@@ -54,7 +54,7 @@ DataStore.prototype.pullData=function(){
 		}
 	}
 
-	xmlHttp.open("GET","zone25.json",true);
+	xmlHttp.open("GET","start.json",true);
 	xmlHttp.send(null);
 	this.httpRequests++;
 }
@@ -143,6 +143,41 @@ DataStore.prototype.processMessage=function(message){
 
 DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
+/*
+ * Send a request to the server.
+ * TODO: to some readahead.
+ */
+	if(!(kmerSequence in this.store)){
+ 		var xmlHttp=null;
+
+/*
+ * This won't work with older browser, things before IE7.
+ */
+		if(window.XMLHttpRequest){
+			xmlHttp=new XMLHttpRequest();
+		}
+
+		_this=this;
+		xmlHttp.onreadystatechange=function(){
+			if(xmlHttp.readyState==4){
+
+				var kmerData=JSON.parse(xmlHttp.responseText);
+				_this.store[kmerSequence]=kmerData[kmerSequence];
+				
+// do a fancy recursive call !
+
+				_this.getKmerInformation(kmerSequence,graphOperator);
+			}
+		}
+
+		var address="/cgi-bin/RayCloudBrowser.webServer.cgi?object="+kmerSequence;
+		xmlHttp.open("GET",address,true);
+		xmlHttp.send(null);
+		this.httpRequests++;
+
+		return;
+	}
+
 	var coverage=0;
 	var parents=new Array();
 	var children=new Array();
@@ -165,6 +200,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
 	var kmer=new Kmer(kmerSequence,coverage,parents,children);
 
-	graphOperator.receiveObject(kmer);
+	var message=new Message(RAY_MESSAGE_TAG_ADD_KMER,this,graphOperator,kmer);
+	graphOperator.receiveMessage(message);
 }
 

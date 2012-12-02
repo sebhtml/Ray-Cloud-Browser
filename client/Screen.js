@@ -501,6 +501,7 @@ Screen.prototype.drawControlPanel=function(){
 		this.context.fillText("Ball: "+toPrint, 32, 32);
 	}
 
+	return;
 
 	var offsetX=10;
 	var offsetY=90;

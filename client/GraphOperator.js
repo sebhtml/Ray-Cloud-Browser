@@ -36,6 +36,8 @@ function GraphOperator(screen){
 	this.objectsPerQuantum=8;
 
 	this.bufferForCommunicationOperations=512;
+
+	this.minimumCoverageAccepted=10;
 }
 
 GraphOperator.prototype.createGraph=function(graph){
@@ -55,6 +57,9 @@ GraphOperator.prototype.receiveMessage=function(message){
 		var message=new Message(RAY_MESSAGE_TAG_GET_KMER_LENGTH_REPLY,this,message.getSource(),
 			this.kmerLength);
 		message.getSource().receiveMessage(message);
+
+	}else if(message.getTag()==RAY_MESSAGE_TAG_ADD_KMER){
+		this.receiveObject(message.getContent());
 	}
 }
 
@@ -105,20 +110,25 @@ GraphOperator.prototype.pullObjects=function(){
 
 GraphOperator.prototype.receiveObject=function(kmerData){
 
-	var vertex=this.graph.addVertex(kmerData.getSequence());
+	if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
+		var vertex=this.graph.addVertex(kmerData.getSequence());
 
-	var kmerObject=kmerData.getSequence();
-	var parents=kmerData.getParents();
-	this.graph.addParents(kmerObject,parents);
-	var children=kmerData.getChildren();
-	this.graph.addChildren(kmerObject,children);
+		var kmerObject=kmerData.getSequence();
+		var parents=kmerData.getParents();
+		this.graph.addParents(kmerObject,parents);
+		var children=kmerData.getChildren();
+		this.graph.addChildren(kmerObject,children);
 
-	this.graph.addCoverage(kmerObject,kmerData.getCoverage());
+		this.graph.addCoverage(kmerObject,kmerData.getCoverage());
 
-	this.added[kmerObject]=true;
+		this.added[kmerObject]=true;
+	}
 
 	var addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 
+	if(kmerData.getCoverage()<this.minimumCoverageAccepted){
+		addVertexFriends=false;
+	}
 /*
  * Only add friends for stuff inside the screen...
  */

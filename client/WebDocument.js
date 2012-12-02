@@ -25,7 +25,7 @@ function WebDocument(){
 	var link=document.createElement("div");
 	var hrefLink=document.createElement("a");
 	hrefLink.href="https://github.com/sebhtml/Ray-Cloud-Browser";
-	var linkText=document.createTextNode("Ray Cloud Browser: interactively skim processed genomics data with energy (DEBUG BUILD)");
+	var linkText=document.createTextNode("Ray Cloud Browser: interactively skim processed genomics data with energy");
 	hrefLink.appendChild(linkText);
 	link.appendChild(hrefLink);
 
