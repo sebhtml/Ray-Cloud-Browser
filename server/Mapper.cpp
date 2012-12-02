@@ -50,7 +50,7 @@ void Mapper::enableReadOperations(){
 	m_read=true;
 }
 
-void*Mapper::mapFile(char*file){
+void*Mapper::mapFile(const char*file){
 
 	if(m_mapped)
 		return m_content;

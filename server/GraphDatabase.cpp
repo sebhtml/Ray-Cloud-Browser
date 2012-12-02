@@ -91,7 +91,7 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 /**
  * \see http://www.c.happycodings.com/Gnu-Linux/code6.html
  */
-void GraphDatabase::openFile(char*file){
+void GraphDatabase::openFile(const char*file){
 	
 	if(m_active)
 		return;

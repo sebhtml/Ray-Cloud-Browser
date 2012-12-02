@@ -47,7 +47,7 @@ class GraphDatabase{
 
 public:
 	GraphDatabase();
-	void openFile(char*file);
+	void openFile(const char*file);
 	void closeFile();
 	bool getObject(const char*key,VertexObject*object);
 	int getKmerLength();

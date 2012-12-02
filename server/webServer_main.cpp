@@ -17,18 +17,68 @@
 
 #include "GraphDatabase.h"
 
+#include <stdlib.h>
+#include <string.h>
 #include <iostream>
 using namespace std;
 
+bool getValue(const char*query,const char*name,char*value){
+	for(int i=0;i<(int)strlen(query);i++){
+		bool match=true;
+
+		//cout<<"Query+i: "<<query+i<<endl;
+		//cout<<"Name:    "<<name<<endl;
+
+		for(int j=0;j<(int)strlen(name);j++){
+			if(query[i+j]!=name[j]){
+				match=false;
+				break;
+			}
+		}
+
+		//cout<<"Match: "<<match<<endl;
+
+		if(match){
+			int startingPosition=i+strlen(name)+1;
+			int endingPosition=startingPosition;
+			while(endingPosition<(int)strlen(query)){
+				if(query[endingPosition]=='&')
+					break;
+				endingPosition++;
+			}
+			int count=endingPosition-i;
+
+			//cout<<"Value= "<<query+startingPosition<<endl;
+
+			memcpy(value,query+startingPosition,count);
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 int main(int argc,char**argv){
 
-	if(argc!=3){
-		cout<<"Usage: "<<argv[0]<<" kmers.dat key"<<endl;
+	char*queryString=getenv("QUERY_STRING");
+
+	cout<<("Content-type: text/html\n\n");
+
+	if(queryString==NULL){
 		return 0;
 	}
 
-	char*dataFile=argv[1];
-	const char*key=argv[2];
+	//cout<<"QUERY_STRING= "<<queryString<<endl;
+
+	const char*dataFile="Database.dat";
+	char key[300];
+	bool foundObject=getValue(queryString,"object",key);
+
+	if(!foundObject){
+		//cout<<"Object not found!"<<endl;
+		return 0;
+
+	}
 
 	GraphDatabase database;
 	database.openFile(dataFile);

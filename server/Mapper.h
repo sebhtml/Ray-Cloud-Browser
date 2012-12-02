@@ -40,14 +40,14 @@ class Mapper{
 #endif
 
 	bool m_mapped;
-	char*m_file;
+	const char*m_file;
 	void*m_content;
 
 public:
 	Mapper();
 	void enableReadOperations();
 	void enableWriteOperations();
-	void*mapFile(char*file);
+	void*mapFile(const char*file);
 	void unmapFile();
 };
 
