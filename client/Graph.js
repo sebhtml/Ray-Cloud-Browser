@@ -29,6 +29,7 @@ function Graph(width,height){
 
 	this.index=new Object();
 	this.objectsWithCoverage=new Object();
+	this.objectsWithoutCoverage=new Object();
 }
 
 Graph.prototype.addVertex=function(sequence){
@@ -45,7 +46,18 @@ Graph.prototype.addVertex=function(sequence){
 		this.layout.setPositionOfFirstObject(vertex1);
 	}
 
+	this.objectsWithoutCoverage[sequence]=true;
+
 	return vertex1;
+}
+
+Graph.prototype.getVertex=function(sequence){
+
+	if(sequence in this.index){
+		return this.index[sequence];
+	}
+
+	return null;
 }
 
 Graph.prototype.addCoverage=function(sequence,coverage){
@@ -64,6 +76,7 @@ Graph.prototype.addCoverage=function(sequence,coverage){
 	this.vertices.push(coverage);
 
 	this.objectsWithCoverage[sequence]=true;
+	delete this.objectsWithoutCoverage[sequence];
 }
 
 Graph.prototype.addParents=function(sequence,parents){
@@ -101,4 +114,6 @@ Graph.prototype.getVertices=function(){
 	return this.vertices;
 }
 
-
+Graph.prototype.getObjectsWithoutData=function(){
+	return this.objectsWithoutCoverage;
+}
