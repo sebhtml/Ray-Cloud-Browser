@@ -110,6 +110,8 @@ GraphOperator.prototype.pullObjects=function(){
 
 GraphOperator.prototype.receiveObject=function(kmerData){
 
+	var addVertexFriends=false;
+
 	if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
 		var vertex=this.graph.addVertex(kmerData.getSequence());
 
@@ -122,9 +124,9 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 		this.graph.addCoverage(kmerObject,kmerData.getCoverage());
 
 		this.added[kmerObject]=true;
+		addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 	}
 
-	var addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 
 	if(kmerData.getCoverage()<this.minimumCoverageAccepted){
 		addVertexFriends=false;
