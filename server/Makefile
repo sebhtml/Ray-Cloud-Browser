@@ -4,13 +4,18 @@
 CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe
 
-TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath
+TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
+	RayCloudBrowser.webServer
+
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $? -o $@
 
 all: $(TARGETS)
+
+RayCloudBrowser.webServer: webServer_main.o $(LIBRARY_OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.commandLineClient: commandLineClient_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@

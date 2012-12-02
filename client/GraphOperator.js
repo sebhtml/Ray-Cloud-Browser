@@ -24,8 +24,9 @@
  *
  * \author Sébastien Boisvert
  */
-function GraphOperator(){
+function GraphOperator(screen){
 
+	this.screen=screen;
 	this.dataStore=new DataStore();
 
 	this.resetProductionQueue();
@@ -33,6 +34,8 @@ function GraphOperator(){
 	this.depth=0;
 
 	this.objectsPerQuantum=8;
+
+	this.bufferForCommunicationOperations=512;
 }
 
 GraphOperator.prototype.createGraph=function(graph){
@@ -93,11 +96,18 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 	this.added[kmerObject]=true;
 
-	for(var i=0;i<parents.length;i++)
-		this.productionQueue.push(parents[i]);
+	var addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 
-	for(var i=0;i<children.length;i++)
-		this.productionQueue.push(children[i]);
+/*
+ * Only add friends for stuff inside the screen...
+ */
+	if(addVertexFriends){
+		for(var i=0;i<parents.length;i++)
+			this.productionQueue.push(parents[i]);
+
+		for(var i=0;i<children.length;i++)
+			this.productionQueue.push(children[i]);
+	}
 
 	this.depth++;
 

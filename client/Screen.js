@@ -47,7 +47,7 @@ function Screen(gameFrequency,renderingFrequency){
 
 	this.humanInterface=new HumanInterface(this);
 
-	this.graphOperator=new GraphOperator();
+	this.graphOperator=new GraphOperator(this);
 
 	var message=new Message(RAY_MESSAGE_TAG_GET_KMER_LENGTH,this,this.graphOperator,null);
 	this.graphOperator.receiveMessage(message);
