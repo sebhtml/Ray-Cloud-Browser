@@ -76,7 +76,7 @@ int main(int argc,char**argv){
 
 	const char*dataFile="Database.dat";
 	char key[300];
-	bool foundObject=getValue(queryString,"object",key);
+	bool foundObject=getValue(queryString,"content",key);
 
 	if(!foundObject){
 		//cout<<"Object not found!"<<endl;

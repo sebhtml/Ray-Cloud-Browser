@@ -1,11 +1,10 @@
 - starting point provided by server
-- add message type when talking to server
 - delete off-screen objects
+
 - move buttons
 - zoom buttons
 - show explicitely repeat k-mers (halo)
 
-- add a python script PushSequenceFile <DataStoreDirectory> <Contigs.fasta>
 - user-supplied sequence
 - user-supplied graph
 - Change current sequence file

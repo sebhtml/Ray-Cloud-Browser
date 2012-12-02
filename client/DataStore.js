@@ -179,7 +179,9 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 			}
 		}
 
-		var address="/cgi-bin/RayCloudBrowser.webServer.cgi?object="+kmerSequence;
+		var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
+		address+="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE";
+		address+="&content="+kmerSequence;
 		xmlHttp.open("GET",address,true);
 		xmlHttp.send(null);
 		this.httpRequests++;
