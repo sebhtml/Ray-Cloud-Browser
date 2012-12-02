@@ -157,12 +157,21 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 			xmlHttp=new XMLHttpRequest();
 		}
 
+/*
+ * Do something with the received data.
+ */
 		_this=this;
 		xmlHttp.onreadystatechange=function(){
 			if(xmlHttp.readyState==4){
 
 				var kmerData=JSON.parse(xmlHttp.responseText);
-				_this.store[kmerSequence]=kmerData[kmerSequence];
+
+				for(var kmerSequenceIterator in kmerData){
+					if(kmerSequenceIterator in _this.store)
+						continue;
+
+					_this.store[kmerSequenceIterator]=kmerData[kmerSequenceIterator];
+				}
 				
 // do a fancy recursive call !
 
@@ -204,3 +213,6 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 	graphOperator.receiveMessage(message);
 }
 
+DataStore.prototype.getHTTPRequests=function(){
+	return this.httpRequests;
+}

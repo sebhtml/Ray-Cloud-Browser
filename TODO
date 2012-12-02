@@ -1,6 +1,5 @@
 - starting point provided by server
 - add message type when talking to server
-- readahead in the server
 - delete off-screen objects
 - move buttons
 - zoom buttons

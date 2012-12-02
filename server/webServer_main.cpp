@@ -20,6 +20,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <vector>
+#include <string>
+#include <set>
 using namespace std;
 
 bool getValue(const char*query,const char*name,char*value){
@@ -68,6 +71,7 @@ int main(int argc,char**argv){
 		return 0;
 	}
 
+
 	//cout<<"QUERY_STRING= "<<queryString<<endl;
 
 	const char*dataFile="Database.dat";
@@ -83,18 +87,57 @@ int main(int argc,char**argv){
 	GraphDatabase database;
 	database.openFile(dataFile);
 
-	VertexObject vertex;
+	int maximumToVisit=64;
+	vector<string> productionQueue;
+	set<string> visited;
+	int head=0;
 
-	bool found = database.getObject(key,&vertex);
+	string first=key;
+
+	productionQueue.push_back(first);
 
 	cout<<"{"<<endl;
 
-	if(found){
-		cout<<"\""<<key<<"\": ";
+	bool printedFirst=false;
+
+	while(head<(int)productionQueue.size() && (int)visited.size()<maximumToVisit){
+	
+		string*stringObject=&(productionQueue[head]);
+
+		head++;
+		visited.insert(*stringObject);
+
+		const char*object=stringObject->c_str();
+
+		VertexObject vertex;
+		bool found = database.getObject(object,&vertex);
+
+		if(!found)
+			continue;
+
+		if(printedFirst){
+			cout<<","<<endl;
+		}
+
+		cout<<"\""<<object<<"\": ";
 		vertex.writeContentInJSON(&cout);
+
+		vector<string> friends;
+		vertex.getParents(&friends);
+		vertex.getChildren(&friends);
+
+		for(int i=0;i<(int)friends.size();i++){
+			string*friendObject=&(friends[i]);
+
+			if(visited.count(*friendObject)>0)
+				continue;
+
+			productionQueue.push_back(*friendObject);
+		}
+
+		printedFirst=true;
 	}
 
-	cout<<endl;
 	cout<<"}"<<endl;
 
 	database.closeFile();
