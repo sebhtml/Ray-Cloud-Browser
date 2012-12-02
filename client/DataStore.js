@@ -44,10 +44,12 @@ DataStore.prototype.pullData=function(){
 	xmlHttp.onreadystatechange=function(){
 		if(xmlHttp.readyState==4){
 			//alert(xmlHttp.responseText);
-			_this.store=JSON.parse(xmlHttp.responseText);
-			_this.finishConstruction();
+			var message=new Message(RAY_MESSAGE_TAG_FIRST_KMER_JSON,
+						_this,
+						_this,
+						xmlHttp.responseText);
+			_this.receiveMessage(message);
 			_this.processMessages();
-			_this.waiting=false;
 		}
 	}
 
@@ -103,15 +105,37 @@ DataStore.prototype.receiveMessage=function(message){
 
 DataStore.prototype.processMessages=function(){
 	var message=this.messageQueue.pop();
-	if(message==null)
-		return;
 
-	if(message.getTag()==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE){
+	while(message!=null){
+		this.processMessage(message);
+		message=this.messageQueue.pop();
+	}
+}
+
+DataStore.prototype.processMessage=function(message){
+	var tag=message.getTag();
+
+	//console.log("Message tag: "+tag);
+
+	if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE){
 	
+/* message ordering stuff */
+		if(this.waiting){
+			this.receiveMessage(message);
+			return;
+		}
+
 		var prefix=this.firstKmer;
 		graphOperator=message.getSource();
 
 		graphOperator.receiveFirstKmer(prefix);
+
+	}else if(tag==RAY_MESSAGE_TAG_FIRST_KMER_JSON){
+		var text=message.getContent();
+
+		this.store=JSON.parse(text);
+		this.finishConstruction();
+		this.waiting=false;
 	}
 }
 
