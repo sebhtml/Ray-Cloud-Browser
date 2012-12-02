@@ -20,6 +20,16 @@
  */
 function HumanInterface(screen){
 	this.screen=screen;
+
+	this.lastZoomIn=screen.getMilliseconds();
+	this.lastZoomOut=screen.getMilliseconds();
+	
+	this.zoomingChange=1.01;
+	this.staggeringValue=0.01;
+	this.maximumZoomChange=8;
+	this.zoomAccumulatorOut=this.zoomingChange;
+	this.zoomAccumulatorIn=this.zoomingChange;
+
 }
 
 /*
@@ -53,8 +63,6 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 	var zoomValue=this.screen.getZoomValue();
 	var shift=32/zoomValue;
 
-	var zoomingChange=1.01;
-
 	var originXSpeed=this.screen.getOriginXSpeed();
 	var originYSpeed=this.screen.getOriginYSpeed();
 	var originX=this.screen.getOriginX();
@@ -74,10 +82,24 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 /*
  * Re-center the origin too.
  */
+
+		var theTime=this.screen.getMilliseconds();
+
+		if(theTime-this.lastZoomIn<500){
+			this.zoomAccumulatorIn+=this.staggeringValue;
+		}else{
+			this.zoomAccumulatorIn=this.zoomingChange;
+		}
+
+		if(this.zoomAccumulatorIn>this.maximumZoomChange)
+			this.zoomAccumulatorIn=this.maximumZoomChange;
+
+		this.lastZoomIn=theTime;
+
 		//console.log("Old zoom value: "+zoomValue);
 		var oldWidth=this.screen.getWidth()/zoomValue;
 		var oldHeight=this.screen.getHeight()/zoomValue;
-		zoomValue*=zoomingChange;
+		zoomValue*=this.zoomAccumulatorIn;
 
 		//console.log("New zoom value: "+zoomValue);
 
@@ -97,10 +119,23 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
  * Re-center the origin too.
  */
 
+		var theTime=this.screen.getMilliseconds();
+
+		if(theTime-this.lastZoomOut<500){
+			this.zoomAccumulatorOut+=this.staggeringValue;
+		}else{
+			this.zoomAccumulatorOut=this.zoomingChange;
+		}
+
+		if(this.zoomAccumulatorOut>this.maximumZoomChange)
+			this.zoomAccumulatorOut=this.maximumZoomChange;
+
+		this.lastZoomOut=theTime;
+
 		//console.log("Old zoom value: "+zoomValue);
 		var oldWidth=this.screen.getWidth()/zoomValue;
 		var oldHeight=this.screen.getHeight()/zoomValue;
-		zoomValue/=zoomingChange;
+		zoomValue/=this.zoomAccumulatorOut;
 
 		//console.log("New zoom value: "+zoomValue);
 
