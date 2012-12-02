@@ -53,7 +53,7 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 	var zoomValue=this.screen.getZoomValue();
 	var shift=32/zoomValue;
 
-	var zoomingChange=2;
+	var zoomingChange=1.01;
 
 	var originXSpeed=this.screen.getOriginXSpeed();
 	var originYSpeed=this.screen.getOriginYSpeed();
@@ -74,20 +74,47 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 /*
  * Re-center the origin too.
  */
-		originX+=this.screen.getWidth()/zoomValue/zoomingChange/2;
-		originY+=this.screen.getHeight()/zoomValue/zoomingChange/2;
-
+		//console.log("Old zoom value: "+zoomValue);
+		var oldWidth=this.screen.getWidth()/zoomValue;
+		var oldHeight=this.screen.getHeight()/zoomValue;
 		zoomValue*=zoomingChange;
 
+		//console.log("New zoom value: "+zoomValue);
+
+		var newWidth=this.screen.getWidth()/zoomValue;
+		var newHeight=this.screen.getHeight()/zoomValue;
+
+		//console.log("Old width: "+oldWidth+" new width: "+newWidth);
+
+		var widthDifference=newWidth-oldWidth;
+		var heightDifference=newHeight-oldHeight;
+		//console.log("Width difference: "+widthDifference);
+
+		originX-=widthDifference/2;
+		originY-=heightDifference/2;
 	}else if(key==pageUp){
 /*
  * Re-center the origin too.
  */
-		originX-=this.screen.getWidth()/zoomValue/2;
-		originY-=this.screen.getHeight()/zoomValue/2;
 
+		//console.log("Old zoom value: "+zoomValue);
+		var oldWidth=this.screen.getWidth()/zoomValue;
+		var oldHeight=this.screen.getHeight()/zoomValue;
 		zoomValue/=zoomingChange;
 
+		//console.log("New zoom value: "+zoomValue);
+
+		var newWidth=this.screen.getWidth()/zoomValue;
+		var newHeight=this.screen.getHeight()/zoomValue;
+
+		//console.log("Old width: "+oldWidth+" new width: "+newWidth);
+
+		var widthDifference=newWidth-oldWidth;
+		var heightDifference=newHeight-oldHeight;
+		//console.log("Width difference: "+widthDifference);
+
+		originX-=widthDifference/2;
+		originY-=heightDifference/2;
 	}
 
 /*
