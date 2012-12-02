@@ -38,7 +38,12 @@ function GraphOperator(){
 GraphOperator.prototype.createGraph=function(graph){
 
 	this.graph=graph;
-	this.dataStore.getFirstKmer(this);
+	var message=new Message(RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE,
+				this,
+				this.dataStore,
+				null);
+
+	this.dataStore.receiveMessage(message);
 }
 
 GraphOperator.prototype.receiveFirstKmer=function(firstKmer){

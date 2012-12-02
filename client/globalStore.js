@@ -1,1 +1,0 @@
-globalStore.js-Cool

@@ -15,44 +15,37 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _constants_h
-#define _constants_h
+/**
+ * A first-in first-out queue.
+ *
+ * \author Sébastien Boisvert
+ */
+function MessageQueue(){
+	this.head=0;
+	this.objects=new Array();
+	this.minimumDirtySlotsForCollection=64;
+}
 
-#define INDEX_A 0
-#define INDEX_C 1
-#define INDEX_G 2
-#define INDEX_T 3
+MessageQueue.prototype.push=function(object){
+	this.objects.push(object);
+}
 
-#define SYMBOL_A 'A'
-#define SYMBOL_C 'C'
-#define SYMBOL_G 'G'
-#define SYMBOL_T 'T'
+MessageQueue.prototype.pop=function(){
+	if(this.head>=this.objects.length)
+		return null;
 
-#define MARKER_NO 0
-#define MARKER_YES 1
+	var object=this.objects[this.head++];
 
+/* nothing to garbage-collect */
+	if(this.head<this.minimumDirtySlotsForCollection)
+		return object;
 
-#if defined(__linux__)
-#define OS_POSIX
+/* garbage collect the old stuff */
+	var secondArray=new Array();
+	while(this.head<this.objects.length){
+		secondArray.push(this.objects[this.head++]);
+	}
+	this.objects=secondArray;
 
-#elif defined(__GNUC__)
-#define OS_POSIX
-
-#elif defined(__APPLE__) || defined(MACOSX)
-#define OS_POSIX
-
-#elif defined(__sparc__) || defined(__sun__)
-#define OS_POSIX
-
-#elif defined(__unix__)
-#define OS_POSIX
-
-#elif defined(__CYGWIN__)
-#define OS_POSIX
-
-#elif defined(__sgi)
-#define OS_POSIX
-#endif
-
-#endif
-
+	return object;
+}

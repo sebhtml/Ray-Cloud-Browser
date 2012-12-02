@@ -23,14 +23,39 @@
  */
 function DataStore(kmerLength){
 	
-/*
- * globalStore is a global variable.
- */
-	this.store=globalStore;
+	this.waiting=true;
 
-	this.VALUE_COVERAGE=0;
-	this.VALUE_PARENTS=1;
-	this.VALUE_CHILDREN=2;
+	this.pullData();
+
+	this.messageQueue=new MessageQueue();
+}
+
+DataStore.prototype.pullData=function(){
+	var xmlHttp;
+
+/*
+ * This won't work with older browser, things before IE7.
+ */
+	if(window.XMLHttpRequest){
+		xmlHttp=new XMLHttpRequest();
+	}
+
+	_this=this;
+	xmlHttp.onreadystatechange=function(){
+		if(xmlHttp.readyState==4){
+			//alert(xmlHttp.responseText);
+			_this.store=JSON.parse(xmlHttp.responseText);
+			_this.finishConstruction();
+			_this.processMessages();
+			_this.waiting=false;
+		}
+	}
+
+	xmlHttp.open("GET","test.json",true);
+	xmlHttp.send(null);
+}
+
+DataStore.prototype.finishConstruction=function(){
 
 	this.graphFiles=new Array();
 	this.sequenceFiles=new Array();
@@ -70,11 +95,24 @@ DataStore.prototype.getGraphFiles=function(){
 	return this.graphFiles;
 }
 
-DataStore.prototype.getFirstKmer=function(graphOperator){
+DataStore.prototype.receiveMessage=function(message){
 
-	var prefix=this.firstKmer;
+	this.messageQueue.push(message);
 
-	graphOperator.receiveFirstKmer(prefix);
+}
+
+DataStore.prototype.processMessages=function(){
+	var message=this.messageQueue.pop();
+	if(message==null)
+		return;
+
+	if(message.getTag()==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE){
+	
+		var prefix=this.firstKmer;
+		graphOperator=message.getSource();
+
+		graphOperator.receiveFirstKmer(prefix);
+	}
 }
 
 DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
