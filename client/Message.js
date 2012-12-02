@@ -21,6 +21,7 @@ var RAY_MESSAGE_TAG_FIRST_KMER_JSON=messageValue++;
 var RAY_MESSAGE_TAG_GET_KMER_LENGTH=messageValue++;
 var RAY_MESSAGE_TAG_GET_KMER_LENGTH_REPLY=messageValue++;
 var RAY_MESSAGE_TAG_ADD_KMER=messageValue++;
+var RAY_MESSAGE_TAG_GET_KMER_FROM_STORE=messageValue++;
 
 /**
  * A message.

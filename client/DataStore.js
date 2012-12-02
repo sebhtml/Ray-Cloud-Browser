@@ -19,10 +19,13 @@
  * The data store is the backend for data
  * retrieval.
  *
+ * This is the only class allowed to send HTTP GET requests.
+ *
  * \author Sébastien Boisvert
  */
 function DataStore(kmerLength){
-	
+	this.store=new Object();
+
 	this.waiting=true;
 	this.httpRequests=0;
 
@@ -53,8 +56,10 @@ DataStore.prototype.pullData=function(){
 			_this.processMessages();
 		}
 	}
+	var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
+	address+="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE";
+	xmlHttp.open("GET",address,true);
 
-	xmlHttp.open("GET","start.json",true);
 	xmlHttp.send(null);
 	this.httpRequests++;
 }
@@ -135,7 +140,8 @@ DataStore.prototype.processMessage=function(message){
 	}else if(tag==RAY_MESSAGE_TAG_FIRST_KMER_JSON){
 		var text=message.getContent();
 
-		this.store=JSON.parse(text);
+		this.addDataInStore(text);
+
 		this.finishConstruction();
 		this.waiting=false;
 	}
@@ -164,14 +170,8 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		xmlHttp.onreadystatechange=function(){
 			if(xmlHttp.readyState==4){
 
-				var kmerData=JSON.parse(xmlHttp.responseText);
+				_this.addDataInStore(xmlHttp.responseText);
 
-				for(var kmerSequenceIterator in kmerData){
-					if(kmerSequenceIterator in _this.store)
-						continue;
-
-					_this.store[kmerSequenceIterator]=kmerData[kmerSequenceIterator];
-				}
 				
 // do a fancy recursive call !
 
@@ -180,7 +180,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		}
 
 		var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
-		address+="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE";
+		address+="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE";
 		address+="&content="+kmerSequence;
 		xmlHttp.open("GET",address,true);
 		xmlHttp.send(null);
@@ -217,4 +217,17 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
 DataStore.prototype.getHTTPRequests=function(){
 	return this.httpRequests;
+}
+
+DataStore.prototype.addDataInStore=function(text){
+
+	var kmerData=JSON.parse(text);
+
+	for(var kmerSequenceIterator in kmerData){
+		if(kmerSequenceIterator in this.store)
+			continue;
+
+		this.store[kmerSequenceIterator]=kmerData[kmerSequenceIterator];
+	}
+
 }

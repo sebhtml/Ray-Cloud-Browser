@@ -25,7 +25,9 @@
 #include <set>
 using namespace std;
 
-bool getValue(const char*query,const char*name,char*value){
+#define MAXIMUM_VALUE_LENGTH 256
+
+bool getValue(const char*query,const char*name,char*value,int maximumValueLength){
 	for(int i=0;i<(int)strlen(query);i++){
 		bool match=true;
 
@@ -49,11 +51,19 @@ bool getValue(const char*query,const char*name,char*value){
 					break;
 				endingPosition++;
 			}
-			int count=endingPosition-i;
+			int count=endingPosition-startingPosition;
+
+/* somebody is trying to break in */
+
+			if(count>maximumValueLength)
+				return false;
 
 			//cout<<"Value= "<<query+startingPosition<<endl;
+			//cout<<"Count= "<<count<<endl;
 
 			memcpy(value,query+startingPosition,count);
+			value[count]='\0';
+
 			return true;
 		}
 	}
@@ -71,18 +81,42 @@ int main(int argc,char**argv){
 		return 0;
 	}
 
-
 	//cout<<"QUERY_STRING= "<<queryString<<endl;
 
 	const char*dataFile="Database.dat";
-	char key[300];
-	bool foundObject=getValue(queryString,"content",key);
 
-	if(!foundObject){
+	char tag[MAXIMUM_VALUE_LENGTH];
+	bool foundTag=getValue(queryString,"tag",tag,MAXIMUM_VALUE_LENGTH);
+
+	if(!foundTag){
 		//cout<<"Object not found!"<<endl;
 		return 0;
 
 	}
+
+	const char*startingPoint="AAAAAAATTTCTGCATGAAAACGGGTTTTCC";
+
+	char requestedObject[MAXIMUM_VALUE_LENGTH];
+
+	const char*key=NULL;
+
+	//cout<<"Tag: "<<tag<<endl;
+
+	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==0){
+		key=startingPoint;
+
+	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==0){
+		
+		bool foundObject=getValue(queryString,"content",requestedObject,MAXIMUM_VALUE_LENGTH);
+		
+		if(!foundObject)
+			return 0;
+
+		key=requestedObject;
+	}
+
+	if(key==NULL)
+		return 0;
 
 	GraphDatabase database;
 	database.openFile(dataFile);
