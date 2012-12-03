@@ -26,7 +26,7 @@
 using namespace std;
 
 #define CONFIG_MAXIMUM_VALUE_LENGTH 256
-#define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 256
+#define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 4096
 
 bool getValue(const char*query,const char*name,char*value,int maximumValueLength){
 	for(int i=0;i<(int)strlen(query);i++){
@@ -123,6 +123,20 @@ int main(int argc,char**argv){
 	database.openFile(dataFile);
 
 	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
+
+	char depth[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundDepth=getValue(queryString,"depth",depth,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+/*
+ * Use the requested depth.
+ */
+	if(foundDepth){
+		int theDepth=atoi(depth);
+
+		if(theDepth<=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS)
+			maximumToVisit=theDepth;
+	}
+
 	vector<string> productionQueue;
 	set<string> visited;
 	int head=0;
