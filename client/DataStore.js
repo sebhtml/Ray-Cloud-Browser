@@ -26,7 +26,10 @@
 function DataStore(kmerLength){
 	this.store=new Object();
 
+	this.defaultDepthFirst=32;
 	this.defaultDepth=512;
+	this.maximumParallelQueries=8;
+	this.activeQueries=0;
 	this.waiting=true;
 	this.httpRequests=0;
 
@@ -61,7 +64,7 @@ DataStore.prototype.pullData=function(){
 	}
 	var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
 	address+="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE";
-	address+="&depth="+this.defaultDepth;
+	address+="&depth="+this.defaultDepthFirst;
 	xmlHttp.open("GET",address,true);
 
 	xmlHttp.send(null);
@@ -163,7 +166,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 /*
  * We don't answer queries when we are waiting.
  */
-		if(this.waiting){
+		if(this.activeQueries==this.maximumParallelQueries){
 			return;
 		}
 
@@ -189,7 +192,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 // do a fancy recursive call !
 
 				_this.getKmerInformation(kmerSequence,graphOperator);
-				_this.waiting=false;
+				_this.activeQueries--;
 			}
 		}
 
@@ -200,7 +203,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		xmlHttp.open("GET",address,true);
 		xmlHttp.send(null);
 		this.httpRequests++;
-		this.waiting=true;
+		this.activeQueries++;
 
 		return;
 	}
