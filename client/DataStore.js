@@ -47,6 +47,7 @@ DataStore.prototype.pullData=function(){
 	_this=this;
 	xmlHttp.onreadystatechange=function(){
 		if(xmlHttp.readyState==4){
+
 			//alert(xmlHttp.responseText);
 			var message=new Message(RAY_MESSAGE_TAG_FIRST_KMER_JSON,
 						_this,
@@ -54,6 +55,7 @@ DataStore.prototype.pullData=function(){
 						xmlHttp.responseText);
 			_this.receiveMessage(message);
 			_this.processMessages();
+			_this.waiting=false;
 		}
 	}
 	var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
@@ -62,6 +64,7 @@ DataStore.prototype.pullData=function(){
 
 	xmlHttp.send(null);
 	this.httpRequests++;
+	this.waiting=true;
 }
 
 DataStore.prototype.finishConstruction=function(){
@@ -154,6 +157,14 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
  * TODO: to some readahead.
  */
 	if(!(kmerSequence in this.store)){
+
+/*
+ * We don't answer queries when we are waiting.
+ */
+		if(this.waiting){
+			return;
+		}
+
  		var xmlHttp=null;
 
 /*
@@ -176,6 +187,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 // do a fancy recursive call !
 
 				_this.getKmerInformation(kmerSequence,graphOperator);
+				_this.waiting=false;
 			}
 		}
 
@@ -185,6 +197,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		xmlHttp.open("GET",address,true);
 		xmlHttp.send(null);
 		this.httpRequests++;
+		this.waiting=true;
 
 		return;
 	}
