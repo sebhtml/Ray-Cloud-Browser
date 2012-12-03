@@ -517,10 +517,7 @@ Screen.prototype.drawControlPanel=function(){
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	var printableZoom=this.zoomValue;
-	if(this.zoomValue<1){
-		printableZoom="1/"+(1/this.zoomValue);
-	}
+	var printableZoom=this.roundNumber(this.zoomValue,2);
 
 	this.context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
 		this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
