@@ -108,7 +108,7 @@ int main(int argc,char**argv){
 
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==0){
 		
-		bool foundObject=getValue(queryString,"content",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
+		bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
 		
 		if(!foundObject)
 			return 0;
