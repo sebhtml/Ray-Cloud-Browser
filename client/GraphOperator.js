@@ -112,21 +112,28 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 	var addVertexFriends=false;
 
+	var kmerObject=kmerData.getSequence();
+	var parents=kmerData.getParents();
+	var children=kmerData.getChildren();
+
+	var vertex=this.graph.getVertex(kmerData.getSequence());
+
 	if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
-		var vertex=this.graph.addVertex(kmerData.getSequence());
+		vertex=this.graph.addVertex(kmerData.getSequence());
 
-		var kmerObject=kmerData.getSequence();
-		var parents=kmerData.getParents();
+
 		this.graph.addParents(kmerObject,parents);
-		var children=kmerData.getChildren();
 		this.graph.addChildren(kmerObject,children);
-
-		this.graph.addCoverage(kmerObject,kmerData.getCoverage());
 
 		this.added[kmerObject]=true;
 		addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 	}
 
+	if(vertex!=null){
+
+		this.graph.addCoverage(kmerObject,kmerData.getCoverage());
+
+	}
 
 	if(kmerData.getCoverage()<this.minimumCoverageAccepted){
 		addVertexFriends=false;
@@ -135,6 +142,7 @@ GraphOperator.prototype.receiveObject=function(kmerData){
  * Only add friends for stuff inside the screen...
  */
 	if(addVertexFriends){
+
 		for(var i=0;i<parents.length;i++)
 			this.productionQueue.push(parents[i]);
 
