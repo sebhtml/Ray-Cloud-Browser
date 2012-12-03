@@ -26,7 +26,8 @@
  */
 function Renderer(screen){
 
-	this.zoomForLevelOfDetails=8;
+	this.zoomForLevelOfDetails=0.12;
+	this.zoomForLevelOfDetailsForCoverage=0.5
 	this.lineWidth=2;
 
 	this.screen=screen;
@@ -42,9 +43,8 @@ function Renderer(screen){
 Renderer.prototype.drawVertices=function(vertices){
 
 	var zoomValue=this.screen.getZoomValue();
-	var inverseZoom=1/zoomValue;
 
-	if(inverseZoom>=this.zoomForLevelOfDetails)
+	if(zoomValue<=this.zoomForLevelOfDetails)
 		return;
 
 	for(i in vertices){
@@ -64,11 +64,10 @@ Renderer.prototype.drawArcs=function(vertices){
 	context.lineWidth=this.lineWidth;
 
 	var zoomValue=this.screen.getZoomValue();
-	var inverseZoom=1/zoomValue;
 	
 	var fullDetails=true;
 
-	if(inverseZoom>=this.zoomForLevelOfDetails)
+	if(zoomValue<=this.zoomForLevelOfDetails)
 		fullDetails=false;
 
 	// draw arcs
@@ -165,7 +164,7 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 
 Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
 
-	if(zoomValue<1 && !vertex.isColored())
+	if(zoomValue<=this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
 		return;
 
 	var radius=vertex.getRadius();
