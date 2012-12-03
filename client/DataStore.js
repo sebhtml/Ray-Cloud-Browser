@@ -191,9 +191,11 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 			}
 		}
 
+		var depth=512;
 		var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
 		address+="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE";
 		address+="&content="+kmerSequence;
+		address+="&depth="+depth;
 		xmlHttp.open("GET",address,true);
 		xmlHttp.send(null);
 		this.httpRequests++;
