@@ -19,6 +19,12 @@
  * The controls for the human using the application.
  */
 function HumanInterface(screen){
+
+	this.sampleSelector=new Selector("Select a sample",
+		["Escherichia coli K-12 MG1655 (SRA001125)",
+		"Project Neutrinos (Confidential)"],
+		screen.getWidth()-305,5,300,400,false);
+
 	this.screen=screen;
 
 	this.lastZoomIn=screen.getMilliseconds();
@@ -384,4 +390,24 @@ HumanInterface.prototype.processButtons=function(){
 }
 */
 
+HumanInterface.prototype.draw=function(){
+	this.sampleSelector.draw(this.screen.getContext());
+}
 
+HumanInterface.prototype.handleMouseDown=function(x,y){
+	if(this.sampleSelector.handleMouseDown(x,y))
+		return true;
+	return false;
+}
+
+HumanInterface.prototype.handleMouseUp=function(x,y){
+	if(this.sampleSelector.handleMouseUp(x,y))
+		return true;
+	return false;
+}
+
+HumanInterface.prototype.handleMouseMove=function(x,y){
+	if(this.sampleSelector.handleMouseMove(x,y))
+		return true;
+	return false;
+}

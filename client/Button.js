@@ -25,6 +25,9 @@
  * \author Sébastien Boisvert
  */
 function Button(x,y,width,height,name,defaultState){
+	this.color="rgb(220,220,220)";
+	this.activeColor="rgb(200,250,200)";
+
 	this.x=x;
 	this.y=y;
 	this.name=name;
@@ -33,14 +36,15 @@ function Button(x,y,width,height,name,defaultState){
 
 	this.state=defaultState;
 
-	this.x1=x-width/2;
-	this.y1=y-height/2;
-	this.x2=x+width/2;
-	this.y2=y-height/2;
-	this.x3=x+width/2;
-	this.y3=y+height/2;
-	this.x4=x-width/2;
-	this.y4=y+height/2;
+	this.computeVertices();
+}
+
+Button.prototype.setBackgroundColor=function(color){
+	this.color=color;
+}
+
+Button.prototype.setActiveColor=function(color){
+	this.activeColor=color;
 }
 
 Button.prototype.handleMouseDown=function(x,y){
@@ -62,7 +66,7 @@ Button.prototype.draw=function(context,blitter){
 
 	var key=this.name+"-"+this.width+"-"+this.height+"-"+this.state;
 
-	if(blitter.hasBlit(key)){
+	if(blitter!=null && blitter.hasBlit(key)){
 		var blit=blitter.getBlit(key);
 
 		var width=blit.getWidth();
@@ -76,20 +80,27 @@ Button.prototype.draw=function(context,blitter){
 		return;
 	}
 
-	var blit=blitter.allocateBlit(key,4+this.width,4+this.height);
+	var x=this.x;
+	var y=this.y;
 
-	var context2=blit.getCanvas().getContext("2d");
+	var context2=context;
 
-	var cacheWidth=blit.getWidth();
-	var cacheHeight=blit.getHeight();
-	var x=blit.getX()+cacheWidth/2;
-	var y=blit.getY()+cacheHeight/2;
+	if(blitter!=null){
+		var blit=blitter.allocateBlit(key,4+this.width,4+this.height);
 
-	context2.fillStyle = "rgb(220,220,220)";
+		context2=blit.getCanvas().getContext("2d");
+
+		var cacheWidth=blit.getWidth();
+		var cacheHeight=blit.getHeight();
+		var x=blit.getX()+cacheWidth/2;
+		var y=blit.getY()+cacheHeight/2;
+	}
+
+	context2.fillStyle = this.color;
 	context2.strokeStyle = "rgb(0,0,0)";
 
 	if(this.state){
-		context2.fillStyle = "rgb(200,250,200)";
+		context2.fillStyle = this.activeColor;
 	}
 
 	var width=this.width;
@@ -118,7 +129,8 @@ Button.prototype.draw=function(context,blitter){
 	context2.font         = 'bold 12px sans-serif';
 	context2.fillText(this.name, x-(this.width/2)*0.7, y+6);
 
-	this.draw(context,blitter);
+	if(blitter!=null)
+		this.draw(context,blitter);
 }
 
 Button.prototype.resetState=function(){
@@ -127,4 +139,42 @@ Button.prototype.resetState=function(){
 
 Button.prototype.activateState=function(){
 	this.state=true;
+}
+
+Button.prototype.setPosition=function(x,y){
+	this.x=x+this.width/2;
+	this.y=y+this.height/2;
+}
+
+Button.prototype.getWidth=function(){
+	return this.width;
+}
+
+Button.prototype.getHeight=function(){
+	return this.height;
+}
+
+Button.prototype.move=function(x,y){
+	this.x+=x;
+	this.y+=y;
+
+	this.computeVertices();
+}
+
+Button.prototype.computeVertices=function(){
+
+	var x=this.x;
+	var y=this.y;
+	var width=this.width;
+	var height=this.height;
+
+	this.x1=x-width/2;
+	this.y1=y-height/2;
+	this.x2=x+width/2;
+	this.y2=y-height/2;
+	this.x3=x+width/2;
+	this.y3=y+height/2;
+	this.x4=x-width/2;
+	this.y4=y+height/2;
+
 }

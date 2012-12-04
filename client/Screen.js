@@ -46,8 +46,6 @@ function Screen(gameFrequency,renderingFrequency){
 	this.originMoveInProgress=false;
 	this.zoomValue=1;
 
-	this.humanInterface=new HumanInterface(this);
-
 	this.graphOperator=new GraphOperator(this);
 
 	var message=new Message(RAY_MESSAGE_TAG_GET_KMER_LENGTH,this,this.graphOperator,null);
@@ -76,6 +74,8 @@ function Screen(gameFrequency,renderingFrequency){
 	this.canvas.height=this.height;
 	this.renderingCanvas.width=this.width;
 	this.renderingCanvas.height=this.height;
+
+	this.humanInterface=new HumanInterface(this);
 
 	this.engine=new PhysicsEngine(this);
 
@@ -175,6 +175,8 @@ Screen.prototype.pull=function(){
 Screen.prototype.handleMouseMove=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 
+	this.humanInterface.handleMouseMove(position[0],position[1]);
+
 	this.selectedVertex=null;
 /*
  * Highlight the equipment.
@@ -224,6 +226,9 @@ Screen.prototype.handleMouseMove=function(eventObject){
 
 Screen.prototype.handleMouseDown=function(eventObject){
 	var position=this.getMousePosition(eventObject);
+
+	if(this.humanInterface.handleMouseDown(position[0],position[1]))
+		return;
 
 	for(i in this.buttons){
 		var candidate=this.buttons[i];
@@ -379,6 +384,9 @@ Screen.prototype.getMousePosition=function(e){
 Screen.prototype.handleMouseUp=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 
+	if(this.humanInterface.handleMouseUp(position[0],position[1]))
+		return;
+
 	for(i in this.graph.getVertices()){
 		if(this.graph.getVertices()[i].handleMouseUp(this.translateX(position[0]),this.translateY(position[1]))){
 			return;
@@ -479,12 +487,15 @@ Screen.prototype.getMilliseconds=function(){
 }
 
 Screen.prototype.drawControlPanel=function(){
+
+	var context=this.getContext();
+
 	for(i in this.buttons){
-		this.buttons[i].draw(this.context,this.blitter);
+		this.buttons[i].draw(context,this.blitter);
 	}
 
-	this.context.fillStyle    = '#000000';
-	this.context.font         = 'bold 12px sans-serif';
+	context.fillStyle    = '#000000';
+	context.font         = 'bold 12px sans-serif';
 /*
 	this.context.fillText("Repulsion: "+this.forceConstant, this.repulsionBase, 25);
 	this.context.fillText("Attraction: "+this.springConstant, this.attractionBase, 25);
@@ -499,7 +510,7 @@ Screen.prototype.drawControlPanel=function(){
 	if(this.selectedVertex!=null){
 		var sequence=this.selectedVertex.getSequence();
 		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
-		this.context.fillText("Ball: "+toPrint, 32, 32);
+		context.fillText("Ball: "+toPrint, 32, 32);
 	}
 
 	if(!this.debugMode)
@@ -509,23 +520,23 @@ Screen.prototype.drawControlPanel=function(){
 	var offsetY=115;
 	var stepping=15;
 
-	this.context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
+	context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	this.context.fillText("HTTP GET requests: "+this.graphOperator.getHTTPRequests(),
+	context.fillText("HTTP GET requests: "+this.graphOperator.getHTTPRequests(),
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
 	var printableZoom=this.roundNumber(this.zoomValue,2);
 
-	this.context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
+	context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
 		this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
 		"zoom: "+printableZoom,
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	this.context.fillText("Game (expected): frequency: "+this.gameFrequency+" Hz, frame length: "+this.gameFrameLength+" ms",
+	context.fillText("Game (expected): frequency: "+this.gameFrequency+" Hz, frame length: "+this.gameFrameLength+" ms",
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
@@ -534,11 +545,11 @@ Screen.prototype.drawControlPanel=function(){
 	if(this.actualGameFrameLength>this.gameFrameLength)
 		warning=" EXCEEDED!";
 
-	this.context.fillText("Game (actual): frequency: "+this.actualGameFrequency+" Hz, frame length: "+this.actualGameFrameLength+
+	context.fillText("Game (actual): frequency: "+this.actualGameFrequency+" Hz, frame length: "+this.actualGameFrameLength+
 		" ms"+warning,offsetX, this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	this.context.fillText("Rendering (expected): frequency: "+this.renderingFrequency+" Hz, frame length: "+this.renderingFrameLength+" ms",
+	context.fillText("Rendering (expected): frequency: "+this.renderingFrequency+" Hz, frame length: "+this.renderingFrameLength+" ms",
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
@@ -547,7 +558,7 @@ Screen.prototype.drawControlPanel=function(){
 	if(this.actualRenderingFrameLength>this.renderingFrameLength)
 		warning=" EXCEEDED!";
 
-	this.context.fillText("Rendering (actual): frequency: "+this.actualRenderingFrequency+" Hz, frame length: "+this.actualRenderingFrameLength+
+	context.fillText("Rendering (actual): frequency: "+this.actualRenderingFrequency+" Hz, frame length: "+this.actualRenderingFrameLength+
 		" ms"+warning,offsetX, this.canvas.height-offsetY);
 	offsetY-=stepping;
 }
@@ -581,7 +592,7 @@ Screen.prototype.draw=function(){
 	context.moveTo(0,0);
 	context.lineTo(this.canvas.width,0);
 	context.lineTo(this.canvas.width,this.canvas.height);
-	context.lineTo(0,this.canvas.height);
+	context.lineTo(1,this.canvas.height);
 	context.lineTo(0,0);
 	context.stroke();
 	context.closePath();
@@ -595,24 +606,33 @@ Screen.prototype.draw=function(){
 		this.renderer.drawVertices(this.getActiveObjects());
 	//}
 
+
+
+/*
+ * \see http://www.w3schools.com/tags/canvas_drawimage.asp
+ */
+
+
+
+	this.humanInterface.draw();
+
+	this.drawControlPanel();
+/*
+ * Everything below won't be processed because
+ * of double-buffering
+ */
+
+
 	this.context.clearRect(0,0,this.width,this.height);
 
 	this.context.drawImage(this.renderingCanvas,
 		0,0,this.width,this.height,
 		0,0,this.width,this.height);
 
-	this.drawControlPanel();
-
-/*
- * \see http://www.w3schools.com/tags/canvas_drawimage.asp
- */
 
 	var end=this.getMilliseconds();
-
 	this.drawingMilliseconds+=(end-start);
-
 	this.drawingFrames++;
-
 }
 
 Screen.prototype.getRandomX=function(){
@@ -727,5 +747,6 @@ Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed
 }
 
 Screen.prototype.toggleDebugMode=function(){
+	console.log("Debug mode.");
 	this.debugMode=!this.debugMode;
 }
