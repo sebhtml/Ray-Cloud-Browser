@@ -36,6 +36,59 @@ function HumanInterface(screen){
 	this.zoomAccumulatorOut=this.zoomingChange;
 	this.zoomAccumulatorIn=this.zoomingChange;
 
+	this.buttonWidth=25;
+	this.buttonColor="#6699FF";
+	this.buttonFontSize=22;
+
+	this.goUp=new Button(this.screen.getWidth()-this.buttonWidth*2,
+		this.screen.getHeight()-this.buttonWidth*3,this.buttonWidth,this.buttonWidth,"↑",false);
+	this.goUp.setBackgroundColor(this.buttonColor);
+	this.goUp.setActiveColor(this.buttonColor);
+	this.goUp.setFontSize(this.buttonFontSize);
+
+	this.goDown=new Button(this.screen.getWidth()-this.buttonWidth*2,
+		this.screen.getHeight()-this.buttonWidth*1,this.buttonWidth,this.buttonWidth,"↓",false);
+	this.goDown.setBackgroundColor(this.buttonColor);
+	this.goDown.setActiveColor(this.buttonColor);
+	this.goDown.setFontSize(this.buttonFontSize);
+
+	this.goLeft=new Button(this.screen.getWidth()-this.buttonWidth*3,
+		this.screen.getHeight()-this.buttonWidth*2,this.buttonWidth,this.buttonWidth,"←",false);
+	this.goLeft.setBackgroundColor(this.buttonColor);
+	this.goLeft.setActiveColor(this.buttonColor);
+	this.goLeft.setFontSize(this.buttonFontSize)
+
+	this.goRight=new Button(this.screen.getWidth()-this.buttonWidth*1,
+		this.screen.getHeight()-this.buttonWidth*2,this.buttonWidth,this.buttonWidth,"→",false);
+	this.goRight.setBackgroundColor(this.buttonColor);
+	this.goRight.setActiveColor(this.buttonColor);
+	this.goRight.setFontSize(this.buttonFontSize)
+
+	this.zoomOut=new Button(this.screen.getWidth()-this.buttonWidth*5,
+		this.screen.getHeight()-this.buttonWidth*1,this.buttonWidth,this.buttonWidth,"-",false);
+	this.zoomOut.setBackgroundColor(this.buttonColor);
+	this.zoomOut.setActiveColor(this.buttonColor);
+	this.zoomOut.setFontSize(this.buttonFontSize)
+
+	this.zoomIn=new Button(this.screen.getWidth()-this.buttonWidth*4,
+		this.screen.getHeight()-this.buttonWidth*1,this.buttonWidth,this.buttonWidth,"+",false);
+	this.zoomIn.setBackgroundColor(this.buttonColor);
+	this.zoomIn.setActiveColor(this.buttonColor);
+	this.zoomIn.setFontSize(this.buttonFontSize)
+
+	this.leftKey=37;
+	this.upKey=38;
+	this.rightKey=39;
+	this.downKey=40;
+
+	this.backspace=8;
+	this.enter=13;
+
+	this.pageUp=33;
+	this.pageDown=34;
+	this.d=68;
+
+
 }
 
 /*
@@ -54,18 +107,6 @@ function HumanInterface(screen){
 HumanInterface.prototype.processKeyboardEvent=function(e){
 	var key=e.which;
 
-	var leftKey=37;
-	var upKey=38;
-	var rightKey=39;
-	var downKey=40;
-
-	var backspace=8;
-	var enter=13;
-
-	var pageUp=33;
-	var pageDown=34;
-	var d=68;
-
 	var zoomValue=this.screen.getZoomValue();
 	var shift=32/zoomValue;
 
@@ -74,17 +115,17 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 	var originX=this.screen.getOriginX();
 	var originY=this.screen.getOriginY();
 
-	if(key==d){
+	if(key==this.d){
 		this.screen.toggleDebugMode();
-	}else if(key==leftKey){
+	}else if(key==this.leftKey){
 		originXSpeed-=shift;
-	}else if(key==rightKey){
+	}else if(key==this.rightKey){
 		originXSpeed+=shift;
-	}else if(key==downKey){
+	}else if(key==this.downKey){
 		originYSpeed+=shift;
-	}else if(key==upKey){
+	}else if(key==this.upKey){
 		originYSpeed-=shift;
-	}else if(key==pageDown){
+	}else if(key==this.pageDown){
 /*
  * Re-center the origin too.
  */
@@ -120,7 +161,7 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 
 		originX-=widthDifference/2;
 		originY-=heightDifference/2;
-	}else if(key==pageUp){
+	}else if(key==this.pageUp){
 /*
  * Re-center the origin too.
  */
@@ -391,12 +432,53 @@ HumanInterface.prototype.processButtons=function(){
 */
 
 HumanInterface.prototype.draw=function(){
-	this.sampleSelector.draw(this.screen.getContext());
+	//console.log("Draw UI");
+
+	var context=this.screen.getContext();
+	this.sampleSelector.draw(context);
+	this.goUp.draw(context,null);
+	this.goDown.draw(context,null);
+	this.goLeft.draw(context,null);
+	this.goRight.draw(context,null);
+	this.zoomOut.draw(context,null);
+	this.zoomIn.draw(context,null);
 }
 
 HumanInterface.prototype.handleMouseDown=function(x,y){
-	if(this.sampleSelector.handleMouseDown(x,y))
+	if(this.sampleSelector.handleMouseDown(x,y)){
 		return true;
+
+	}else if(this.goLeft.handleMouseDown(x,y)){
+		var aEvent=new Object();
+		aEvent.which=this.leftKey;
+		this.processKeyboardEvent(aEvent);
+
+	}else if(this.goRight.handleMouseDown(x,y)){
+		var aEvent=new Object();
+		aEvent.which=this.rightKey;
+		this.processKeyboardEvent(aEvent);
+
+	}else if(this.zoomOut.handleMouseDown(x,y)){
+		var aEvent=new Object();
+		aEvent.which=this.pageUp;
+		this.processKeyboardEvent(aEvent);
+
+	}else if(this.zoomIn.handleMouseDown(x,y)){
+		var aEvent=new Object();
+		aEvent.which=this.pageDown;
+		this.processKeyboardEvent(aEvent);
+
+	}else if(this.goDown.handleMouseDown(x,y)){
+		var aEvent=new Object();
+		aEvent.which=this.downKey;
+		this.processKeyboardEvent(aEvent);
+
+	}else if(this.goUp.handleMouseDown(x,y)){
+		var aEvent=new Object();
+		aEvent.which=this.upKey;
+		this.processKeyboardEvent(aEvent);
+	}
+
 	return false;
 }
 

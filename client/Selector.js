@@ -41,7 +41,6 @@ function Selector(title,choices,x,y,width,height,visible){
 
 	this.overlay=new Button(this.x+this.width/2,this.y+this.buttonWidth/2,
 		this.width,this.buttonWidth,"     "+title,false);
-
 	this.overlay.setBackgroundColor("#99CCCC");
 	this.overlay.setActiveColor("#99CCCC");
 }

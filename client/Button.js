@@ -35,8 +35,13 @@ function Button(x,y,width,height,name,defaultState){
 	this.height=height;
 
 	this.state=defaultState;
+	this.fontSize=12;
 
 	this.computeVertices();
+}
+
+Button.prototype.setFontSize=function(size){
+	this.fontSize=size;
 }
 
 Button.prototype.setBackgroundColor=function(color){
@@ -63,6 +68,8 @@ Button.prototype.getState=function(){
 }
 
 Button.prototype.draw=function(context,blitter){
+
+	//console.log("Drawing self="+this.name+" x "+this.x+" y "+this.y);
 
 	var key=this.name+"-"+this.width+"-"+this.height+"-"+this.state;
 
@@ -126,7 +133,7 @@ Button.prototype.draw=function(context,blitter){
 	context2.closePath();
 
 	context2.fillStyle    = '#000000';
-	context2.font         = 'bold 12px sans-serif';
+	context2.font         = 'bold '+this.fontSize+'px sans-serif';
 	context2.fillText(this.name, x-(this.width/2)*0.7, y+6);
 
 	if(blitter!=null)
