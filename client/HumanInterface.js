@@ -483,6 +483,7 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 }
 
 HumanInterface.prototype.handleMouseUp=function(x,y){
+
 	if(this.sampleSelector.handleMouseUp(x,y))
 		return true;
 	return false;

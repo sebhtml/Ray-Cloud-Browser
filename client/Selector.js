@@ -53,9 +53,9 @@ Selector.prototype.draw=function(context){
 
 	context.beginPath();
 	context.rect(this.x, this.y, this.width,height );
-	context.fillStyle = '66FF00';
+	context.fillStyle = '#CCFFCC';
 	context.fill();
-	context.lineWidth = 0;
+	context.lineWidth = 1;
 	context.strokeStyle = 'black';
 	context.stroke();
 
