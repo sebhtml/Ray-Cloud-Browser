@@ -18,7 +18,7 @@
 /**
  * This is a window that allows a selection.
  */
-function Selector(title,choices,x,y,width,height,visible,screen){
+function Inventory(title,choices,x,y,width,height,visible,screen){
 
 	this.selected=false;
 	this.screen=screen;
@@ -51,7 +51,7 @@ function Selector(title,choices,x,y,width,height,visible,screen){
 		6*this.buttonWidth,this.buttonWidth,"Display map position",false);
 }
 
-Selector.prototype.draw=function(context){
+Inventory.prototype.draw=function(context){
 
 	var height=this.height;
 	if(!this.visible)
@@ -73,7 +73,7 @@ Selector.prototype.draw=function(context){
 	}
 }
 
-Selector.prototype.handleMouseDown=function(x,y){
+Inventory.prototype.handleMouseDown=function(x,y){
 
 	this.mouseX=x;
 	this.mouseY=y;
@@ -92,7 +92,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 	return false;
 }
 
-Selector.prototype.handleMouseMove=function(x,y){
+Inventory.prototype.handleMouseMove=function(x,y){
 	if(this.selected){
 		var deltaX=x-this.mouseX;
 		var deltaY=y-this.mouseY;
@@ -108,7 +108,7 @@ Selector.prototype.handleMouseMove=function(x,y){
 	this.mouseY=y;
 }
 
-Selector.prototype.handleMouseUp=function(x,y){
+Inventory.prototype.handleMouseUp=function(x,y){
 	this.selected=false;
 }
 

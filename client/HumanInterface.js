@@ -20,7 +20,7 @@
  */
 function HumanInterface(screen){
 
-	this.sampleSelector=new Selector("Inventory",
+	this.sampleInventory=new Inventory("Inventory",
 		["Escherichia coli K-12 MG1655 (SRA001125)",
 		"Project Neutrinos (Confidential)"],
 		screen.getWidth()-305,5,300,400,false,screen);
@@ -435,7 +435,7 @@ HumanInterface.prototype.draw=function(){
 	//console.log("Draw UI");
 
 	var context=this.screen.getContext();
-	this.sampleSelector.draw(context);
+	this.sampleInventory.draw(context);
 	this.goUp.draw(context,null);
 	this.goDown.draw(context,null);
 	this.goLeft.draw(context,null);
@@ -445,7 +445,7 @@ HumanInterface.prototype.draw=function(){
 }
 
 HumanInterface.prototype.handleMouseDown=function(x,y){
-	if(this.sampleSelector.handleMouseDown(x,y)){
+	if(this.sampleInventory.handleMouseDown(x,y)){
 		return true;
 
 	}else if(this.goLeft.handleMouseDown(x,y)){
@@ -490,13 +490,13 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 
 HumanInterface.prototype.handleMouseUp=function(x,y){
 
-	if(this.sampleSelector.handleMouseUp(x,y))
+	if(this.sampleInventory.handleMouseUp(x,y))
 		return true;
 	return false;
 }
 
 HumanInterface.prototype.handleMouseMove=function(x,y){
-	if(this.sampleSelector.handleMouseMove(x,y))
+	if(this.sampleInventory.handleMouseMove(x,y))
 		return true;
 	return false;
 }
