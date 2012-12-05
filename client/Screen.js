@@ -42,9 +42,13 @@ function Screen(gameFrequency,renderingFrequency){
 	this.originXSpeed=0;
 	this.originYSpeed=0;
 	this.originDamping=0.90;
-	this.originMoveSlices=3;
+	this.originMoveSlices=1;
 	this.originMoveInProgress=false;
+
+	this.zoomDamping=0.90;
+	this.zoomSlices=1;
 	this.zoomValue=1;
+	this.zoomValueSpeed=0;
 
 	this.graphOperator=new GraphOperator(this);
 
@@ -453,6 +457,8 @@ Screen.prototype.iterate=function(){
 		this.lastMouseGameFrame=this.globalGameFrameNumber;
 	}
 
+	var epsilon=0.01;
+
 /*
  * To the crazy sliding thing.
  */
@@ -469,11 +475,12 @@ Screen.prototype.iterate=function(){
 /*
  * TODO: the epsilon case is buggy.
  */
-		var epsilon=0.01;
 		if(this.originXSpeed< epsilon && this.originYSpeed< epsilon){
 			//this.originMoveInProgress=false;
 		}
 	}
+
+	this.performZoomOperations();
 
 	var end=this.getMilliseconds();
 	this.gameMilliseconds+=(end-start);
@@ -484,6 +491,49 @@ Screen.prototype.iterate=function(){
 
 Screen.prototype.getMilliseconds=function(){
 	return new Date()*1;
+}
+
+Screen.prototype.performZoomOperations=function(){
+
+	var epsilon=0.0000001;
+
+	if(this.zoomValueSpeed!=0){
+
+		//console.log("Old zoom value: "+this.zoomValue);
+
+		var oldWidth=this.getWidth()/this.zoomValue;
+		var oldHeight=this.getHeight()/this.zoomValue;
+
+		//console.log("Speed: "+this.zoomValueSpeed);
+
+		this.zoomValue+=(this.zoomValueSpeed/this.zoomSlices);
+
+		var minimum=0.001;
+		if(this.zoomValue<minimum)
+			this.zoomValue=minimum;
+
+		//console.log("New zoom value: "+this.zoomValue);
+
+		var newWidth=this.getWidth()/this.zoomValue;
+		var newHeight=this.getHeight()/this.zoomValue;
+
+		//console.log("Old width: "+oldWidth+" new width: "+newWidth);
+
+		var widthDifference=newWidth-oldWidth;
+		var heightDifference=newHeight-oldHeight;
+		//console.log("Width difference: "+widthDifference);
+
+		this.originX-=widthDifference/2;
+		this.originY-=heightDifference/2;
+
+		this.zoomValueSpeed*=this.zoomDamping;
+
+		if(-epsilon <= this.zoomValueSpeed && this.zoomValueSpeed <= epsilon){
+			this.zoomValueSpeed=0;
+		}
+	}
+
+
 }
 
 Screen.prototype.drawControlPanel=function(){
@@ -528,7 +578,7 @@ Screen.prototype.drawControlPanel=function(){
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	var printableZoom=this.roundNumber(this.zoomValue,2);
+	var printableZoom=this.roundNumber(this.zoomValue,4);
 
 	context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
 		this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
@@ -734,16 +784,21 @@ Screen.prototype.getZoomValue=function(){
 	return this.zoomValue;
 }
 
+Screen.prototype.getZoomValueSpeed=function(){
+	return this.zoomValueSpeed;
+}
+
 Screen.prototype.processKeyboardEvent=function(e){
 	this.humanInterface.processKeyboardEvent(e);
 }
 
-Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed,zoomValue){
+Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed,zoomValue,zoomValueSpeed){
 	this.originX=originX;
 	this.originY=originY;
 	this.originXSpeed=originXSpeed;
 	this.originYSpeed=originYSpeed;
 	this.zoomValue=zoomValue;
+	this.zoomValueSpeed=zoomValueSpeed;
 }
 
 Screen.prototype.toggleDebugMode=function(){
