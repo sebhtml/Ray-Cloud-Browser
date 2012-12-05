@@ -705,10 +705,8 @@ Screen.prototype.getHeight=function(){
 	return this.canvas.height;
 }
 
-Screen.prototype.isOutside=function(vertex,buffer){
+Screen.prototype.isPointOutside=function(x,y,buffer){
 
-	var x=vertex.getX()-this.getOriginX();
-	var y=vertex.getY()-this.getOriginY();
 
 	var width=this.width/this.zoomValue;
 	var height=this.height/this.zoomValue;
@@ -729,6 +727,16 @@ Screen.prototype.isOutside=function(vertex,buffer){
 		return true;
 
 	return false;
+}
+
+
+
+Screen.prototype.isOutside=function(vertex,buffer){
+
+	var x=vertex.getX()-this.getOriginX();
+	var y=vertex.getY()-this.getOriginY();
+
+	return this.isPointOutside(x,y,buffer);
 }
 
 

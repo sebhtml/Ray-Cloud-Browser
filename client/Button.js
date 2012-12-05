@@ -62,9 +62,13 @@ Button.prototype.handleMouseDown=function(x,y){
 	//console.log("handleMouseClick");
 	this.state=!this.state;
 	
-	this.clickedTicks=8;
+	this.activateColor();
 
 	return true;
+}
+
+Button.prototype.activateColor=function(){
+	this.clickedTicks=8;
 }
 
 Button.prototype.getState=function(){

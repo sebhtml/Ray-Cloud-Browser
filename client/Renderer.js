@@ -121,10 +121,74 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
  */
 Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails){
 
+	//var headWasCorrected=false;
+
+/*
+ * Calculate boundaries.
+ *
+ * y = m*x + z
+ *
+ * m = (by-ay) / (bx-xa)
+ *
+ * z = y - m*x
+ */
+
+/*
+	var aIsOutside=this.screen.isPointOutside(ax,ay,10);
+	var bIsOutside=this.screen.isPointOutside(bx,by,10);
+	
+	if(aIsOutside || bIsOutside){
+
+		var m1=(by-ay);
+		if((bx-ax)!=0)
+			m1/=(bx-ax);
+
+		var z1=ay-m1*ax;
+		var m2=(bx-ax);
+
+		if((by-ay)!=0)
+			m2/=(by-ay);
+
+		if(aIsOutside){
+			if(ax<0){
+				ax=0;
+			}
+			if(ax>=this.screen.getWidth()){
+				ax=this.screen.getWidth()-1;
+				ax/=this.screen.getZoomValue();
+			}
+
+			ay=m1*ax+z1;
+		}
+
+		if(bIsOutside){
+			if(bx<0){
+				bx=0;
+			}
+			if(bx>=this.screen.getWidth()){
+				bx=this.screen.getWidth()-1;
+				bx/=this.screen.getZoomValue();
+			}
+
+			by=m1*bx+z1;
+
+
+			headWasCorrected=true;
+		}
+	}
+*/
+
 	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by);
+
+	//return;
 
 	if(!fullDetails)
 		return;
+
+/*
+	if(headWasCorrected)
+		return;
+*/
 
 	var arrowPartLength=5;
 	var ab_x=bx-ax;

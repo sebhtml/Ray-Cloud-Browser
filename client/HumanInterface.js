@@ -115,13 +115,19 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 		this.screen.toggleDebugMode();
 	}else if(key==this.leftKey){
 		originXSpeed-=shift;
+		this.goLeft.activateColor();
 	}else if(key==this.rightKey){
 		originXSpeed+=shift;
+		this.goRight.activateColor();
 	}else if(key==this.downKey){
 		originYSpeed+=shift;
+		this.goDown.activateColor();
 	}else if(key==this.upKey){
 		originYSpeed-=shift;
+		this.goUp.activateColor();
 	}else if(key==this.pageDown){
+
+		this.zoomIn.activateColor();
 
 		var newZoom=zoomValue*this.zoomingChange;
 
@@ -130,6 +136,8 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 		//console.log("Old "+zoomValue+" New "+newZoom+" Delta "+zoomValueSpeed);
 
 	}else if(key==this.pageUp){
+
+		this.zoomOut.activateColor();
 
 		var newZoom=zoomValue/this.zoomingChange;
 
