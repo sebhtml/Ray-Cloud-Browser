@@ -1,4 +1,5 @@
 - zooming events more smooth
+- display edge if one end is on screen
 
 1. Change sample (graph file)
 2. Change current sequence file
