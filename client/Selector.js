@@ -18,7 +18,8 @@
 /**
  * This is a window that allows a selection.
  */
-function Selector(title,choices,x,y,width,height,visible){
+function Selector(title,choices,x,y,width,height,visible,screen){
+
 	this.selected=false;
 	this.screen=screen;
 	this.mouseX=0;
@@ -34,7 +35,7 @@ function Selector(title,choices,x,y,width,height,visible){
 	this.y=y;
 	this.visible=visible;
 
-	this.buttonWidth=40;
+	this.buttonWidth=25;
 
 	this.closeButton=new Button(this.x+this.buttonWidth/2,this.y+this.buttonWidth/2,
 		this.buttonWidth,this.buttonWidth,"",false);
@@ -43,6 +44,11 @@ function Selector(title,choices,x,y,width,height,visible){
 		this.width,this.buttonWidth,"     "+title,false);
 	this.overlay.setBackgroundColor("#99CCCC");
 	this.overlay.setActiveColor("#99CCCC");
+
+
+	this.debugButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
+		this.y+2.0*this.buttonWidth,
+		6*this.buttonWidth,this.buttonWidth,"Display map position",false);
 }
 
 Selector.prototype.draw=function(context){
@@ -53,7 +59,7 @@ Selector.prototype.draw=function(context){
 
 	context.beginPath();
 	context.rect(this.x, this.y, this.width,height );
-	context.fillStyle = '#CCFFCC';
+	context.fillStyle = '#FFFF99';
 	context.fill();
 	context.lineWidth = 1;
 	context.strokeStyle = 'black';
@@ -61,6 +67,10 @@ Selector.prototype.draw=function(context){
 
 	this.overlay.draw(context,null);
 	this.closeButton.draw(context,null);
+	
+	if(this.visible){
+		this.debugButton.draw(context,null);
+	}
 }
 
 Selector.prototype.handleMouseDown=function(x,y){
@@ -74,6 +84,9 @@ Selector.prototype.handleMouseDown=function(x,y){
 	}else if(this.overlay.handleMouseDown(x,y)){
 		this.selected=true;
 		return true;
+	}else if(this.debugButton.handleMouseDown(x,y)){
+		this.screen.toggleDebugMode();
+		return true;
 	}
 
 	return false;
@@ -86,6 +99,7 @@ Selector.prototype.handleMouseMove=function(x,y){
 
 		this.closeButton.move(deltaX,deltaY);
 		this.overlay.move(deltaX,deltaY);
+		this.debugButton.move(deltaX,deltaY);
 		this.x+=deltaX;
 		this.y+=deltaY;
 	}

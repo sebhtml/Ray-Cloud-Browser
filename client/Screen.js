@@ -510,7 +510,7 @@ Screen.prototype.drawControlPanel=function(){
 	if(this.selectedVertex!=null){
 		var sequence=this.selectedVertex.getSequence();
 		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
-		context.fillText("Ball: "+toPrint, 32, 32);
+		context.fillText("Item: "+toPrint, 32, 32);
 	}
 
 	if(!this.debugMode)

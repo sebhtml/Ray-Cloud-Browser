@@ -20,10 +20,10 @@
  */
 function HumanInterface(screen){
 
-	this.sampleSelector=new Selector("Select a sample",
+	this.sampleSelector=new Selector("Inventory",
 		["Escherichia coli K-12 MG1655 (SRA001125)",
 		"Project Neutrinos (Confidential)"],
-		screen.getWidth()-305,5,300,400,false);
+		screen.getWidth()-305,5,300,400,false,screen);
 
 	this.screen=screen;
 
