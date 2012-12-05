@@ -37,12 +37,14 @@ function WebDocument(){
 	body.appendChild(center);
 
 	var footer=document.createElement("div");
-	var controls=document.createTextNode("Controls: move with mouse or arrows, zoom with page down & page up. ");
-	var linkTextBottom=document.createTextNode("This project is Copyright (C) 2012 Sébastien Boisvert and distributed under the GNU General Public License, version 3.");
-	footer.appendChild(controls);
+	var footerSmall=document.createElement("small");
+	var controls=document.createTextNode("controls: move: mouse or arrows, zoom: page down & page up ");
+	var linkTextBottom=document.createTextNode("Copyright (C) 2012 Sébastien Boisvert licensed under the GNU General Public License, version 3");
+	footerSmall.appendChild(controls);
 	//footer.appendChild(document.createElement("br"));
-	footer.appendChild(linkTextBottom);
+	footerSmall.appendChild(linkTextBottom);
 	body.appendChild(footer);
+	footer.appendChild(footerSmall);
 }
 
 WebDocument.prototype.getCanvas=function(){

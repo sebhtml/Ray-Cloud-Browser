@@ -1,4 +1,3 @@
-- display edge if one end is on screen
 
 1. Change sample (graph file)
 2. Change current sequence file
@@ -9,3 +8,4 @@
 
 - delete off-screen objects
 - user can change the minimum coverage to display
+- display edge if one end is on screen
