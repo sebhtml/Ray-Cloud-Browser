@@ -452,31 +452,37 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 		var aEvent=new Object();
 		aEvent.which=this.leftKey;
 		this.processKeyboardEvent(aEvent);
+		return true;
 
 	}else if(this.goRight.handleMouseDown(x,y)){
 		var aEvent=new Object();
 		aEvent.which=this.rightKey;
 		this.processKeyboardEvent(aEvent);
+		return true;
 
 	}else if(this.zoomOut.handleMouseDown(x,y)){
 		var aEvent=new Object();
 		aEvent.which=this.pageUp;
 		this.processKeyboardEvent(aEvent);
+		return true;
 
 	}else if(this.zoomIn.handleMouseDown(x,y)){
 		var aEvent=new Object();
 		aEvent.which=this.pageDown;
 		this.processKeyboardEvent(aEvent);
+		return true;
 
 	}else if(this.goDown.handleMouseDown(x,y)){
 		var aEvent=new Object();
 		aEvent.which=this.downKey;
 		this.processKeyboardEvent(aEvent);
+		return true;
 
 	}else if(this.goUp.handleMouseDown(x,y)){
 		var aEvent=new Object();
 		aEvent.which=this.upKey;
 		this.processKeyboardEvent(aEvent);
+		return true;
 	}
 
 	return false;
