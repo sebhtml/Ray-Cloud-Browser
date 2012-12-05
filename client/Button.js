@@ -27,7 +27,9 @@
 function Button(x,y,width,height,name,defaultState){
 	this.color="rgb(220,220,220)";
 	this.activeColor="rgb(200,250,200)";
+	this.mouseDownColor="rgb(255,50,50)";
 
+	this.clickedTicks=0;
 	this.x=x;
 	this.y=y;
 	this.name=name;
@@ -60,6 +62,8 @@ Button.prototype.handleMouseDown=function(x,y){
 	//console.log("handleMouseClick");
 	this.state=!this.state;
 	
+	this.clickedTicks=8;
+
 	return true;
 }
 
@@ -71,7 +75,7 @@ Button.prototype.draw=function(context,blitter){
 
 	//console.log("Drawing self="+this.name+" x "+this.x+" y "+this.y);
 
-	var key=this.name+"-"+this.width+"-"+this.height+"-"+this.state;
+	//var key=this.name+"-"+this.width+"-"+this.height+"-"+this.state;
 
 	if(blitter!=null && blitter.hasBlit(key)){
 		var blit=blitter.getBlit(key);
@@ -104,11 +108,16 @@ Button.prototype.draw=function(context,blitter){
 	}
 
 	context2.fillStyle = this.color;
+
 	context2.strokeStyle = "rgb(0,0,0)";
 
 	if(this.state){
 		context2.fillStyle = this.activeColor;
 	}
+
+	if(this.clickedTicks>0)
+		context2.fillStyle = this.mouseDownColor;
+	
 
 	var width=this.width;
 	var height=this.height;
@@ -138,6 +147,10 @@ Button.prototype.draw=function(context,blitter){
 
 	if(blitter!=null)
 		this.draw(context,blitter);
+
+	this.clickedTicks--;
+	if(this.clickedTicks<0)
+		this.clickedTicks=0;
 }
 
 Button.prototype.resetState=function(){
