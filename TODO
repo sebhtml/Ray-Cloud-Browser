@@ -1,4 +1,4 @@
-Holding button should accumulate stuff
+- zooming events more smooth
 
 1. Change sample (graph file)
 2. Change current sequence file
@@ -9,4 +9,3 @@ Holding button should accumulate stuff
 
 - delete off-screen objects
 - user can change the minimum coverage to display
-
