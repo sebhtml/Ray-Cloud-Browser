@@ -1,0 +1,15 @@
+Thomas Hunt Morgan worked on genetic maps [1].
+
+In Ray Cloud Browser, the navigator is called Morgan.
+
+Terminology:
+
+Map: the de Bruijn graph of a sample genome
+
+???: a set of Region entries
+
+Region: a path in the de Bruijn graph (a fasta sequence)
+
+Location: a position in a region
+
+[1] http://en.wikipedia.org/wiki/Thomas_Hunt_Morgan
