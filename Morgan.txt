@@ -6,7 +6,7 @@ Terminology:
 
 Map: the de Bruijn graph of a sample genome
 
-???: a set of Region entries
+Section: a set of Region entries
 
 Region: a path in the de Bruijn graph (a fasta sequence)
 
