@@ -1,0 +1,39 @@
+
+RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_MAPS
+
+	Returns a list of available maps. The returned message contains maps, and for each map, there is
+	a name and a list of section.
+
+	{
+		"bcereus/map1.dat": {
+			"name": "Map of Bacillus cereus",
+			"sections": [{"bcereus/contigs.dat": "Assembly with Ray"}]
+		}
+	}
+
+
+RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&map=bcereus/map1.dat&object=ATCGAACAT&depth=512
+
+	Returns the k-mers near a k-mer in the graph map1.dat
+
+
+RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_NUMBER_OF_REGIONS&map=bcereus/map1.dat&section=bcereus/contigs.dat
+
+	Returns the number of regions in bcereus/contigs.dat
+
+
+RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_REGIONS&map=bcereus/map1.dat&section=bcereus/contigs.dat&first=0&count=100
+
+	Returns at most 100 regions starting at 0.
+
+	{
+		"regions": [
+			{"index": 0, "name": "contig-09879", "lengthInKmers": 123456}
+		]
+	}
+
+
+RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&map=bcereus/map1.dat&section=bcereus/contigs.dat&region=0&location=34&readahead=512
+
+	Returns at most 512 k-mers from position 34 in region 0 from bcereus/contigs.dat
+
