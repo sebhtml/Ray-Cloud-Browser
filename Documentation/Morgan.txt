@@ -13,3 +13,11 @@ Region: a path in the de Bruijn graph (a fasta sequence)
 Location: a position in a region
 
 [1] http://en.wikipedia.org/wiki/Thomas_Hunt_Morgan
+
+
+The menu goes like this:
+
+1. Select map
+2. Select section
+3. Select region
+4. Select Location

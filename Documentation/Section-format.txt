@@ -1,0 +1,17 @@
+A section is basically just a indexed fasta file.
+
+A section contains regions and locations can be viewed for regions.
+
+
+<magicNumber>
+<numberOfRegions>
+<nameStart><nameLength><sequenceStart><sequenceLength>
+<nameStart><nameLength><sequenceStart><sequenceLength>
+<nameStart><nameLength><sequenceStart><sequenceLength>
+<nameData><sequenceData>
+<nameData><sequenceData>
+<nameData><sequenceData>
+
+
+With this format, we are able to obtain a k-mer at any location of the
+form (region,location) in constant time.
