@@ -84,7 +84,7 @@ int main(int argc,char**argv){
 
 	//cout<<"QUERY_STRING= "<<queryString<<endl;
 
-	const char*dataFile="Database.dat";
+	const char*dataFile="kmers.txt.dat";
 
 	char tag[CONFIG_MAXIMUM_VALUE_LENGTH];
 	bool foundTag=getValue(queryString,"tag",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
