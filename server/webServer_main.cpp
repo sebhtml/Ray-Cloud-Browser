@@ -95,7 +95,7 @@ int main(int argc,char**argv){
 
 	}
 
-	const char*startingPoint="AAAAAAATTTCTGCATGAAAACGGGTTTTCC";
+	const char*startingPoint="ACGCCCGGCACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAA";
 
 	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
 

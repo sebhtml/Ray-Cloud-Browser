@@ -2,10 +2,10 @@
 # \author Sébastien Boisvert
 
 CXX=g++
-CXXFLAGS= -O3 -Wall -march=native -pipe
+CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 
 TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
-	RayCloudBrowser.webServer.cgi
+	RayCloudBrowser.webServer
 
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o
 
@@ -14,7 +14,7 @@ LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o
 
 all: $(TARGETS)
 
-RayCloudBrowser.webServer.cgi: webServer_main.o $(LIBRARY_OBJECTS)
+RayCloudBrowser.webServer: webServer_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.commandLineClient: commandLineClient_main.o $(LIBRARY_OBJECTS)
@@ -32,10 +32,10 @@ clean:
 check: test-first test-store test-not-found
 
 test-store:
-	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=CATGAAAACGGGTTTTCCCATATTGACGCTA" ./RayCloudBrowser.webServer.cgi
+	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=CATGAAAACGGGTTTTCCCATATTGACGCTA" ./RayCloudBrowser.webServer
 
 test-first:
-	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE" ./RayCloudBrowser.webServer.cgi
+	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE" ./RayCloudBrowser.webServer
 
 test-not-found:
-	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=fdfddfjdsfdjsclkk" ./RayCloudBrowser.webServer.cgi
+	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=fdfddfjdsfdjsclkk" ./RayCloudBrowser.webServer

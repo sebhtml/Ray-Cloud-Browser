@@ -1,0 +1,7 @@
+samples: 1
+
+sample: E.Coli-DH10B-MiSeq-250x2
+map: kmers.txt.dat
+sections: 1
+section: Contigs.fasta.dat
+

@@ -62,7 +62,7 @@ DataStore.prototype.pullData=function(){
 			_this.waiting=false;
 		}
 	}
-	var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
+	var address="../server/RayCloudBrowser.webServer.cgi?";
 	address+="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE";
 	address+="&depth="+this.defaultDepthFirst;
 	xmlHttp.open("GET",address,true);
@@ -196,7 +196,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 			}
 		}
 
-		var address="/cgi-bin/RayCloudBrowser.webServer.cgi?";
+		var address="../server/RayCloudBrowser.webServer.cgi?";
 		address+="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE";
 		address+="&object="+kmerSequence;
 		address+="&depth="+this.defaultDepth;
