@@ -1,5 +1,6 @@
 # \see http://www.cprogramming.com/tutorial/makefiles_continued.html
 # \author Sébastien Boisvert
+# Copyright (C) 2012, 2013 Sébastien Boisvert
 
 CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
