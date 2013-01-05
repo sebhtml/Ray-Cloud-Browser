@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012, 2013  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -87,11 +87,18 @@ int main(int argc,char**argv){
 
 		mock.getName(path,name);
 
+		char sequence[300];
+
+		int kmerLength=31;
+		int offset=0;
+		mock.getKmer(path,kmerLength,offset,sequence);
+
 		cout<<"File: "<<file<<endl;
 		cout<<"Entries: "<<entries<<endl;
 		cout<<"PathNumber: "<<path<<endl;
 		cout<<"Name: "<<name<<endl;
 		cout<<"NameLength: "<<nameLength<<endl;
+		cout<<"Sequence: "<<sequence<<"..."<<endl;
 		cout<<"SequenceLength: "<<sequenceLength<<endl;
 	
 		mock.closeFile();

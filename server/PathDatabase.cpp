@@ -132,12 +132,35 @@ uint64_t PathDatabase::getSequenceLength(uint64_t entry){
 
 void PathDatabase::getName(uint64_t path,char*outputName){
 
+	if(!m_active)
+		return;
+
 	uint64_t nameOffset=getNameOffset(path);
 	uint64_t nameLength=getNameLength(path);
 
 	memcpy(outputName,m_data+nameOffset,nameLength);
 
 	outputName[nameLength]='\0';
+}
+
+void PathDatabase::getKmer(uint64_t path,int kmerLength,int offset,char*output){
+
+	if(!m_active)
+		return;
+
+	uint64_t sequenceOffset=getSequenceOffset(path);
+	uint64_t sequenceLength=getSequenceLength(path);
+
+	int numberOfKmers=sequenceLength-kmerLength+1;
+
+// this is an error
+	if(offset>=numberOfKmers){
+		return;
+	}
+
+	memcpy(output,m_data+sequenceOffset+offset,kmerLength);
+
+	output[kmerLength]='\0';
 }
 
 void PathDatabase::terminateString(char*object){
@@ -373,6 +396,7 @@ void PathDatabase::debug(){
 
 	cout<<"--- Ray Technologies ---"<<endl;
 	cout<<endl;
+
 	cout<<"Magic: "<<readInteger64(offset)<<endl;
 	offset+=sizeof(uint64_t);
 
@@ -400,7 +424,12 @@ void PathDatabase::debug(){
 
 		getName(i,name);
 
-		cout<<"	name="<<name<<"	sequence=...";
+		cout<<"	name="<<name;
+		
+
+		char kmer[301];
+		getKmer(i,31,0,kmer);
+		cout<<"	sequence="<<kmer<<"...";
 		cout<<endl;
 
 		i++;

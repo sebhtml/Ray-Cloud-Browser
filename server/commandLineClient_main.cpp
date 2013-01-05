@@ -23,6 +23,7 @@ using namespace std;
 int main(int argc,char**argv){
 
 	if(argc!=3){
+		cout<<"Fetch information about a k-mer"<<endl;
 		cout<<"Usage: "<<argv[0]<<" kmers.dat key"<<endl;
 		return 0;
 	}

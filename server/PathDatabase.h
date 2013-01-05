@@ -57,6 +57,8 @@ public:
 	void index(const char*input,const char*output);
 
 	void debug();
+	
+	void getKmer(uint64_t path,int kmerLength,int offset,char*output);
 };
 
 #endif
