@@ -18,14 +18,9 @@
 #include "PathDatabase.h"
 
 #include <iostream>
-#include <sstream>
-#include <vector>
-#include <algorithm>
 using namespace std;
 
 #include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
 
 /**
