@@ -32,6 +32,12 @@ using namespace std;
 int main(int argc,char**argv){
 
 	if(argc==1){
+		cout<<"Operate a indexed fasta file with various commands"<<endl;
+		cout<<"Author: Sébastien Boisvert"<<endl;
+		cout<<endl;
+
+
+		cout<<"Usages:"<<endl;
 		cout<<argv[0]<<" info Contigs.fasta.dat"<<endl;
 		cout<<argv[0]<<" debug Contigs.fasta.dat"<<endl;
 		cout<<argv[0]<<" getPathMetaData Contigs.fasta.dat 44"<<endl;

@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +44,10 @@ void addKey(map<string,int>*objectsToProcess,string*sequenceKey,int distance,int
 int main(int argc,char**argv){
 
 	if(argc!=4){
+		cout<<"Obtain nearby biological objects in a indexed graph"<<endl;
+		cout<<"Author: Sébastien Boisvert"<<endl;
+		cout<<endl;
+
 		cout<<"Usage: "<<argv[0]<<" kmers.dat sequence.fasta maximumDistance"<<endl;
 		return 0;
 	}

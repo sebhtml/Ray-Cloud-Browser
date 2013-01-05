@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@ int main(int argc,char**argv){
 
 	if(argc!=3){
 		cout<<"Fetch information about a k-mer"<<endl;
+		cout<<"Author: Sébastien Boisvert"<<endl;
+		cout<<endl;
+		cout<<"The index must be generated with RayCloudBrowser.createGraphDatabase"<<endl;
+
 		cout<<"Usage: "<<argv[0]<<" kmers.dat key"<<endl;
 		return 0;
 	}
