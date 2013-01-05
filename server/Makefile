@@ -8,7 +8,7 @@ CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
 	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase
 
-LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o
+LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $? -o $@

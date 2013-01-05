@@ -40,6 +40,8 @@ public:
 	PathDatabase();
 	void openFile(const char*file);
 	void closeFile();
+	
+	void index(const char*input,const char*output);
 };
 
 #endif
