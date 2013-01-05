@@ -3,6 +3,7 @@
 
 CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
+#CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
 
 TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
 	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase

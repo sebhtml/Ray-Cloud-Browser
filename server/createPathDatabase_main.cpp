@@ -29,6 +29,10 @@ using namespace std;
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef CONFIG_ASSERT
+#include <assert.h>
+#endif
+
 // TODO: this whole file should be a method of PathDatabase.
 
 bool myFunction(const vector<int>&a,const vector<int>&b){
@@ -182,8 +186,6 @@ int main(int argc,char**argv){
 // At this point, we have all the offsets ready to be dumped in a file
 
 
-	mapper.unmapFile();
-
 	FILE*outputStream=fopen(output,"w");
 
 	uint64_t magicNumber=PATH_FORMAT_VERSION;
@@ -201,7 +203,62 @@ int main(int argc,char**argv){
 
 // now we dump the data
 
+	for(uint64_t j=0;j<entries;j++){
+
+		int i=list[j][0];
+
+		int headerLength=headerLengths[i];
+		int sequenceLength=sequenceLengths[i];
+		
+		uint64_t sourceHeaderOffset=headerStarts[i];
+		uint64_t sourceSequenceOffset=sequenceStarts[i];
+
+		int dumped=0;
+
+// dump the header
+		while(dumped<headerLength){
+
+#ifdef CONFIG_ASSERT
+			assert(sourceHeaderOffset<bytes);
+#endif
+
+			if(array[sourceHeaderOffset]!='\n'){
+
+				fwrite(array+sourceHeaderOffset,sizeof(char),1,outputStream);
+				dumped++;
+			}
+
+			sourceHeaderOffset++;
+		}
+
+		//continue;
+
+// dump the sequence
+
+		dumped=0;
+
+		while(dumped<sequenceLength){
+
+#ifdef CONFIG_ASSERT
+			assert(sourceSequenceOffset<bytes);
+#endif
+
+			if(array[sourceSequenceOffset]!='\n'){
+
+				fwrite(array+sourceSequenceOffset,sizeof(char),1,outputStream);
+				dumped++;
+			}
+
+			sourceSequenceOffset++;
+		}
+	}
+
 	fclose(outputStream);
+
+
+
+	mapper.unmapFile();
+
 
 	return EXIT_SUCCESS;
 }
