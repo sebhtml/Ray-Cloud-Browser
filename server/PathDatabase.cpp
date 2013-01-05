@@ -39,12 +39,108 @@ bool myFunction(const vector<int>&a,const vector<int>&b){
 }
 
 
-
 void PathDatabase::openFile(const char*file){
 	
+	if(m_active)
+		return;
+
+	m_mapper.enableReadOperations();
+
+	m_data=(char*)m_mapper.mapFile(file);
+
+	m_active=true;
 }
 
 void PathDatabase::closeFile(){
+
+	if(!m_active)
+		return;
+
+	m_active=false;
+
+	m_mapper.unmapFile();
+
+}
+
+uint64_t PathDatabase::readInteger64(uint64_t offset){
+	if(!m_active)
+		return 0;
+
+	uint64_t value;
+
+// skip magic number
+	memcpy(&value,m_data+offset,sizeof(uint64_t));
+
+	return value;
+
+}
+
+uint64_t PathDatabase::getEntries(){
+	if(!m_active)
+		return 0;
+
+	return readInteger64(sizeof(uint64_t));
+}
+
+uint64_t PathDatabase::getSequenceOffset(uint64_t entry){
+	if(!m_active)
+		return 0;
+
+	uint64_t offset=0;
+	offset+=sizeof(uint64_t); // magic
+	offset+=sizeof(uint64_t); // entries
+	offset+=entry*4*sizeof(uint64_t); // previous entries
+	offset+=2*sizeof(uint64_t); // offset within self.
+
+	return readInteger64(offset);
+}
+
+uint64_t PathDatabase::getNameOffset(uint64_t entry){
+	if(!m_active)
+		return 0;
+
+	uint64_t offset=0;
+	offset+=sizeof(uint64_t); // magic
+	offset+=sizeof(uint64_t); // entries
+	offset+=entry*4*sizeof(uint64_t); // previous entries
+	offset+=0*sizeof(uint64_t); // offset within self.
+
+	return readInteger64(offset);
+}
+
+uint64_t PathDatabase::getNameLength(uint64_t entry){
+	if(!m_active)
+		return 0;
+
+	uint64_t offset=0;
+	offset+=sizeof(uint64_t); // magic
+	offset+=sizeof(uint64_t); // entries
+	offset+=entry*4*sizeof(uint64_t); // previous entries
+	offset+=1*sizeof(uint64_t); // offset within self.
+
+	return readInteger64(offset);
+}
+
+uint64_t PathDatabase::getSequenceLength(uint64_t entry){
+	if(!m_active)
+		return 0;
+
+	uint64_t offset=(2*sizeof(uint64_t)+4*sizeof(uint64_t)*entry+3*sizeof(uint64_t));
+
+	return readInteger64(offset);
+}
+
+void PathDatabase::getName(uint64_t path,char*outputName){
+
+	uint64_t nameOffset=getNameOffset(path);
+	uint64_t nameLength=getNameLength(path);
+
+	memcpy(outputName,m_data+nameOffset,nameLength);
+
+	outputName[nameLength]='\0';
+}
+
+void PathDatabase::terminateString(char*object){
 
 }
 
@@ -159,9 +255,9 @@ void PathDatabase::index(const char*input,const char*output){
 
 	uint64_t offset=0;
 
-	offset+=sizeof(uint64_t); // magic number
-	offset+=sizeof(uint64_t); // entries
-	offset+=sizeof(uint64_t)*entries; // meta-data
+	offset+=1*sizeof(uint64_t); // magic number
+	offset+=1*sizeof(uint64_t); // entries
+	offset+=entries*4*sizeof(uint64_t); // meta-data
 
 	for(uint64_t j=0;j<entries;j++){
 
@@ -170,16 +266,16 @@ void PathDatabase::index(const char*input,const char*output){
 		int headerLength=headerLengths[i];
 		int sequenceLength=sequenceLengths[i];
 
-		binaryNameStarts[j]=offset;
+		binaryNameStarts[i]=offset;
 		offset+=headerLength;
-		binarySequenceStarts[j]=offset;
+		binarySequenceStarts[i]=offset;
 		offset+=sequenceLength;
 
 /*
-		cout<<"Entry #"<<i;
-		cout<<" HeaderStart: "<<headerStarts[i];
+		cout<<"Entry #"<<j<<" origin: "<<i;
+		cout<<" HeaderStart: "<<headerStarts[i]<<" Binary: "<<binaryNameStarts[j];
 		cout<<" HeaderLength: "<<headerLengths[i];
-		cout<<" SequenceStart: "<<sequenceStarts[i];
+		cout<<" SequenceStart: "<<sequenceStarts[i]<<" Binary: "<<binarySequenceStarts[j];
 		cout<<" SequenceLength: "<<sequenceLength<<endl;
 */
 	}
@@ -194,12 +290,24 @@ void PathDatabase::index(const char*input,const char*output){
 	fwrite(&magicNumber,sizeof(uint64_t),1,outputStream);
 	fwrite(&entries,sizeof(uint64_t),1,outputStream);
 	
-	for(uint64_t i=0;i<entries;i++){
+	for(uint64_t j=0;j<entries;j++){
+
+		uint64_t i=list[j][0];
+
+		//uint64_t binaryHeaderStart=binaryNameStarts[i];
+		uint64_t binaryHeaderLength=headerLengths[i];
 
 		fwrite(&(binaryNameStarts[i]),sizeof(uint64_t),1,outputStream);
-		fwrite(&(headerLengths[i]),sizeof(uint64_t),1,outputStream);
+		fwrite(&binaryHeaderLength,sizeof(uint64_t),1,outputStream);
 		fwrite(&(binarySequenceStarts[i]),sizeof(uint64_t),1,outputStream);
 		fwrite(&(sequenceLengths[i]),sizeof(uint64_t),1,outputStream);
+
+#if 0
+		cout<<"Entry "<<i<<" Head.start: "<<binaryNameStarts[i];
+		cout<<" Head.length: "<<headerLengths[i];
+		cout<<" Body.start: "<<binarySequenceStarts[i];
+		cout<<" Body.length: "<<sequenceLengths[i]<<endl;
+#endif
 	}
 
 // now we dump the data
@@ -256,9 +364,45 @@ void PathDatabase::index(const char*input,const char*output){
 
 	fclose(outputStream);
 
-
-
 	mapper.unmapFile();
+}
 
+void PathDatabase::debug(){
 
+	uint64_t offset=0;
+
+	cout<<"--- Ray Technologies ---"<<endl;
+	cout<<endl;
+	cout<<"Magic: "<<readInteger64(offset)<<endl;
+	offset+=sizeof(uint64_t);
+
+	cout<<"Objects: "<<readInteger64(offset)<<endl;
+	offset+=sizeof(uint64_t);
+
+	uint64_t entries=getEntries();
+
+	uint64_t i=0;
+
+	while(i<entries){
+
+		cout<<"	["<<i<<"]";
+
+		cout<<"	"<<readInteger64(offset);
+		offset+=sizeof(uint64_t);
+		cout<<"	"<<readInteger64(offset);
+		offset+=sizeof(uint64_t);
+		cout<<"	"<<readInteger64(offset);
+		offset+=sizeof(uint64_t);
+		cout<<"	"<<readInteger64(offset);
+		offset+=sizeof(uint64_t);
+
+		char name[1024];
+
+		getName(i,name);
+
+		cout<<"	name="<<name<<"	sequence=...";
+		cout<<endl;
+
+		i++;
+	}
 }

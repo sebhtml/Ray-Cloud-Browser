@@ -34,14 +34,29 @@ class PathDatabase{
 
 	bool m_active;
 
+	char*m_data;
+
 	Mapper m_mapper;
+
+	uint64_t readInteger64(uint64_t offset);
+	uint64_t getNameOffset(uint64_t entry);
+	uint64_t getSequenceOffset(uint64_t entry);
+	void terminateString(char*object);
 
 public:
 	PathDatabase();
 	void openFile(const char*file);
 	void closeFile();
 	
+	uint64_t getEntries();
+	uint64_t getNameLength(uint64_t entry);
+	uint64_t getSequenceLength(uint64_t entry);
+
+	void getName(uint64_t path,char*outputName);
+
 	void index(const char*input,const char*output);
+
+	void debug();
 };
 
 #endif

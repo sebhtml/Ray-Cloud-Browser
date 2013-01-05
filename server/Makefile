@@ -7,7 +7,7 @@ CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 #CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
 
 TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
-	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase
+	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath
 
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o
 
@@ -31,6 +31,9 @@ RayCloudBrowser.getSubgraphWithPath: getSubgraphWithPath_main.o $(LIBRARY_OBJECT
 RayCloudBrowser.createPathDatabase: createPathDatabase_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
+RayCloudBrowser.probePath: probePath_main.o $(LIBRARY_OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 clean:
 	rm -f *.o $(TARGETS)
 
@@ -50,3 +53,6 @@ path-index:
 
 graph-index:
 	./RayCloudBrowser.createGraphDatabase ~/Ray-Cloud-Browser-data/kmers.txt.sorted ~/Ray-Cloud-Browser-data/kmers.txt.dat
+
+debug-path:
+	./RayCloudBrowser.probePath debug  Contigs.fasta.dat|less
