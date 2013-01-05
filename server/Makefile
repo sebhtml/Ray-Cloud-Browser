@@ -18,6 +18,8 @@ all: $(TARGETS)
 
 RayCloudBrowser.webServer.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
+	chmod g-w $@
+	chmod o-w $@
 
 RayCloudBrowser.commandLineClient: commandLineClient_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
