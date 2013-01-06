@@ -1,0 +1,8 @@
+{
+	"samples": [
+		{	"name": "E.Coli-DH10B-MiSeq-250x2",
+			"map": "kmers.txt.dat",
+			"sections":	{ "Contigs.fasta.dat": "Assembly with Ray" }}
+		]
+}
+

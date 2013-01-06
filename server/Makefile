@@ -7,9 +7,10 @@ CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 #CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
 
 TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
-	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath
+	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath \
+	RayCloudBrowser.readJSON
 
-LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o
+LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $? -o $@
@@ -22,6 +23,9 @@ RayCloudBrowser.webServer.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	chmod o-w $@
 
 RayCloudBrowser.commandLineClient: commandLineClient_main.o $(LIBRARY_OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+RayCloudBrowser.readJSON: readJSON_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.createGraphDatabase: createGraphDatabase_main.o $(LIBRARY_OBJECTS)
@@ -58,3 +62,6 @@ graph-index:
 
 debug-path:
 	./RayCloudBrowser.probePath debug  Contigs.fasta.dat|less
+
+test-json:
+	./RayCloudBrowser.readJSON  test.json
