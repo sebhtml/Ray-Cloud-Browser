@@ -18,12 +18,7 @@
 #ifndef _JSONParser_h
 #define _JSONParser_h
 
-#define JSONParser_TYPE_OBJECT 0
-#define JSONParser_TYPE_ARRAY 1
-#define JSONParser_TYPE_STRING 2
-#define JSONParser_TYPE_INTEGER 3
-#define JSONParser_TYPE_DOUBLE 4
-
+#include "JSONNode.h"
 #include "Mapper.h"
 
 #include <string>
@@ -31,65 +26,21 @@
 using namespace std;
 
 /**
- * TODO: split in many classes
- * TODO: support comments in JSON
- * TODO: support ' for strings
- *
  * \author Sébastien Boisvert
  */
 class JSONParser{
+	JSONNode m_root;
+
 	int m_fileSize;
 	const char*m_file;
-	bool m_debug;
 
 	Mapper m_mapper;
-	int m_type;
-	const char*m_content;
-	int m_start;
-	int m_end;
-
-	vector<JSONParser> m_associativeKeyContent;
-	vector<JSONParser> m_associativeValueContent;
-
-	vector<JSONParser> m_arrayContent;
-
-	string m_stringContent;
-
-	int64_t m_integerContent;
-
-	double m_doubleContent;
-
-	void parseContent();
-	void parseObject();
-	void parseArray();
-	void parseString();
-	void parseInteger();
-	void parseDouble();
-
-	void pullContent(JSONParser*node,int position);
-	void pullObject(JSONParser*node,int position);
-	void pullArray(JSONParser*node,int position);
-	void pullString(JSONParser*node,int position);
-	void pullInteger(JSONParser*node,int position);
-	void pullDouble(JSONParser*node,int position);
-
-	void create(int type,const char*content,int start,int end);
-
-	int getType();
-	int getStart();
-	int getEnd();
-
-	void print(int depth);
-	void addSpaces(int space);
-
-	bool isDigitSymbol(char symbol);
 public:
 
 	JSONParser();
 
 	void parse(const char*file);
 	void printFile();
-	void debug();
 };
 
 #endif
