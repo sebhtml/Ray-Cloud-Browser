@@ -38,10 +38,10 @@ void JSONParser::parse(const char*file){
 
 	char*content=(char*)m_mapper.mapFile(file);
 	int start=0;
-	int fileSize=m_mapper.getFileSize();
-	int end=fileSize-1;
+	m_file=file;
+	m_fileSize=m_mapper.getFileSize();
+	int end=m_fileSize-1;
 
-	cout<<"File: "<<file<<" Size: "<<fileSize<<" bytes"<<endl;
 	create(JSONParser_TYPE_OBJECT,content,start,end);
 
 	m_mapper.unmapFile();
@@ -384,6 +384,8 @@ void JSONParser::debug(){
 }
 
 void JSONParser::printFile(){
+
+	cout<<"File: "<<m_file<<" Size: "<<m_fileSize<<" bytes"<<endl;
 
 	print(0);
 }

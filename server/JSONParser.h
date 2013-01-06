@@ -38,7 +38,8 @@ using namespace std;
  * \author Sébastien Boisvert
  */
 class JSONParser{
-
+	int m_fileSize;
+	const char*m_file;
 	bool m_debug;
 
 	Mapper m_mapper;
