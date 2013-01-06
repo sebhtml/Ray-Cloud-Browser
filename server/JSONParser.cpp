@@ -29,6 +29,7 @@ int JSONParser::getType(){
 }
 
 JSONParser::JSONParser(){
+	m_debug=false;
 }
 
 void JSONParser::parse(const char*file){
@@ -37,8 +38,10 @@ void JSONParser::parse(const char*file){
 
 	char*content=(char*)m_mapper.mapFile(file);
 	int start=0;
-	int end=m_mapper.getFileSize()-1;
+	int fileSize=m_mapper.getFileSize();
+	int end=fileSize-1;
 
+	cout<<"File: "<<file<<" Size: "<<fileSize<<" bytes"<<endl;
 	create(JSONParser_TYPE_OBJECT,content,start,end);
 
 	m_mapper.unmapFile();
@@ -61,7 +64,8 @@ void JSONParser::parseContent(){
 
 void JSONParser::parseObject(){
 
-	cout<<"[parseObject] "<<m_start<<" "<<m_end<<endl;
+	if(m_debug)
+		cout<<"[parseObject] "<<m_start<<" "<<m_end<<endl;
 
 	int start=m_start;
 	int end=m_end;
@@ -88,13 +92,16 @@ void JSONParser::parseObject(){
 // no more keys
 		if(m_content[findNextKey]!='"'){
 
-			cout<<"[parseObject] no more keys"<<endl;
+			if(m_debug)
+				cout<<"[parseObject] no more keys"<<endl;
 
 			break;
 		}
 
-		cout<<"[parseObject] findNextKey -> "<<findNextKey<<" "<<m_content[findNextKey]<<endl;
-		cout<<"[parseObject] find key"<<endl;
+		if(m_debug){
+			cout<<"[parseObject] findNextKey -> "<<findNextKey<<" "<<m_content[findNextKey]<<endl;
+			cout<<"[parseObject] find key"<<endl;
+		}
 
 		JSONParser key;
 
@@ -113,7 +120,8 @@ void JSONParser::parseObject(){
 			firstNextSymbol++;
 		}
 
-		cout<<"[parseObject] find value"<<endl;
+		if(m_debug)
+			cout<<"[parseObject] find value"<<endl;
 
 		JSONParser value;
 		
@@ -156,7 +164,8 @@ void JSONParser::pullContent(JSONParser*node,int position){
 
 void JSONParser::pullString(JSONParser*node,int position){
 
-	cout<<"[pullString] "<<position<<endl;
+	if(m_debug)
+		cout<<"[pullString] "<<position<<endl;
 
 	int openingQuote=position;
 
@@ -224,12 +233,14 @@ void JSONParser::parseString(){
 	content[length]='\0';
 	m_stringContent=content;
 
-	cout<<"[parseString] "<<m_start<<" "<<m_end<<" -> "<<"\""<<m_stringContent<<"\""<<endl;
+	if(m_debug)
+		cout<<"[parseString] "<<m_start<<" "<<m_end<<" -> "<<"\""<<m_stringContent<<"\""<<endl;
 }
 
 void JSONParser::parseArray(){
 
-	cout<<"[parseArray] "<<m_start<<" "<<m_end<<endl;
+	if(m_debug)
+		cout<<"[parseArray] "<<m_start<<" "<<m_end<<endl;
 
 	int start=m_start;
 	int end=m_end;
@@ -261,12 +272,14 @@ void JSONParser::parseArray(){
 			&& m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
 			&& m_content[findNextKey]!='"' ){
 
-			cout<<"[parseObject] no more values"<<endl;
+			if(m_debug)
+				cout<<"[parseObject] no more values"<<endl;
 
 			break;
 		}
 
-		cout<<"[parseArray] findNextKey -> "<<findNextKey<<" "<<m_content[findNextKey]<<endl;
+		if(m_debug)
+			cout<<"[parseArray] findNextKey -> "<<findNextKey<<" "<<m_content[findNextKey]<<endl;
 
 
 // find the first non-white-space character
@@ -279,7 +292,8 @@ void JSONParser::parseArray(){
 			firstNextSymbol++;
 		}
 
-		cout<<"[parseArray] find value"<<endl;
+		if(m_debug)
+			cout<<"[parseArray] find value"<<endl;
 
 		JSONParser value;
 		
@@ -315,18 +329,21 @@ void JSONParser::parseInteger(){
 
 	content[length]='\0';
 
-	cout<<"[parseInteger] "<<m_start<<" "<<m_end<<" Content -> "<<content<<endl;
+	if(m_debug)
+		cout<<"[parseInteger] "<<m_start<<" "<<m_end<<" Content -> "<<content<<endl;
 
 	istringstream buffer(content);
 
 	buffer>>m_integerContent;
 
-	cout<<"[parseInteger] "<<m_start<<" "<<m_end<<" -> "<<m_integerContent<<endl;
+	if(m_debug)
+		cout<<"[parseInteger] "<<m_start<<" "<<m_end<<" -> "<<m_integerContent<<endl;
 }
 
 void JSONParser::pullInteger(JSONParser*node,int start){
 
-	cout<<"[pullInteger] "<<start<<endl;
+	if(m_debug)
+		cout<<"[pullInteger] "<<start<<endl;
 
 	int beginning=start;
 	
@@ -363,6 +380,10 @@ void JSONParser::pullArray(JSONParser*node,int position){
 }
 
 void JSONParser::debug(){
+	m_debug=!m_debug;
+}
+
+void JSONParser::printFile(){
 
 	print(0);
 }

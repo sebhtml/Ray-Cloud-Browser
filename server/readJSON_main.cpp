@@ -35,7 +35,7 @@ int main(int argc,char**argv){
 	JSONParser parser;
 	parser.parse(file);
 
-	parser.debug();
+	parser.printFile();
 
 	return 0;
 }

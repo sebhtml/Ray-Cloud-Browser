@@ -39,6 +39,8 @@ using namespace std;
  */
 class JSONParser{
 
+	bool m_debug;
+
 	Mapper m_mapper;
 	int m_type;
 	const char*m_content;
@@ -85,6 +87,7 @@ public:
 	JSONParser();
 
 	void parse(const char*file);
+	void printFile();
 	void debug();
 };
 
