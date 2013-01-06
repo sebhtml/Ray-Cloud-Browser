@@ -52,7 +52,7 @@ class JSONParser{
 
 	string m_stringContent;
 
-	uint64_t m_integerContent;
+	int64_t m_integerContent;
 
 	double m_doubleContent;
 
@@ -78,6 +78,8 @@ class JSONParser{
 
 	void print(int depth);
 	void addSpaces(int space);
+
+	bool isDigitSymbol(char symbol);
 public:
 
 	JSONParser();

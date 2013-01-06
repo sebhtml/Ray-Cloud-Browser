@@ -19,6 +19,7 @@
 #include "Mapper.h"
 
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 #include <string.h>
@@ -248,14 +249,16 @@ void JSONParser::parseArray(){
 
 		int findNextKey=start;
 
-		while(m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
+		while(!isDigitSymbol(m_content[findNextKey])
+			&& m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
 			&& m_content[findNextKey]!='"' && findNextKey<=end){
 
 			findNextKey++;
 		}
 
 // no more keys
-		if(m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
+		if(!isDigitSymbol(m_content[findNextKey])
+			&& m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
 			&& m_content[findNextKey]!='"' ){
 
 			cout<<"[parseObject] no more values"<<endl;
@@ -297,13 +300,44 @@ void JSONParser::parseArray(){
 	}
 }
 
+// TODO: to be implemented.
 void JSONParser::parseDouble(){
 }
 
 void JSONParser::parseInteger(){
+
+
+// TODO: 1000 is hard-coded !
+	char content[1000];
+
+	int length=(m_end-m_start+1);
+	memcpy(content,m_content+m_start,length);
+
+	content[length]='\0';
+
+	cout<<"[parseInteger] "<<m_start<<" "<<m_end<<" Content -> "<<content<<endl;
+
+	istringstream buffer(content);
+
+	buffer>>m_integerContent;
+
+	cout<<"[parseInteger] "<<m_start<<" "<<m_end<<" -> "<<m_integerContent<<endl;
 }
 
 void JSONParser::pullInteger(JSONParser*node,int start){
+
+	cout<<"[pullInteger] "<<start<<endl;
+
+	int beginning=start;
+	
+	int theEnd=beginning;
+
+	while(isDigitSymbol(m_content[theEnd]))
+		theEnd++;
+
+	theEnd--;
+
+	node->create(JSONParser_TYPE_INTEGER,m_content,beginning,theEnd);
 }
 
 void JSONParser::pullArray(JSONParser*node,int position){
@@ -352,6 +386,9 @@ void JSONParser::print(int depth){
 	}else if(m_type==JSONParser_TYPE_STRING){
 		addSpaces(depth);
 		cout<<"Type: String"<<" Value \""<<m_stringContent<<"\""<<endl;
+	}else if(m_type==JSONParser_TYPE_INTEGER){
+		addSpaces(depth);
+		cout<<"Type: Integer"<<" Value "<<m_integerContent<<endl;
 	}else if(m_type==JSONParser_TYPE_ARRAY){
 
 		addSpaces(depth);
@@ -369,4 +406,23 @@ void JSONParser::print(int depth){
 void JSONParser::addSpaces(int count){
 	while(count--)
 		cout<<"   ";
+}
+
+bool JSONParser::isDigitSymbol(char symbol){
+// TODO: don't allow '-' inside a number
+	if(
+	symbol=='-'
+	||symbol=='0'
+	||symbol=='1'
+	||symbol=='2'
+	||symbol=='3'
+	||symbol=='4'
+	||symbol=='5'
+	||symbol=='6'
+	||symbol=='7'
+	||symbol=='8'
+	||symbol=='9')
+		return true;
+
+	return false;
 }
