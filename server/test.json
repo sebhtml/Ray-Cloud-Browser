@@ -2,5 +2,11 @@
 	"MyKey": "MyValue",
 	"key2" : "value2",
 	"object8"   
-                   :   {  "888" : "crocodile" }
+                   :   {  "888" : "crocodile" }    	,
+
+	"un tableau drôle"   : [ "1", "2", "3"],
+
+	"hard-to-parse" :
+		[ "1", "2", [[[{"3467895" : "6iovb"}]]]]
+
 }

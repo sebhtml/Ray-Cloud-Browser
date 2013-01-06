@@ -228,12 +228,72 @@ void JSONParser::parseString(){
 
 void JSONParser::parseArray(){
 
+	cout<<"[parseArray] "<<m_start<<" "<<m_end<<endl;
+
 	int start=m_start;
 	int end=m_end;
 
+	while(m_content[start]!='[')
+		start++;
+
+	while(m_content[end]!=']')
+		end--;
+
+	start++;
+	end--;
+
 	while(start<=end){
 
+// find the opening " for the key
 
+		int findNextKey=start;
+
+		while(m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
+			&& m_content[findNextKey]!='"' && findNextKey<=end){
+
+			findNextKey++;
+		}
+
+// no more keys
+		if(m_content[findNextKey]!='{' && m_content[findNextKey]!='[' 
+			&& m_content[findNextKey]!='"' ){
+
+			cout<<"[parseObject] no more values"<<endl;
+
+			break;
+		}
+
+		cout<<"[parseArray] findNextKey -> "<<findNextKey<<" "<<m_content[findNextKey]<<endl;
+
+
+// find the first non-white-space character
+
+		int firstNextSymbol=start;
+
+		while(m_content[firstNextSymbol]==' '||m_content[firstNextSymbol]=='\t'
+			||m_content[firstNextSymbol]=='\n'){
+
+			firstNextSymbol++;
+		}
+
+		cout<<"[parseArray] find value"<<endl;
+
+		JSONParser value;
+		
+		pullContent(&value,firstNextSymbol);
+
+		start=value.getEnd();
+
+		start++;
+
+// Skip the ','
+// TODO: this code will work with "key",,,, but should not
+		while(m_content[start]==' '||m_content[start]=='\t'||m_content[start]=='\n'
+			|| m_content[start]==','){
+			start++;
+		}
+	
+		m_arrayContent.push_back(value);
 	}
 }
 
@@ -291,11 +351,19 @@ void JSONParser::print(int depth){
 		}
 	}else if(m_type==JSONParser_TYPE_STRING){
 		addSpaces(depth);
-		cout<<"Type: String"<<endl;
-		addSpaces(depth);
-		cout<<"Value "<<m_stringContent<<endl;
-	}
+		cout<<"Type: String"<<" Value \""<<m_stringContent<<"\""<<endl;
+	}else if(m_type==JSONParser_TYPE_ARRAY){
 
+		addSpaces(depth);
+		cout<<"Type: Array"<<endl;
+
+		for(int i=0;i<(int)m_arrayContent.size();i++){
+			addSpaces(depth);
+			cout<<"Value "<<i<<endl;
+			m_arrayContent[i].print(depth+1);
+
+		}
+	}
 }
 
 void JSONParser::addSpaces(int count){
