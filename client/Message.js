@@ -42,10 +42,10 @@ messageSymbols[RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY]="RAY_MESSAGE_TAG_GET_K
 /**
  * A message.
  *
- * @param tag the message type
- * @param source the source
- * @param destination the destination
- * @content the content, can be anything, but usually a javascript Object instance
+ * \param tag the message type
+ * \param source the source
+ * \param destination the destination
+ * \param content the content, can be anything, but usually a javascript Object instance
  */
 function Message(tag,source,destination,content){
 	this.tag=tag;

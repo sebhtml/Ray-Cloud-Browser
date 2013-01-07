@@ -44,11 +44,11 @@ function DataStore(kmerLength){
  * The source is obviously this.
  * This is the only place that uses JSON and XMLHttpRequest.
  *
- * @param messageTag message tag
- * @param source local source
- * @param destination local destination
- * @content array of arguments
- * @replyTag reply tag to the message tag
+ * \param messageTag message tag
+ * \param source local source
+ * \param destination local destination
+ * \param content array of arguments
+ * \param replyTag reply tag to the message tag
  *
  */
 DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,content,replyTag){
