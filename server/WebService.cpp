@@ -133,7 +133,7 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
  */
 bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString){
 
-	const char*dataFile="kmers.txt.dat";
+	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
 	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
 
 	const char*key=NULL;
@@ -141,8 +141,12 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString
 	//cout<<"Tag: "<<tag<<endl;
 
 	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundMap=getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
 		
 	if(!foundObject)
+		return false;
+
+	if(!foundMap)
 		return false;
 
 	key=requestedObject;
@@ -351,6 +355,9 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString){
 	return true;
 }
 
+/**
+ * Required QUERY_STRING parameters: tag, section.
+ */
 bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 
 	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];

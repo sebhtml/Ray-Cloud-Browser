@@ -233,6 +233,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
 
 		var parameters=new Object();
+		parameters["map"]="kmers.txt.dat";
 		parameters["object"]=kmerSequence;
 		parameters["depth"]=this.defaultDepth;
 
