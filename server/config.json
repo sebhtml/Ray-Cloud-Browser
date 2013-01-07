@@ -1,8 +1,12 @@
 {
-	"samples": [
-		{	"name": "E.Coli-DH10B-MiSeq-250x2",
-			"map": "kmers.txt.dat",
-			"sections":	{ "Contigs.fasta.dat": "Assembly with Ray" }}
-		]
+"maps": [
+		{
+		"name": "E.Coli-DH10B-MiSeq-250x2",
+		"file": "kmers.txt.dat",
+		"sections": [
+		 		{"name": "Assembly with Ray", "file": "Contigs.fasta.dat"}
+				]
+		}
+	]
 }
 
