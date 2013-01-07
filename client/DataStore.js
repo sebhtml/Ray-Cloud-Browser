@@ -42,6 +42,7 @@ function DataStore(kmerLength){
  *
  * This send a message on the web.
  * The source is obviously this.
+ * This is the only place that uses JSON and XMLHttpRequest.
  *
  * @param messageTag message tag
  * @param source local source
@@ -230,40 +231,14 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 			return;
 		}
 
- 		var xmlHttp=null;
 
-/*
- * This won't work with older browser, things before IE7.
- */
-		if(window.XMLHttpRequest){
-			xmlHttp=new XMLHttpRequest();
-		}
+		var parameters=new Object();
+		parameters["object"]=kmerSequence;
+		parameters["depth"]=this.defaultDepth;
 
-/*
- * Do something with the received data.
- */
-		_this=this;
-		xmlHttp.onreadystatechange=function(){
-			if(xmlHttp.readyState==4){
+		this.sendMessageOnTheWeb(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,
+			this,this,parameters,RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY);
 
-			var message=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY,
-						_this,
-						_this,
-						JSON.parse(xmlHttp.responseText));
-
-				_this.receiveMessage(message);
-				_this.processMessages();
-				
-			}
-		}
-
-		var address="../server/RayCloudBrowser.webServer.cgi?";
-		address+="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE";
-		address+="&object="+kmerSequence;
-		address+="&depth="+this.defaultDepth;
-		xmlHttp.open("GET",address,true);
-		xmlHttp.send(null);
-		this.httpRequests++;
 		this.activeQueries++;
 
 		return;
