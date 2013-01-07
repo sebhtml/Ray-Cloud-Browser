@@ -49,3 +49,6 @@ void JSONParser::printFile(){
 JSONParser::JSONParser(){
 }
 
+JSONNode*JSONParser::getNode(){
+	return &m_root;
+}

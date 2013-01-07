@@ -70,7 +70,6 @@ class JSONNode{
 	void pullInteger(JSONNode*node,int position);
 	void pullDouble(JSONNode*node,int position);
 
-	int getType();
 	int getStart();
 	int getEnd();
 
@@ -84,6 +83,14 @@ public:
 	void create(int type,const char*content,int start,int end);
 	void debug();
 	void print(int depth);
+	int getType();
+	int64_t getInteger();
+	string*getString();
+	JSONNode*getArrayElement(int index);
+	JSONNode*getObjectKey(int index);
+	JSONNode*getObjectValue(int index);
+	int getArraySize();
+	int getObjectSize();
 };
 
 #endif

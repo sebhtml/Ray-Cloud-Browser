@@ -41,6 +41,8 @@ public:
 
 	void parse(const char*file);
 	void printFile();
+
+	JSONNode*getNode();
 };
 
 #endif

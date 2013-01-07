@@ -17,6 +17,7 @@
 
 #include "WebService.h"
 #include "GraphDatabase.h"
+#include "JSONParser.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -75,9 +76,15 @@ bool WebService::getValue(const char*query,const char*name,char*value,int maximu
 	return false;
 }
 
+/**
+ * \see http://www.ietf.org/rfc/rfc4627.txt
+ * ( The application/json Media Type for JavaScript Object Notation (JSON) )
+ */
 bool WebService::processQuery(const char*queryString){
 
-	cout<<("Content-type: text/html\n\n");
+	cout<<("Content-type: application/json\n\n");
+
+	//cout<<("Content-type: text/html\n\n");
 
 	if(queryString==NULL){
 		return false;
@@ -108,12 +115,19 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 		return call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
 		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
+	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
+		return call_RAY_MESSAGE_TAG_GET_MAPS(queryString);
 	}
+
+	cout<<"{ \"message\": \"tag not serviced\" } "<<endl;
 
 // unmatched message tag
 	return false;
 }
 
+/**
+ * Required parameters in QUERY_STRING: tag, object, depth.
+ */
 bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString){
 
 	const char*dataFile="kmers.txt.dat";
@@ -211,6 +225,9 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString
 	return true;
 }
 
+/**
+ * Parameters needed in QUERY_STRING: tag, depth.
+ */
 bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString){
 
 	const char*startingPoint="ACGCCCGGCACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAA";
@@ -300,6 +317,33 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*query
 	cout<<"}}"<<endl;
 
 	database.closeFile();
+
+	return true;
+}
+
+/**
+ * QUERY_STRING parameters: tag.
+ */
+bool WebService::call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString){
+
+// We make sure that the configuration is valid...
+	const char*configuration="config.json";
+	JSONParser parser;
+	parser.parse(configuration);
+
+	//parser.printFile();
+
+	//JSONNode*node=parser.getNode();
+
+// just dump directly the json file
+	Mapper theMapper;
+
+	theMapper.enableReadOperations();
+
+	char*content=(char*)theMapper.mapFile(configuration);
+	cout<<content;
+
+	theMapper.unmapFile();
 
 	return true;
 }

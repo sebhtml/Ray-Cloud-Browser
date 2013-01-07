@@ -426,3 +426,33 @@ bool JSONNode::isDigitSymbol(char symbol){
 
 	return false;
 }
+
+int64_t JSONNode::getInteger(){
+	return m_integerContent;
+}
+
+string*JSONNode::getString(){
+	return &m_stringContent;
+}
+
+JSONNode*JSONNode::getArrayElement(int index){
+	return &(m_arrayContent[index]);
+}
+
+JSONNode*JSONNode::getObjectKey(int index){
+	return &(m_associativeKeyContent[index]);
+}
+
+JSONNode*JSONNode::getObjectValue(int index){
+	return &(m_associativeValueContent[index]);
+}
+
+int JSONNode::getArraySize(){
+	return m_arrayContent.size();
+}
+
+int JSONNode::getObjectSize(){
+	return m_associativeKeyContent.size();
+}
+
+
