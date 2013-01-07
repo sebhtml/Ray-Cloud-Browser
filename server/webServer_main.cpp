@@ -147,6 +147,9 @@ int main(int argc,char**argv){
 
 	cout<<"{"<<endl;
 
+	cout<<"\"object\": \""<<key<<"\","<<endl;
+	cout<<"\"vertices\": {"<<endl;
+
 	bool printedFirst=false;
 
 	while(head<(int)productionQueue.size() && (int)visited.size()<maximumToVisit){
@@ -187,7 +190,7 @@ int main(int argc,char**argv){
 		printedFirst=true;
 	}
 
-	cout<<"}"<<endl;
+	cout<<"}}"<<endl;
 
 	database.closeFile();
 

@@ -64,11 +64,13 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 	xmlHttp.onreadystatechange=function(){
 		if(xmlHttp.readyState==4){
 
+			var content=JSON.parse(xmlHttp.responseText);
+
 			//alert(xmlHttp.responseText);
 			var message=new Message(replyTag,
 						source,
 						destination,
-						xmlHttp.responseText);
+						content);
 
 			destination.receiveMessageFromTheWeb(message);
 		}
@@ -195,10 +197,21 @@ DataStore.prototype.processMessage=function(message){
 	}else if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY){
 		var text=message.getContent();
 
-		this.addDataInStore(text);
+		this.addDataInStore(text["vertices"]);
 
 		this.finishConstruction();
 		this.waiting=false;
+	}else if(tag==RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY){
+
+		var text=message.getContent();
+
+		this.addDataInStore(text["vertices"]);
+
+		var kmerSequence=text["object"];
+// do a fancy recursive call !
+
+		this.getKmerInformation(kmerSequence,this.graphOperator);
+		this.activeQueries--;
 	}
 }
 
@@ -233,13 +246,14 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		xmlHttp.onreadystatechange=function(){
 			if(xmlHttp.readyState==4){
 
-				_this.addDataInStore(xmlHttp.responseText);
+			var message=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY,
+						_this,
+						_this,
+						JSON.parse(xmlHttp.responseText));
 
+				_this.receiveMessage(message);
+				_this.processMessages();
 				
-// do a fancy recursive call !
-
-				_this.getKmerInformation(kmerSequence,graphOperator);
-				_this.activeQueries--;
 			}
 		}
 
@@ -285,9 +299,7 @@ DataStore.prototype.getHTTPRequests=function(){
 	return this.httpRequests;
 }
 
-DataStore.prototype.addDataInStore=function(text){
-
-	var kmerData=JSON.parse(text);
+DataStore.prototype.addDataInStore=function(kmerData){
 
 	for(var kmerSequenceIterator in kmerData){
 		if(kmerSequenceIterator in this.store)

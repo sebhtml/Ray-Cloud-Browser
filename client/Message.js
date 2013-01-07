@@ -36,9 +36,16 @@ messageSymbols[RAY_MESSAGE_TAG_ADD_KMER]="RAY_MESSAGE_TAG_ADD_KMER";
 var RAY_MESSAGE_TAG_GET_KMER_FROM_STORE=messageValue++;
 messageSymbols[RAY_MESSAGE_TAG_GET_KMER_FROM_STORE]="RAY_MESSAGE_TAG_GET_KMER_FROM_STORE";
 
+var RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY=messageValue++;
+messageSymbols[RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY]="RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY";
 
 /**
  * A message.
+ *
+ * @param tag the message type
+ * @param source the source
+ * @param destination the destination
+ * @content the content, can be anything, but usually a javascript Object instance
  */
 function Message(tag,source,destination,content){
 	this.tag=tag;
