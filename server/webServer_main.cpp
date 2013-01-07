@@ -24,7 +24,11 @@ int main(int argc,char**argv){
 	const char*queryString=getenv("QUERY_STRING");
 
 	WebService service;
-	service.processQuery(queryString);
+	
+	bool success=service.processQuery(queryString);
+
+	if(!success)
+		return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
 }

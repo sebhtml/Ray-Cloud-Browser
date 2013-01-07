@@ -75,50 +75,63 @@ bool WebService::getValue(const char*query,const char*name,char*value,int maximu
 	return false;
 }
 
-int WebService::processQuery(const char*queryString){
+bool WebService::processQuery(const char*queryString){
 
 	cout<<("Content-type: text/html\n\n");
 
 	if(queryString==NULL){
-		return 0;
+		return false;
 	}
 
 	//cout<<"QUERY_STRING= "<<queryString<<endl;
 
-	const char*dataFile="kmers.txt.dat";
 
 	char tag[CONFIG_MAXIMUM_VALUE_LENGTH];
 	bool foundTag=getValue(queryString,"tag",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundTag){
 		//cout<<"Object not found!"<<endl;
-		return 0;
-
+		return false;
 	}
 
-	const char*startingPoint="ACGCCCGGCACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAA";
+	return dispatchQuery(tag,queryString);
+}
 
+WebService::WebService(){
+}
+
+bool WebService::dispatchQuery(const char*tag,const char*queryString){
+
+	int match=0;
+
+	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==match){
+		return call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(queryString);
+	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
+		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
+	}
+
+// unmatched message tag
+	return false;
+}
+
+bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString){
+
+	const char*dataFile="kmers.txt.dat";
 	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
 
 	const char*key=NULL;
 
 	//cout<<"Tag: "<<tag<<endl;
 
-	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==0){
-		key=startingPoint;
-
-	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==0){
+	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
 		
-		bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
-		
-		if(!foundObject)
-			return 0;
+	if(!foundObject)
+		return false;
 
-		key=requestedObject;
-	}
+	key=requestedObject;
 
 	if(key==NULL)
-		return 0;
+		return false;
 
 	GraphDatabase database;
 	database.openFile(dataFile);
@@ -194,8 +207,99 @@ int WebService::processQuery(const char*queryString){
 	cout<<"}}"<<endl;
 
 	database.closeFile();
+
+	return true;
 }
 
-WebService::WebService(){
-}
+bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString){
 
+	const char*startingPoint="ACGCCCGGCACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAA";
+
+	const char*dataFile="kmers.txt.dat";
+
+	const char*key=NULL;
+
+	//cout<<"Tag: "<<tag<<endl;
+
+	key=startingPoint;
+
+	if(key==NULL)
+		return false;
+
+	GraphDatabase database;
+	database.openFile(dataFile);
+
+	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
+
+	char depth[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundDepth=getValue(queryString,"depth",depth,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+/*
+ * Use the requested depth.
+ */
+	if(foundDepth){
+		int theDepth=atoi(depth);
+
+		if(theDepth<=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS)
+			maximumToVisit=theDepth;
+	}
+
+	vector<string> productionQueue;
+	set<string> visited;
+	int head=0;
+
+	string first=key;
+
+	productionQueue.push_back(first);
+
+	cout<<"{"<<endl;
+
+	cout<<"\"object\": \""<<key<<"\","<<endl;
+	cout<<"\"vertices\": {"<<endl;
+
+	bool printedFirst=false;
+
+	while(head<(int)productionQueue.size() && (int)visited.size()<maximumToVisit){
+	
+		string*stringObject=&(productionQueue[head]);
+
+		head++;
+		visited.insert(*stringObject);
+
+		const char*object=stringObject->c_str();
+
+		VertexObject vertex;
+		bool found = database.getObject(object,&vertex);
+
+		if(!found)
+			continue;
+
+		if(printedFirst){
+			cout<<","<<endl;
+		}
+
+		cout<<"\""<<object<<"\": ";
+		vertex.writeContentInJSON(&cout);
+
+		vector<string> friends;
+		vertex.getParents(&friends);
+		vertex.getChildren(&friends);
+
+		for(int i=0;i<(int)friends.size();i++){
+			string*friendObject=&(friends[i]);
+
+			if(visited.count(*friendObject)>0)
+				continue;
+
+			productionQueue.push_back(*friendObject);
+		}
+
+		printedFirst=true;
+	}
+
+	cout<<"}}"<<endl;
+
+	database.closeFile();
+
+	return true;
+}
