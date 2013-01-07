@@ -17,6 +17,7 @@
 
 #include "WebService.h"
 #include "GraphDatabase.h"
+#include "PathDatabase.h"
 #include "JSONParser.h"
 
 #include <stdlib.h>
@@ -117,6 +118,8 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
 		return call_RAY_MESSAGE_TAG_GET_MAPS(queryString);
+	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGIONS")==match){
+		return call_RAY_MESSAGE_TAG_GET_REGIONS(queryString);
 	}
 
 	cout<<"{ \"message\": \"tag not serviced\" } "<<endl;
@@ -344,6 +347,62 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString){
 	cout<<content;
 
 	theMapper.unmapFile();
+
+	return true;
+}
+
+bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
+
+	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!found)
+		return false;
+
+	PathDatabase mock;
+	mock.openFile(buffer);
+
+	//mock.debug();
+	
+	cout<<"{ \"section\": \""<<buffer<<"\","<<endl;
+
+	int entries=mock.getEntries();
+
+	cout<<"\"count\": "<<entries<<","<<endl;
+
+	cout<<"\"regions\": ["<<endl;
+
+	char name[1024];
+
+	bool discardSpaces=false;
+	
+	for(int i=0;i<entries;i++){
+
+		if(i!=0)
+			cout<<",";
+
+		mock.getName(i,name);
+
+		int theLength=strlen(name);
+		int nucleotides=mock.getSequenceLength(i);
+
+		cout<<"{\"name\":\"";
+
+// only take the first token if configured as such
+
+		for(int j=0;j<theLength;j++){
+			if(name[j]==' ' && discardSpaces)
+				break;
+
+			cout<<name[j];
+		}
+
+		cout<<"\", \"nucleotides\":"<<nucleotides<<"}";
+	}
+
+	cout<<" ] }"<<endl;
+
+	mock.closeFile();
 
 	return true;
 }

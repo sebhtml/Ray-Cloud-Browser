@@ -22,13 +22,23 @@
  * The Ray Cloud Browser web service.
  * This is used by the interface with the HTTP GET method.
  *
- * services with method GET: (the address can be different depending on the deployment)
+ * QUERY_STRING for the supported services with method GET:
  *
- * - GET /~seb/Ray-Cloud-Browser/server/RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_MAPS HTTP/1.1
- * - GET /~seb/Ray-Cloud-Browser/server/RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE&depth=32 HTTP/1.1
- * - GET /~seb/Ray-Cloud-Browser/server/RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&object=ACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAATCGGCAGAA&depth=512 HTTP/1.1
+ * - list maps: 
+ *   	tag=RAY_MESSAGE_TAG_GET_MAPS
  *
- * - http://localhost/~seb/Ray-Cloud-Browser/server/RayCloudBrowser.webServer.cgi?tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&object=ACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAATCGGCAGAA&depth=512
+ * - start somewhere: 
+ *   	tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE&depth=32
+ *
+ * - get kmers:
+ *   	tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&object=ACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAATCGGCAGAA&depth=512
+ *
+ * - get a list of regions:
+ *   	tag=RAY_MESSAGE_TAG_GET_REGIONS&section=Contigs.fasta.dat
+ *
+ * Development server: 
+ *
+ * http://localhost/~seb/Ray-Cloud-Browser/server/RayCloudBrowser.webServer.cgi
  *
  * \author Sébastien Boisvert
  */
@@ -39,6 +49,7 @@ class WebService{
 
 	bool call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString);
+	bool call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString);
 
 public:
