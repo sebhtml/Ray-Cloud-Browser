@@ -420,7 +420,12 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 
 	int entries=mock.getEntries();
 
+	int readahead=1024;
+	int start=0;
+
 	cout<<"\"count\": "<<entries<<","<<endl;
+	cout<<"\"first\": "<<start<<","<<endl;
+	cout<<"\"readahead\": "<<readahead<<","<<endl;
 
 	cout<<"\"regions\": ["<<endl;
 
@@ -428,10 +433,23 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 
 	bool discardSpaces=false;
 	
+	bool isFirst=true;
+
+	int printed=0;
+
 	for(int i=0;i<entries;i++){
 
-		if(i!=0)
+		if(printed>=readahead)
+			break;
+
+		if(i<start)
+			continue;
+
+		if(isFirst){
+			isFirst=false;
+		}else{
 			cout<<",";
+		}
 
 		mock.getName(i,name);
 
@@ -450,6 +468,8 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 		}
 
 		cout<<"\", \"nucleotides\":"<<nucleotides<<"}";
+
+		printed++;
 	}
 
 	cout<<" ] }"<<endl;
