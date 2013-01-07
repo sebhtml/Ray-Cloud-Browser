@@ -10,7 +10,7 @@ TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase Ra
 	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath \
 	RayCloudBrowser.readJSON
 
-LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o
+LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $? -o $@

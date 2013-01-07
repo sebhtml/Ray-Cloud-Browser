@@ -15,16 +15,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "WebService.h"
+#ifndef _WebService_h
+#define _WebService_h
 
-#include <stdlib.h>
+/**
+ * The Ray Cloud Browser web service.
+ * This is used by the interface with the HTTP GET method.
+ *
+ * \author Sébastien Boisvert
+ */
+class WebService{
 
-int main(int argc,char**argv){
+	bool getValue(const char*query,const char*name,char*value,int maximumValueLength);
+public:
+	WebService();
+	int processQuery(const char*queryString);
 
-	const char*queryString=getenv("QUERY_STRING");
+};
 
-	WebService service;
-	service.processQuery(queryString);
-
-	return EXIT_SUCCESS;
-}
+#endif
