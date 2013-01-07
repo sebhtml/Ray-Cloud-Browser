@@ -149,6 +149,8 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 
 	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==match){
 		return call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(queryString);
+	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION")==match){
+		return call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
 		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
@@ -451,6 +453,97 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 	}
 
 	cout<<" ] }"<<endl;
+
+	mock.closeFile();
+
+	return true;
+}
+
+/**
+ * Required QUERY_STRING parameters: tag, section.
+ */
+bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*queryString){
+
+	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!found)
+		return false;
+
+// fail in silence
+	if(!isAllowedFile(buffer))
+		return false;
+
+	char regionBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundRegion=getValue(queryString,"region",regionBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!foundRegion)
+		return false;
+
+	int region=atoi(regionBuffer);
+
+	PathDatabase mock;
+	mock.openFile(buffer);
+
+	//mock.debug();
+	
+	int entries=mock.getEntries();
+
+// invalid region
+	if(!(region<entries))
+		return false;
+
+	char kmerLengthBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundKmerLength=getValue(queryString,"kmerLength",kmerLengthBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!foundKmerLength)
+		return false;
+
+	int kmerLength=atoi(kmerLengthBuffer);
+
+	int minimumKmerLength=15;
+	int maximumKmerLength=701;
+
+	if(!(minimumKmerLength <= kmerLength && kmerLength <= maximumKmerLength))
+		return false;
+
+	char name[1024];
+	mock.getName(region,name);
+	int nucleotides=mock.getSequenceLength(region);
+
+// kmer length is too long.
+	if(!(kmerLength<=nucleotides))
+		return false;
+
+	//int numberOfKmers=nucleotides-kmerLength+1;
+
+	char locationBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundLocation=getValue(queryString,"location",locationBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	if(!foundLocation)
+		return false;
+	int location=atoi(locationBuffer);
+
+	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundReadahead=getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	if(!foundReadahead)
+		return false;
+	int readahead=atoi(readaheadBuffer);
+
+// Now we are ready
+
+	cout<<"{"<<endl;
+	cout<<"\"section\": \""<<buffer<<"\","<<endl;
+	cout<<"\"region\": "<<region<<","<<endl;
+	cout<<"\"kmerLength\": "<<kmerLength<<","<<endl;
+	cout<<"\"location\": "<<location<<","<<endl;
+	cout<<"\"name\":\""<<name<<"\","<<endl;
+	cout<<"\"nucleotides\":"<<nucleotides<<","<<endl;
+	cout<<"\"readahead\": "<<readahead<<","<<endl;
+
+	cout<<"\"vertices\": ["<<endl;
+
+	cout<<"] }"<<endl;
+
 
 	mock.closeFile();
 
