@@ -18,16 +18,12 @@
 /**
  * This is a window that allows a selection.
  */
-function Inventory(title,choices,x,y,width,height,visible,screen){
+function Inventory(x,y,width,height,visible,screen){
 
 	this.selected=false;
 	this.screen=screen;
 	this.mouseX=0;
 	this.mouseY=0;
-
-	this.choices=choices;
-
-	this.choice=null;
 
 	this.width=width;
 	this.height=height;
@@ -40,6 +36,8 @@ function Inventory(title,choices,x,y,width,height,visible,screen){
 	this.closeButton=new Button(this.x+this.buttonWidth/2,this.y+this.buttonWidth/2,
 		this.buttonWidth,this.buttonWidth,"",false);
 
+	var title="Inventory";
+
 	this.overlay=new Button(this.x+this.width/2,this.y+this.buttonWidth/2,
 		this.width,this.buttonWidth,"     "+title,false);
 	this.overlay.setBackgroundColor("#99CCCC");
@@ -47,8 +45,14 @@ function Inventory(title,choices,x,y,width,height,visible,screen){
 
 
 	this.debugButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
-		this.y+2.0*this.buttonWidth,
+		this.y+1.8*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Display map position",false);
+
+	this.warpButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
+		this.y+3.0*this.buttonWidth,
+		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
+
+	this.selector=new Selector(this.x+10,this.y+100);
 }
 
 Inventory.prototype.draw=function(context){
@@ -70,6 +74,10 @@ Inventory.prototype.draw=function(context){
 	
 	if(this.visible){
 		this.debugButton.draw(context,null);
+		this.warpButton.draw(context,null);
+
+		if(this.warpButton.getState())
+			this.selector.draw(context);
 	}
 }
 
@@ -87,6 +95,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	}else if(this.debugButton.handleMouseDown(x,y)){
 		this.screen.toggleDebugMode();
 		return true;
+	}else if(this.warpButton.handleMouseDown(x,y)){
 	}
 
 	return false;
@@ -100,6 +109,8 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.closeButton.move(deltaX,deltaY);
 		this.overlay.move(deltaX,deltaY);
 		this.debugButton.move(deltaX,deltaY);
+		this.warpButton.move(deltaX,deltaY);
+		this.selector.move(deltaX,deltaY);
 		this.x+=deltaX;
 		this.y+=deltaY;
 	}

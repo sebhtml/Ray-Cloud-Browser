@@ -20,10 +20,7 @@
  */
 function HumanInterface(screen){
 
-	this.sampleInventory=new Inventory("Inventory",
-		["Escherichia coli K-12 MG1655 (SRA001125)",
-		"Project Neutrinos (Confidential)"],
-		screen.getWidth()-305,5,300,400,false,screen);
+	this.sampleInventory=new Inventory(screen.getWidth()-305,5,300,400,false,screen);
 
 	this.screen=screen;
 
