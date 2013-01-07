@@ -206,11 +206,16 @@ Screen.prototype.handleMouseMove=function(eventObject){
 		}
 	}
 
-
+// This computes the force with which the slide will happen
 	if(this.moveOrigin){
 
 		var dx=this.lastMouseX-position[0];
 		var dy=this.lastMouseY-position[1];
+
+		var softModifier=0.3;
+
+		dx*=softModifier;
+		dy*=softModifier;
 
 		dx/=this.zoomValue;
 		dy/=this.zoomValue;
