@@ -448,7 +448,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 		if(isFirst){
 			isFirst=false;
 		}else{
-			cout<<",";
+			cout<<","<<endl;
 		}
 
 		mock.getName(i,name);
@@ -535,7 +535,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*que
 	if(!(kmerLength<=nucleotides))
 		return false;
 
-	//int numberOfKmers=nucleotides-kmerLength+1;
+	int numberOfKmers=nucleotides-kmerLength+1;
 
 	char locationBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
 	bool foundLocation=getValue(queryString,"location",locationBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
@@ -561,6 +561,32 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*que
 	cout<<"\"readahead\": "<<readahead<<","<<endl;
 
 	cout<<"\"vertices\": ["<<endl;
+
+	int printed=0;
+
+	char kmerSequence[512];
+
+	int startingPlace=location-readahead/2;
+
+	if(startingPlace<0)
+		startingPlace=0;
+
+	bool first=true;
+
+	while(startingPlace<numberOfKmers && printed<readahead){
+
+		mock.getKmer(region,kmerLength,startingPlace,kmerSequence);
+
+		if(first)
+			first=false;
+		else
+			cout<<","<<endl;
+
+		cout<<"{\"position\":"<<startingPlace<<",\"value\":\""<<kmerSequence<<"\"}";
+
+		startingPlace++;
+		printed++;
+	}
 
 	cout<<"] }"<<endl;
 
