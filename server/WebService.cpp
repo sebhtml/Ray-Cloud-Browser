@@ -29,6 +29,41 @@
 #include <set>
 using namespace std;
 
+bool WebService::isAllowedFile(const char*file){
+
+// no absolute paths
+	if(file[0]=='/')
+		return false;
+
+	int length=strlen(file);
+
+// no relative paths with '..'
+	for(int i=0;i<length-2;i++){
+		if(file[i]=='.' && file[i+1]=='.')
+			return false;
+	}
+
+	return true;
+
+/* we don't care for the next two rules */
+#if 0
+// must be something + .dat
+	if(length<=4) 
+		return false;
+
+// must end with .dat
+	if(!(
+		/**/file[length-4]=='.'
+		&&file[length-3]=='d'
+		&&file[length-2]=='a'
+		&&file[length-1]=='t')){
+
+		return false;
+	}
+	
+	return true;
+#endif
+}
 
 #define CONFIG_MAXIMUM_VALUE_LENGTH 256
 #define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 4096
@@ -147,6 +182,10 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString
 		return false;
 
 	if(!foundMap)
+		return false;
+
+// fail in silence
+	if(!isAllowedFile(dataFile))
 		return false;
 
 	key=requestedObject;
@@ -364,6 +403,10 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!found)
+		return false;
+
+// fail in silence
+	if(!isAllowedFile(buffer))
 		return false;
 
 	PathDatabase mock;
