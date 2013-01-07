@@ -38,7 +38,20 @@ function DataStore(kmerLength){
 	this.messageQueue=new MessageQueue();
 }
 
-DataStore.prototype.pullData=function(){
+/**
+ *
+ * This send a message on the web.
+ * The source is obviously this.
+ *
+ * @param messageTag message tag
+ * @param source local source
+ * @param destination local destination
+ * @content array of arguments
+ * @replyTag reply tag to the message tag
+ *
+ */
+DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,content,replyTag){
+
 	var xmlHttp=null;
 
 /*
@@ -48,28 +61,62 @@ DataStore.prototype.pullData=function(){
 		xmlHttp=new XMLHttpRequest();
 	}
 
-	_this=this;
 	xmlHttp.onreadystatechange=function(){
 		if(xmlHttp.readyState==4){
 
 			//alert(xmlHttp.responseText);
-			var message=new Message(RAY_MESSAGE_TAG_FIRST_KMER_JSON,
-						_this,
-						_this,
+			var message=new Message(replyTag,
+						source,
+						destination,
 						xmlHttp.responseText);
-			_this.receiveMessage(message);
-			_this.processMessages();
-			_this.waiting=false;
+
+			destination.receiveMessageFromTheWeb(message);
 		}
 	}
-	var address="../server/RayCloudBrowser.webServer.cgi?";
-	address+="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE";
-	address+="&depth="+this.defaultDepthFirst;
-	xmlHttp.open("GET",address,true);
+	var cgiProgram="../server/RayCloudBrowser.webServer.cgi"
+	
+	var processed=new Object();
 
-	xmlHttp.send(null);
+	var queryString="tag="+messageSymbols[messageTag];
+	processed["tag"]=true;
+
+	for(var key in content){
+
+		if(key in processed)
+			continue;
+
+		queryString+="&"+key+"="+content[key];
+
+		processed[key]=true;
+	}
+
+	var method="GET";
+
+	var address=cgiProgram+"?"+queryString;
+
+	xmlHttp.open(method,address,true);
+	xmlHttp.send();
+
 	this.httpRequests++;
+
 	this.waiting=true;
+}
+
+DataStore.prototype.receiveMessageFromTheWeb=function(message){
+
+	this.receiveMessage(message);
+	this.processMessages();
+	this.waiting=false;
+
+}
+
+DataStore.prototype.pullData=function(){
+
+	var body=new Object();
+	body["depth"]=this.defaultDepthFirst;
+
+	this.sendMessageOnTheWeb(RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE,
+		this,this,body,RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY);
 }
 
 DataStore.prototype.finishConstruction=function(){
@@ -145,7 +192,7 @@ DataStore.prototype.processMessage=function(message){
 
 		graphOperator.receiveFirstKmer(prefix);
 
-	}else if(tag==RAY_MESSAGE_TAG_FIRST_KMER_JSON){
+	}else if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY){
 		var text=message.getContent();
 
 		this.addDataInStore(text);
