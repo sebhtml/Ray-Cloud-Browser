@@ -71,12 +71,21 @@ function Screen(gameFrequency,renderingFrequency){
  * Resolution.
  *
  */
-	
-	var physicalScreenWidth=1200;//screen.width;
-	var physicalScreenHeight=900;//screen.height;
 
-	this.width=physicalScreenWidth-20;
-	this.height=physicalScreenHeight*0.9;
+	var physicalScreenWidth=window.screen.width;
+	var physicalScreenHeight=window.screen.height;
+
+	var availableWidth=window.screen.availWidth;
+	var availableHeight=window.screen.availHeight;
+
+	this.width=availableWidth-20;
+	this.height=availableHeight-20;
+
+	//this.width=physicalScreenWidth;
+	//this.height=physicalScreenHeight-40;
+
+	//this.width=virtualWindowWidth;
+	//this.height=virtualWindowHeight-40;
 
 	this.canvas.width=this.width;
 	this.canvas.height=this.height;

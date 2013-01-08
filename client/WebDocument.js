@@ -22,26 +22,23 @@ function WebDocument(){
 
 	this.canvas.style.position="relative";
 
-	var link=document.createElement("div");
+	var body=document.getElementsByTagName("body")[0];
+
+	body.appendChild(this.canvas);
+
+	var footer=document.createElement("div");
+
 	var hrefLink=document.createElement("a");
 	hrefLink.href="https://github.com/sebhtml/Ray-Cloud-Browser";
 	var linkText=document.createTextNode("Ray Cloud Browser: interactively skim processed genomics data with energy");
 	hrefLink.appendChild(linkText);
-	link.appendChild(hrefLink);
 
-	var body=document.getElementsByTagName("body")[0];
-	body.appendChild(link);
-	var center=document.createElement("center");
-	center.appendChild(this.canvas);
-
-	body.appendChild(center);
-
-	var footer=document.createElement("div");
 	var footerSmall=document.createElement("small");
-	var controls=document.createTextNode("controls: move: mouse or arrows, zoom: page down & page up ");
-	var linkTextBottom=document.createTextNode("Copyright (C) 2012, 2013 Sébastien Boisvert licensed under the GNU General Public License, version 3");
-	footerSmall.appendChild(controls);
+	var controls=document.createTextNode(" controls: move: mouse or arrows, zoom: page down & page up ");
+	var linkTextBottom=document.createTextNode("Copyright (C) 2012, 2013 Sébastien Boisvert, license: GPLv3");
 	//footer.appendChild(document.createElement("br"));
+	footerSmall.appendChild(hrefLink);
+	footerSmall.appendChild(controls);
 	footerSmall.appendChild(linkTextBottom);
 	body.appendChild(footer);
 	footer.appendChild(footerSmall);
