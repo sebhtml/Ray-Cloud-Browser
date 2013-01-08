@@ -218,6 +218,9 @@ DataStore.prototype.processMessage=function(message){
 
 DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
+// TODO: this should be done only once
+	this.graphOperator=graphOperator;
+
 /*
  * Send a request to the server.
  * TODO: to some readahead.
