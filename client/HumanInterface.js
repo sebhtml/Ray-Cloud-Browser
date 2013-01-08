@@ -17,10 +17,12 @@
 
 /**
  * The controls for the human using the application.
+ *
+ * \author Sébastien Boisvert
  */
-function HumanInterface(screen){
+function HumanInterface(screen,dataStore){
 
-	this.sampleInventory=new Inventory(130,20,300,400,false,screen);
+	this.sampleInventory=new Inventory(130,20,300,400,false,screen,dataStore);
 
 	this.screen=screen;
 

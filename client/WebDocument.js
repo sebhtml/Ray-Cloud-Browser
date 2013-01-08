@@ -15,6 +15,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * The document in the browser.
+ *
+ * \author Sébastien Boisvert
+ */
 function WebDocument(){
 
 	this.canvas=document.createElement("canvas");

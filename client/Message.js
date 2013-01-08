@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,6 +39,12 @@ messageSymbols[RAY_MESSAGE_TAG_GET_KMER_FROM_STORE]="RAY_MESSAGE_TAG_GET_KMER_FR
 var RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY=messageValue++;
 messageSymbols[RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY]="RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY";
 
+var RAY_MESSAGE_TAG_GET_MAPS=messageValue++;
+messageSymbols[RAY_MESSAGE_TAG_GET_MAPS]="RAY_MESSAGE_TAG_GET_MAPS";
+
+var RAY_MESSAGE_TAG_GET_MAPS_REPLY=messageValue++;
+messageSymbols[RAY_MESSAGE_TAG_GET_MAPS_REPLY]="RAY_MESSAGE_TAG_GET_MAPS_REPLY";
+
 /**
  * A message.
  *
@@ -46,6 +52,8 @@ messageSymbols[RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY]="RAY_MESSAGE_TAG_GET_K
  * \param source the source
  * \param destination the destination
  * \param content the content, can be anything, but usually a javascript Object instance
+ *
+ * \author Sébastien Boisvert
  */
 function Message(tag,source,destination,content){
 	this.tag=tag;

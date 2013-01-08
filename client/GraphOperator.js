@@ -173,3 +173,7 @@ GraphOperator.prototype.getKmerLength=function(){
 GraphOperator.prototype.getHTTPRequests=function(){
 	return this.dataStore.getHTTPRequests();
 }
+
+GraphOperator.prototype.getDataStore=function(){
+	return this.dataStore;
+}

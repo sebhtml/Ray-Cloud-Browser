@@ -110,7 +110,6 @@ DataStore.prototype.receiveMessageFromTheWeb=function(message){
 	this.receiveMessage(message);
 	this.processMessages();
 	this.waiting=false;
-
 }
 
 DataStore.prototype.pullData=function(){
@@ -165,7 +164,6 @@ DataStore.prototype.getGraphFiles=function(){
 DataStore.prototype.receiveMessage=function(message){
 
 	this.messageQueue.push(message);
-
 }
 
 DataStore.prototype.processMessages=function(){
@@ -213,6 +211,14 @@ DataStore.prototype.processMessage=function(message){
 
 		this.getKmerInformation(kmerSequence,this.graphOperator);
 		this.activeQueries--;
+	}else if(tag==RAY_MESSAGE_TAG_GET_MAPS){
+
+		var parameters=new Object();
+
+		this.sendMessageOnTheWeb(RAY_MESSAGE_TAG_GET_MAPS,
+			this,message.getSource(),parameters,RAY_MESSAGE_TAG_GET_MAPS_REPLY);
+
+
 	}
 }
 
@@ -287,4 +293,10 @@ DataStore.prototype.addDataInStore=function(kmerData){
 		this.store[kmerSequenceIterator]=kmerData[kmerSequenceIterator];
 	}
 
+}
+
+DataStore.prototype.receiveAndProcessMessage=function(message){
+
+	this.receiveMessage(message);
+	this.processMessages();
 }

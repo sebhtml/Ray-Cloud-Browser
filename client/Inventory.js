@@ -17,8 +17,10 @@
 
 /**
  * This is a window that allows a selection.
+ *
+ * \author Sébastien Boisvert
  */
-function Inventory(x,y,width,height,visible,screen){
+function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.selected=false;
 	this.screen=screen;
@@ -26,7 +28,7 @@ function Inventory(x,y,width,height,visible,screen){
 	this.mouseY=0;
 
 	this.width=width;
-	this.height=height;
+	this.height=height/4;
 	this.x=x;
 	this.y=y;
 	this.visible=visible;
@@ -45,24 +47,43 @@ function Inventory(x,y,width,height,visible,screen){
 
 
 	this.debugButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
-		this.y+1.8*this.buttonWidth,
+		this.y+2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Display map position",false);
 
 	this.warpButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
-		this.y+3.0*this.buttonWidth,
+		this.y+3.2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
-	this.selector=new Selector(this.x+10,this.y+100);
+	this.selector=new Selector(this.x,this.y+this.height+30,this.width,height/4*3,dataStore);
 }
 
 Inventory.prototype.draw=function(context){
 
-	var height=this.height;
-	if(!this.visible)
+	var height=this.height-5;
+	var drawingY=this.y;
+	if(!this.visible){
 		height=this.buttonWidth;
+		drawingY=this.y+5
+	}else{
+		drawingY=this.y+this.buttonWidth+5
+	}
+
+// draw the pink overlay
+	context.beginPath();
+
+	if(!this.visible)
+		context.rect(this.x, drawingY, this.width, 30 );
+	else if(!this.warpButton.getState())
+		context.rect(this.x, drawingY, this.width, 100 );
+
+	context.fillStyle = '#FFF8F9';
+	context.fill();
+	context.lineWidth = 1;
+	context.strokeStyle = 'black';
+	context.stroke();
 
 	context.beginPath();
-	context.rect(this.x, this.y, this.width,height );
+	context.rect(this.x, drawingY, this.width,height );
 	context.fillStyle = '#FFFF99';
 	context.fill();
 	context.lineWidth = 1;
@@ -96,6 +117,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		this.screen.toggleDebugMode();
 		return true;
 	}else if(this.warpButton.handleMouseDown(x,y)){
+	
 	}
 
 	return false;

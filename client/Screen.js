@@ -92,7 +92,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.renderingCanvas.width=this.width;
 	this.renderingCanvas.height=this.height;
 
-	this.humanInterface=new HumanInterface(this);
+	this.humanInterface=new HumanInterface(this,this.graphOperator.getDataStore());
 
 	this.engine=new PhysicsEngine(this);
 
