@@ -20,7 +20,7 @@
  */
 function HumanInterface(screen){
 
-	this.sampleInventory=new Inventory(screen.getWidth()-305,5,300,400,false,screen);
+	this.sampleInventory=new Inventory(130,20,300,400,false,screen);
 
 	this.screen=screen;
 
@@ -30,38 +30,40 @@ function HumanInterface(screen){
 	this.buttonColor="#6699FF";
 	this.buttonFontSize=22;
 
+	var arrowVerticalOffset=10;
+
 	this.goUp=new Button(this.buttonWidth*1.4,
-		this.buttonWidth*0.9,this.buttonWidth,this.buttonWidth,"↑",false);
+		this.buttonWidth*0.9+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"↑",false);
 	this.goUp.setBackgroundColor(this.buttonColor);
 	this.goUp.setActiveColor(this.buttonColor);
 	this.goUp.setFontSize(this.buttonFontSize);
 
 	this.goDown=new Button(this.buttonWidth*1.4,
-		this.buttonWidth*(3+0.1),this.buttonWidth,this.buttonWidth,"↓",false);
+		this.buttonWidth*(3+0.1)+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"↓",false);
 	this.goDown.setBackgroundColor(this.buttonColor);
 	this.goDown.setActiveColor(this.buttonColor);
 	this.goDown.setFontSize(this.buttonFontSize);
 
 	this.goLeft=new Button(this.buttonWidth*(1.4-0.5-0.05),
-		this.buttonWidth*(0.9+1+0.1),this.buttonWidth,this.buttonWidth,"←",false);
+		this.buttonWidth*(0.9+1+0.1)+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"←",false);
 	this.goLeft.setBackgroundColor(this.buttonColor);
 	this.goLeft.setActiveColor(this.buttonColor);
 	this.goLeft.setFontSize(this.buttonFontSize)
 
 	this.goRight=new Button(this.buttonWidth*(1.4+0.5+0.05),
-		this.buttonWidth*(0.9+1+0.1),this.buttonWidth,this.buttonWidth,"→",false);
+		this.buttonWidth*(0.9+1+0.1)+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"→",false);
 	this.goRight.setBackgroundColor(this.buttonColor);
 	this.goRight.setActiveColor(this.buttonColor);
 	this.goRight.setFontSize(this.buttonFontSize)
 
 	this.zoomOut=new Button(this.buttonWidth*1.4,
-		this.buttonWidth*(6.1-0.5),this.buttonWidth,this.buttonWidth,"-",false);
+		this.buttonWidth*(6.1-0.5)+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"-",false);
 	this.zoomOut.setBackgroundColor(this.buttonColor);
 	this.zoomOut.setActiveColor(this.buttonColor);
 	this.zoomOut.setFontSize(this.buttonFontSize)
 
 	this.zoomIn=new Button(this.buttonWidth*1.4,
-		this.buttonWidth*4.5,this.buttonWidth,this.buttonWidth,"+",false);
+		this.buttonWidth*4.5+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"+",false);
 	this.zoomIn.setBackgroundColor(this.buttonColor);
 	this.zoomIn.setActiveColor(this.buttonColor);
 	this.zoomIn.setFontSize(this.buttonFontSize)
