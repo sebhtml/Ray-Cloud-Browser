@@ -135,6 +135,18 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 
 	var result=false;
 
+	var selected=-1;
+
+// check if a choice button is down already
+	var i=0;
+	while(i<this.choiceButtons.length){
+		if(this.choiceButtons[i].getState()){
+			selected=i;
+			break;
+		}
+		i++;
+	}
+
 	for(var i in this.buttons){
 		if(this.buttons[i].handleMouseDown(x,y)){
 			result=true;
@@ -142,20 +154,37 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 		}
 	}
 
+// reset the other button if a new one is active
+	var i=0;
+	while(i<this.choiceButtons.length){
+		if(selected==-1)
+			break;
+		if(this.choiceButtons[i].getState() && i!=selected){
+			this.choiceButtons[selected].resetState();
+			break;
+		}
+		i++;
+	}
+
 	if(this.okButton.getState()){
 
 		var i=0;
+		var selected=0;
+
 		while(i < this.choiceButtons.length){
+
+
 			if(this.choiceButtons[i].getState()){
 				this.finalChoice=this.offset+i;
 
 				//console.log((typeof(this.offset))+" "+(typeof(i)));
-
+				selected++;
 				this.gotFinalChoice=true;
 			}
 
 			i++;
 		}
+
 
 		if(!this.gotFinalChoice){
 			this.okButton.resetState();
