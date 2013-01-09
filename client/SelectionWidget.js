@@ -32,16 +32,18 @@ function SelectionWidget(x,y,width,height,title,choices){
 
 	var buttonDimension=25;
 
+	var stepping=7;
+
 	this.previousButton=new Button(this.x+this.width/2-buttonDimension/2-2,
-		this.y+this.height-40,
+		this.y+this.height-buttonDimension/2-stepping,
 		buttonDimension,buttonDimension,"<<",false);
 
 	this.nextButton=new Button(this.x+this.width/2+buttonDimension/2+2,
-		this.y+this.height-40,
+		this.y+this.height-buttonDimension/2-stepping,
 		buttonDimension,buttonDimension,">>",false);
 
-	this.okButton=new Button(this.x+this.width-buttonDimension/2-10,
-		this.y+this.height-buttonDimension/2-10,
+	this.okButton=new Button(this.x+this.width-buttonDimension/2-stepping,
+		this.y+this.height-buttonDimension/2-stepping,
 		buttonDimension,buttonDimension,"OK",false);
 
 	this.finished=false;
@@ -53,17 +55,24 @@ SelectionWidget.prototype.createButtons=function(offset){
 	this.offset=offset;
 	this.displayed=10;
 
-	var i=0;
+	var i=offset;
 
 	this.buttons=new Array();
 	this.choiceButtons=new Array();
 
-	while(i<this.choices.length){
-		var fancyButton=new Button(this.x+10+this.width/2,
-			this.y+80,this.width-40,18,this.choices[i++],false);
+	var processed=0;
+	var buttonHeight=18;
+	while(i<this.choices.length && processed < this.displayed){
+
+		var multiplier=i-this.offset;
+
+		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.3*buttonHeight,
+			this.width-40,buttonHeight,this.choices[i++],false);
 
 		this.buttons.push(fancyButton);
 		this.choiceButtons.push(fancyButton);
+		
+		processed++;
 	}
 
 	if(this.offset!=0)
@@ -151,6 +160,17 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 		if(!this.gotFinalChoice){
 			this.okButton.resetState();
 		}
+	}else if(this.nextButton.getState()){
+
+		this.createButtons(this.offset+this.displayed);
+
+		this.nextButton.resetState();
+
+	}else if(this.previousButton.getState()){
+
+		this.createButtons(this.offset-this.displayed);
+
+		this.previousButton.resetState();
 	}
 
 	return result;

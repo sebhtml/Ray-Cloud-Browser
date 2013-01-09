@@ -115,7 +115,6 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 
 DataStore.prototype.receiveMessageFromTheWeb=function(message){
 
-
 	this.receiveAndProcessMessage(message);
 }
 
@@ -226,10 +225,13 @@ DataStore.prototype.processMessage=function(message){
 
 		var parameters=new Object();
 
-		this.sendMessageOnTheWeb(RAY_MESSAGE_TAG_GET_MAPS,
+		this.sendMessageOnTheWeb(tag,
 			this,message.getSource(),parameters,RAY_MESSAGE_TAG_GET_MAPS_REPLY);
 
+	}else if(tag==RAY_MESSAGE_TAG_GET_REGIONS){
 
+		this.sendMessageOnTheWeb(tag,
+			this,message.getSource(),message.getContent(),RAY_MESSAGE_TAG_GET_REGIONS_REPLY);
 	}
 }
 

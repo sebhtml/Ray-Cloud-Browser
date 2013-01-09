@@ -44,7 +44,7 @@ function Selector(x,y,width,height,dataStore){
 	this.SLAVE_MODE_SELECT_MAP=step++;
 	this.SLAVE_MODE_SELECT_SECTION=step++;
 	this.SLAVE_MODE_PULL_REGIONS=step++;
-	this.SLAVE_MOVE_SELECT_REGION=step++;
+	this.SLAVE_MODE_SELECT_REGION=step++;
 	this.SLAVE_MODE_SELECT_LOCATION=step++;
 
 	this.state=this.SLAVE_MODE_PULL_MAPS;
@@ -97,10 +97,11 @@ Selector.prototype.draw=function(context){
 			//console.log("Creating widget for selecting map");
 			//console.log(this.mapChoices);
 
-			this.mapWidget=new SelectionWidget(this.x+10,this.y+10,this.width,this.height,"(1/4) Select map",this.mapChoices);
+			this.mapWidget=new SelectionWidget(this.x+10,this.y+10,this.width*1.5,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
-
 			this.state=this.SLAVE_MODE_SELECT_MAP;
+
+			this.requestedRegions=false;
 
 		}
 
@@ -120,7 +121,40 @@ Selector.prototype.draw=function(context){
 		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
 
-	}else if(this.state==this.SLAVE_MOVE_SELECT_REGION){
+		if(!this.requestedRegions){
+			var parameters=new Object();
+			parameters["section"]=this.mapData[this.mapIndex]["sections"][this.sectionIndex]["file"];
+
+			var message=new Message(RAY_MESSAGE_TAG_GET_REGIONS,this,this.dataStore,parameters);
+
+			this.requestedRegions=true;
+			this.receivedRegions=false;
+
+			this.dataStore.receiveAndProcessMessage(message);
+
+		}else if(this.receivedRegions){
+
+			var choices=new Array();
+			var i=0;
+
+			while(i<this.regionData["regions"].length){
+				var entry=this.regionData["regions"][i++];
+				choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
+			}
+
+			this.regionWidget=new SelectionWidget(this.x+30,this.y+110,this.width*1.5,this.height,"(3/4) Select region",choices);
+			this.objects=new Array();
+			this.objects.push(this.regionWidget);
+			this.state=this.SLAVE_MODE_SELECT_REGION;
+		}
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_REGION){
+
+		this.mapWidget.draw(context);
+		this.sectionWidget.draw(context);
+		this.regionWidget.draw(context);
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION){
 
 		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
@@ -157,7 +191,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 			sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
 		}
 
-		this.sectionWidget=new SelectionWidget(this.x+20,this.y+70,this.width,this.height,"(2/4) Select section",sections);
+		this.sectionWidget=new SelectionWidget(this.x+20,this.y+60,this.width*1.5,this.height,"(2/4) Select section",sections);
 		this.objects=new Array();
 		this.objects.push(this.sectionWidget);
 		this.state=this.SLAVE_MODE_SELECT_SECTION;
@@ -177,6 +211,19 @@ Selector.prototype.handleMouseDown=function(x,y){
 		this.objects=new Array();
 
 		this.deadObjects.push(this.sectionWidget);
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice()){
+
+		this.regionIndex=this.regionWidget.getChoice();
+
+		this.state=this.SLAVE_MODE_SELECT_LOCATION;
+
+		this.regionWidget.resetState();
+
+		this.objects=new Array();
+		this.deadObjects.push(this.regionWidget);
+
+
 	}
 
 	return result;
@@ -209,7 +256,9 @@ Selector.prototype.move=function(x,y){
 
 Selector.prototype.receiveAndProcessMessage=function(message){
 
-	if(message.getTag()==RAY_MESSAGE_TAG_GET_MAPS_REPLY){
+	var tag=message.getTag();
+
+	if(tag==RAY_MESSAGE_TAG_GET_MAPS_REPLY){
 
 		//console.log("Selector received RAY_MESSAGE_TAG_GET_MAPS_REPLY");
 		//console.log(message.getContent());
@@ -223,6 +272,13 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 		}
 
 		this.receivedMaps=true;
+
+	}else if(tag==RAY_MESSAGE_TAG_GET_REGIONS_REPLY){
+
+		this.regionData=message.getContent();
+
+		this.receivedRegions=true;
+
 	}
 }
 
