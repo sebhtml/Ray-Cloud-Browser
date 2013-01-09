@@ -15,7 +15,7 @@ http://ec2-54-242-197-219.compute-1.amazonaws.com/~sebhtml/Ray-Cloud-Browser/cli
 
 One of the problems with genomics is that you need to deliver large data
 to end users before delivering a user experience for visualization.
-But most clients are not ready for these large data and in some way it
+But most end users are not ready for these large data and in some way it
 does not make sense to move large data around.
 
 Ray Cloud Browser is a genome graph browser in the cloud. The purpose is
