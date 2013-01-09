@@ -22,6 +22,9 @@
  */
 function Inventory(x,y,width,height,visible,screen,dataStore){
 
+	this.originHeight=height;
+	this.dataStore=dataStore;
+
 	this.selected=false;
 	this.screen=screen;
 	this.mouseX=0;
@@ -54,7 +57,12 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+3.2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
-	this.selector=new Selector(this.x,this.y+this.height+30,this.width,height/5*4,dataStore);
+	this.pushSelector();
+}
+
+Inventory.prototype.pushSelector=function(){
+
+	this.selector=new Selector(this.x,this.y+this.height+30,this.width,this.originHeight/5*4,this.dataStore);
 }
 
 Inventory.prototype.draw=function(context){
@@ -118,6 +126,9 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		return true;
 	}else if(this.warpButton.handleMouseDown(x,y)){
 	
+		if(this.warpButton.getState())
+			this.pushSelector();
+
 		return true;
 	}else if(this.selector.handleMouseDown(x,y)){
 		return true;
