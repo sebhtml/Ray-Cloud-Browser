@@ -43,6 +43,7 @@ function Selector(x,y,width,height,dataStore){
 	this.SLAVE_MODE_PULL_MAPS=step++;
 	this.SLAVE_MODE_SELECT_MAP=step++;
 	this.SLAVE_MODE_SELECT_SECTION=step++;
+	this.SLAVE_MODE_PULL_REGIONS=step++;
 	this.SLAVE_MOVE_SELECT_REGION=step++;
 	this.SLAVE_MODE_SELECT_LOCATION=step++;
 
@@ -95,8 +96,7 @@ Selector.prototype.draw=function(context){
 			//console.log("Creating widget for selecting map");
 			//console.log(this.mapChoices);
 
-			this.mapWidget=new SelectionWidget(this.x,this.y,this.width,this.height,"Select map",this.mapChoices);
-
+			this.mapWidget=new SelectionWidget(this.x,this.y,this.width,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
 
 			this.state=this.SLAVE_MODE_SELECT_MAP;
@@ -108,6 +108,9 @@ Selector.prototype.draw=function(context){
 		//console.log("SLAVE_MODE_SELECT_MAP");
 
 		this.mapWidget.draw(context);
+	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION){
+
+		this.sectionWidget.draw(context);
 	}
 }
 
@@ -116,7 +119,47 @@ Selector.prototype.handleMouseDown=function(x,y){
 	this.mouseX=x;
 	this.mouseY=y;
 
-	return false;
+	var result=false;
+
+	var i=0;
+	while(i<this.objects.length){
+		if(this.objects[i].handleMouseDown(x,y)){
+			result=true;
+			break;
+		}
+		i++;
+	}
+
+	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.mapWidget.hasChoice()){
+		var index=this.mapWidget.getChoice();
+		//alert("Choice: # "+index+" "+this.mapChoices[index]);
+
+		this.mapIndex=index;
+
+		var sections=new Array();
+
+		var i=0;
+		while(i<this.mapData[this.mapIndex]["sections"].length){
+			sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
+		}
+
+		this.sectionWidget=new SelectionWidget(this.x,this.y,this.width,this.height,"(2/4) Select section",sections);
+		this.objects=new Array();
+		this.objects.push(this.sectionWidget);
+		this.state=this.SLAVE_MODE_SELECT_SECTION;
+
+		//console.log("Creating section widget, "+this.objects.length);
+		this.mapWidget.resetState();
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION && this.sectionWidget.hasChoice()){
+		this.sectionIndex=this.sectionWidget.getChoice();
+
+		this.state=this.SLAVE_MODE_PULL_REGIONS;
+
+		this.sectionWidget.resetState();
+	}
+
+	return result;
 }
 
 Selector.prototype.handleMouseMove=function(x,y){
@@ -147,7 +190,13 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 		//console.log("Selector received RAY_MESSAGE_TAG_GET_MAPS_REPLY");
 		//console.log(message.getContent());
 
-		this.mapChoices=message.getContent()["maps"];
+		this.mapData=message.getContent()["maps"];
+
+		this.mapChoices=new Array();
+
+		for(var i in this.mapData){
+			this.mapChoices.push(this.mapData[i]["name"]);
+		}
 
 		this.receivedMaps=true;
 	}

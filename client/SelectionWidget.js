@@ -25,9 +25,7 @@ function SelectionWidget(x,y,width,height,title,choices){
 	this.y=y;
 	this.title=title;
 	this.choices=choices;
-
-	this.offset=0;
-	this.displayed=10;
+	this.gotFinalChoice=false;
 
 	this.width=width;
 	this.height=height;
@@ -45,6 +43,39 @@ function SelectionWidget(x,y,width,height,title,choices){
 	this.okButton=new Button(this.x+this.width-buttonDimension/2-2,
 		this.y+this.height-buttonDimension/2-2,
 		buttonDimension,buttonDimension,"OK",false);
+
+	this.createButtons(0);
+}
+
+SelectionWidget.prototype.createButtons=function(offset){
+	this.offset=offset;
+	this.displayed=10;
+
+	var i=0;
+
+	this.buttons=new Array();
+	this.choiceButtons=new Array();
+
+	while(i<this.choices.length){
+		var fancyButton=new Button(this.x+10+this.width/2,
+			this.y+40,this.width-40,18,this.choices[i++],false);
+
+		this.buttons.push(fancyButton);
+		this.choiceButtons.push(fancyButton);
+	}
+
+	if(this.offset!=0)
+		this.buttons.push(this.previousButton);
+
+	var lastDisplayed=this.offset+this.displayed-1;
+
+	if(lastDisplayed>this.choices.length-1)
+		lastDisplayed=this.choices.length-1;
+
+	if(lastDisplayed!=this.choices.length-1)
+		this.buttons.push(this.nextButton);
+
+	this.buttons.push(this.okButton);
 }
 
 SelectionWidget.prototype.draw=function(context){
@@ -67,22 +98,62 @@ SelectionWidget.prototype.draw=function(context){
 	context.fillStyle    = '#000000';
 	context.font         = ''+this.fontSize+'px Arial';
 
-	while(i<this.choices.length){
-
-		context.fillText(this.choices[i]["name"]+" ("+this.choices[i]["file"]+")", this.x+10,this.y+50+i*10);
-		i++;
+	for(var i in this.buttons){
+		this.buttons[i++].draw(context,null);
 	}
-
-	this.previousButton.draw(context,null);
-	this.nextButton.draw(context,null);
-	this.okButton.draw(context,null);
 }
 
 SelectionWidget.prototype.move=function(x,y){
 	this.x+=x;
 	this.y+=y;
 
-	this.previousButton.move(x,y);
-	this.nextButton.move(x,y);
-	this.okButton.move(x,y);
+	for(var i in this.buttons){
+		this.buttons[i++].move(x,y);
+	}
+}
+
+SelectionWidget.prototype.handleMouseDown=function(x,y){
+
+	var result=false;
+
+	for(var i in this.buttons){
+		if(this.buttons[i].handleMouseDown(x,y)){
+			result=true;
+			break;
+		}
+	}
+
+	if(this.okButton.getState()){
+
+		var i=0;
+		while(i < this.choiceButtons.length){
+			if(this.choiceButtons[i].getState()){
+				this.finalChoice=this.offset+i;
+
+				//console.log((typeof(this.offset))+" "+(typeof(i)));
+
+				this.gotFinalChoice=true;
+			}
+
+			i++;
+		}
+
+		if(!this.gotFinalChoice){
+			this.okButton.resetState();
+		}
+	}
+
+	return result;
+}
+
+SelectionWidget.prototype.hasChoice=function(){
+	return this.gotFinalChoice;
+}
+
+SelectionWidget.prototype.getChoice=function(){
+	return this.finalChoice;
+}
+
+SelectionWidget.prototype.resetState=function(){
+	this.gotFinalChoice=false;
 }
