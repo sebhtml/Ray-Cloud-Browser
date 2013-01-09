@@ -28,7 +28,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.mouseY=0;
 
 	this.width=width;
-	this.height=height/4;
+	this.height=height/5;
 	this.x=x;
 	this.y=y;
 	this.visible=visible;
@@ -54,7 +54,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+3.2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
-	this.selector=new Selector(this.x,this.y+this.height+30,this.width,height/4*3,dataStore);
+	this.selector=new Selector(this.x,this.y+this.height+30,this.width,height/5*4,dataStore);
 }
 
 Inventory.prototype.draw=function(context){
