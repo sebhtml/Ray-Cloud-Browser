@@ -3,37 +3,3 @@
 * Sébastien Boisvert
 ** Structures and their relationships
 
-
-
-## Designers (alphabetical order):
-
-* Sébastien Boisvert
-** Spatial indexing
-** Algorithms for Hooke's law
-** Algorithms for Coulomb's law
-** readahead algorithms
-** layout algorithms
-** NoSQL server design
-** Messaging layer
-
-* Élénie Godzaridis
-** Level of details (rendering)
-** Transformation matrices
-** HTML5 guidance
-** Javascript guidance
-
-* Charles Joly-Beauparlant
-** Sliding experience
-
-* Frédéric Raymond
-** Use one nucleotide per k-mer
-** Zooming
-
-
-## Testers (alphabetical order):
-
-* Jacques Corbeil
-** On the IPad
-
-* Charles Joly-Beauparlant
-* Pier-Luc Plante
