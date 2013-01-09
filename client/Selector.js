@@ -50,6 +50,7 @@ function Selector(x,y,width,height,dataStore){
 	this.state=this.SLAVE_MODE_PULL_MAPS;
 
 	this.objects=[];
+	this.deadObjects=[];
 
 	this.requestedMaps=false;
 }
@@ -96,7 +97,7 @@ Selector.prototype.draw=function(context){
 			//console.log("Creating widget for selecting map");
 			//console.log(this.mapChoices);
 
-			this.mapWidget=new SelectionWidget(this.x,this.y,this.width,this.height,"(1/4) Select map",this.mapChoices);
+			this.mapWidget=new SelectionWidget(this.x+10,this.y+10,this.width,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
 
 			this.state=this.SLAVE_MODE_SELECT_MAP;
@@ -108,9 +109,22 @@ Selector.prototype.draw=function(context){
 		//console.log("SLAVE_MODE_SELECT_MAP");
 
 		this.mapWidget.draw(context);
+
 	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION){
 
+		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
+
+	}else if(this.state==this.SLAVE_MODE_PULL_REGIONS){
+
+		this.mapWidget.draw(context);
+		this.sectionWidget.draw(context);
+
+	}else if(this.state==this.SLAVE_MOVE_SELECT_REGION){
+
+		this.mapWidget.draw(context);
+		this.sectionWidget.draw(context);
+		this.regionWidget.draw(context);
 	}
 }
 
@@ -143,10 +157,12 @@ Selector.prototype.handleMouseDown=function(x,y){
 			sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
 		}
 
-		this.sectionWidget=new SelectionWidget(this.x,this.y,this.width,this.height,"(2/4) Select section",sections);
+		this.sectionWidget=new SelectionWidget(this.x+20,this.y+70,this.width,this.height,"(2/4) Select section",sections);
 		this.objects=new Array();
 		this.objects.push(this.sectionWidget);
 		this.state=this.SLAVE_MODE_SELECT_SECTION;
+
+		this.deadObjects.push(this.mapWidget);
 
 		//console.log("Creating section widget, "+this.objects.length);
 		this.mapWidget.resetState();
@@ -157,6 +173,10 @@ Selector.prototype.handleMouseDown=function(x,y){
 		this.state=this.SLAVE_MODE_PULL_REGIONS;
 
 		this.sectionWidget.resetState();
+
+		this.objects=new Array();
+
+		this.deadObjects.push(this.sectionWidget);
 	}
 
 	return result;
@@ -180,6 +200,10 @@ Selector.prototype.move=function(x,y){
 
 	for(var item in this.objects){
 		this.objects[item].move(x,y);
+	}
+
+	for(var item in this.deadObjects){
+		this.deadObjects[item].move(x,y);
 	}
 }
 

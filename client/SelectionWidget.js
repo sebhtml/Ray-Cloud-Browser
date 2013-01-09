@@ -44,6 +44,8 @@ function SelectionWidget(x,y,width,height,title,choices){
 		this.y+this.height-buttonDimension/2-2,
 		buttonDimension,buttonDimension,"OK",false);
 
+	this.finished=false;
+
 	this.createButtons(0);
 }
 
@@ -58,7 +60,7 @@ SelectionWidget.prototype.createButtons=function(offset){
 
 	while(i<this.choices.length){
 		var fancyButton=new Button(this.x+10+this.width/2,
-			this.y+40,this.width-40,18,this.choices[i++],false);
+			this.y+80,this.width-40,18,this.choices[i++],false);
 
 		this.buttons.push(fancyButton);
 		this.choiceButtons.push(fancyButton);
@@ -90,7 +92,7 @@ SelectionWidget.prototype.draw=function(context){
 
 	context.fillStyle    = '#000000';
 	context.font         = 'bold '+this.fontSize+'px Arial';
-	context.fillText(this.title, this.x+this.width/5,this.y+20);
+	context.fillText(this.title, this.x+this.width/20,this.y+20);
 
 // show choices
 	var i=0;
@@ -98,9 +100,17 @@ SelectionWidget.prototype.draw=function(context){
 	context.fillStyle    = '#000000';
 	context.font         = ''+this.fontSize+'px Arial';
 
+	if(this.finished){
+
+		context.fillText(this.choices[this.finalChoice], this.x+this.width/9,this.y+40);
+		
+		return;
+	}
+
 	for(var i in this.buttons){
 		this.buttons[i++].draw(context,null);
 	}
+
 }
 
 SelectionWidget.prototype.move=function(x,y){
@@ -156,4 +166,5 @@ SelectionWidget.prototype.getChoice=function(){
 
 SelectionWidget.prototype.resetState=function(){
 	this.gotFinalChoice=false;
+	this.finished=true;
 }
