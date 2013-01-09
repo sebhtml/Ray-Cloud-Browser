@@ -40,8 +40,8 @@ function SelectionWidget(x,y,width,height,title,choices){
 		this.y+this.height-40,
 		buttonDimension,buttonDimension,">>",false);
 
-	this.okButton=new Button(this.x+this.width-buttonDimension/2-2,
-		this.y+this.height-buttonDimension/2-2,
+	this.okButton=new Button(this.x+this.width-buttonDimension/2-10,
+		this.y+this.height-buttonDimension/2-10,
 		buttonDimension,buttonDimension,"OK",false);
 
 	this.finished=false;
