@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,12 +40,20 @@ MessageQueue.prototype.pop=function(){
 	if(this.head<this.minimumDirtySlotsForCollection)
 		return object;
 
+	//console.log("[MessageQueue::pop] cleaning queue length="+this.objects.length+" head="+this.head);
+
 /* garbage collect the old stuff */
 	var secondArray=new Array();
 	while(this.head<this.objects.length){
 		secondArray.push(this.objects[this.head++]);
 	}
+
+	//console.log("[MessageQueue::pop] old="+this.objects.length+" new="+secondArray.length);
+
 	this.objects=secondArray;
+
+// reset the head obviously
+	this.head=0;
 
 	return object;
 }
