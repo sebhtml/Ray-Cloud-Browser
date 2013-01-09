@@ -828,6 +828,6 @@ Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed
 }
 
 Screen.prototype.toggleDebugMode=function(){
-	console.log("Debug mode.");
+	//console.log("Debug mode.");
 	this.debugMode=!this.debugMode;
 }

@@ -24,13 +24,16 @@
  * \author Sébastien Boisvert
  */
 function DataStore(kmerLength){
+
+	this.firstKmerReceived=false;
+	this.pendingRequests=0;
+
 	this.store=new Object();
 
 	this.defaultDepthFirst=32;
 	this.defaultDepth=512;
 	this.maximumParallelQueries=8;
 	this.activeQueries=0;
-	this.waiting=true;
 	this.httpRequests=0;
 
 	this.pullData();
@@ -73,6 +76,9 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 						destination,
 						content);
 
+			source.pendingRequests--;
+
+			//console.log("[DataStore::sendMessageOnTheWeb] received response PendingRequests: "+source.pendingRequests+" Tag: "+messageSymbols[replyTag]);
 			destination.receiveMessageFromTheWeb(message);
 		}
 	}
@@ -100,16 +106,17 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 	xmlHttp.open(method,address,true);
 	xmlHttp.send();
 
+	this.pendingRequests++;
+	//console.log("[DataStore::sendMessageOnTheWeb] PendingRequests: "+this.pendingRequests+" GET "+address);
+
 	this.httpRequests++;
 
-	this.waiting=true;
 }
 
 DataStore.prototype.receiveMessageFromTheWeb=function(message){
 
-	this.receiveMessage(message);
-	this.processMessages();
-	this.waiting=false;
+
+	this.receiveAndProcessMessage(message);
 }
 
 DataStore.prototype.pullData=function(){
@@ -183,8 +190,10 @@ DataStore.prototype.processMessage=function(message){
 	if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE){
 	
 /* message ordering stuff */
-		if(this.waiting){
+		if(!this.firstKmerReceived){
 			this.receiveMessage(message);
+
+			this.firstKmerReceived=true;
 			return;
 		}
 
@@ -199,7 +208,6 @@ DataStore.prototype.processMessage=function(message){
 		this.addDataInStore(text["vertices"]);
 
 		this.finishConstruction();
-		this.waiting=false;
 	}else if(tag==RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY){
 
 		var text=message.getContent();
@@ -211,7 +219,10 @@ DataStore.prototype.processMessage=function(message){
 
 		this.getKmerInformation(kmerSequence,this.graphOperator);
 		this.activeQueries--;
+
 	}else if(tag==RAY_MESSAGE_TAG_GET_MAPS){
+
+		//console.log("[DataStore] received RAY_MESSAGE_TAG_GET_MAPS");
 
 		var parameters=new Object();
 
@@ -239,7 +250,6 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		if(this.activeQueries==this.maximumParallelQueries){
 			return;
 		}
-
 
 		var parameters=new Object();
 		parameters["map"]="kmers.txt.dat";
@@ -297,6 +307,9 @@ DataStore.prototype.addDataInStore=function(kmerData){
 
 DataStore.prototype.receiveAndProcessMessage=function(message){
 
+	//console.log("[DataStore::receiveAndProcessMessage] Tag: "+messageSymbols[message.getTag()]);
+
+	//this.processMessage(message);
 	this.receiveMessage(message);
 	this.processMessages();
 }

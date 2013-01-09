@@ -27,6 +27,9 @@
 function Selector(x,y,width,height,dataStore){
 
 	this.dataStore=dataStore;
+
+	//console.log("[Selector] this.dataStore= "+this.dataStore);
+
 	var width=width;
 	var height=height;
 
@@ -72,10 +75,18 @@ Selector.prototype.draw=function(context){
 		if(!this.requestedMaps){
 			var message=new Message(RAY_MESSAGE_TAG_GET_MAPS,this,this.dataStore,null);
 
-			//console.log("Sending RAY_MESSAGE_TAG_GET_MAPS");
+			//console.log("[Selector] Sending RAY_MESSAGE_TAG_GET_MAPS");
 
 			this.receivedMaps=false;
 			this.requestedMaps=true;
+
+/*
+			console.log("[Selector] destination: "+this.dataStore);
+
+			if(this.dataStore instanceof DataStore){
+				console.log("[Selector] this.dataStore is instanceof DataStore");
+			}
+*/
 
 			this.dataStore.receiveAndProcessMessage(message);
 
@@ -143,5 +154,6 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 }
 
 Selector.prototype.receiveMessageFromTheWeb=function(message){
+
 	this.receiveAndProcessMessage(message);
 }
