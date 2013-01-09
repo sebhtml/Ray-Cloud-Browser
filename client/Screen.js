@@ -558,6 +558,16 @@ Screen.prototype.drawControlPanel=function(){
 
 	var context=this.getContext();
 
+// show a loading icon
+	if(this.graphOperator.getDataStore().hasPendingQueries()){
+		var width=16;
+		context.beginPath();
+		context.rect(width*0.5, width*0.5, width, width/2 );
+		context.fillStyle = '#7788FF';
+		context.fill();
+	}
+
+
 	for(i in this.buttons){
 		this.buttons[i].draw(context,this.blitter);
 	}
@@ -592,7 +602,7 @@ Screen.prototype.drawControlPanel=function(){
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 
-	context.fillText("HTTP GET requests: "+this.graphOperator.getHTTPRequests(),
+	context.fillText("HTTP GET requests: "+this.graphOperator.getDataStore().getHTTPRequests(),
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;
 

@@ -170,10 +170,6 @@ GraphOperator.prototype.getKmerLength=function(){
 	return this.dataStore.getKmerLength();
 }
 
-GraphOperator.prototype.getHTTPRequests=function(){
-	return this.dataStore.getHTTPRequests();
-}
-
 GraphOperator.prototype.getDataStore=function(){
 	return this.dataStore;
 }

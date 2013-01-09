@@ -313,3 +313,7 @@ DataStore.prototype.receiveAndProcessMessage=function(message){
 	this.receiveMessage(message);
 	this.processMessages();
 }
+
+DataStore.prototype.hasPendingQueries=function(){
+	return this.pendingRequests>0;
+}
