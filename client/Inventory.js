@@ -48,10 +48,9 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.overlay.setBackgroundColor("#99CCCC");
 	this.overlay.setActiveColor("#99CCCC");
 
-
 	this.debugButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
 		this.y+2*this.buttonWidth,
-		6*this.buttonWidth,this.buttonWidth,"Display map position",false);
+		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
 
 	this.warpButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
 		this.y+3.2*this.buttonWidth,
