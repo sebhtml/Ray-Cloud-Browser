@@ -56,6 +56,8 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 
 	this.digits=digits;
 
+	this.rawMinimums=this.getDigits(this.digits,this.minimum);
+	this.rawMaximums=this.getDigits(this.digits,this.maximum);
 	this.minimums=this.getDigits(this.digits,this.minimum);
 	this.maximums=this.getDigits(this.digits,this.maximum);
 
@@ -144,7 +146,44 @@ IntegerSelectionWidget.prototype.createButtons=function(){
 	}
 }
 
+IntegerSelectionWidget.prototype.updateBoundaries=function(){
+	var i=0;
+
+// reset boundaries
+	while(i<this.digits){
+		this.minimums[i]=this.rawMinimums[i];
+		this.maximums[i]=this.rawMaximums[i];
+		i++;
+	}
+
+	i=this.digits-1;
+	var base=10;
+// recalculate boundaries
+	while(i>=0){
+		if(this.symbols[i]<this.rawMaximums[i]){
+			var j=i-1;
+			while(j>=0){
+				this.maximums[j]=base-1;
+				j--;
+			}
+		}
+		i--;
+	}
+
+	i=0;
+	while(i<this.digits){
+		if(this.symbols[i]>this.maximums[i])
+			this.symbols[i]=this.maximums[i];
+
+		if(this.symbols[i]<this.minimums[i])
+			this.symbols[i]=this.minimums[i];
+		i++;
+	}
+}
+
 IntegerSelectionWidget.prototype.draw=function(context){
+
+	this.updateBoundaries();
 
 	context.beginPath();
 	context.rect(this.x, this.y, this.width, this.height );
@@ -255,9 +294,6 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 		if(this.upButtons[i].handleMouseDown(x,y)){
 			this.symbols[i]++;
 
-			if(this.symbols[i]>this.maximums[i])
-				this.symbols[i]=this.maximums[i];
-
 			this.upButtons[i].resetState();
 			return true;
 		}
@@ -268,9 +304,6 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 	while(i<this.digits){
 		if(this.downButtons[i].handleMouseDown(x,y)){
 			this.symbols[i]--;
-
-			if(this.symbols[i]<this.minimums[i])
-				this.symbols[i]=this.minimums[i];
 
 			this.downButtons[i].resetState();
 			return true;
@@ -286,6 +319,9 @@ IntegerSelectionWidget.prototype.hasChoice=function(){
 }
 
 IntegerSelectionWidget.prototype.getChoice=function(){
+
+	this.updateBoundaries();
+
 	return this.finalChoice;
 }
 
