@@ -392,6 +392,14 @@ HumanInterface.prototype.draw=function(){
 	this.zoomIn.draw(context,null);
 }
 
+HumanInterface.prototype.handleMouseDoubleClick=function(e){
+	console.log("ici1");
+	var aEvent=new Object();
+	aEvent.which=this.pageDown;
+	this.processKeyboardEvent(aEvent);
+	return true;
+}
+
 HumanInterface.prototype.handleMouseDown=function(x,y){
 	if(this.sampleInventory.handleMouseDown(x,y)){
 		return true;
