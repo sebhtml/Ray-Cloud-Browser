@@ -122,9 +122,14 @@ function Screen(gameFrequency,renderingFrequency){
 		_this.handleMouseMove.call(_this,e);
 	}
 
+	function handleMouseDoubleClick(e){
+		_this.handleMouseDoubleClick.call(_this,e);
+	}
+
 	this.canvas.addEventListener("mousedown",handleMouseDown,false);
 	this.canvas.addEventListener("mouseup",handleMouseUp,false);
 	this.canvas.addEventListener("mousemove",handleMouseMove,false);
+	this.canvas.addEventListener("dblclick",handleMouseDoubleClick,false);
 
 	//this.createButtons();
 
@@ -419,6 +424,8 @@ Screen.prototype.handleMouseUp=function(eventObject){
 
 	//eventObject.target.style.cursor="default";
 }
+
+
 
 Screen.prototype.printGraph=function(){
 	for(i in this.graph.getVertices()){
@@ -826,6 +833,10 @@ Screen.prototype.getZoomValueSpeed=function(){
 
 Screen.prototype.processKeyboardEvent=function(e){
 	this.humanInterface.processKeyboardEvent(e);
+}
+
+Screen.prototype.handleMouseDoubleClick=function(e){
+	this.humanInterface.handleMouseDoubleClick(e);
 }
 
 Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed,zoomValue,zoomValueSpeed){
