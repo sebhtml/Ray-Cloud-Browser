@@ -118,6 +118,8 @@ bool WebService::getValue(const char*query,const char*name,char*value,int maximu
  */
 bool WebService::processQuery(const char*queryString){
 
+	cout<<"X-Powered-By: Ray Cloud Browser by Ray Technologies"<<endl;
+	cout<<"Access-Control-Allow-Origin: *"<<endl;
 	cout<<("Content-type: application/json\n\n");
 
 	//cout<<("Content-type: text/html\n\n");
