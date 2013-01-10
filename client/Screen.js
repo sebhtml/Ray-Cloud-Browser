@@ -108,22 +108,22 @@ function Screen(gameFrequency,renderingFrequency){
 	this.context=this.canvas.getContext("2d");
 	this.renderingContext=this.renderingCanvas.getContext("2d");
 
-	var _this=this;
+	var screenObject=this;
 
 	function handleMouseDown(e){
-		_this.handleMouseDown.call(_this,e);
+		screenObject.handleMouseDown.call(screenObject,e);
 	}
 
 	function handleMouseUp(e){
-		_this.handleMouseUp.call(_this,e);
+		screenObject.handleMouseUp.call(screenObject,e);
 	}
 
 	function handleMouseMove(e){
-		_this.handleMouseMove.call(_this,e);
+		screenObject.handleMouseMove.call(screenObject,e);
 	}
 
 	function handleMouseDoubleClick(e){
-		_this.handleMouseDoubleClick.call(_this,e);
+		screenObject.handleMouseDoubleClick.call(screenObject,e);
 	}
 
 	this.canvas.addEventListener("mousedown",handleMouseDown,false);
@@ -836,7 +836,9 @@ Screen.prototype.processKeyboardEvent=function(e){
 }
 
 Screen.prototype.handleMouseDoubleClick=function(e){
-	this.humanInterface.handleMouseDoubleClick(e);
+	var point=this.getMousePosition(e);
+
+	this.humanInterface.handleMouseDoubleClick(point[0],point[1]);
 }
 
 Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed,zoomValue,zoomValueSpeed){
