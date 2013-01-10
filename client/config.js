@@ -34,6 +34,6 @@ var CONFIG_PULL_FREQUENCY=64;
 /**
  * The server to use for all web services.
  */
-var CONFIG_WEB_SERVER="../server/";
-//var CONFIG_WEB_SERVER="http://ec2-54-242-197-219.compute-1.amazonaws.com/~sebhtml/Ray-Cloud-Browser/server/";
+//var CONFIG_WEB_SERVER="../server/";
+var CONFIG_WEB_SERVER="http://ec2-54-242-197-219.compute-1.amazonaws.com/~sebhtml/Ray-Cloud-Browser/server/";
 
