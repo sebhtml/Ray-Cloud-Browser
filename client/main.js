@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 /*
  * Global settings for game and rendering frequencies.
  */
-var renderingFrequency=24;
-var gameFrequency=32;
-var pullFrequency=64;
+var renderingFrequency=CONFIG_RENDERING_FREQUENCY;
+var gameFrequency=CONFIG_GAME_FREQUENCY;
+var pullFrequency=CONFIG_PULL_FREQUENCY;
 
 /*
  * The variable can not be called screen because
