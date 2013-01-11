@@ -54,7 +54,13 @@ function DataStore(kmerLength){
  * \param replyTag reply tag to the message tag
  *
  */
-DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,content,replyTag){
+DataStore.prototype.sendMessageOnTheWeb=function(message){
+
+	var messageTag=message.getTag();
+	var source=message.getSource();
+	var destination=message.getDestination();
+	var content=message.getContent();
+	var replyTag=messageReplies[messageTag];
 
 	var xmlHttp=null;
 
@@ -70,7 +76,6 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 
 			var content=JSON.parse(xmlHttp.responseText);
 
-			//alert(xmlHttp.responseText);
 			var message=new Message(replyTag,
 						source,
 						destination,
@@ -78,7 +83,6 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 
 			source.pendingRequests--;
 
-			//console.log("[DataStore::sendMessageOnTheWeb] received response PendingRequests: "+source.pendingRequests+" Tag: "+messageSymbols[replyTag]);
 			destination.receiveMessageFromTheWeb(message);
 		}
 	}
@@ -108,7 +112,6 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 	xmlHttp.send();
 
 	this.pendingRequests++;
-	//console.log("[DataStore::sendMessageOnTheWeb] PendingRequests: "+this.pendingRequests+" GET "+address);
 
 	this.httpRequests++;
 
@@ -126,8 +129,8 @@ DataStore.prototype.pullData=function(){
 
 	var tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE;
 
-	this.sendMessageOnTheWeb(tag,
-		this,this,body,messageReplies[tag]);
+	var theMessage=new Message(tag,this,this,body);
+	this.sendMessageOnTheWeb(theMessage);
 }
 
 DataStore.prototype.finishConstruction=function(){
@@ -187,8 +190,6 @@ DataStore.prototype.processMessages=function(){
 DataStore.prototype.processMessage=function(message){
 	var tag=message.getTag();
 
-	//console.log("Message tag: "+tag);
-
 	if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE){
 	
 /* message ordering stuff */
@@ -224,22 +225,20 @@ DataStore.prototype.processMessage=function(message){
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_MAPS){
 
-		//console.log("[DataStore] received RAY_MESSAGE_TAG_GET_MAPS");
-
 		var parameters=new Object();
 
-		this.sendMessageOnTheWeb(tag,
-			this,message.getSource(),parameters,messageReplies[tag]);
+		var theMessage=new Message(tag,this,message.getSource(),parameters);
+		this.sendMessageOnTheWeb(theMessage);
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_REGIONS){
 
-		this.sendMessageOnTheWeb(tag,
-			this,message.getSource(),message.getContent(),messageReplies[tag]);
+		var theMessage=new Message(tag,this,message.getSource(),message.getContent());
+		this.sendMessageOnTheWeb(theMessage);
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_MAP_INFORMATION){
 
-		this.sendMessageOnTheWeb(tag,
-			this,message.getSource(),message.getContent(),messageReplies[tag]);
+		var theMessage=new Message(tag,this,message.getSource(),message.getContent());
+		this.sendMessageOnTheWeb(theMessage);
 	}
 }
 
@@ -268,9 +267,8 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
 		var tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE;
 
-		this.sendMessageOnTheWeb(tag,
-			this,this,parameters,messageReplies[tag]);
-
+		var theMessage=new Message(tag,this,this,parameters);
+		this.sendMessageOnTheWeb(theMessage);
 		this.activeQueries++;
 
 		return;
@@ -319,9 +317,6 @@ DataStore.prototype.addDataInStore=function(kmerData){
 
 DataStore.prototype.receiveAndProcessMessage=function(message){
 
-	//console.log("[DataStore::receiveAndProcessMessage] Tag: "+messageSymbols[message.getTag()]);
-
-	//this.processMessage(message);
 	this.receiveMessage(message);
 	this.processMessages();
 }
