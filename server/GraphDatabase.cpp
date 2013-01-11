@@ -287,3 +287,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	cout<<"Created "<<binaryFile<<endl;
 
 }
+
+uint64_t GraphDatabase::getEntries(){
+	return m_entries;
+}

@@ -52,6 +52,7 @@ public:
 	bool getObject(const char*key,VertexObject*object);
 	int getKmerLength();
 	char getSymbol(int code);
+	uint64_t getEntries();
 
 	void index(const char*input,const char*output);
 };

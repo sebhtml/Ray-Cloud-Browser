@@ -159,12 +159,41 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 		return call_RAY_MESSAGE_TAG_GET_MAPS(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGIONS")==match){
 		return call_RAY_MESSAGE_TAG_GET_REGIONS(queryString);
+	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAP_INFORMATION")==match){
+		return call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(queryString);
 	}
 
 	cout<<"{ \"message\": \"tag not serviced\" } "<<endl;
 
 // unmatched message tag
 	return false;
+}
+
+bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString){
+
+	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
+
+	bool foundMap=getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!foundMap)
+		return false;
+
+// fail in silence
+	if(!isAllowedFile(dataFile))
+		return false;
+
+	GraphDatabase database;
+	database.openFile(dataFile);
+
+	cout<<"{"<<endl;
+	cout<<"\"map\": \""<<dataFile<<"\","<<endl;
+	cout<<"\"kmerLength\": "<<database.getKmerLength()<<","<<endl;
+	cout<<"\"entries\": "<<database.getEntries()<<endl;
+	cout<<"}"<<endl;
+
+	database.closeFile();
+
+	return true;
 }
 
 /**
