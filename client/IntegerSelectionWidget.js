@@ -35,6 +35,7 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 
 	var exponent=0;
 
+
 	while(1){
 		var value=1;
 		var i=0;
@@ -43,7 +44,9 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 			i+=1;
 		}
 
-		if(Math.floor(this.maximum/value)>0){
+		var digit=Math.floor(maximum/value);
+
+		if(digit>0 || value<this.maximum){
 			digits++;
 			exponent++;
 		}else{
@@ -51,17 +54,12 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 		}
 	}
 
-	this.minimums=[];
-	this.maximums=[];
 	this.digits=digits;
-	this.symbols=[];
 
-	var i=0;
-	while(i++<digits){
-		this.symbols.push(0);
-		this.minimums.push(0);
-		this.maximums.push(9);
-	}
+	this.minimums=this.getDigits(this.digits,this.minimum);
+	this.maximums=this.getDigits(this.digits,this.maximum);
+
+	this.symbols=this.getDigits(this.digits,this.minimum);
 
 	this.width=width;
 	this.height=height;
@@ -85,6 +83,37 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 	this.finished=false;
 
 	this.createButtons();
+}
+
+/**
+ * 1234,0  other=1 next=10 digit=(1234%10)/1=4
+ * 1234,1  other=10 next=100 digit=(1234%100)/10=34/10=3
+ */
+IntegerSelectionWidget.prototype.getDigit=function(value,position){
+	var other=1;
+	var i=0;
+	var base=10;
+	while(i++<position)
+		other*=base;
+
+	var next=other*base;
+
+	var digit=Math.floor((value%next)/other);
+
+	return digit;
+}
+
+IntegerSelectionWidget.prototype.getDigits=function(digits,inputValue){
+
+	var value=[];
+	var i=0;
+	while(i<digits){
+		var theDigit=this.getDigit(inputValue,i);
+		value.push(theDigit);
+		i++;
+	}
+
+	return value;
 }
 
 IntegerSelectionWidget.prototype.createButtons=function(){
