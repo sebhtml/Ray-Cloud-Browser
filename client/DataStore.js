@@ -83,7 +83,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(messageTag,source,destination,c
 		}
 	}
 
-	var cgiProgram=CONFIG_WEB_SERVER+"RayCloudBrowser.webServer.cgi";
+	var cgiProgram=CONFIG_WEB_SERVER+"RayCloudBrowser.cgi";
 	
 	var processed=new Object();
 

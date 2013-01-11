@@ -6,7 +6,7 @@ CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 #CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
 
-TARGETS=RayCloudBrowser.webServer.cgi
+TARGETS=RayCloudBrowser.cgi
 
 EXTRA_TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
 	 RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath \
@@ -21,7 +21,7 @@ all: $(TARGETS)
 
 devel: $(EXTRA_TARGETS)
 
-RayCloudBrowser.webServer.cgi: webServer_main.o $(LIBRARY_OBJECTS)
+RayCloudBrowser.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 	chmod g-w $@
 	chmod o-w $@
