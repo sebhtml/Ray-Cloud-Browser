@@ -75,7 +75,6 @@ Selector.prototype.draw=function(context){
 		//console.log("SLAVE_MODE_PULL_MAPS is done");
 
 		if(!this.requestedMaps){
-			var message=new Message(RAY_MESSAGE_TAG_GET_MAPS,this,this.dataStore,null);
 
 			//console.log("[Selector] Sending RAY_MESSAGE_TAG_GET_MAPS");
 
@@ -90,6 +89,7 @@ Selector.prototype.draw=function(context){
 			}
 */
 
+			var message=new Message(RAY_MESSAGE_TAG_GET_MAPS,this,this.dataStore,null);
 			this.dataStore.receiveAndProcessMessage(message);
 
 		}else if(this.receivedMaps){
@@ -159,6 +159,14 @@ Selector.prototype.draw=function(context){
 		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
 		this.regionWidget.draw(context);
+		this.locationWidget.draw(context);
+	}
+
+// show extra information
+	if(this.receivedMapFileData){
+		context.fillStyle    = '#000000';
+		context.font         = 'bold '+this.fontSize+'px Arial';
+		context.fillText(this.metaData, this.x+200,this.y+30);
 	}
 }
 
@@ -179,6 +187,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 	}
 
 	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.mapWidget.hasChoice()){
+
 		var index=this.mapWidget.getChoice();
 		//alert("Choice: # "+index+" "+this.mapChoices[index]);
 
@@ -201,6 +210,17 @@ Selector.prototype.handleMouseDown=function(x,y){
 		//console.log("Creating section widget, "+this.objects.length);
 		this.mapWidget.resetState();
 
+// this is a new communication pattern, you send, but you wait later
+// it is like a readahead messaging
+
+		var parameters=new Object();
+		parameters["map"]=this.mapData[this.mapIndex]["file"];
+
+		var message=new Message(RAY_MESSAGE_TAG_GET_MAP_INFORMATION,this,this.dataStore,parameters);
+		this.dataStore.receiveAndProcessMessage(message);
+
+		this.receivedMapFileData=true;
+
 	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION && this.sectionWidget.hasChoice()){
 		this.sectionIndex=this.sectionWidget.getChoice();
 
@@ -212,7 +232,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 		this.deadObjects.push(this.sectionWidget);
 
-	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice()){
+	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice() && this.receivedMapFileData){
 
 		this.regionIndex=this.regionWidget.getChoice();
 
@@ -220,10 +240,24 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 		this.regionWidget.resetState();
 
+		var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["kmerLength"]+1;
+
+		this.locationWidget=new IntegerSelectionWidget(this.x+40,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
+			1,maximum);
+
 		this.objects=new Array();
+		this.objects.push(this.locationWidget);
+
 		this.deadObjects.push(this.regionWidget);
 
+	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.locationWidget.hasChoice()){
 
+// we want 0-based positions
+		this.locationIndex=this.locationWidget.getChoice()-1;
+		this.locationWidget.resetState();
+
+		this.objects=new Array();
+		this.deadObjects.push(this.locationWidget);
 	}
 
 	return result;
@@ -279,6 +313,12 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 
 		this.receivedRegions=true;
 
+	}else if(tag==RAY_MESSAGE_TAG_GET_MAP_INFORMATION_REPLY){
+
+		this.mapFileData=message.getContent();
+		this.receivedMapFileData=true;
+
+		this.metaData="Kmer length: "+this.mapFileData["kmerLength"]+" entries: "+this.mapFileData["entries"];
 	}
 }
 

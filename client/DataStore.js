@@ -233,6 +233,11 @@ DataStore.prototype.processMessage=function(message){
 
 		this.sendMessageOnTheWeb(tag,
 			this,message.getSource(),message.getContent(),RAY_MESSAGE_TAG_GET_REGIONS_REPLY);
+
+	}else if(tag==RAY_MESSAGE_TAG_GET_MAP_INFORMATION){
+
+		this.sendMessageOnTheWeb(tag,
+			this,message.getSource(),message.getContent(),RAY_MESSAGE_TAG_GET_MAP_INFORMATION_REPLY);
 	}
 }
 

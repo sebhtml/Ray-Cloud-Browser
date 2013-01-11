@@ -61,12 +61,12 @@ SelectionWidget.prototype.createButtons=function(offset){
 	this.choiceButtons=new Array();
 
 	var processed=0;
-	var buttonHeight=18;
+	var buttonHeight=20;
 	while(i<this.choices.length && processed < this.displayed){
 
 		var multiplier=i-this.offset;
 
-		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.3*buttonHeight,
+		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.1*buttonHeight,
 			this.width-40,buttonHeight,this.choices[i++],false);
 
 		this.buttons.push(fancyButton);

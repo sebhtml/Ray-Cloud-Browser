@@ -1,8 +1,5 @@
-- implement a integer selection widget
-- select location
+- sendMessageOnTheWeb simplification
 - select part of graph to obtain DNA sequence
 - delete off-screen objects
 - user can change the minimum coverage to display
 - display edge if one end is on screenS
-
-- add the number of vertices
