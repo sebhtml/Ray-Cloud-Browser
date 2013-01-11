@@ -1,3 +1,13 @@
+RayCloudBrowser.cgi is the server and is built with
+
+	make
+
+Its configuration is config.json.
+
+== Other tools ==
+
+make devel
+
 Programs are prefixed by "RayCloudBrowser."
 
 The server is implemented in C++ 1998.
@@ -15,13 +25,4 @@ CGI 1.1   The Common Gateway Interface (CGI) Version 1.1
   http://www.ietf.org/rfc/rfc3875
 
 The messages are passed with the Hyper Text Transfer Protocol (method: GET).
-
-For the store:
-
-DataStore/
-	SampleList.txt
-	sample1-Graph.dat
-	sample1-Paths.fasta
-	joe-Graph.dat
-	joe-Paths.fasta
 
