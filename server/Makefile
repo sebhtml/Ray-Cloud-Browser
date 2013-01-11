@@ -6,8 +6,10 @@ CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 #CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
 
-TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
-	RayCloudBrowser.webServer.cgi RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath \
+TARGETS=RayCloudBrowser.webServer.cgi
+
+EXTRA_TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
+	 RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath \
 	RayCloudBrowser.readJSON
 
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o
@@ -16,6 +18,8 @@ LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParse
 	$(CXX) $(CXXFLAGS) -c $? -o $@
 
 all: $(TARGETS)
+
+devel: $(EXTRA_TARGETS)
 
 RayCloudBrowser.webServer.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -41,9 +45,9 @@ RayCloudBrowser.probePath: probePath_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:
-	rm -f *.o $(TARGETS)
+	rm -f $(TARGETS) $(EXTRA_TARGETS) $(LIBRARY_OBJECTS)
 
-check: test-first test-store test-not-found
+check: devel test-first test-store test-not-found
 
 test-store:
 	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=CATGAAAACGGGTTTTCCCATATTGACGCTA" ./RayCloudBrowser.webServer.cgi
