@@ -124,8 +124,10 @@ DataStore.prototype.pullData=function(){
 	var body=new Object();
 	body["depth"]=this.defaultDepthFirst;
 
-	this.sendMessageOnTheWeb(RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE,
-		this,this,body,RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY);
+	var tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE;
+
+	this.sendMessageOnTheWeb(tag,
+		this,this,body,messageReplies[tag]);
 }
 
 DataStore.prototype.finishConstruction=function(){
@@ -227,17 +229,17 @@ DataStore.prototype.processMessage=function(message){
 		var parameters=new Object();
 
 		this.sendMessageOnTheWeb(tag,
-			this,message.getSource(),parameters,RAY_MESSAGE_TAG_GET_MAPS_REPLY);
+			this,message.getSource(),parameters,messageReplies[tag]);
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_REGIONS){
 
 		this.sendMessageOnTheWeb(tag,
-			this,message.getSource(),message.getContent(),RAY_MESSAGE_TAG_GET_REGIONS_REPLY);
+			this,message.getSource(),message.getContent(),messageReplies[tag]);
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_MAP_INFORMATION){
 
 		this.sendMessageOnTheWeb(tag,
-			this,message.getSource(),message.getContent(),RAY_MESSAGE_TAG_GET_MAP_INFORMATION_REPLY);
+			this,message.getSource(),message.getContent(),messageReplies[tag]);
 	}
 }
 
@@ -264,8 +266,10 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		parameters["object"]=kmerSequence;
 		parameters["depth"]=this.defaultDepth;
 
-		this.sendMessageOnTheWeb(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,
-			this,this,parameters,RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY);
+		var tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE;
+
+		this.sendMessageOnTheWeb(tag,
+			this,this,parameters,messageReplies[tag]);
 
 		this.activeQueries++;
 
