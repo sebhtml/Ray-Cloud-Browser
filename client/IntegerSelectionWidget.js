@@ -156,8 +156,6 @@ IntegerSelectionWidget.prototype.draw=function(context){
 		this.buttons[i++].draw(context,null);
 	}
 
-	//console.log("DownButtons: "+this.downButtons.length);
-
 	i=0;
 	while(i<this.downButtons.length){
 		this.downButtons[i++].draw(context,null);
@@ -219,8 +217,8 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 	i=0;
 	while(i<this.digits){
 		if(this.upButtons[i].handleMouseDown(x,y)){
-			//console.log("UpButton");
 			this.symbols[i]++;
+			this.upButtons[i].resetState();
 			return true;
 		}
 		i++;
@@ -230,6 +228,7 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 	while(i<this.digits){
 		if(this.downButtons[i].handleMouseDown(x,y)){
 			this.symbols[i]--;
+			this.downButtons[i].resetState();
 			return true;
 		}
 		i++;
