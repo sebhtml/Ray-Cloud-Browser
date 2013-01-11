@@ -28,7 +28,6 @@ function Selector(x,y,width,height,dataStore){
 
 	this.dataStore=dataStore;
 
-	//console.log("[Selector] this.dataStore= "+this.dataStore);
 
 	var width=width;
 	var height=height;
@@ -72,30 +71,17 @@ Selector.prototype.draw=function(context){
 // some granularity
 	if(this.state==this.SLAVE_MODE_PULL_MAPS){
 
-		//console.log("SLAVE_MODE_PULL_MAPS is done");
 
 		if(!this.requestedMaps){
 
-			//console.log("[Selector] Sending RAY_MESSAGE_TAG_GET_MAPS");
 
 			this.receivedMaps=false;
 			this.requestedMaps=true;
-
-/*
-			console.log("[Selector] destination: "+this.dataStore);
-
-			if(this.dataStore instanceof DataStore){
-				console.log("[Selector] this.dataStore is instanceof DataStore");
-			}
-*/
 
 			var message=new Message(RAY_MESSAGE_TAG_GET_MAPS,this,this.dataStore,null);
 			this.dataStore.receiveAndProcessMessage(message);
 
 		}else if(this.receivedMaps){
-
-			//console.log("Creating widget for selecting map");
-			//console.log(this.mapChoices);
 
 			this.mapWidget=new SelectionWidget(this.x+10,this.y+10,this.width*1.5,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
@@ -107,7 +93,6 @@ Selector.prototype.draw=function(context){
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_MAP){
 
-		//console.log("SLAVE_MODE_SELECT_MAP");
 
 		this.mapWidget.draw(context);
 
@@ -207,7 +192,6 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 		this.deadObjects.push(this.mapWidget);
 
-		//console.log("Creating section widget, "+this.objects.length);
 		this.mapWidget.resetState();
 
 // this is a new communication pattern, you send, but you wait later
@@ -294,8 +278,6 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 
 	if(tag==RAY_MESSAGE_TAG_GET_MAPS_REPLY){
 
-		//console.log("Selector received RAY_MESSAGE_TAG_GET_MAPS_REPLY");
-		//console.log(message.getContent());
 
 		this.mapData=message.getContent()["maps"];
 

@@ -59,10 +59,9 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 	var i=0;
 	while(i++<digits){
 		this.symbols.push(0);
+		this.minimums.push(0);
+		this.maximums.push(9);
 	}
-
-// first can not be 0
-	this.symbols[0]++;
 
 	this.width=width;
 	this.height=height;
@@ -158,12 +157,20 @@ IntegerSelectionWidget.prototype.draw=function(context){
 
 	i=0;
 	while(i<this.downButtons.length){
-		this.downButtons[i++].draw(context,null);
+
+		if(this.symbols[i]!=this.minimums[i])
+			this.downButtons[i].draw(context,null);
+
+		i++;
 	}
 
 	i=0;
 	while(i<this.upButtons.length){
-		this.upButtons[i++].draw(context,null);
+
+		if(this.symbols[i]!=this.maximums[i])
+			this.upButtons[i].draw(context,null);
+
+		i++;
 	}
 }
 
@@ -218,6 +225,10 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 	while(i<this.digits){
 		if(this.upButtons[i].handleMouseDown(x,y)){
 			this.symbols[i]++;
+
+			if(this.symbols[i]>this.maximums[i])
+				this.symbols[i]=this.maximums[i];
+
 			this.upButtons[i].resetState();
 			return true;
 		}
@@ -228,6 +239,10 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 	while(i<this.digits){
 		if(this.downButtons[i].handleMouseDown(x,y)){
 			this.symbols[i]--;
+
+			if(this.symbols[i]<this.minimums[i])
+				this.symbols[i]=this.minimums[i];
+
 			this.downButtons[i].resetState();
 			return true;
 		}
