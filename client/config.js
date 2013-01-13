@@ -32,6 +32,12 @@ var CONFIG_GAME_FREQUENCY=32;
 var CONFIG_PULL_FREQUENCY=64;
 
 /**
+ * Minimum coverage to display
+ * TODO: add this in the user interface instead
+ */
+var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=30;
+
+/**
  * The server to use for all web services.
  */
 var CONFIG_WEB_SERVER="../server/";

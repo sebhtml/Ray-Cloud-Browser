@@ -37,7 +37,7 @@ function GraphOperator(screen){
 
 	this.bufferForCommunicationOperations=512;
 
-	this.minimumCoverageAccepted=10;
+	this.minimumCoverageAccepted=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 }
 
 GraphOperator.prototype.createGraph=function(graph){
