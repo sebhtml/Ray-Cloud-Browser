@@ -118,7 +118,9 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 	var vertex=this.graph.getVertex(kmerData.getSequence());
 
-	if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
+	if(kmerData.getCoverage()>=this.minimumCoverageAccepted ||
+		this.graph.getVertices().length<32){
+
 		vertex=this.graph.addVertex(kmerData.getSequence());
 
 

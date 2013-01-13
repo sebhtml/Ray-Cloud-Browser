@@ -56,15 +56,17 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		var content=message.getContent();
 
-		//console.log(length);
 		//console.log(content);
 		var vertices=content["vertices"]
-		var kmerSequence=vertices[vertices.length/2]["value"];
+		//console.log(vertices.length);
+		var kmerSequence=vertices[Math.floor(vertices.length/2)]["value"];
 
 		var parameters=new Object();
 		parameters["map"]=this.dataStore.getMapFile();
 		parameters["object"]=kmerSequence;
 		parameters["depth"]=this.dataStore.getDefaultDepth();
+
+		//console.log("kmerSequence= "+kmerSequence);
 
 		var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
 		this.dataStore.sendMessageOnTheWeb(theMessage);
