@@ -238,6 +238,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 	var x=vertex.getX()-originX;
 	var y=vertex.getY()-originY;
 
+/*
 	if(this.blitter.hasBlit(key)){
 		var blit=this.blitter.getBlit(key);
 
@@ -251,43 +252,51 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 
 		return;
 	}
+*/
 	
-	var context2=context;
+	//3var context2=context;
 
+/*
 	if(this.useBlitter){
-		var blit=this.blitter.allocateBlit(key,4+2*radius,4+2*radius);
+		var blit=this.blitter.allocateBlit(key,4+3*radius,4+3*radius);
 		context2=blit.getCanvas().getContext("2d");
 	}
+*/
 
+/*
 	var cacheWidth=blit.getWidth();
 	var blitX=blit.getX()+cacheWidth/2;
 	var blitY=blit.getY()+cacheWidth/2;
+*/
 
 	if(vertex.isColored()){
-		context2.beginPath();
-		context2.fillStyle = theColor;
-		context2.strokeStyle = "rgb(0,0,0)";
-		context2.lineWidth=this.lineWidth;
-		context2.arc(blitX,blitY,radius, 0, Math.PI*2, true);
+		context.beginPath();
+		context.fillStyle = theColor;
+		context.strokeStyle = "rgb(0,0,0)";
+		context.lineWidth=this.lineWidth;
+		context.arc((x)*zoomValue,
+				(y)*zoomValue,zoomValue*radius, 0, Math.PI*2, true);
 	
-		context2.fill();
-		context2.stroke();
-		context2.closePath();
+		context.fill();
+		context.stroke();
+		context.closePath();
 	}
 
-	context2.fillStyle    = '#000000';
-	context2.font         = 'bold 12px Arial';
+	context.fillStyle    = '#000000';
+	context.font         = 'bold '+Math.floor(12*zoomValue)+'px Arial';
 
 	if(vertex.isColored()){
-		context2.fillText(vertex.getLabel(),blitX-radius/2,blitY+radius/2);
+		context.fillText(vertex.getLabel(),(x-radius/2)*zoomValue,(y+radius/2)*zoomValue);
 	}else{
-		context2.fillText(vertex.getLabel(),blitX-radius,blitY+radius/2);
+		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
 	}
 
 	//console.log("Drawed something.");
 
+/*
 	if(this.useBlitter)
 		this.drawVertex(context,originX,originY,zoomValue,vertex);
+*/
 }
 
 
