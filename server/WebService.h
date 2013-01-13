@@ -41,7 +41,7 @@
  *
  * Development server: 
  *
- * http://localhost/~seb/Ray-Cloud-Browser/server/RayCloudBrowser.webServer.cgi
+ * http://localhost/~seb/Ray-Cloud-Browser/server/RayCloudBrowser.cgi
  *
  * \author Sébastien Boisvert
  */
