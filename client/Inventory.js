@@ -130,6 +130,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 	}else if(this.selector.handleMouseDown(x,y)){
+
 		return true;
 	}
 
@@ -158,3 +159,6 @@ Inventory.prototype.handleMouseUp=function(x,y){
 	this.selected=false;
 }
 
+Inventory.prototype.hasChoices=function(){
+	return this.selector.hasChoices();
+}

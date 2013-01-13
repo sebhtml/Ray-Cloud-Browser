@@ -23,13 +23,11 @@
 function Graph(width,height){
 
 	this.layout=new LayoutEngine();
-	this.vertices=new Array();
 	this.width=width;
 	this.height=height;
 
-	this.index=new Object();
-	this.objectsWithCoverage=new Object();
-	this.objectsWithoutCoverage=new Object();
+	this.clear();
+	
 }
 
 Graph.prototype.addVertex=function(sequence){
@@ -116,4 +114,11 @@ Graph.prototype.getVertices=function(){
 
 Graph.prototype.getObjectsWithoutData=function(){
 	return this.objectsWithoutCoverage;
+}
+
+Graph.prototype.clear=function(){
+	this.vertices=new Array();
+	this.index=new Object();
+	this.objectsWithCoverage=new Object();
+	this.objectsWithoutCoverage=new Object();
 }

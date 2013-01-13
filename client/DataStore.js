@@ -27,8 +27,9 @@ function DataStore(kmerLength){
 
 	this.firstKmerReceived=false;
 	this.pendingRequests=0;
+	this.mapFile="kmers.txt.dat";
 
-	this.store=new Object();
+	this.clear();
 
 	this.defaultDepthFirst=32;
 	this.defaultDepth=512;
@@ -39,6 +40,11 @@ function DataStore(kmerLength){
 	this.pullData();
 
 	this.messageQueue=new MessageQueue();
+}
+
+DataStore.prototype.clear=function(){
+
+	this.store=new Object();
 }
 
 /**
@@ -83,7 +89,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 
 			source.pendingRequests--;
 
-			destination.receiveMessageFromTheWeb(message);
+			destination.receiveAndProcessMessage(message);
 		}
 	}
 
@@ -117,10 +123,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 
 }
 
-DataStore.prototype.receiveMessageFromTheWeb=function(message){
 
-	this.receiveAndProcessMessage(message);
-}
 
 DataStore.prototype.pullData=function(){
 
@@ -206,16 +209,15 @@ DataStore.prototype.processMessage=function(message){
 		graphOperator.receiveFirstKmer(prefix);
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY){
-		var text=message.getContent();
 
-		this.addDataInStore(text["vertices"]);
+		this.clear();
+		this.addDataInStore(message.getContent());
 
 		this.finishConstruction();
 	}else if(tag==RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY){
 
 		var text=message.getContent();
-
-		this.addDataInStore(text["vertices"]);
+		this.addDataInStore(text);
 
 		var kmerSequence=text["object"];
 // do a fancy recursive call !
@@ -239,7 +241,21 @@ DataStore.prototype.processMessage=function(message){
 
 		var theMessage=new Message(tag,this,message.getSource(),message.getContent());
 		this.sendMessageOnTheWeb(theMessage);
+
+	}else if(tag==RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION){
+
+		this.forwardMessageOnTheWeb(message);
 	}
+}
+
+DataStore.prototype.setMapFile=function(mapFile){
+	this.mapFile=mapFile;
+}
+
+DataStore.prototype.forwardMessageOnTheWeb=function(message){
+
+	var theMessage=new Message(message.getTag(),this,message.getSource(),message.getContent());
+	this.sendMessageOnTheWeb(theMessage);
 }
 
 DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
@@ -261,12 +277,11 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		}
 
 		var parameters=new Object();
-		parameters["map"]="kmers.txt.dat";
+		parameters["map"]=this.mapFile;
 		parameters["object"]=kmerSequence;
 		parameters["depth"]=this.defaultDepth;
 
 		var tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE;
-
 		var theMessage=new Message(tag,this,this,parameters);
 		this.sendMessageOnTheWeb(theMessage);
 		this.activeQueries++;
@@ -304,7 +319,9 @@ DataStore.prototype.getHTTPRequests=function(){
 	return this.httpRequests;
 }
 
-DataStore.prototype.addDataInStore=function(kmerData){
+DataStore.prototype.addDataInStore=function(content){
+
+	var kmerData=content["vertices"];
 
 	for(var kmerSequenceIterator in kmerData){
 		if(kmerSequenceIterator in this.store)
@@ -323,4 +340,12 @@ DataStore.prototype.receiveAndProcessMessage=function(message){
 
 DataStore.prototype.hasPendingQueries=function(){
 	return this.pendingRequests>0;
+}
+
+DataStore.prototype.getDefaultDepth=function(){
+	return this.defaultDepth;
+}
+
+DataStore.prototype.getMapFile=function(){
+	return this.mapFile;
 }

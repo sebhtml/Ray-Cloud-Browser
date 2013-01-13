@@ -173,3 +173,8 @@ GraphOperator.prototype.getKmerLength=function(){
 GraphOperator.prototype.getDataStore=function(){
 	return this.dataStore;
 }
+
+GraphOperator.prototype.clear=function(){
+	this.graph.clear();
+}
+

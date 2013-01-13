@@ -93,6 +93,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.renderingCanvas.height=this.height;
 
 	this.humanInterface=new HumanInterface(this,this.graphOperator.getDataStore());
+	this.pathOperator=new PathOperator(this.graphOperator.getDataStore(),this.graphOperator);
 
 	this.engine=new PhysicsEngine(this);
 
@@ -254,8 +255,23 @@ Screen.prototype.handleMouseMove=function(eventObject){
 Screen.prototype.handleMouseDown=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 
-	if(this.humanInterface.handleMouseDown(position[0],position[1]))
-		return;
+	if(this.humanInterface.handleMouseDown(position[0],position[1])){
+
+		if(this.humanInterface.sampleInventory.selector.hasChoices()){
+
+			this.locationData=this.humanInterface.sampleInventory.selector.getLocationData();
+
+			//console.log(JSON.stringify(this.locationData));
+			this.humanInterface.sampleInventory.selector.markAsConsumed();
+
+			this.kmerLength=this.locationData["kmerLength"];
+			this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
+			this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
+
+		}
+
+		return true;
+	}
 
 	for(i in this.buttons){
 		var candidate=this.buttons[i];
@@ -854,3 +870,5 @@ Screen.prototype.toggleDebugMode=function(){
 	//console.log("Debug mode.");
 	this.debugMode=!this.debugMode;
 }
+
+

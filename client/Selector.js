@@ -27,7 +27,7 @@
 function Selector(x,y,width,height,dataStore){
 
 	this.dataStore=dataStore;
-
+	this.consumed=false;
 
 	var width=width;
 	var height=height;
@@ -45,6 +45,7 @@ function Selector(x,y,width,height,dataStore){
 	this.SLAVE_MODE_PULL_REGIONS=step++;
 	this.SLAVE_MODE_SELECT_REGION=step++;
 	this.SLAVE_MODE_SELECT_LOCATION=step++;
+	this.SLAVE_MODE_FINISHED=step++;
 
 	this.state=this.SLAVE_MODE_PULL_MAPS;
 
@@ -108,7 +109,8 @@ Selector.prototype.draw=function(context){
 
 		if(!this.requestedRegions){
 			var parameters=new Object();
-			parameters["section"]=this.mapData[this.mapIndex]["sections"][this.sectionIndex]["file"];
+			this.sectionFile=this.mapData[this.mapIndex]["sections"][this.sectionIndex]["file"];
+			parameters["section"]=this.sectionFile;
 
 			var message=new Message(RAY_MESSAGE_TAG_GET_REGIONS,this,this.dataStore,parameters);
 
@@ -140,6 +142,12 @@ Selector.prototype.draw=function(context){
 		this.regionWidget.draw(context);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION){
+
+		this.mapWidget.draw(context);
+		this.sectionWidget.draw(context);
+		this.regionWidget.draw(context);
+		this.locationWidget.draw(context);
+	}else if(this.state==this.SLAVE_MODE_FINISHED){
 
 		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
@@ -242,6 +250,9 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 		this.objects=new Array();
 		this.deadObjects.push(this.locationWidget);
+
+		this.state=this.SLAVE_MODE_FINISHED;
+		this.consumed=false;
 	}
 
 	return result;
@@ -304,7 +315,22 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 	}
 }
 
-Selector.prototype.receiveMessageFromTheWeb=function(message){
+Selector.prototype.hasChoices=function(){
+	return this.state==this.SLAVE_MODE_FINISHED && !this.consumed;
+}
 
-	this.receiveAndProcessMessage(message);
+Selector.prototype.getLocationData=function(){
+
+	var parameters=new Object();
+	parameters["section"]=this.sectionFile;
+	parameters["region"]=this.regionIndex;
+	parameters["location"]=this.locationIndex;
+	parameters["kmerLength"]=this.mapFileData["kmerLength"];
+	parameters["map"]=this.mapData[this.mapIndex]["file"];
+
+	return parameters;
+}
+
+Selector.prototype.markAsConsumed=function(){
+	this.consumed=true;
 }

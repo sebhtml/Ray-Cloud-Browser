@@ -23,7 +23,7 @@
 function HumanInterface(screen,dataStore){
 
 	this.sampleInventory=new Inventory(130,20,300,400,false,screen,dataStore);
-
+	this.consumedLocation=false;
 	this.screen=screen;
 
 	this.zoomingChange=1.04;
@@ -407,6 +407,8 @@ HumanInterface.prototype.handleMouseDoubleClick=function(x,y){
 HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	if(this.sampleInventory.handleMouseDown(x,y)){
+
+
 		return true;
 
 	}else if(this.goLeft.handleMouseDown(x,y)){
