@@ -87,15 +87,18 @@ Vertex.prototype.getColor=function(){
 		return "NULL";
 	}
 
+/*
 	if(this.followMouse){
 		return "rgb(255,255,255)";
 	}
+*/
 	
 	if(!this.canChangeColor){
 		return "rgb(235,225,240)";
 	}
 
-	var seed=Math.floor(10*Math.sqrt(this.velocityX*this.velocityX+10*this.velocityY*this.velocityY+10));
+	//var seed=Math.floor(10*Math.sqrt(this.velocityX*this.velocityX+10*this.velocityY*this.velocityY+10));
+	var seed=10;
 	var red=seed+this.redSeed;
 	var green=seed+this.greenSeed; //Math.floor(10*this.velocityX*this.velocityX)+150;
 	var blue=seed+this.blueSeed; //Math.floor(10*this.velocityY*this.velocityY)+150;
