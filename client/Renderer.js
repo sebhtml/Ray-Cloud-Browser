@@ -104,9 +104,17 @@ Renderer.prototype.drawArcs=function(vertices){
 	context.stroke();
 }
 
-Renderer.prototype.drawLine=function(context,ax,ay,bx,by){
+Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails){
+	if(fullDetails)
+		context.lineWidth=this.lineWidth*zoomValue;
+	else
+		context.lineWidth=this.lineWidth;
+
+	context.beginPath();
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
+	context.stroke();
+	context.closePath();
 }
 
 /*
@@ -178,7 +186,7 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	}
 */
 
-	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by);
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails);
 
 	//return;
 
@@ -222,8 +230,8 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy);
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue,fullDetails);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails);
 }
 
 Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
@@ -273,7 +281,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 		context.beginPath();
 		context.fillStyle = theColor;
 		context.strokeStyle = "rgb(0,0,0)";
-		context.lineWidth=this.lineWidth;
+		context.lineWidth=this.lineWidth*zoomValue;
 		context.arc((x)*zoomValue,
 				(y)*zoomValue,zoomValue*radius, 0, Math.PI*2, true);
 	

@@ -689,6 +689,7 @@ Screen.prototype.draw=function(){
 /*
  * Draw a line around the canvas.
  */
+	context.lineWidth=1;
 	context.beginPath();
 	context.moveTo(0,0);
 	context.lineTo(this.canvas.width,0);
