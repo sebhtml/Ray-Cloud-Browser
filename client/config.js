@@ -40,9 +40,8 @@ var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=30;
 /**
  * The server to use for all web services.
  */
-var CONFIG_WEB_SERVER="../server/";
-//var CONFIG_WEB_SERVER="http://ec2-54-242-197-219.compute-1.amazonaws.com/~sebhtml/Ray-Cloud-Browser/server/";
-
+var CONFIG_WEB_SERVER="../server";
+//var CONFIG_WEB_SERVER="http://ec2-107-20-98-120.compute-1.amazonaws.com/server";
 
 
 // messaging service configuration
