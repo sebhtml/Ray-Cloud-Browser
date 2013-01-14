@@ -51,10 +51,10 @@ function PhysicsEngine(screen){
  * Coulomb's law
  * This is for the repulsion.
  */
-	this.forceStep=0.05;
+	this.forceStep=0.6;
 	this.charge=256;
 	this.labelCharge=96;
-	this.forceConstant=0.15;
+	this.forceConstant=0.1;
 	this.maximumRepulsion=64;
 
 /* 
@@ -62,8 +62,8 @@ function PhysicsEngine(screen){
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
-	this.sprintStep=0.5;
-	this.springConstant=0.35;
+	this.sprintStep=0.6;
+	this.springConstant=0.3;
 	this.springLength=20;
 	this.maximumAttraction=64;
 
@@ -238,6 +238,7 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 	var displacement=distance-this.springLength;
 
 	var force=this.springConstant*displacement;
+	force*=this.sprintStep;
 
 	force=this.checkBounds(force,this.maximumAttraction);
 
@@ -284,6 +285,7 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 	}
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
+	force*=this.forceStep;
 
 	force=this.checkBounds(force,this.maximumRepulsion);
 
