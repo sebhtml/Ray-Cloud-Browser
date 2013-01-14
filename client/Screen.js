@@ -169,8 +169,7 @@ Screen.prototype.start=function(){
 
 	this.moveOrigin=false;
 
-	this.originX=0;
-	this.originY=0;
+	this.clear();
 
 	this.lastOriginX=this.originX;
 	this.lastOriginY=this.originY;
@@ -266,6 +265,7 @@ Screen.prototype.handleMouseDown=function(eventObject){
 
 			this.kmerLength=this.locationData["kmerLength"];
 			this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
+			this.clear();
 			this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
 
 		}
@@ -872,4 +872,7 @@ Screen.prototype.toggleDebugMode=function(){
 	this.debugMode=!this.debugMode;
 }
 
-
+Screen.prototype.clear=function(){
+	this.originX=0;
+	this.originY=0;
+}
