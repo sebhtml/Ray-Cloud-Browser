@@ -95,6 +95,8 @@ function Screen(gameFrequency,renderingFrequency){
 	this.humanInterface=new HumanInterface(this,this.graphOperator.getDataStore());
 	this.pathOperator=new PathOperator(this.graphOperator.getDataStore(),this.graphOperator);
 
+	this.graphOperator.setPathOperator(this.pathOperator);
+
 	this.engine=new PhysicsEngine(this);
 
 	this.graph=new Graph(this.getWidth(),this.getHeight());
@@ -699,10 +701,12 @@ Screen.prototype.draw=function(){
 	context.stroke();
 	context.closePath();
 
+	this.renderer.drawPathVertices(this.getActiveObjects());
 
 	//if(this.showArcsButton.getState()){
 		this.renderer.drawArcs(this.getActiveObjects());
 	//}
+
 
 	//if(this.showVerticesButton.getState()){
 		this.renderer.drawVertices(this.getActiveObjects());

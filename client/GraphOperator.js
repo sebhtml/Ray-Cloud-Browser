@@ -127,6 +127,10 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 		this.added[kmerObject]=true;
 		addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
+
+		if(this.pathOperator.isVertexInPath(vertex.getSequence())){
+			vertex.annotateAsPathComponent();
+		}
 	}
 
 	if(vertex!=null){
@@ -178,3 +182,6 @@ GraphOperator.prototype.clear=function(){
 	this.graph.clear();
 }
 
+GraphOperator.prototype.setPathOperator=function(pathOperator){
+	this.pathOperator=pathOperator;
+}

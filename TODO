@@ -1,5 +1,4 @@
 - don't show any vertices below the minimum
-- blue shadow for contigs
 - path positions in display
 - return {} when there is an error instead of empty content
 

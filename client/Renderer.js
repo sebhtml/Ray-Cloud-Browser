@@ -26,6 +26,9 @@
  */
 function Renderer(screen){
 
+	this.pathColor="rgb(80,80,255)";
+	this.pathMultiplierForVertex=1.5;
+	this.pathMultiplierForArc=3;
 	this.zoomForLevelOfDetails=0.12;
 	this.zoomForLevelOfDetailsForCoverage=0.5
 	this.lineWidth=2;
@@ -47,15 +50,49 @@ Renderer.prototype.drawVertices=function(vertices){
 	if(zoomValue<=this.zoomForLevelOfDetails)
 		return;
 
-	for(i in vertices){
+// draw selection
+	var i=0;
+	while(i<vertices.length){
 		var vertex=vertices[i];
 
-		if(this.screen.isOutside(vertex,this.renderingBuffer))
+		if(this.screen.isOutside(vertex,this.renderingBuffer)){
+			i++;
 			continue;
+		}
 
 		this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
 			zoomValue,vertex);
+		i++;
 	}
+}
+
+/**
+ * This gene was duplicated from Renderer.prototype.drawVertices.
+ * The function of this gene changed over time.
+ */
+Renderer.prototype.drawPathVertices=function(vertices){
+
+	var zoomValue=this.screen.getZoomValue();
+
+	if(zoomValue<=this.zoomForLevelOfDetails)
+		return;
+
+// draw selection
+	var i=0;
+
+	while(i<vertices.length){
+		var vertex=vertices[i];
+
+		if(this.screen.isOutside(vertex,this.renderingBuffer)){
+			i++;
+			continue;
+		}
+
+		this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
+			zoomValue,vertex);
+		i++;
+	}
+
 }
 
 Renderer.prototype.drawArcs=function(vertices){
@@ -87,10 +124,15 @@ Renderer.prototype.drawArcs=function(vertices){
 			var originX=this.screen.getOriginX();
 			var originY=this.screen.getOriginY();
 
+			var importantArc=false;
+
+			if(vertex.isInPath() && vertex2.isInPath())
+				importantArc=true;
+
 			this.drawArc(context,vertex.getX()-originX,vertex.getY()-originY,
 				vertex2.getX()-originX,vertex2.getY()-originY,
 				this.screen.getZoomValue(),
-				vertex2.getRadius(),fullDetails);
+				vertex2.getRadius(),fullDetails,importantArc);
 
 		}
 	}
@@ -104,12 +146,14 @@ Renderer.prototype.drawArcs=function(vertices){
 	context.stroke();
 }
 
-Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails){
-	if(fullDetails)
-		context.lineWidth=this.lineWidth*zoomValue;
-	else
-		context.lineWidth=this.lineWidth;
+Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,lineWidth,color){
 
+	if(fullDetails)
+		context.lineWidth=lineWidth*zoomValue;
+	else
+		context.lineWidth=lineWidth;
+
+	context.strokeStyle=color;
 	context.beginPath();
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
@@ -127,7 +171,10 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails){
  *                   /
  *                  .
  */
-Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails){
+Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,importantArc){
+
+	var lineWidth=this.lineWidth;
+	var color='black';
 
 	//var headWasCorrected=false;
 
@@ -186,7 +233,14 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	}
 */
 
-	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails);
+	if(importantArc){
+		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+			lineWidth*this.pathMultiplierForArc,this.pathColor);
+	}
+
+// only draw the small line if it won't be done later on
+	if(!importantArc)
+		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
 
 	//return;
 
@@ -230,8 +284,20 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue,fullDetails);
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails);
+	if(importantArc){
+
+// draw the 2 big lines
+		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+			lineWidth*this.pathMultiplierForArc,this.pathColor);
+
+		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+			lineWidth*this.pathMultiplierForArc,this.pathColor);
+
+		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
+	}
+
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue,fullDetails,lineWidth,color);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails,lineWidth,color);
 }
 
 Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
@@ -261,8 +327,8 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 		return;
 	}
 */
-	
-	//3var context2=context;
+
+	//var context2=context;
 
 /*
 	if(this.useBlitter){
@@ -276,6 +342,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 	var blitX=blit.getX()+cacheWidth/2;
 	var blitY=blit.getY()+cacheWidth/2;
 */
+
 
 	if(vertex.isColored()){
 		context.beginPath();
@@ -307,4 +374,60 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 */
 }
 
+Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,vertex){
 
+	if(zoomValue<=this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
+		return;
+
+	var radius=vertex.getRadius();
+	var theColor= vertex.getColor();
+	var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
+
+	var x=vertex.getX()-originX;
+	var y=vertex.getY()-originY;
+
+/*
+	if(this.blitter.hasBlit(key)){
+		var blit=this.blitter.getBlit(key);
+
+		var width=blit.getWidth();
+		var height=blit.getHeight();
+
+		//blit.print();
+
+		context.drawImage(blit.getCanvas(),blit.getX(),blit.getY(),width,height,
+			(x-width/2)*zoomValue,(y-height/2)*zoomValue,width*zoomValue,height*zoomValue);
+
+		return;
+	}
+*/
+
+	//3var context2=context;
+
+/*
+	if(this.useBlitter){
+		var blit=this.blitter.allocateBlit(key,4+3*radius,4+3*radius);
+		context2=blit.getCanvas().getContext("2d");
+	}
+*/
+
+/*
+	var cacheWidth=blit.getWidth();
+	var blitX=blit.getX()+cacheWidth/2;
+	var blitY=blit.getY()+cacheWidth/2;
+*/
+
+	if(vertex.isInPath()){
+
+		context.beginPath();
+		context.fillStyle = this.pathColor;
+		context.strokeStyle = "rgb(0,0,0)";
+		context.lineWidth=this.lineWidth*zoomValue;
+		context.arc((x)*zoomValue,
+				(y)*zoomValue,this.pathMultiplierForVertex*zoomValue*radius, 0, Math.PI*2, true);
+
+		context.fill();
+		//context.stroke();
+		context.closePath();
+	}
+}

@@ -33,6 +33,8 @@ function Vertex(name,colored){
 	this.colored=colored;
 	this.name=name;
 
+	this.inPath=false;
+
 	if(this.colored){
 		this.chiefNucleotide=name[name.length-1];
 	}
@@ -331,4 +333,12 @@ Vertex.prototype.moved=function(threshold){
 Vertex.prototype.moveInGrid=function(){
 	this.lastGridUpdateX=this.getX();
 	this.lastGridUpdateY=this.getY();
+}
+
+Vertex.prototype.annotateAsPathComponent=function(){
+	this.inPath=true;
+}
+
+Vertex.prototype.isInPath=function(){
+	return this.inPath;
 }

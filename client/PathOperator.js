@@ -25,10 +25,12 @@
 function PathOperator(dataStore,graphOperator){
 	this.dataStore=dataStore;
 	this.graphOperator=graphOperator;
+
+	this.reset();
 }
 
 PathOperator.prototype.startOnPath=function(locationData){
-
+	this.reset();
 	this.locationData=locationData;
 
 	locationData["readahead"]=512;
@@ -58,6 +60,12 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		//console.log(content);
 		var vertices=content["vertices"]
+
+		var i=0;
+		while(i<vertices.length){
+			this.keys[vertices[i++]["value"]]=true;
+		}
+
 		//console.log(vertices.length);
 		var kmerSequence=vertices[Math.floor(vertices.length/2)]["value"];
 
@@ -73,4 +81,16 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		//console.log(JSON.stringify(message.getContent()));
 	}
+}
+
+PathOperator.prototype.isVertexInPath=function(vertex){
+	if(vertex in this.keys)
+		return true;
+
+	return false;
+}
+
+PathOperator.prototype.reset=function(){
+
+	this.keys=new Object();
 }
