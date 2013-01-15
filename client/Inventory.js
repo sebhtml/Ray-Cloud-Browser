@@ -36,6 +36,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.y=y;
 	this.visible=visible;
 
+	this.moviePeriod=1000;
+
 	this.buttonWidth=25;
 
 	this.closeButton=new Button(this.x+this.buttonWidth/2,this.y+this.buttonWidth/2,
@@ -57,12 +59,20 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
 	this.previousButton=new Button(this.x+this.buttonWidth+15*this.buttonWidth/2,
-		this.y+2.5*this.buttonWidth,
+		this.y+2.7*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"<<",false);
 
-	this.nextButton=new Button(this.x+this.buttonWidth+18*this.buttonWidth/2,
-		this.y+2.5*this.buttonWidth,
+	this.nextButton=new Button(this.x+this.buttonWidth+17.5*this.buttonWidth/2,
+		this.y+2.7*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,">>",false);
+
+	this.increaseButton=new Button(this.x+this.buttonWidth+20*this.buttonWidth/2,
+		this.y+2.2*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,"+",false);
+
+	this.decreaseButton=new Button(this.x+this.buttonWidth+20*this.buttonWidth/2,
+		this.y+3.3*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,"-",false);
 
 	this.pushSelector();
 }
@@ -114,6 +124,8 @@ Inventory.prototype.draw=function(context){
 
 		this.nextButton.draw(context,null);
 		this.previousButton.draw(context,null);
+		this.increaseButton.draw(context,null);
+		this.decreaseButton.draw(context,null);
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
@@ -155,6 +167,24 @@ Inventory.prototype.handleMouseDown=function(x,y){
 			this.nextButton.resetState();
 
 		return true;
+	}else if(this.increaseButton.handleMouseDown(x,y)){
+		this.moviePeriod-=100;
+
+		var minimum=100;
+		if(this.moviePeriod<minimum)
+			this.moviePeriod=minimum;
+
+		this.increaseButton.resetState();
+
+	}else if(this.decreaseButton.handleMouseDown(x,y)){
+		this.moviePeriod+=100;
+
+		var maximum=2000;
+		if(this.moviePeriod>maximum)
+			this.moviePeriod=maximum;
+
+		this.decreaseButton.resetState();
+		return true;
 	}
 
 	return false;
@@ -192,4 +222,8 @@ Inventory.prototype.getPreviousButton=function(){
 
 Inventory.prototype.getNextButton=function(){
 	return this.nextButton;
+}
+
+Inventory.prototype.getMoviePeriod=function(){
+	return this.moviePeriod;
 }

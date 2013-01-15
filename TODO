@@ -1,5 +1,4 @@
 # client
-
 - don't show any vertices below the minimum
 - user can change the minimum coverage to display
 
@@ -9,5 +8,4 @@
 - display edge if one end is on screens
 
 # server
-
 - return {} when there is an error instead of empty content

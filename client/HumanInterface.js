@@ -408,7 +408,6 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	if(this.sampleInventory.handleMouseDown(x,y)){
 
-
 		return true;
 
 	}else if(this.goLeft.handleMouseDown(x,y)){
@@ -470,4 +469,8 @@ HumanInterface.prototype.goNext=function(){
 
 HumanInterface.prototype.goPrevious=function(){
 	return this.sampleInventory.getPreviousButton().getState();
+}
+
+HumanInterface.prototype.getMoviePeriod=function(){
+	return this.sampleInventory.getMoviePeriod();
 }

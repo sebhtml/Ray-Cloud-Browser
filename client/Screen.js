@@ -28,6 +28,8 @@
 function Screen(gameFrequency,renderingFrequency){
 
 	this.canControlScreen=false;
+	this.periodForControl=1000;
+
 	this.debugMode=false;
 /*
  * Turn on the physics engine.
@@ -168,6 +170,7 @@ Screen.prototype.start=function(){
 
 	this.vertexSelected=null;
 	this.lastUpdate=this.getMilliseconds();
+	this.lastUpdateForControl=this.getMilliseconds();
 	this.identifier=0;
 
 	this.moveOrigin=false;
@@ -489,6 +492,11 @@ Screen.prototype.iterate=function(){
 
 	var start=this.getMilliseconds();
 
+	if(start>=this.lastUpdateForControl+this.periodForControl){
+		this.canControlScreen=true;
+		this.lastUpdateForControl=start;
+	}
+
 	if(start>= this.lastUpdate+1000){
 		this.actualGameFrequency=this.roundNumber(this.gameFrameNumber*1000/(start-this.lastUpdate),2);
 		this.actualGameFrameLength=this.roundNumber(this.gameMilliseconds/this.gameFrameNumber,2);
@@ -501,7 +509,10 @@ Screen.prototype.iterate=function(){
 		this.drawingFrames=0;
 
 		this.lastUpdate=start;
-		this.canControlScreen=true;
+
+		this.periodForControl=this.humanInterface.getMoviePeriod();
+
+		//console.log("PeriodForControl= "+this.periodForControl);
 	}
 
 	this.engine.applyForces(this.getActiveObjects());
