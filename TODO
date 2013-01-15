@@ -1,11 +1,12 @@
-- fetch more path locations
+# client
+
 - path positions in display
-- don't show any vertices below the minimum
-- user can change the minimum coverage to display
+- fetch more path locations
 - recenter on new location
 - play region
+- don't show any vertices below the minimum
+- user can change the minimum coverage to display
 
-- return {} when there is an error instead of empty content
 
 - add buttons to go to minimum and maximum
 - select part of graph to obtain DNA sequence
@@ -13,4 +14,9 @@
 - display edge if one end is on screens
 
 
+- various TODO entries directly in the code
+
+# server
+
+- return {} when there is an error instead of empty content
 - various TODO entries directly in the code
