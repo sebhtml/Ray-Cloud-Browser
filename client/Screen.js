@@ -473,9 +473,15 @@ Screen.prototype.iterate=function(){
 		if(vertex!=null && this.canControlScreen){
 			//console.log("Graph has vertex too");
 
-			this.center(vertex.getX(),vertex.getY());
-			this.pathOperator.next();
-			this.canControlScreen=false;
+			if(this.humanInterface.goNext()){
+				this.center(vertex.getX(),vertex.getY());
+				this.pathOperator.next();
+				this.canControlScreen=false;
+			}else if(this.humanInterface.goPrevious()){
+				this.center(vertex.getX(),vertex.getY());
+				this.pathOperator.previous();
+				this.canControlScreen=false;
+			}
 		}
 	//}else{
 		//console.log("PathOperator does not have vertex");

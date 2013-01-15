@@ -239,4 +239,13 @@ PathOperator.prototype.getVertex=function(){
 
 PathOperator.prototype.next=function(){
 	this.currentLocation++;
+
+	if(this.currentLocation>=this.regionLength)
+		this.currentLocation=this.regionLength-1;
+}
+
+PathOperator.prototype.previous=function(){
+	this.currentLocation--;
+	if(this.currentLocation<0)
+		this.currentLocation=0;
 }

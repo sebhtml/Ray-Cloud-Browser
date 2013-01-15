@@ -56,6 +56,14 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+3.2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
+	this.previousButton=new Button(this.x+this.buttonWidth+15*this.buttonWidth/2,
+		this.y+2.5*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,"<<",false);
+
+	this.nextButton=new Button(this.x+this.buttonWidth+18*this.buttonWidth/2,
+		this.y+2.5*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,">>",false);
+
 	this.pushSelector();
 }
 
@@ -104,6 +112,9 @@ Inventory.prototype.draw=function(context){
 		this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
 
+		this.nextButton.draw(context,null);
+		this.previousButton.draw(context,null);
+
 		if(this.warpButton.getState())
 			this.selector.draw(context);
 	}
@@ -130,6 +141,18 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 	}else if(this.selector.handleMouseDown(x,y)){
+
+		return true;
+	}else if(this.nextButton.handleMouseDown(x,y)){
+
+		if(this.nextButton.getState())
+			this.previousButton.resetState();
+
+		return true;
+	}else if(this.previousButton.handleMouseDown(x,y)){
+
+		if(this.previousButton.getState())
+			this.nextButton.resetState();
 
 		return true;
 	}
@@ -161,4 +184,12 @@ Inventory.prototype.handleMouseUp=function(x,y){
 
 Inventory.prototype.hasChoices=function(){
 	return this.selector.hasChoices();
+}
+
+Inventory.prototype.getPreviousButton=function(){
+	return this.previousButton;
+}
+
+Inventory.prototype.getNextButton=function(){
+	return this.nextButton;
 }

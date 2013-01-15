@@ -8,9 +8,6 @@
 - delete off-screen objects
 - display edge if one end is on screens
 
-- various TODO entries directly in the code
-
 # server
 
 - return {} when there is an error instead of empty content
-- various TODO entries directly in the code

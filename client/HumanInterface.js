@@ -463,3 +463,11 @@ HumanInterface.prototype.handleMouseMove=function(x,y){
 		return true;
 	return false;
 }
+
+HumanInterface.prototype.goNext=function(){
+	return this.sampleInventory.getNextButton().getState();
+}
+
+HumanInterface.prototype.goPrevious=function(){
+	return this.sampleInventory.getPreviousButton().getState();
+}
