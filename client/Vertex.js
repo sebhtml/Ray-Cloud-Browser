@@ -25,6 +25,9 @@
  * \author Sébastien Boisvert
  */
 function Vertex(name,colored){
+
+	this.isPosition=false;
+	this.hasPositionValue=false;
 	this.x=0;
 	this.y=0;
 	this.positionIsSet=false;
@@ -335,10 +338,22 @@ Vertex.prototype.moveInGrid=function(){
 	this.lastGridUpdateY=this.getY();
 }
 
-Vertex.prototype.annotateAsPathComponent=function(){
-	this.inPath=true;
+Vertex.prototype.isInPath=function(){
+	return this.hasAnnotation("position");
 }
 
-Vertex.prototype.isInPath=function(){
-	return this.inPath;
+Vertex.prototype.hasAnnotation=function(predicate){
+	return this.hasPositionValue;
+}
+
+Vertex.prototype.registerAnnotation=function(predicate){
+	this.hasPositionValue=true;
+}
+
+Vertex.prototype.setPositionType=function(){
+	this.isPosition=true;
+}
+
+Vertex.prototype.isPositionVertex=function(){
+	return this.isPosition;
 }

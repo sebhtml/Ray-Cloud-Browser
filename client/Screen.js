@@ -667,7 +667,7 @@ Screen.prototype.drawControlPanel=function(){
 }
 
 /*
- * TODO: move this in HumanInterface
+ * TODO: move this in HumanInterface or in Renderer
  */
 Screen.prototype.draw=function(){
 /*

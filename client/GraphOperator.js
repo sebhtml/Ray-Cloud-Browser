@@ -129,7 +129,10 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 		addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 
 		if(this.pathOperator.isVertexInPath(vertex.getSequence())){
-			vertex.annotateAsPathComponent();
+			var position=this.pathOperator.getVertexPosition(vertex.getSequence());
+
+			this.graph.addPosition(vertex.getSequence(),position);
+			vertex.registerAnnotation("position");
 		}
 	}
 

@@ -307,7 +307,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 
 	var radius=vertex.getRadius();
 	var theColor= vertex.getColor();
-	var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
+	//var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
 
 	var x=vertex.getX()-originX;
 	var y=vertex.getY()-originY;
@@ -361,8 +361,13 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 	context.font         = 'bold '+Math.floor(12*zoomValue)+'px Arial';
 
 	if(vertex.isColored()){
+		context.fillStyle="black";
 		context.fillText(vertex.getLabel(),(x-radius/2)*zoomValue,(y+radius/2)*zoomValue);
+	}else if(vertex.isPositionVertex()){
+		context.fillStyle=this.pathColor;
+		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
 	}else{
+		context.fillStyle="black";
 		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
 	}
 

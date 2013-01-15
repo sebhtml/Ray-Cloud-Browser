@@ -94,3 +94,7 @@ PathOperator.prototype.reset=function(){
 
 	this.keys=new Object();
 }
+
+PathOperator.prototype.getVertexPosition=function(sequence){
+	return 1;
+}

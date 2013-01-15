@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -77,6 +77,27 @@ Graph.prototype.addCoverage=function(sequence,coverage){
 	delete this.objectsWithoutCoverage[sequence];
 }
 
+Graph.prototype.addPosition=function(sequence,position){
+
+	var vertex1=this.addVertex(sequence);
+
+	if(vertex1.hasAnnotation("position")){
+		return;
+	}
+
+	var positionVertex=new Vertex(position,false);
+	positionVertex.setPositionType();
+	positionVertex.setX(vertex1.getX()+10);
+	positionVertex.setY(vertex1.getY()+10);
+
+	vertex1.addLinkedObject(positionVertex);
+	positionVertex.addLinkedObject(vertex1);
+
+	this.vertices.push(positionVertex);
+
+	vertex1.registerAnnotation("position");
+}
+
 Graph.prototype.addParents=function(sequence,parents){
 
 	if(sequence in this.objectsWithCoverage)
@@ -119,6 +140,8 @@ Graph.prototype.getObjectsWithoutData=function(){
 Graph.prototype.clear=function(){
 	this.vertices=new Array();
 	this.index=new Object();
+
+// TODO remove objectsWithCoverage, instead use this.vertices to store this information
 	this.objectsWithCoverage=new Object();
 	this.objectsWithoutCoverage=new Object();
 }
