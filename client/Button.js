@@ -25,7 +25,7 @@
  * \author Sébastien Boisvert
  */
 function Button(x,y,width,height,name,defaultState){
-	this.color="rgb(220,220,220)";
+	this.color="rgb(220,224,235)";
 	this.activeColor="rgb(200,250,200)";
 	this.mouseDownColor="rgb(255,50,50)";
 

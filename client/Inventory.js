@@ -50,13 +50,15 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.overlay.setBackgroundColor("#99CCCC");
 	this.overlay.setActiveColor("#99CCCC");
 
+/*
 	this.debugButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
 		this.y+2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
+*/
 
 	this.warpButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
-		this.y+3.2*this.buttonWidth,
-		6*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
+		this.y+2.7*this.buttonWidth,
+		4.5*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
 	this.previousButton=new Button(this.x+this.buttonWidth+15*this.buttonWidth/2,
 		this.y+2.7*this.buttonWidth,
@@ -119,7 +121,7 @@ Inventory.prototype.draw=function(context){
 	this.closeButton.draw(context,null);
 	
 	if(this.visible){
-		this.debugButton.draw(context,null);
+		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
 
 		this.nextButton.draw(context,null);
@@ -143,9 +145,11 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	}else if(this.overlay.handleMouseDown(x,y)){
 		this.selected=true;
 		return true;
+/*
 	}else if(this.debugButton.handleMouseDown(x,y)){
 		this.screen.toggleDebugMode();
 		return true;
+*/
 	}else if(this.warpButton.handleMouseDown(x,y)){
 	
 		if(this.warpButton.getState())
@@ -197,7 +201,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 
 		this.closeButton.move(deltaX,deltaY);
 		this.overlay.move(deltaX,deltaY);
-		this.debugButton.move(deltaX,deltaY);
+		//this.debugButton.move(deltaX,deltaY);
 		this.warpButton.move(deltaX,deltaY);
 		this.selector.move(deltaX,deltaY);
 		this.x+=deltaX;
