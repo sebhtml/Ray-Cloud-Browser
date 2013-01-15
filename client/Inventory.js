@@ -200,6 +200,10 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		//this.debugButton.move(deltaX,deltaY);
 		this.warpButton.move(deltaX,deltaY);
 		this.selector.move(deltaX,deltaY);
+		this.decreaseButton.move(deltaX,deltaY);
+		this.increaseButton.move(deltaX,deltaY);
+		this.nextButton.move(deltaX,deltaY);
+		this.previousButton.move(deltaX,deltaY);
 		this.x+=deltaX;
 		this.y+=deltaY;
 	}
