@@ -108,8 +108,26 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		this.started=true;
 
+		var locationInRegion=this.locationData["location"];
 		//console.log(vertices.length);
+
+// pick up a middle position
 		var kmerSequence=vertices[Math.floor(vertices.length/2)]["value"];
+
+		var i=0;
+		while(i<vertices.length){
+			var sequence=vertices[i]["value"];
+			var position=vertices[i]["position"];
+
+			if(position==locationInRegion){
+				kmerSequence=sequence;
+
+				//console.log("Found starting point");
+				break;
+			}
+
+			i++;
+		}
 
 		var parameters=new Object();
 		parameters["map"]=this.dataStore.getMapFile();

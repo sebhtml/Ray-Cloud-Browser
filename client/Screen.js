@@ -880,3 +880,4 @@ Screen.prototype.clear=function(){
 	this.originX=0;
 	this.originY=0;
 }
+
