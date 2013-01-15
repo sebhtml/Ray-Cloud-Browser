@@ -53,7 +53,6 @@ function PhysicsEngine(screen){
  */
 	this.forceStep=0.6;
 	this.charge=256;
-	this.labelCharge=184;
 	this.forceConstant=0.1;
 	this.maximumRepulsion=64;
 
@@ -280,14 +279,6 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var charge1=this.charge;
 	var charge2=this.charge;
-
-/*
- * Annotation are less charged with energy.
- */
-	if(!vertex1.isColored() || !vertex2.isColored()){
-		charge1=this.labelCharge;
-		charge2=this.labelCharge;
-	}
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
 	force*=this.forceStep;

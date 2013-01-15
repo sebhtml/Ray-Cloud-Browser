@@ -64,14 +64,13 @@ Graph.prototype.addCoverage=function(sequence,coverage){
 		return;
 
 	var vertex1=this.addVertex(sequence);
-	var coverage=new Vertex(coverage,false);
-	coverage.setX(vertex1.getX()+10);
-	coverage.setY(vertex1.getY()+10);
+	var coverageVertex=new Vertex(coverage,false);
+	this.layout.applyGoodLayout(vertex1,coverageVertex);
 
-	vertex1.addLinkedObject(coverage);
-	coverage.addLinkedObject(vertex1);
+	vertex1.addLinkedObject(coverageVertex);
+	coverageVertex.addLinkedObject(vertex1);
 
-	this.vertices.push(coverage);
+	this.vertices.push(coverageVertex);
 
 	this.objectsWithCoverage[sequence]=true;
 	delete this.objectsWithoutCoverage[sequence];
@@ -87,8 +86,7 @@ Graph.prototype.addPosition=function(sequence,position){
 
 	var positionVertex=new Vertex(position,false);
 	positionVertex.setPositionType();
-	positionVertex.setX(vertex1.getX()+10);
-	positionVertex.setY(vertex1.getY()+10);
+	this.layout.applyGoodLayout(vertex1,positionVertex);
 
 	vertex1.addLinkedObject(positionVertex);
 	positionVertex.addLinkedObject(vertex1);
