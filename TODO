@@ -1,7 +1,5 @@
 # client
 
-- recenter on new location
-- play region
 - don't show any vertices below the minimum
 - user can change the minimum coverage to display
 

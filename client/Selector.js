@@ -327,7 +327,7 @@ Selector.prototype.getLocationData=function(){
 	parameters["region"]=this.regionIndex;
 	parameters["location"]=this.locationIndex;
 	parameters["kmerLength"]=this.mapFileData["kmerLength"];
-	parameters["regionLength"]=this.maximum;
+	parameters["regionLength"]=this.regionLength;
 	parameters["map"]=this.mapData[this.mapIndex]["file"];
 
 	return parameters;

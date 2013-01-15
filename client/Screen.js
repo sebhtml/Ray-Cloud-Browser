@@ -26,7 +26,8 @@
  * \author Sébastien Boisvert
  */
 function Screen(gameFrequency,renderingFrequency){
-	
+
+	this.canControlScreen=false;
 	this.debugMode=false;
 /*
  * Turn on the physics engine.
@@ -463,7 +464,23 @@ Screen.prototype.roundNumber=function(number,precision){
 }
 
 Screen.prototype.iterate=function(){
-	
+
+	if(this.pathOperator.hasVertex()){
+		var object=this.pathOperator.getVertex();
+
+		//console.log("operator has vertex");
+		var vertex=this.graph.getVertex(object);
+		if(vertex!=null && this.canControlScreen){
+			//console.log("Graph has vertex too");
+
+			this.center(vertex.getX(),vertex.getY());
+			this.pathOperator.next();
+			this.canControlScreen=false;
+		}
+	//}else{
+		//console.log("PathOperator does not have vertex");
+	}
+
 	var start=this.getMilliseconds();
 
 	if(start>= this.lastUpdate+1000){
@@ -478,6 +495,7 @@ Screen.prototype.iterate=function(){
 		this.drawingFrames=0;
 
 		this.lastUpdate=start;
+		this.canControlScreen=true;
 	}
 
 	this.engine.applyForces(this.getActiveObjects());
@@ -879,5 +897,14 @@ Screen.prototype.toggleDebugMode=function(){
 Screen.prototype.clear=function(){
 	this.originX=0;
 	this.originY=0;
+}
+
+Screen.prototype.center=function(x,y){
+	this.originXSpeed=x-(this.originX+this.width/2/this.zoomValue);
+	this.originYSpeed=y-(this.originY+this.height/2/this.zoomValue);
+
+	var softModifier=0.1;
+	this.originXSpeed*=softModifier;
+	this.originYSpeed*=softModifier;
 }
 

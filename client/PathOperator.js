@@ -37,6 +37,7 @@ PathOperator.prototype.startOnPath=function(locationData){
 	this.reset();
 	this.locationData=locationData;
 	this.regionLength=this.locationData["regionLength"];
+	this.currentLocation=this.locationData["location"];
 
 	locationData["readahead"]=512;
 
@@ -75,6 +76,7 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 			var sequence=vertices[i]["value"];
 			var position=vertices[i]["position"];
 
+			this.vertexAtPosition[position]=sequence;
 
 			if(!this.hasLeft|| position<this.lastLeft){
 				this.lastLeft=position;
@@ -191,16 +193,21 @@ PathOperator.prototype.isVertexInPath=function(vertex){
 }
 
 PathOperator.prototype.reset=function(){
+
 	this.active=false;
 
 	this.keys=new Object();
 	this.pathPositions=new Object();
+	this.vertexAtPosition=new Object();
 
 	this.started=false;
 	this.lastLeft=0;
 	this.lastRight=0;
 	this.hasLeft=false;
 	this.hasRight=false;
+
+	this.currentLocation=0;
+	this.regionLength=0;
 }
 
 PathOperator.prototype.getVertexPosition=function(sequence){
@@ -214,4 +221,22 @@ PathOperator.prototype.getVertexPosition=function(sequence){
 
 	}
 	return 0;
+}
+
+PathOperator.prototype.hasVertex=function(){
+
+	//console.log(this.currentLocation+" -- "+this.regionLength);
+
+	return this.currentLocation<this.regionLength && this.currentLocation>=0;
+}
+
+PathOperator.prototype.getVertex=function(){
+	if(!this.hasVertex)
+		return null;
+
+	return this.vertexAtPosition[this.currentLocation];
+}
+
+PathOperator.prototype.next=function(){
+	this.currentLocation++;
 }
