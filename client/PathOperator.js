@@ -29,9 +29,14 @@ function PathOperator(dataStore,graphOperator){
 	this.reset();
 }
 
+/**
+ * QUERY_STRING:
+ * tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
+ */
 PathOperator.prototype.startOnPath=function(locationData){
 	this.reset();
 	this.locationData=locationData;
+	this.regionLength=this.locationData["regionLength"];
 
 	locationData["readahead"]=512;
 
@@ -49,6 +54,8 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 	var tag=message.getTag();
 
 	if(tag==RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY){
+
+		this.active=false;
 /*
 		var kmer=new Kmer(kmerSequence,coverage,parents,children);
 
@@ -61,17 +68,45 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 		//console.log(content);
 		var vertices=content["vertices"]
 
+
 		var i=0;
 		while(i<vertices.length){
+
 			var sequence=vertices[i]["value"];
 			var position=vertices[i]["position"];
+
+
+			if(!this.hasLeft|| position<this.lastLeft){
+				this.lastLeft=position;
+				this.hasLeft=true;
+			}
+
+/*
+			if(position<10)
+				console.log("position= "+position);
+*/
+
 			this.keys[sequence]=true;
 			if(!(sequence in this.pathPositions)){
 				this.pathPositions[sequence]=new Array();
 			}
 			this.pathPositions[sequence].push(position);
+
+			if(!this.hasRight|| position>this.lastRight){
+				this.lastRight=position;
+				this.hasRight=true;
+			}
+
 			i++;
 		}
+
+/*
+ * We only need to bootstrap the beast once.
+ */
+		if(this.started)
+			return;
+
+		this.started=true;
 
 		//console.log(vertices.length);
 		var kmerSequence=vertices[Math.floor(vertices.length/2)]["value"];
@@ -90,26 +125,73 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 	}
 }
 
+/**
+ * QUERY_STRING:
+ * tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
+ */
+PathOperator.prototype.doReadahead=function(vertex){
+
+	if(this.active)
+		return;
+
+	var position=this.getVertexPosition(vertex);
+
+	var buffer=1024;
+
+	if(position<this.lastLeft+buffer && this.lastLeft!=0){
+
+		//console.log("doReadahead on the left with lastLeft="+this.lastLeft+" and position "+position);
+		this.active=true;
+		this.locationData["location"]=this.lastLeft;
+
+		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
+				this,this.dataStore,this.locationData);
+		message.send();
+
+	}else if(position > this.lastRight-buffer && this.lastRight!=this.regionLength-1){
+
+		//console.log("doReadahead on the right with lastRight="+this.lastRight+" and position "+position);
+		this.active=true;
+		this.locationData["location"]=this.lastRight;
+
+		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
+				this,this.dataStore,this.locationData);
+		message.send();
+	}
+}
+
 PathOperator.prototype.isVertexInPath=function(vertex){
-	if(vertex in this.keys)
+
+	if(vertex in this.keys){
+
+		this.doReadahead(vertex);
+
 		return true;
+	}
 
 	return false;
 }
 
 PathOperator.prototype.reset=function(){
+	this.active=false;
 
 	this.keys=new Object();
 	this.pathPositions=new Object();
+
+	this.started=false;
+	this.lastLeft=0;
+	this.lastRight=0;
+	this.hasLeft=false;
+	this.hasRight=false;
 }
 
-// TODO show many coverages when there are many
 PathOperator.prototype.getVertexPosition=function(sequence){
 	if(sequence in this.pathPositions){
 		if(this.pathPositions[sequence].length==1){
 			return this.pathPositions[sequence][0];
 		}else{
-			return this.pathPositions[sequence];
+// TODO show many coverages when there are many
+			return this.pathPositions[sequence][0];
 		}
 
 	}

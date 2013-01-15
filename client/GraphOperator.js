@@ -131,7 +131,7 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 		if(this.pathOperator.isVertexInPath(vertex.getSequence())){
 			var position=this.pathOperator.getVertexPosition(vertex.getSequence());
 
-			this.graph.addPosition(vertex.getSequence(),position);
+			this.graph.addPosition(vertex.getSequence(),position+1);
 			vertex.registerAnnotation("position");
 		}
 	}

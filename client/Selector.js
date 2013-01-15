@@ -233,6 +233,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 		this.regionWidget.resetState();
 
 		var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["kmerLength"]+1;
+		this.regionLength=maximum;
 
 		this.locationWidget=new IntegerSelectionWidget(this.x+40,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
 			1,maximum);
@@ -326,6 +327,7 @@ Selector.prototype.getLocationData=function(){
 	parameters["region"]=this.regionIndex;
 	parameters["location"]=this.locationIndex;
 	parameters["kmerLength"]=this.mapFileData["kmerLength"];
+	parameters["regionLength"]=this.maximum;
 	parameters["map"]=this.mapData[this.mapIndex]["file"];
 
 	return parameters;
