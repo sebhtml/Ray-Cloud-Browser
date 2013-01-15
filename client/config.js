@@ -35,7 +35,7 @@ var CONFIG_PULL_FREQUENCY=64;
  * Minimum coverage to display
  * TODO: add this in the user interface instead
  */
-var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=30;
+var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=16;
 
 /**
  * The server to use for all web services.

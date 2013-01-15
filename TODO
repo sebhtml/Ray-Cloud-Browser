@@ -1,4 +1,7 @@
-# client
+- readahead is not good enough (padding is pad)
+- MouseDown intefere with acceleration when pressing movie buttons
+- movie controls don't move
+- push currentVertex in PathOperator upon selection
 - don't show any vertices below the minimum
 - user can change the minimum coverage to display
 
@@ -7,5 +10,5 @@
 - delete off-screen objects
 - display edge if one end is on screens
 
-# server
-- return {} when there is an error instead of empty content
+- server -- return {} when there is an error instead of empty content
+- server -- return array instead of {} for vertices

@@ -36,7 +36,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.y=y;
 	this.visible=visible;
 
-	this.moviePeriod=1000;
+	this.moviePeriod=1024;
 
 	this.buttonWidth=25;
 
@@ -172,20 +172,16 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 	}else if(this.increaseButton.handleMouseDown(x,y)){
-		this.moviePeriod-=100;
+		this.moviePeriod/=2;
 
-		var minimum=100;
+		var minimum=2;
 		if(this.moviePeriod<minimum)
 			this.moviePeriod=minimum;
 
 		this.increaseButton.resetState();
 
 	}else if(this.decreaseButton.handleMouseDown(x,y)){
-		this.moviePeriod+=100;
-
-		var maximum=2000;
-		if(this.moviePeriod>maximum)
-			this.moviePeriod=maximum;
+		this.moviePeriod*=2;
 
 		this.decreaseButton.resetState();
 		return true;
