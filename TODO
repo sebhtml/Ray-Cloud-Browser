@@ -3,8 +3,7 @@
 - path positions in display
 - return {} when there is an error instead of empty content
 
-- add buttons to go to minimum and maximum
-- select part of graph to obtain DNA sequence
+i- select part of graph to obtain DNA sequence
 - delete off-screen objects
 - user can change the minimum coverage to display
 - display edge if one end is on screens
