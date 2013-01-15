@@ -63,7 +63,14 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		var i=0;
 		while(i<vertices.length){
-			this.keys[vertices[i++]["value"]]=true;
+			var sequence=vertices[i]["value"];
+			var position=vertices[i]["position"];
+			this.keys[sequence]=true;
+			if(!(sequence in this.pathPositions)){
+				this.pathPositions[sequence]=new Array();
+			}
+			this.pathPositions[sequence].push(position);
+			i++;
 		}
 
 		//console.log(vertices.length);
@@ -93,8 +100,18 @@ PathOperator.prototype.isVertexInPath=function(vertex){
 PathOperator.prototype.reset=function(){
 
 	this.keys=new Object();
+	this.pathPositions=new Object();
 }
 
+// TODO show many coverages when there are many
 PathOperator.prototype.getVertexPosition=function(sequence){
-	return 1;
+	if(sequence in this.pathPositions){
+		if(this.pathPositions[sequence].length==1){
+			return this.pathPositions[sequence][0];
+		}else{
+			return this.pathPositions[sequence];
+		}
+
+	}
+	return 0;
 }
