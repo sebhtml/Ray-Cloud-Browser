@@ -81,11 +81,14 @@ function Screen(gameFrequency,renderingFrequency){
 	var availableWidth=window.screen.availWidth;
 	var availableHeight=window.screen.availHeight;
 
-	this.width=availableWidth-20;
-	this.height=availableHeight-20;
+// fix the screen size
+	this.width=availableWidth;
+	this.height=availableHeight;
 
-	//this.width=physicalScreenWidth;
-	//this.height=physicalScreenHeight-40;
+/*
+	this.width=physicalScreenWidth;
+	this.height=physicalScreenHeight;
+*/
 
 	//this.width=virtualWindowWidth;
 	//this.height=virtualWindowHeight-40;
@@ -625,6 +628,7 @@ Screen.prototype.drawControlPanel=function(){
 
 	var context=this.getContext();
 
+
 // show a loading icon
 	if(this.graphOperator.getDataStore().hasPendingQueries()){
 		var width=16;
@@ -657,6 +661,7 @@ Screen.prototype.drawControlPanel=function(){
 		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
 		context.fillText("Item: "+toPrint, this.getWidth()/2-sequence.length*3, 64);
 	}
+
 
 	if(!this.debugMode)
 		return;
@@ -730,9 +735,23 @@ Screen.prototype.draw=function(){
 
 	//context.strokeStyle = "rgb(0,0,0)";
 
+	context.lineWidth=0;
+	context.beginPath();
+	context.fillStyle = '#ffeeaa';
+	context.strokeStyle = "rgb(0,0,0)";
+	context.rect(this.width-130, 0, 130, 20);
+	//context.stroke();
+	context.fill();
+
+	context.fillStyle    = '#000000';
+	context.font         = '13px Arial';
+	context.fillText("Ray Cloud Browser", this.width-120,15);
+
+
 /*
  * Draw a line around the canvas.
  */
+/*
 	context.lineWidth=1;
 	context.beginPath();
 	context.moveTo(0,0);
@@ -742,6 +761,7 @@ Screen.prototype.draw=function(){
 	context.lineTo(0,0);
 	context.stroke();
 	context.closePath();
+*/
 
 	this.renderer.drawPathVertices(this.getActiveObjects());
 

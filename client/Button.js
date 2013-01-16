@@ -112,6 +112,7 @@ Button.prototype.draw=function(context,blitter){
 	}
 
 	context2.fillStyle = this.color;
+	context2.lineWidth=1;
 
 	context2.strokeStyle = "rgb(0,0,0)";
 

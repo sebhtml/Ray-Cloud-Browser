@@ -45,7 +45,7 @@ function WebDocument(){
 	footerSmall.appendChild(hrefLink);
 	footerSmall.appendChild(controls);
 	footerSmall.appendChild(linkTextBottom);
-	body.appendChild(footer);
+	//body.appendChild(footer);
 	footer.appendChild(footerSmall);
 }
 
