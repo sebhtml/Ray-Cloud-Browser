@@ -82,6 +82,14 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 		this.y+this.height-buttonDimension/2-stepping,
 		buttonDimension,buttonDimension,"OK",false);
 
+	this.minButton=new Button(this.x+this.width/2+buttonDimension/2,
+		this.y+this.height-buttonDimension/2-stepping,
+		buttonDimension+stepping,buttonDimension,"Min",false);
+
+	this.maxButton=new Button(this.x+this.width/2+buttonDimension/2+8*stepping,
+		this.y+this.height-buttonDimension/2-stepping,
+		buttonDimension+stepping,buttonDimension,"Max",false);
+
 	this.finished=false;
 
 	this.createButtons();
@@ -123,6 +131,10 @@ IntegerSelectionWidget.prototype.createButtons=function(){
 	this.buttons=new Array();
 
 	this.buttons.push(this.okButton);
+
+	this.buttons.push(this.minButton);
+
+	this.buttons.push(this.maxButton);
 
 	this.upButtons=[];
 	this.downButtons=[];
@@ -261,6 +273,24 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 			break;
 		}
 		i++;
+	}
+
+	if(this.minButton.getState()){
+		var i=0;
+		while(i<this.digits){
+			this.symbols[i]=this.minimums[i];
+			i++;
+		this.minButton.resetState();
+		}
+	}
+
+	if(this.maxButton.getState()){
+		var i=0;
+		while(i<this.digits){
+			this.symbols[i]=this.maximums[i];
+			i++;
+		this.maxButton.resetState();
+		}
 	}
 
 	if(this.okButton.getState()){
