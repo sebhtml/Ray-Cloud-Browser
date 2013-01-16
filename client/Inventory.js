@@ -43,7 +43,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.closeButton=new Button(this.x+this.buttonWidth/2,this.y+this.buttonWidth/2,
 		this.buttonWidth,this.buttonWidth,"",false);
 
-	var title="Inventory";
+	var title="Navigation";
 
 	this.overlay=new Button(this.x+this.width/2,this.y+this.buttonWidth/2,
 		this.width,this.buttonWidth,"     "+title,false);
