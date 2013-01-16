@@ -22,6 +22,7 @@
  */
 function Inventory(x,y,width,height,visible,screen,dataStore){
 
+	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
 	this.dataStore=dataStore;
 
@@ -56,25 +57,35 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
 */
 
-	this.warpButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
-		this.y+2.7*this.buttonWidth,
+	this.warpButton=new Button(this.x+this.buttonWidth+6*this.buttonWidth/2,
+		this.y+3.3*this.buttonWidth,
 		4.5*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
 
-	this.previousButton=new Button(this.x+this.buttonWidth+15*this.buttonWidth/2,
-		this.y+2.7*this.buttonWidth,
-		1*this.buttonWidth,this.buttonWidth,"<<",false);
+	this.buttonWidth=20;
 
-	this.nextButton=new Button(this.x+this.buttonWidth+17.5*this.buttonWidth/2,
-		this.y+2.7*this.buttonWidth,
-		1*this.buttonWidth,this.buttonWidth,">>",false);
-
-	this.increaseButton=new Button(this.x+this.buttonWidth+20*this.buttonWidth/2,
+	this.increaseCoverageButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
 		this.y+2.2*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
-	this.decreaseButton=new Button(this.x+this.buttonWidth+20*this.buttonWidth/2,
-		this.y+3.3*this.buttonWidth,
+	this.decreaseCoverageButton=new Button(this.x+this.buttonWidth+0.1*this.buttonWidth/2,
+		this.y+2.2*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"-",false);
+
+	this.previousButton=new Button(this.x+this.buttonWidth+19.5*this.buttonWidth/2,
+		this.y+2.3*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,"<<",false);
+
+	this.nextButton=new Button(this.x+this.buttonWidth+26.5*this.buttonWidth/2,
+		this.y+2.3*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,">>",false);
+
+	this.decreaseButton=new Button(this.x+this.buttonWidth+19.5*this.buttonWidth/2,
+		this.y+4.0*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,"-",false);
+
+	this.increaseButton=new Button(this.x+this.buttonWidth+26.5*this.buttonWidth/2,
+		this.y+4.0*this.buttonWidth,
+		1*this.buttonWidth,this.buttonWidth,"+",false);
 
 	this.pushSelector();
 }
@@ -121,6 +132,32 @@ Inventory.prototype.draw=function(context){
 	this.closeButton.draw(context,null);
 	
 	if(this.visible){
+
+		context.beginPath();
+		context.rect(this.x+20, this.y+30, 150,30);
+		context.fillStyle = '#FFF8F9';
+		context.fill();
+		context.lineWidth = 1;
+		context.strokeStyle = 'black';
+		context.stroke();
+
+		context.beginPath();
+		context.rect(this.x+210, this.y+30, 80,30);
+		context.fillStyle = '#FFF8F9';
+		context.fill();
+		context.lineWidth = 1;
+		context.strokeStyle = 'black';
+		context.stroke();
+
+		context.beginPath();
+		context.rect(this.x+210, this.y+65, 80,30);
+		context.fillStyle = '#FFF8F9';
+		context.fill();
+		context.lineWidth = 1;
+		context.strokeStyle = 'black';
+		context.stroke();
+
+
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
 
@@ -128,6 +165,16 @@ Inventory.prototype.draw=function(context){
 		this.previousButton.draw(context,null);
 		this.increaseButton.draw(context,null);
 		this.decreaseButton.draw(context,null);
+		this.increaseCoverageButton.draw(context,null);
+		this.decreaseCoverageButton.draw(context,null);
+
+		context.fillStyle    = '#000000';
+		context.font         = 'bold '+this.fontSize+'px Arial';
+
+		context.fillText("min. coverage: "+this.minimumCoverage, this.x+40,this.y+50);
+		context.fillText("play", this.x+235,this.y+50);
+		context.fillText("speed", this.x+235,this.y+85);
+
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
@@ -187,6 +234,23 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		this.decreaseButton.resetState();
 		return true;
+	}else if(this.decreaseCoverageButton.handleMouseDown(x,y)){
+
+		this.minimumCoverage--;
+
+		this.decreaseCoverageButton.resetState();
+
+		if(this.minimumCoverage<0)
+			this.minimumCoverage=0;
+
+		return true;
+	}else if(this.increaseCoverageButton.handleMouseDown(x,y)){
+
+		this.minimumCoverage++;
+
+		this.increaseCoverageButton.resetState();
+
+		return true;
 	}
 
 	return false;
@@ -232,4 +296,8 @@ Inventory.prototype.getNextButton=function(){
 
 Inventory.prototype.getMoviePeriod=function(){
 	return this.moviePeriod;
+}
+
+Inventory.prototype.getMinimumCoverage=function(){
+	return this.minimumCoverage;
 }

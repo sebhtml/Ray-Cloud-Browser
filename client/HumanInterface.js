@@ -474,3 +474,7 @@ HumanInterface.prototype.goPrevious=function(){
 HumanInterface.prototype.getMoviePeriod=function(){
 	return this.sampleInventory.getMoviePeriod();
 }
+
+HumanInterface.prototype.getMinimumCoverage=function(){
+	return this.sampleInventory.getMinimumCoverage();
+}

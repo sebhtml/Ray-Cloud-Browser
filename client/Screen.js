@@ -273,8 +273,9 @@ Screen.prototype.handleMouseDown=function(eventObject){
 			this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
 			this.clear();
 			this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
-
 		}
+
+		this.graphOperator.setMinimumCoverage(this.humanInterface.getMinimumCoverage());
 
 		return true;
 	}

@@ -188,3 +188,7 @@ GraphOperator.prototype.clear=function(){
 GraphOperator.prototype.setPathOperator=function(pathOperator){
 	this.pathOperator=pathOperator;
 }
+
+GraphOperator.prototype.setMinimumCoverage=function(value){
+	this.minimumCoverageAccepted=value;
+}

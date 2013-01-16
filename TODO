@@ -1,6 +1,4 @@
 - don't show any vertices below the minimum
-- user can change the minimum coverage to display
-
 - select part of graph to obtain DNA sequence
 - delete off-screen objects
 - display edge if one end is on screens
