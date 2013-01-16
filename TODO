@@ -1,5 +1,4 @@
 - readahead is not good enough (padding is pad)
-- MouseDown intefere with acceleration when pressing movie buttons
 - push currentVertex in PathOperator upon selection
 - don't show any vertices below the minimum
 - user can change the minimum coverage to display

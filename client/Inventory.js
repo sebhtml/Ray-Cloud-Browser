@@ -180,6 +180,8 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		this.increaseButton.resetState();
 
+		return true;
+
 	}else if(this.decreaseButton.handleMouseDown(x,y)){
 		this.moviePeriod*=2;
 

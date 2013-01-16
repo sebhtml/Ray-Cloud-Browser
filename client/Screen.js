@@ -301,6 +301,7 @@ Screen.prototype.handleMouseDown=function(eventObject){
 		}
 	}
 
+/*
 	if(false && this.addVertexButton.getState()){
 		var vertex=new Vertex(position[0]+this.originX,position[1]+this.originY,this.identifier);
 		this.vertices.push(vertex);
@@ -308,6 +309,7 @@ Screen.prototype.handleMouseDown=function(eventObject){
 		this.identifier++;
 		return;
 	}
+*/
 
 	if(false && this.removeVertexButton.getState()){
 		for(i in this.vertices){
@@ -330,7 +332,6 @@ Screen.prototype.handleMouseDown=function(eventObject){
 						newTable.push(this.vertices[j]);
 					}
 				}
-
 
 				this.vertices=newTable;
 
