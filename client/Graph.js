@@ -30,7 +30,7 @@ function Graph(width,height){
 	
 }
 
-Graph.prototype.addVertex=function(sequence,disabled){
+Graph.prototype.addVertex=function(sequence){
 
 	if(sequence in this.index){
 		return this.index[sequence];
@@ -63,7 +63,7 @@ Graph.prototype.addCoverage=function(sequence,coverage){
 	if(sequence in this.objectsWithCoverage)
 		return;
 
-	var vertex1=this.addVertex(sequence,true);
+	var vertex1=this.addVertex(sequence);
 	var coverageVertex=new Vertex(coverage,false);
 	this.layout.applyGoodLayout(vertex1,coverageVertex);
 
@@ -74,16 +74,15 @@ Graph.prototype.addCoverage=function(sequence,coverage){
 
 	this.objectsWithCoverage[sequence]=true;
 
-	vertex1.enable();
+	vertex1.addChild(coverageVertex);
 	vertex1.setCoverageValue(coverage);
-	coverageVertex.setCoverageValue(coverage);
 
 	delete this.objectsWithoutCoverage[sequence];
 }
 
 Graph.prototype.addPosition=function(sequence,position){
 
-	var vertex1=this.addVertex(sequence,true);
+	var vertex1=this.addVertex(sequence);
 
 	if(vertex1.hasAnnotation("position")){
 		return;
@@ -96,6 +95,7 @@ Graph.prototype.addPosition=function(sequence,position){
 	vertex1.addLinkedObject(positionVertex);
 	positionVertex.addLinkedObject(vertex1);
 
+	vertex1.addChild(positionVertex);
 	this.vertices.push(positionVertex);
 
 	vertex1.registerAnnotation("position");
@@ -107,7 +107,7 @@ Graph.prototype.addParents=function(sequence,parents){
 		return;
 
 	for(var i=0;i<parents.length;i++){
-		this.addArc(this.addVertex(parents[i],true),this.addVertex(sequence),true);
+		this.addArc(this.addVertex(parents[i]),this.addVertex(sequence));
 	}
 }
 
@@ -117,7 +117,7 @@ Graph.prototype.addChildren=function(sequence,children){
 		return;
 
 	for(var i=0;i<children.length;i++){
-		this.addArc(this.addVertex(sequence,true),this.addVertex(children[i]),true);
+		this.addArc(this.addVertex(sequence),this.addVertex(children[i]));
 	}
 }
 

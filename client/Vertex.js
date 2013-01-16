@@ -26,6 +26,7 @@
  */
 function Vertex(name,colored){
 
+	this.children=[];
 	this.coverageValue=0;
 	this.enabled=true;
 	this.isPosition=false;
@@ -361,11 +362,24 @@ Vertex.prototype.isPositionVertex=function(){
 }
 
 Vertex.prototype.disable=function(){
+
+	if(!this.enabled)
+		return;
+
 	this.enabled=false;
+
+	for(var i in this.children)
+		this.children[i].disable();
 }
 
 Vertex.prototype.enable=function(){
+	if(this.enabled)
+		return;
+
 	this.enabled=true;
+
+	for(var i in this.children)
+		this.children[i].enable();
 }
 
 Vertex.prototype.isEnabled=function(){
@@ -378,4 +392,8 @@ Vertex.prototype.getCoverageValue=function(){
 
 Vertex.prototype.setCoverageValue=function(value){
 	this.coverageValue=value;
+}
+
+Vertex.prototype.addChild=function(value){
+	this.children.push(value);
 }

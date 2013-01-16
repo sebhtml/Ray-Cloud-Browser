@@ -856,10 +856,12 @@ Screen.prototype.getActiveObjects=function(){
 	while(i<quantum && this.activeIndex<vertices.length){
 		var vertex=vertices[this.activeIndex];
 
-		if(vertex.getCoverageValue()<this.humanInterface.getMinimumCoverage()){
-			vertex.disable();
-		}else{
-			vertex.enable();
+		if(vertex.isColored()){
+			if(vertex.getCoverageValue()<this.humanInterface.getMinimumCoverage()){
+				vertex.disable();
+			}else{
+				vertex.enable();
+			}
 		}
 
 		if(vertex.isEnabled() && !this.isOutside(vertex,bufferForActiveObjects)){

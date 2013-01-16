@@ -120,7 +120,7 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 	if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
 
-		vertex=this.graph.addVertex(kmerData.getSequence(),true);
+		vertex=this.graph.addVertex(kmerData.getSequence());
 
 		this.graph.addParents(kmerObject,parents);
 		this.graph.addChildren(kmerObject,children);
