@@ -255,7 +255,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString
 	cout<<"{"<<endl;
 
 	cout<<"\"object\": \""<<key<<"\","<<endl;
-	cout<<"\"vertices\": {"<<endl;
+	cout<<"\"vertices\": ["<<endl;
 
 	bool printedFirst=false;
 
@@ -278,7 +278,6 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString
 			cout<<","<<endl;
 		}
 
-		cout<<"\""<<object<<"\": ";
 		vertex.writeContentInJSON(&cout);
 
 		vector<string> friends;
@@ -297,7 +296,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString
 		printedFirst=true;
 	}
 
-	cout<<"}}"<<endl;
+	cout<<"]}"<<endl;
 
 	database.closeFile();
 
@@ -351,7 +350,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*query
 	cout<<"{"<<endl;
 
 	cout<<"\"object\": \""<<key<<"\","<<endl;
-	cout<<"\"vertices\": {"<<endl;
+	cout<<"\"vertices\": ["<<endl;
 
 	bool printedFirst=false;
 
@@ -374,7 +373,6 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*query
 			cout<<","<<endl;
 		}
 
-		cout<<"\""<<object<<"\": ";
 		vertex.writeContentInJSON(&cout);
 
 		vector<string> friends;
@@ -393,7 +391,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*query
 		printedFirst=true;
 	}
 
-	cout<<"}}"<<endl;
+	cout<<"]}"<<endl;
 
 	database.closeFile();
 

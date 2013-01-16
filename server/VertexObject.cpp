@@ -46,7 +46,7 @@ uint32_t VertexObject::getCoverage(){
 
 void VertexObject::writeContentInJSON(ostream*stream){
 	(*stream)<<"{"<<endl;
-	//(*stream)<<"	\"sequence\": \""<<m_sequence<<"\","<<endl;
+	(*stream)<<"	\"value\": \""<<m_sequence<<"\","<<endl;
 	(*stream)<<"	\"coverage\": "<<m_coverage<<","<<endl;
 	(*stream)<<"	\"parents\": [";
 

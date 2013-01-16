@@ -1,12 +1,6 @@
-- readahead is not good enough (padding is pad)
-- server -- return {} when there is an error instead of empty content
-- server -- return array instead of {} for vertices
-
 - don't show any vertices below the minimum
 - user can change the minimum coverage to display
 
 - select part of graph to obtain DNA sequence
 - delete off-screen objects
 - display edge if one end is on screens
-
-

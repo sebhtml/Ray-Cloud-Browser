@@ -323,11 +323,14 @@ DataStore.prototype.addDataInStore=function(content){
 
 	var kmerData=content["vertices"];
 
-	for(var kmerSequenceIterator in kmerData){
-		if(kmerSequenceIterator in this.store)
-			continue;
+	var i=0;
+	while(i<kmerData.length){
+		var kmerSequenceIterator=kmerData[i]["value"];
 
-		this.store[kmerSequenceIterator]=kmerData[kmerSequenceIterator];
+		if(!(kmerSequenceIterator in this.store))
+			this.store[kmerSequenceIterator]=kmerData[i];
+
+		i++;
 	}
 
 }
