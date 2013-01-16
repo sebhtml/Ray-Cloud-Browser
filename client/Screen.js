@@ -395,9 +395,14 @@ Screen.prototype.handleMouseDown=function(eventObject){
 
 
 	for(i in this.graph.getVertices()){
-		if(this.graph.getVertices()[i].handleMouseDown(this.translateX(position[0]),
+
+		var vertex=this.graph.getVertices()[i];
+		if(vertex.handleMouseDown(this.translateX(position[0]),
 			this.translateY(position[1]))){
 
+// select this vertex
+
+			this.pathOperator.setCurrentVertex(vertex.getSequence());
 			return;
 		}
 	}

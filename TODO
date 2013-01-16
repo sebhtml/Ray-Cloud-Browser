@@ -1,4 +1,3 @@
-- push currentVertex in PathOperator upon selection
 - readahead is not good enough (padding is pad)
 - server -- return {} when there is an error instead of empty content
 - server -- return array instead of {} for vertices

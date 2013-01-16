@@ -220,7 +220,8 @@ PathOperator.prototype.getVertexPosition=function(sequence){
 		}
 
 	}
-	return 0;
+
+	return -1;
 }
 
 PathOperator.prototype.hasVertex=function(){
@@ -228,6 +229,12 @@ PathOperator.prototype.hasVertex=function(){
 	//console.log(this.currentLocation+" -- "+this.regionLength);
 
 	return this.currentLocation<this.regionLength && this.currentLocation>=0;
+}
+
+PathOperator.prototype.setCurrentVertex=function(sequence){
+	if(sequence in this.pathPositions){
+		this.currentLocation=this.pathPositions[sequence][0];
+	}
 }
 
 PathOperator.prototype.getVertex=function(){
