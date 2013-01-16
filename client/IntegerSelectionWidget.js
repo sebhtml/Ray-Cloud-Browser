@@ -182,6 +182,23 @@ IntegerSelectionWidget.prototype.updateBoundaries=function(){
 		i--;
 	}
 
+// check if we can have 0 for the first
+
+	i=this.digits-1;
+	var canHaveZero=false;
+	while(i>=1){
+		if(this.symbols[i]!=0){
+			canHaveZero=true;
+			break;
+		}
+		i--;
+	}
+
+	if(canHaveZero){
+		this.minimums[0]=0;
+	}
+
+// validate the new boundaries
 	i=0;
 	while(i<this.digits){
 		if(this.symbols[i]>this.maximums[i])
