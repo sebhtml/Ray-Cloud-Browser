@@ -66,6 +66,29 @@ Renderer.prototype.drawVertices=function(vertices){
 	}
 }
 
+Renderer.prototype.drawVertexPowers=function(vertices){
+
+	var zoomValue=this.screen.getZoomValue();
+
+	if(zoomValue<=this.zoomForLevelOfDetails)
+		return;
+
+// draw selection
+	var i=0;
+	while(i<vertices.length){
+		var vertex=vertices[i];
+
+		if(vertex.isEnabled()
+			&& !this.screen.isOutside(vertex,this.renderingBuffer)){
+
+			this.drawVertexPower(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
+				zoomValue,vertex);
+		}
+
+		i++;
+	}
+}
+
 /**
  * This gene was duplicated from Renderer.prototype.drawVertices.
  * The function of this gene changed over time.
@@ -83,7 +106,7 @@ Renderer.prototype.drawPathVertices=function(vertices){
 	while(i<vertices.length){
 		var vertex=vertices[i];
 
-		if(this.screen.isOutside(vertex,this.renderingBuffer)){
+		if(!vertex.isEnabled() || this.screen.isOutside(vertex,this.renderingBuffer)){
 			i++;
 			continue;
 		}
@@ -306,7 +329,7 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails,lineWidth,color);
 }
 
-Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
+Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,vertex){
 
 	if(zoomValue<=this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
 		return;
@@ -349,6 +372,66 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 	var blitY=blit.getY()+cacheWidth/2;
 */
 
+	var power=vertex.getPower();
+	if(power>0){
+		context.beginPath();
+		context.fillStyle = "rgb(255,40,40)";
+		context.strokeStyle = "rgb(0,0,0)";
+		context.lineWidth=this.lineWidth*zoomValue;
+		context.arc((x)*zoomValue,
+				(y)*zoomValue,zoomValue*radius*power, 0, Math.PI*2, true);
+
+		context.fill();
+		context.stroke();
+		context.closePath();
+	}
+
+}
+
+
+
+Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
+
+	if(zoomValue<=this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
+		return;
+
+	var radius=vertex.getRadius();
+	var theColor= vertex.getColor();
+	//var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
+
+	var x=vertex.getX()-originX;
+	var y=vertex.getY()-originY;
+
+/*
+	if(this.blitter.hasBlit(key)){
+		var blit=this.blitter.getBlit(key);
+
+		var width=blit.getWidth();
+		var height=blit.getHeight();
+
+		//blit.print();
+
+		context.drawImage(blit.getCanvas(),blit.getX(),blit.getY(),width,height,
+			(x-width/2)*zoomValue,(y-height/2)*zoomValue,width*zoomValue,height*zoomValue);
+
+		return;
+	}
+*/
+
+	//var context2=context;
+
+/*
+	if(this.useBlitter){
+		var blit=this.blitter.allocateBlit(key,4+3*radius,4+3*radius);
+		context2=blit.getCanvas().getContext("2d");
+	}
+*/
+
+/*
+	var cacheWidth=blit.getWidth();
+	var blitX=blit.getX()+cacheWidth/2;
+	var blitY=blit.getY()+cacheWidth/2;
+*/
 
 	if(vertex.isColored()){
 		context.beginPath();
@@ -441,4 +524,11 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 		//context.stroke();
 		context.closePath();
 	}
+}
+
+Renderer.prototype.draw=function(objects){
+	this.drawPathVertices(objects);
+	this.drawVertexPowers(objects);
+	this.drawArcs(objects);
+	this.drawVertices(objects);
 }

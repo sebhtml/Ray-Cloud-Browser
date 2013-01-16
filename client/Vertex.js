@@ -26,6 +26,7 @@
  */
 function Vertex(name,colored){
 
+	this.resetPower();
 	this.children=[];
 	this.coverageValue=0;
 	this.enabled=true;
@@ -241,8 +242,14 @@ Vertex.prototype.handleMouseDown=function(x,y){
 	if(!this.colored)
 		return false;
 
+
 	if(this.isInside(x,y,this.radius)){
 		//console.log(this.name+" follows");
+
+		if(this.power==0){
+			this.resetPower();
+			this.power=10;
+		}
 
 		this.followMouse=true;
 
@@ -396,4 +403,28 @@ Vertex.prototype.setCoverageValue=function(value){
 
 Vertex.prototype.addChild=function(value){
 	this.children.push(value);
+}
+
+Vertex.prototype.getPower=function(){
+	if(this.power>0 && this.powerIteration%5==0){
+		if(this.powerIteration<10){
+			this.power+=this.powerChange;
+			this.powerChange++;
+		}else{
+			this.power-=this.powerChange;
+			this.powerChange++;
+		}
+	}
+	this.powerIteration++;
+	if(this.power<0){
+		this.resetPower();
+	}
+	return this.power;
+}
+
+Vertex.prototype.resetPower=function(){
+	this.power=0;
+	this.powerChange=1;
+	this.powerIteration=0;
+
 }

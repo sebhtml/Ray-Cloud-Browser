@@ -768,17 +768,7 @@ Screen.prototype.draw=function(){
 	context.closePath();
 */
 
-	this.renderer.drawPathVertices(this.getActiveObjects());
-
-	//if(this.showArcsButton.getState()){
-		this.renderer.drawArcs(this.getActiveObjects());
-	//}
-
-
-	//if(this.showVerticesButton.getState()){
-		this.renderer.drawVertices(this.getActiveObjects());
-	//}
-
+	this.renderer.draw(this.getActiveObjects());
 
 
 /*
