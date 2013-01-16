@@ -1,5 +1,6 @@
-- readahead is not good enough (padding is pad)
+
 - push currentVertex in PathOperator upon selection
+- readahead is not good enough (padding is pad)
 - don't show any vertices below the minimum
 - user can change the minimum coverage to display
 
