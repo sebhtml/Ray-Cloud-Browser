@@ -42,7 +42,9 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.buttonWidth=25;
 
 	this.closeButton=new Button(this.x+this.buttonWidth/2,this.y+this.buttonWidth/2,
-		this.buttonWidth,this.buttonWidth,"",false);
+		this.buttonWidth,this.buttonWidth,"↕",false);
+
+	this.closeButton.setFontSize(24);
 
 	var title="Navigation";
 
