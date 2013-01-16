@@ -75,11 +75,16 @@ function Screen(gameFrequency,renderingFrequency){
  *
  */
 
+/*
 	var physicalScreenWidth=window.screen.width;
 	var physicalScreenHeight=window.screen.height;
 
 	var availableWidth=window.screen.availWidth;
 	var availableHeight=window.screen.availHeight;
+*/
+
+	var availableWidth=window.innerWidth;
+	var availableHeight=window.innerHeight;
 
 // fix the screen size
 	this.width=availableWidth;
