@@ -26,6 +26,7 @@
  */
 function Vertex(name,colored){
 
+	this.annotations=new Object();
 	this.resetPower();
 	this.children=[];
 	this.coverageValue=0;
@@ -349,14 +350,15 @@ Vertex.prototype.moveInGrid=function(){
 }
 
 Vertex.prototype.isInPath=function(){
-	return this.hasAnnotation("position");
-}
-
-Vertex.prototype.hasAnnotation=function(predicate){
 	return this.hasPositionValue;
 }
 
+Vertex.prototype.hasAnnotation=function(predicate){
+	return predicate in this.annotations;
+}
+
 Vertex.prototype.registerAnnotation=function(predicate){
+	this.annotations[predicate]=true;
 	this.hasPositionValue=true;
 }
 

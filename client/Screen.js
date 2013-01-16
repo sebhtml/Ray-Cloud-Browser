@@ -483,6 +483,8 @@ Screen.prototype.roundNumber=function(number,precision){
 
 Screen.prototype.iterate=function(){
 
+	this.graphOperator.iterate();
+
 	if(this.pathOperator.hasVertex()){
 		var object=this.pathOperator.getVertex();
 

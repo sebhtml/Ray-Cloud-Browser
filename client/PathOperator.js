@@ -92,7 +92,30 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 			if(!(sequence in this.pathPositions)){
 				this.pathPositions[sequence]=new Array();
 			}
-			this.pathPositions[sequence].push(position);
+
+			var found=false;
+			var iterator=0;
+			while(iterator<this.pathPositions[sequence].length){
+				if(this.pathPositions[sequence][iterator++]==position){
+					found=true;
+					break;
+				}
+			}
+
+			if(!found){
+				this.pathPositions[sequence].push(position);
+
+				this.graphOperator.addPositionForVertex(sequence,position);
+			}
+
+/*
+			if(this.pathPositions[sequence].length>1){
+				console.log("More than 1 position for "+sequence+" with");
+
+				for(var k in this.pathPositions[sequence])
+ 					console.log(" ->"+this.pathPositions[sequence][k]);
+			}
+*/
 
 			if(!this.hasRight|| position>this.lastRight){
 				this.lastRight=position;
@@ -255,4 +278,12 @@ PathOperator.prototype.previous=function(){
 	this.currentLocation--;
 	if(this.currentLocation<0)
 		this.currentLocation=0;
+}
+
+PathOperator.prototype.getVertexPositions=function(sequence){
+	if(sequence in this.pathPositions){
+		return this.pathPositions[sequence];
+	}
+
+	return [];
 }

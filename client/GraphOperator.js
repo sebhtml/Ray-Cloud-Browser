@@ -30,6 +30,7 @@ function GraphOperator(screen){
 	this.dataStore=new DataStore();
 
 	this.resetProductionQueue();
+	this.positionsToAdd=[];
 
 	this.depth=0;
 
@@ -128,12 +129,6 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 		this.added[kmerObject]=true;
 		addVertexFriends=!this.screen.isOutside(vertex,this.bufferForCommunicationOperations);
 
-		if(this.pathOperator.isVertexInPath(vertex.getSequence())){
-			var position=this.pathOperator.getVertexPosition(vertex.getSequence());
-
-			this.graph.addPosition(vertex.getSequence(),position+1);
-			vertex.registerAnnotation("position");
-		}
 	}
 
 	if(vertex!=null){
@@ -193,4 +188,52 @@ GraphOperator.prototype.setPathOperator=function(pathOperator){
 
 GraphOperator.prototype.setMinimumCoverage=function(value){
 	this.minimumCoverageAccepted=value;
+}
+
+GraphOperator.prototype.addPositionForVertex=function(sequence,position){
+
+	this.positionsToAdd.push([sequence,position]);
+}
+
+GraphOperator.prototype.iterate=function(){
+
+	//console.log("Iterate");
+
+	var i=0;
+	var hasSome=false;
+	while(i<this.positionsToAdd.length){
+		var vertex=this.graph.getVertex(this.positionsToAdd[i][0]);
+		if(vertex!=null){
+			hasSome=true;
+			break;
+		}
+
+		i++;
+	}
+
+	if(!hasSome)
+		return;
+
+	var newArray=[];
+	i=0;
+
+	while(i<this.positionsToAdd.length){
+		var sequence=this.positionsToAdd[i][0];
+		var vertex=this.graph.getVertex(sequence);
+
+		if(vertex!=null){
+			var position=this.positionsToAdd[i][1];
+			this.graph.addPosition(sequence,position+1);
+/*
+			if(position==230)
+				console.log("addPosition 230");
+*/
+		}else{
+			newArray.push(this.positionsToAdd[i]);
+		}
+
+		i++;
+	}
+
+	this.positionsToAdd=newArray;
 }

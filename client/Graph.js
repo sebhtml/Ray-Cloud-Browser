@@ -84,7 +84,7 @@ Graph.prototype.addPosition=function(sequence,position){
 
 	var vertex1=this.addVertex(sequence);
 
-	if(vertex1.hasAnnotation("position")){
+	if(vertex1.hasAnnotation("position="+position)){
 		return;
 	}
 
@@ -98,7 +98,7 @@ Graph.prototype.addPosition=function(sequence,position){
 	vertex1.addChild(positionVertex);
 	this.vertices.push(positionVertex);
 
-	vertex1.registerAnnotation("position");
+	vertex1.registerAnnotation("position="+position);
 }
 
 Graph.prototype.addParents=function(sequence,parents){
