@@ -120,7 +120,7 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 	if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
 
-		vertex=this.graph.addVertex(kmerData.getSequence());
+		vertex=this.graph.addVertex(kmerData.getSequence(),true);
 
 		this.graph.addParents(kmerObject,parents);
 		this.graph.addChildren(kmerObject,children);
@@ -137,9 +137,11 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 	}
 
 	if(vertex!=null){
-
-		this.graph.addCoverage(kmerObject,kmerData.getCoverage());
-
+		if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
+			this.graph.addCoverage(kmerObject,kmerData.getCoverage());
+		}else{
+			vertex.disable();
+		}
 	}
 
 	if(kmerData.getCoverage()<this.minimumCoverageAccepted){

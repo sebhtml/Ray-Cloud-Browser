@@ -93,7 +93,6 @@ PhysicsEngine.prototype.checkBounds=function(force, maximum){
  */
 PhysicsEngine.prototype.applyForces=function(vertices){
 
-
 	if(this.activeIndex>=vertices.length){
 		this.resetActiveIndex();
 	}

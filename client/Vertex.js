@@ -26,6 +26,8 @@
  */
 function Vertex(name,colored){
 
+	this.coverageValue=0;
+	this.enabled=true;
 	this.isPosition=false;
 	this.hasPositionValue=false;
 	this.x=0;
@@ -356,4 +358,24 @@ Vertex.prototype.setPositionType=function(){
 
 Vertex.prototype.isPositionVertex=function(){
 	return this.isPosition;
+}
+
+Vertex.prototype.disable=function(){
+	this.enabled=false;
+}
+
+Vertex.prototype.enable=function(){
+	this.enabled=true;
+}
+
+Vertex.prototype.isEnabled=function(){
+	return this.enabled;
+}
+
+Vertex.prototype.getCoverageValue=function(){
+	return this.coverageValue;
+}
+
+Vertex.prototype.setCoverageValue=function(value){
+	this.coverageValue=value;
 }

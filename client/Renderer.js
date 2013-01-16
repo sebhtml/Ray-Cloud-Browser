@@ -55,13 +55,13 @@ Renderer.prototype.drawVertices=function(vertices){
 	while(i<vertices.length){
 		var vertex=vertices[i];
 
-		if(this.screen.isOutside(vertex,this.renderingBuffer)){
-			i++;
-			continue;
+		if(vertex.isEnabled()
+			&& !this.screen.isOutside(vertex,this.renderingBuffer)){
+
+			this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
+				zoomValue,vertex);
 		}
 
-		this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
-			zoomValue,vertex);
 		i++;
 	}
 }
@@ -108,11 +108,14 @@ Renderer.prototype.drawArcs=function(vertices){
 		fullDetails=false;
 
 	// draw arcs
-	for(i in vertices){
+	for(var i in vertices){
 		var vertex=vertices[i];
 
+		if(!vertex.isEnabled())
+			continue;
+
 		var arcs=vertex.getArcs();
-		for(j in arcs){
+		for(var j in arcs){
 
 			var vertex2=arcs[j];
 
@@ -120,7 +123,10 @@ Renderer.prototype.drawArcs=function(vertices){
 				 && this.screen.isOutside(vertex2,this.renderingBuffer)){
 				continue;
 			}
-	
+
+			if(!vertex2.isEnabled())
+				continue;
+
 			var originX=this.screen.getOriginX();
 			var originY=this.screen.getOriginY();
 

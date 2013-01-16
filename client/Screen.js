@@ -856,8 +856,15 @@ Screen.prototype.getActiveObjects=function(){
 	while(i<quantum && this.activeIndex<vertices.length){
 		var vertex=vertices[this.activeIndex];
 
-		if(!this.isOutside(vertex,bufferForActiveObjects))
+		if(vertex.getCoverageValue()<this.humanInterface.getMinimumCoverage()){
+			vertex.disable();
+		}else{
+			vertex.enable();
+		}
+
+		if(vertex.isEnabled() && !this.isOutside(vertex,bufferForActiveObjects)){
 			this.nextActiveObjects.push(vertex);
+		}
 
 		i++;
 		this.activeIndex++;

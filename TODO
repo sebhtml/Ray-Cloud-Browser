@@ -1,4 +1,3 @@
-- don't show any vertices below the minimum
 - select part of graph to obtain DNA sequence
 - delete off-screen objects
 - display edge if one end is on screens
