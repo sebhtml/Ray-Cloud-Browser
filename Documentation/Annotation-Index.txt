@@ -1,0 +1,26 @@
+map.dat
+
+<magic>
+<kmerLength>
+<entries>
+<kmerSequence><coverage><parents><children><annotationOffset>
+<kmerSequence><coverage><parents><children><annotationOffset>
+<kmerSequence><coverage><parents><children><annotationOffset>
+<kmerSequence><coverage><parents><children><annotationOffset>
+<kmerSequence><coverage><parents><children><annotationOffset>
+...
+
+
+annotations.dat
+
+<magic>
+<type><length><content><nextOffset>
+<type><length><content><nextOffset>
+<type><length><content><nextOffset>
+<type><length><content><nextOffset>
+...
+
+
+section.dat
+
+(see Section-format.txt)

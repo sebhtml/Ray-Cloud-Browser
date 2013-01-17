@@ -26,6 +26,7 @@
 
 #define GRAPH_FORMAT_VERSION 2345678987
 
+
 /**
  * A class to search kmers in a database file.
  * \author Sébastien Boisvert
@@ -35,7 +36,7 @@ class GraphDatabase{
 	Mapper m_mapper;
 
 	bool m_active;
-	char m_codeSymbols[4];
+	char m_codeSymbols[ALPHABET_SIZE];
 	void*m_content;
 
 	int m_entrySize;

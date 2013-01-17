@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012  Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,8 +28,9 @@ using namespace std;
  * \author Sébastien Boisvert
  */
 class VertexObject{
-	char m_sequence[256];
+	uint64_t m_annotationOffset;
 	uint32_t m_coverage;
+	char m_sequence[256];
 	char m_parents[4];
 	char m_children[4];
 	
@@ -46,7 +47,8 @@ public:
 	void addChild(char symbol);
 	int getSymbolCode(char symbol);
 	char getCodeSymbol(int code);
-
+	uint64_t getAnnotationOffset();
+	void setAnnotationOffset(uint64_t value);
 	
 };
 

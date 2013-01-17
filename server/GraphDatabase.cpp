@@ -44,32 +44,41 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	while(first<=last){
 	
 		uint64_t middle=first+(last-first)/2;
-
 		uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
 
-		char sequence[300];
-		uint32_t coverage;
-		char parents[4];
-		char children[4];
+		char sequence[MAXIMUM_LENGTH];
 
 		char*myBuffer=((char*)m_content)+middlePosition;
+		int position=0;
 
-		memcpy(sequence,myBuffer,m_kmerLength);
+		memcpy(sequence,myBuffer+position,m_kmerLength);
 		sequence[m_kmerLength]='\0';
-
-		memcpy(&coverage,myBuffer+m_kmerLength,sizeof(uint32_t));
-		memcpy(parents,myBuffer+m_kmerLength+sizeof(uint32_t),4);
-		memcpy(children,myBuffer+m_kmerLength+sizeof(uint32_t)+4,4);
 
 		int comparisonResult=strcmp(key,sequence);
 
 		if(comparisonResult==0){
 			found=true;
 
+			uint32_t coverage;
+			uint64_t annotationOffset;
+			char parents[ALPHABET_SIZE];
+			char children[ALPHABET_SIZE];
+
+			position+=m_kmerLength;
+			memcpy(&coverage,myBuffer+position,sizeof(uint32_t));
+			position+=sizeof(uint32_t);
+			memcpy(parents,myBuffer+position,ALPHABET_SIZE*sizeof(char));
+			position+=ALPHABET_SIZE*sizeof(char);
+			memcpy(children,myBuffer+position,ALPHABET_SIZE*sizeof(char));
+			position+=ALPHABET_SIZE*sizeof(char);
+			memcpy(&annotationOffset,myBuffer+position,sizeof(uint64_t));
+			position+=sizeof(uint64_t);
+
 			object->setSequence(sequence);
 			object->setCoverage(coverage);
+			object->setAnnotationOffset(annotationOffset);
 
-			for(int i=0;i<4;i++){
+			for(int i=0;i<ALPHABET_SIZE;i++){
 				if(parents[i]==MARKER_YES){
 					object->addParent(getSymbol(i));
 				}
@@ -112,9 +121,9 @@ void GraphDatabase::openFile(const char*file){
 	m_codeSymbols[INDEX_G]=SYMBOL_G;
 	m_codeSymbols[INDEX_T]=SYMBOL_T;
 
-	m_entrySize=m_kmerLength+sizeof(uint32_t)+4+4;
+	m_entrySize=m_kmerLength+sizeof(uint32_t)+ALPHABET_SIZE+ALPHABET_SIZE+sizeof(uint64_t);
 
-	m_startingPosition=sizeof(int)+sizeof(int)+sizeof(uint64_t);
+	m_startingPosition=sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t);
 
 	m_active=true;
 }
@@ -198,8 +207,8 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	FILE*output=fopen(binaryFile,"w");
 
 	int formatVersion=GRAPH_FORMAT_VERSION;
-	fwrite(&formatVersion,sizeof(int),1,output);
-	fwrite(&kmerLength,sizeof(int),1,output);
+	fwrite(&formatVersion,sizeof(uint32_t),1,output);
+	fwrite(&kmerLength,sizeof(uint32_t),1,output);
 	fwrite(&entries,sizeof(uint64_t),1,output);
 
 	int no=MARKER_NO;
@@ -233,14 +242,14 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 		fwrite(&coverage,sizeof(uint32_t),1,output);
 
-		char parents[4];
+		char parents[ALPHABET_SIZE];
 		
 		parents[indexA]=no;
 		parents[indexC]=no;
 		parents[indexG]=no;
 		parents[indexT]=no;
 
-		char children[4];
+		char children[ALPHABET_SIZE];
 
 		children[indexA]=no;
 		children[indexC]=no;
@@ -276,9 +285,11 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		}
 */
 
+		fwrite(parents,ALPHABET_SIZE*sizeof(char),1,output);
+		fwrite(children,ALPHABET_SIZE*sizeof(char),1,output);
 
-		fwrite(parents,4,1,output);
-		fwrite(children,4,1,output);
+		uint64_t annotationOffset=OFFSET_NULL;
+		fwrite(&annotationOffset,sizeof(uint64_t),1,output);
 	}
 
 	fclose(output);
