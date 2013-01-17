@@ -199,10 +199,12 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 
 		var arcs=vertex1.getLinkedObjects();
 
-		for(j in arcs){
+		for(var j in arcs){
 
 			var vertex2=arcs[j];
 
+			if(!vertex2.isEnabled())
+				continue;
 			var force2=this.getAttractionForce(vertex1,vertex2);
 
 			force=this.addForces(force,force2);
