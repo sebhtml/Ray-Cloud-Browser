@@ -197,6 +197,8 @@ GraphOperator.prototype.addPositionForVertex=function(sequence,position){
 
 GraphOperator.prototype.iterate=function(){
 
+	this.pathOperator.doReadahead();
+
 	//console.log("Iterate");
 
 	var i=0;

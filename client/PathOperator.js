@@ -56,6 +56,8 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 	if(tag==RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY){
 
+		//console.log("Received RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY");
+
 		this.active=false;
 /*
 		var kmer=new Kmer(kmerSequence,coverage,parents,children);
@@ -172,14 +174,20 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
  * QUERY_STRING:
  * tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
  */
-PathOperator.prototype.doReadahead=function(vertex){
+PathOperator.prototype.doReadahead=function(){
 
-	if(this.active)
+	if(this.active){
+		//console.log("active.");
+		return;
+	}
+
+	if(!(this.hasLeft && this.hasRight))
 		return;
 
-	var position=this.getVertexPosition(vertex);
+	var position=this.currentLocation;
 
 	var buffer=1024;
+	//console.log("doReadahead position "+position+" lastLeft= "+this.lastLeft+" lastRight= "+this.lastRight);
 
 	if(position<this.lastLeft+buffer && this.lastLeft!=0){
 
@@ -207,7 +215,7 @@ PathOperator.prototype.isVertexInPath=function(vertex){
 
 	if(vertex in this.keys){
 
-		this.doReadahead(vertex);
+		//this.doReadahead(vertex);
 
 		return true;
 	}
