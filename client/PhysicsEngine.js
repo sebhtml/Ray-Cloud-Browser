@@ -52,7 +52,7 @@ function PhysicsEngine(screen){
  * This is for the repulsion.
  */
 	this.forceStep=0.6;
-	this.charge=256;
+	this.charge=128;
 	this.forceConstant=0.1;
 	this.maximumRepulsion=64;
 

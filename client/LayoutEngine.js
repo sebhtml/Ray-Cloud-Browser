@@ -24,10 +24,10 @@ function LayoutEngine(){
 }
 
 LayoutEngine.prototype.applyGoodLayout=function(vertex1,vertex2){
-	var yRange=100;
+	var yRange=50;
 
 	if(!vertex1.hasPosition()){
-		vertex1.setX(vertex2.getX()-80);
+		vertex1.setX(vertex2.getX()-50);
 		vertex1.setY(vertex2.getY()+Math.random()*yRange-yRange/2);
 
 		vertex1.setPosition();
@@ -35,7 +35,7 @@ LayoutEngine.prototype.applyGoodLayout=function(vertex1,vertex2){
 
 
 	if(!vertex2.hasPosition()){
-		vertex2.setX(vertex1.getX()+80);
+		vertex2.setX(vertex1.getX()+50);
 		vertex2.setY(vertex1.getY()+Math.random()*yRange-yRange/2);
 
 		vertex2.setPosition();
