@@ -1,0 +1,5 @@
+POST
+
+-> to add files
+-> to add map
+-> to add section to map
