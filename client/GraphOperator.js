@@ -44,6 +44,7 @@ function GraphOperator(screen){
 GraphOperator.prototype.createGraph=function(graph){
 
 	this.graph=graph;
+
 	var message=new Message(RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE,
 				this,
 				this.dataStore,
@@ -80,7 +81,8 @@ GraphOperator.prototype.pullObjects=function(){
 
 /*
  * Only fetch one object everytime.
- */
+ /*/
+		//console.log("pullObjects with "+kmerObject);
 		this.dataStore.getKmerInformation(kmerObject,this);
 		return;
 	}

@@ -23,11 +23,11 @@
  *
  * \author Sébastien Boisvert
  */
-function DataStore(kmerLength){
+function DataStore(){
 
 	this.firstKmerReceived=false;
 	this.pendingRequests=0;
-	this.mapFile="kmers.txt.dat";
+	this.mapFile="/dev/null";
 
 	this.clear();
 
@@ -117,13 +117,12 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 	xmlHttp.open(method,address,true);
 	xmlHttp.send();
 
+	//console.log(address);
+
 	this.pendingRequests++;
 
 	this.httpRequests++;
-
 }
-
-
 
 DataStore.prototype.pullData=function(){
 
@@ -137,12 +136,6 @@ DataStore.prototype.pullData=function(){
 }
 
 DataStore.prototype.finishConstruction=function(){
-
-	this.graphFiles=new Array();
-	this.sequenceFiles=new Array();
-
-	this.graphFiles.push("mock-kmers.txt");
-	this.sequenceFiles.push("mock-Contigs.fasta");
 
 	for(key in this.store){
 		this.firstKmer=key;
@@ -161,19 +154,15 @@ DataStore.prototype.finishConstruction=function(){
 		}
 	}
 	
-	this.kmerLength=this.firstKmer.length;
-}
-
-DataStore.prototype.getSequenceFiles=function(){
-	return this.sequenceFiles;
+	//this.kmerLength=this.firstKmer.length;
 }
 
 DataStore.prototype.getKmerLength=function(){
 	return this.kmerLength;
 }
 
-DataStore.prototype.getGraphFiles=function(){
-	return this.graphFiles;
+DataStore.prototype.setKmerLength=function(value){
+	this.kmerLength=value;
 }
 
 DataStore.prototype.receiveMessage=function(message){
@@ -211,7 +200,7 @@ DataStore.prototype.processMessage=function(message){
 	}else if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY){
 
 		this.clear();
-		this.addDataInStore(message.getContent());
+		//this.addDataInStore(message.getContent());
 
 		this.finishConstruction();
 	}else if(tag==RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY){
@@ -260,8 +249,14 @@ DataStore.prototype.forwardMessageOnTheWeb=function(message){
 
 DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
+	//console.log("getKmerInformation "+kmerSequence);
+
 // TODO: this should be done only once
 	this.graphOperator=graphOperator;
+
+	if(kmerSequence == undefined){
+		return;
+	}
 
 /*
  * Send a request to the server.

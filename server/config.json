@@ -2,10 +2,20 @@
 "maps": [
 		{
 		"name": "E.Coli-DH10B-MiSeq-250x2",
-		"file": "kmers.txt.dat",
+		"file": "Ray-Cloud-Browser-data/ecoli-MiSeq/kmers.txt.dat",
 		"sections": [
-		 		{"name": "Assembly with Ray", "file": "Contigs.fasta.dat"}
+				{"name": "Assembly with Ray", "file": "Ray-Cloud-Browser-data/ecoli-MiSeq/Contigs.fasta.dat"}
 				]
+		},
+
+		{
+			"name": "Sample-2-3",
+			"file": "Ray-Cloud-Browser-data/Sample-2-3/kmers.dat",
+			"sections":[
+				{"name": "Contigs (Ray)", "file": "Ray-Cloud-Browser-data/Sample-2-3/Contigs.dat"},
+				{"name": "Seeds (Ray)", "file": "Ray-Cloud-Browser-data/Sample-2-3/Seeds.dat"},
+				{"name": "Extensions (Ray)", "file": "Ray-Cloud-Browser-data/Sample-2-3/Extensions.dat"}
+			]
 		}
 	]
 }

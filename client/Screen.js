@@ -279,6 +279,7 @@ Screen.prototype.handleMouseDown=function(eventObject){
 
 			this.kmerLength=this.locationData["kmerLength"];
 			this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
+			this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
 			this.clear();
 			this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
 		}
