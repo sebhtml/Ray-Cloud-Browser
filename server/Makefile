@@ -17,9 +17,7 @@ LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParse
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $? -o $@
 
-all: $(TARGETS)
-
-devel: $(EXTRA_TARGETS)
+all: $(TARGETS) $(EXTRA_TARGETS)
 
 RayCloudBrowser.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@

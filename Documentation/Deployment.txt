@@ -1,6 +1,6 @@
 1. Run Ray with -write-kmers on your data
 2. Clone de Ray-Cloud-Browser git repository on your server
-3. Go in server/ and type "make all devel"
+3. Go in server/ and type "make"
 4. Convert kmers.txt to kmers.dat with RayCloudBrowser.createGraphDatabase
 5. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser.createPathDatabase
 6. Edit server/config.json

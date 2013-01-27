@@ -144,11 +144,4 @@ void VertexObject::getChildren(vector<string>*children){
 	}
 }
 
-uint64_t VertexObject::getAnnotationOffset(){
-	return m_annotationOffset;
-}
-
-void VertexObject::setAnnotationOffset(uint64_t value){
-	m_annotationOffset=value;
-}
 

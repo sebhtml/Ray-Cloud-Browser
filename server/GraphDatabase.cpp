@@ -60,23 +60,44 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 			found=true;
 
 			uint32_t coverage;
-			uint64_t annotationOffset;
-			char parents[ALPHABET_SIZE];
-			char children[ALPHABET_SIZE];
+			uint8_t friendInformation;
 
 			position+=m_kmerLength;
 			memcpy(&coverage,myBuffer+position,sizeof(uint32_t));
 			position+=sizeof(uint32_t);
-			memcpy(parents,myBuffer+position,ALPHABET_SIZE*sizeof(char));
-			position+=ALPHABET_SIZE*sizeof(char);
-			memcpy(children,myBuffer+position,ALPHABET_SIZE*sizeof(char));
-			position+=ALPHABET_SIZE*sizeof(char);
-			memcpy(&annotationOffset,myBuffer+position,sizeof(uint64_t));
-			position+=sizeof(uint64_t);
+
+			memcpy(&friendInformation,myBuffer+position,1*sizeof(uint8_t));
+
+			char parents[ALPHABET_SIZE];
+			char children[ALPHABET_SIZE];
+			int offset=0;
+
+			for(int i=0;i<ALPHABET_SIZE;i++){
+				uint64_t value=friendInformation;
+
+				int bit=offset+i;
+
+				value<<=(BITS_IN_BYTE*sizeof(uint64_t)-1-bit);
+				value>>=(BITS_IN_BYTE*sizeof(uint64_t)-1);
+
+				parents[i]=value;
+			}
+
+			offset+=ALPHABET_SIZE;
+
+			for(int i=0;i<ALPHABET_SIZE;i++){
+				uint64_t value=friendInformation;
+
+				int bit=offset+i;
+
+				value<<=(BITS_IN_BYTE*sizeof(uint64_t)-1-bit);
+				value>>=(BITS_IN_BYTE*sizeof(uint64_t)-1);
+
+				children[i]=value;
+			}
 
 			object->setSequence(sequence);
 			object->setCoverage(coverage);
-			object->setAnnotationOffset(annotationOffset);
 
 			for(int i=0;i<ALPHABET_SIZE;i++){
 				if(parents[i]==MARKER_YES){
@@ -121,7 +142,7 @@ void GraphDatabase::openFile(const char*file){
 	m_codeSymbols[INDEX_G]=SYMBOL_G;
 	m_codeSymbols[INDEX_T]=SYMBOL_T;
 
-	m_entrySize=m_kmerLength+sizeof(uint32_t)+ALPHABET_SIZE+ALPHABET_SIZE;
+	m_entrySize=m_kmerLength+sizeof(uint32_t)+sizeof(uint8_t);
 
 	m_startingPosition=sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t);
 
@@ -165,7 +186,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	char symbolC=SYMBOL_C;
 	char symbolG=SYMBOL_G;
 	char symbolT=SYMBOL_T;
-
 
 	int kmerLength=0;
 	uint64_t entries=0;
@@ -211,9 +231,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	fwrite(&kmerLength,sizeof(uint32_t),1,output);
 	fwrite(&entries,sizeof(uint64_t),1,output);
 
-	int no=MARKER_NO;
-	int yes=MARKER_YES;
-
 	for(uint64_t i=0;i<entries;i++){
 		char*value=fgets(buffer,1024,stream);
 		if(value==NULL)
@@ -244,17 +261,17 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 		char parents[ALPHABET_SIZE];
 		
-		parents[indexA]=no;
-		parents[indexC]=no;
-		parents[indexG]=no;
-		parents[indexT]=no;
+		parents[indexA]=MARKER_NO;
+		parents[indexC]=MARKER_NO;
+		parents[indexG]=MARKER_NO;
+		parents[indexT]=MARKER_NO;
 
 		char children[ALPHABET_SIZE];
 
-		children[indexA]=no;
-		children[indexC]=no;
-		children[indexG]=no;
-		children[indexT]=no;
+		children[indexA]=MARKER_NO;
+		children[indexC]=MARKER_NO;
+		children[indexG]=MARKER_NO;
+		children[indexT]=MARKER_NO;
 
 		char*selection=parents;
 
@@ -264,30 +281,38 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			if(operationCode==';')
 				selection=children;
 			else if(operationCode==symbolA)
-				selection[indexA]=yes;
+				selection[indexA]=MARKER_YES;
 			else if(operationCode==symbolC)
-				selection[indexC]=yes;
+				selection[indexC]=MARKER_YES;
 			else if(operationCode==symbolG)
-				selection[indexG]=yes;
+				selection[indexG]=MARKER_YES;
 			else if(operationCode==symbolT)
-				selection[indexT]=yes;
+				selection[indexT]=MARKER_YES;
 		}
 
-/*
-		cout<<"========++"<<endl;
-
-		for(int i=0;i<4;i++){
-			cout<<" "<<(int)parents[i]<<endl;
+		uint64_t friends=0;
+		int offset=0;
+		for(int i=0;i<ALPHABET_SIZE;i++){
+			if(parents[i]==MARKER_YES){
+				uint64_t mask=MARKER_YES;
+				mask<<=(offset+i);
+				friends|=mask;
+			}
 		}
 
-		for(int i=0;i<4;i++){
-			cout<<" "<<(int)children[i]<<endl;
+		offset+=ALPHABET_SIZE;
+
+		for(int i=0;i<ALPHABET_SIZE;i++){
+			if(children[i]==MARKER_YES){
+				uint64_t mask=MARKER_YES;
+				mask<<=(offset+i);
+				friends|=mask;
+			}
 		}
-*/
 
-		fwrite(parents,ALPHABET_SIZE*sizeof(char),1,output);
-		fwrite(children,ALPHABET_SIZE*sizeof(char),1,output);
+		uint8_t informationToWrite=friends;
 
+		fwrite(&informationToWrite,1*sizeof(uint8_t),1,output);
 	}
 
 	fclose(output);

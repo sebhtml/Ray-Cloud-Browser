@@ -28,7 +28,6 @@ using namespace std;
  * \author Sébastien Boisvert
  */
 class VertexObject{
-	uint64_t m_annotationOffset;
 	uint32_t m_coverage;
 	char m_sequence[256];
 	char m_parents[4];
@@ -48,7 +47,6 @@ public:
 	int getSymbolCode(char symbol);
 	char getCodeSymbol(int code);
 	uint64_t getAnnotationOffset();
-	void setAnnotationOffset(uint64_t value);
 	
 };
 
