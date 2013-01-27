@@ -5,6 +5,8 @@
 CXX=g++
 CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
 #CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
+RM=rm
+Q=@
 
 TARGETS=RayCloudBrowser.cgi
 
@@ -15,35 +17,44 @@ EXTRA_TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatab
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $? -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) -c $? -o $@
 
 all: $(TARGETS) $(EXTRA_TARGETS)
 
 RayCloudBrowser.cgi: webServer_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
-	chmod g-w $@
-	chmod o-w $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)chmod g-w $@
+	$(Q)chmod o-w $@
 
 RayCloudBrowser.commandLineClient: commandLineClient_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.readJSON: readJSON_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.createGraphDatabase: createGraphDatabase_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.getSubgraphWithPath: getSubgraphWithPath_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.createPathDatabase: createPathDatabase_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.probePath: probePath_main.o $(LIBRARY_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(Q)echo "CXX $@"
+	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:
-	rm -f $(TARGETS) $(EXTRA_TARGETS) $(LIBRARY_OBJECTS)
+	$(Q)echo "RM"
+	$(Q)$(RM) -f $(TARGETS) $(EXTRA_TARGETS) $(LIBRARY_OBJECTS)
 
 check: devel test-first test-store test-not-found
 
