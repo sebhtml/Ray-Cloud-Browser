@@ -32,7 +32,6 @@
 #define MARKER_YES 1
 
 #define OFFSET_NULL 0
-#define MAXIMUM_LENGTH 256
 #define ALPHABET_SIZE 4
 
 #if defined(__linux__)
@@ -57,7 +56,7 @@
 #define OS_POSIX
 #endif
 
-#define BITS_IN_BYTE 8
+// the maximum length of a object, measured in nucleotide
 #define CONFIG_MAXKMERLENGTH 256
 
 #endif

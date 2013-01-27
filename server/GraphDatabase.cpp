@@ -15,9 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // TODO: maybe adding padding could enhance performance
-
 
 #include "GraphDatabase.h"
 
@@ -28,6 +26,19 @@
 #include <iostream>
 #include <sstream>
 using namespace std;
+
+/*
+ * Some implementation-specific sizes.
+ */
+
+// the size of the binary header
+#define GRAPH_HEADER_LENGTH (sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t))
+
+// the size of extra information of a object (coverage, parents, children)
+#define OBJECT_INFORMATION_LENGTH (sizeof(uint32_t)+sizeof(uint8_t))
+
+// number of bits in one byte
+#define BITS_IN_BYTE 8
 
 // TODO add error management for file operations
 
@@ -43,33 +54,48 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 
 	uint64_t first=0;
 	uint64_t last=m_entries-1;
+	int match=0;
 
 	while(first<=last){
 	
 		uint64_t middle=first+(last-first)/2;
 		uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
 
-		char sequence[MAXIMUM_LENGTH];
+		char sequence[CONFIG_MAXKMERLENGTH];
 
 		char*myBuffer=((char*)m_content)+middlePosition;
 		int position=0;
+
+// first, we only copy the sequence to compare it with what we are looking for
+// we don't load the object meta-information if it's not a match
 
 		memcpy(sequence,myBuffer+position,m_kmerLength);
 		sequence[m_kmerLength]='\0';
 
 		int comparisonResult=strcmp(key,sequence);
 
-		if(comparisonResult==0){
+		if(comparisonResult==match){
 			found=true;
 
 			uint32_t coverage;
 			uint8_t friendInformation;
 
 			position+=m_kmerLength;
-			memcpy(&coverage,myBuffer+position,sizeof(uint32_t));
+
+// group disk I/O operations here
+			char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
+			memcpy(objectBufferForDisk,myBuffer+position,OBJECT_INFORMATION_LENGTH);
+
+// then copy stuff from our memory buffer
+
+			int position=0;
+			memcpy(&coverage,objectBufferForDisk+position,sizeof(uint32_t));
 			position+=sizeof(uint32_t);
 
-			memcpy(&friendInformation,myBuffer+position,1*sizeof(uint8_t));
+			memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
+
+// finally, we build a VertexObject object with the information we extracted in the
+// file
 
 			char parents[ALPHABET_SIZE];
 			char children[ALPHABET_SIZE];
@@ -112,11 +138,11 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 			}
 
 			break;
-		}else if(comparisonResult>0){
+		}else if(comparisonResult>match){
 
 			first=middle+1;
 
-		}else if(comparisonResult<0){
+		}else if(comparisonResult<match){
 
 			last=middle-1;
 		}
@@ -125,7 +151,6 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	return found;
 }
 
-#define GRAPH_HEADER_LENGTH (sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t))
 
 /**
  * \see http://www.c.happycodings.com/Gnu-Linux/code6.html
@@ -145,25 +170,25 @@ void GraphDatabase::openFile(const char*file){
 
 	m_content=(uint8_t*)m_mapper.mapFile(file);
 
-	char headerBuffer[GRAPH_HEADER_LENGTH];
+	char headerBufferForDisk[GRAPH_HEADER_LENGTH];
 
 /*
  * Only do 1 single memcpy to fetch the header from the disk.
  */
-	memcpy(headerBuffer,m_content,GRAPH_HEADER_LENGTH);
+	memcpy(headerBufferForDisk,m_content,GRAPH_HEADER_LENGTH);
 
 	int position=0;
 
 /*
  * Get information from header using our own copy.
  */
-	memcpy(&m_magicNumber,headerBuffer+position,sizeof(uint32_t));
+	memcpy(&m_magicNumber,headerBufferForDisk+position,sizeof(uint32_t));
 	position+=sizeof(uint32_t);
-	memcpy(&m_formatVersion,headerBuffer+position,sizeof(uint32_t));
+	memcpy(&m_formatVersion,headerBufferForDisk+position,sizeof(uint32_t));
 	position+=sizeof(uint32_t);
-	memcpy(&m_kmerLength,headerBuffer+position,sizeof(uint32_t));
+	memcpy(&m_kmerLength,headerBufferForDisk+position,sizeof(uint32_t));
 	position+=sizeof(uint32_t);
-	memcpy(&m_entries,headerBuffer+position,sizeof(uint64_t));
+	memcpy(&m_entries,headerBufferForDisk+position,sizeof(uint64_t));
 	position+=sizeof(uint64_t);
 
 	if(m_magicNumber!=m_expectedMagicNumber){

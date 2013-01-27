@@ -17,6 +17,8 @@
 
 #ifndef _VertexObject_h
 
+#include "constants.h"
+
 #include <stdint.h>
 #include <iostream>
 #include <string>
