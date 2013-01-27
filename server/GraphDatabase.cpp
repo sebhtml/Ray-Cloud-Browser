@@ -301,6 +301,9 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			null++;
 		}
 
+		if(strlen(buffer)>0 && buffer[0]=='#')
+			continue;
+
 		if(strlen(buffer)>0){
 			entries++;
 
@@ -338,6 +341,9 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		char*value=fgets(buffer,1024,stream);
 		if(value==NULL)
 			null++;
+
+		if(strlen(buffer)>0 && buffer[0]=='#')
+			continue;
 
 		//cout<<"Line: "<<buffer<<endl;
 

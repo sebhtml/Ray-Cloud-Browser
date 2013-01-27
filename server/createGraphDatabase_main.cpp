@@ -36,7 +36,7 @@ int main(int argc,char**argv){
 		cout<<endl;
 		cout<<"You must run Ray with -write-kmers, which will generate a kmers.txt file"<<endl;
 		cout<<"Then, you must create the kmers.txt.sorted file with:"<<endl;
-		cout<<" cat kmers.txt|grep -v ^#|sort -T . > kmers.txt.sorted"<<endl;
+		cout<<" cat kmers.txt|sort -T . > kmers.txt.sorted"<<endl;
 
 		return 0;
 	}
