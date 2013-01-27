@@ -26,6 +26,16 @@
 
 /**
  * A class to search kmers in a database file.
+ * This class also implement the compiler for converting
+ * ASCII Ray graph to Ray Cloud Browser open binary format.
+ *
+ * Basically, there is a header (magic, version, kmer length, entries)
+ * and then sorted entries.
+ *
+ * A entry has a sequence, a coverage, parents, and children.
+ *
+ * Custom annotations are implemented elsewhere.
+ *
  * \author Sébastien Boisvert
  */
 class GraphDatabase{
@@ -53,13 +63,14 @@ class GraphDatabase{
 	void writeTwoBits(uint8_t*sequenceData,int bitPosition,int code);
 	void readTwoBits(uint8_t*sequenceData,int bitPosition,int*code);
 	int getSymbolCode(char symbol);
+	char getSymbol(int code);
+
 public:
 	GraphDatabase();
 	void openFile(const char*file);
 	void closeFile();
 	bool getObject(const char*key,VertexObject*object);
 	int getKmerLength();
-	char getSymbol(int code);
 	uint64_t getEntries();
 
 	void index(const char*input,const char*output);
