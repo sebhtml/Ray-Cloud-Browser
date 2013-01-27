@@ -24,27 +24,28 @@
 
 #include <stdint.h>
 
-#define GRAPH_FORMAT_VERSION 2345678987
-
-
 /**
  * A class to search kmers in a database file.
  * \author Sébastien Boisvert
  */
 class GraphDatabase{
 
+	uint64_t m_entries;
+	int m_kmerLength;
+	uint32_t m_magicNumber;
+	uint32_t m_formatVersion;
+	uint32_t m_expectedMagicNumber;
+	uint32_t m_expectedFormatVersion;
+
 	Mapper m_mapper;
 
 	bool m_active;
+	bool m_error;
 	char m_codeSymbols[ALPHABET_SIZE];
-	void*m_content;
+	uint8_t*m_content;
 
 	int m_entrySize;
 	int m_startingPosition;
-
-	int m_format;
-	int m_kmerLength;
-	uint64_t m_entries;
 
 public:
 	GraphDatabase();

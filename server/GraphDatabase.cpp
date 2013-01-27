@@ -38,6 +38,9 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	if(!m_active)
 		return found;
 
+	if(m_error)
+		return found;
+
 	uint64_t first=0;
 	uint64_t last=m_entries-1;
 
@@ -130,23 +133,44 @@ void GraphDatabase::openFile(const char*file){
 	if(m_active)
 		return;
 
+	if(m_error)
+		return;
+
+	m_active=true;
+	m_error=false;
+
 	m_mapper.enableReadOperations();
-	m_content=m_mapper.mapFile(file);
 
-	memcpy(&m_format,(char*)m_content,sizeof(uint32_t));
-	memcpy(&m_kmerLength,((char*)m_content)+sizeof(uint32_t),sizeof(uint32_t));
-	memcpy(&m_entries,((char*)m_content)+sizeof(uint32_t)+sizeof(uint32_t),sizeof(uint64_t));
+	m_content=(uint8_t*)m_mapper.mapFile(file);
 
-	m_codeSymbols[INDEX_A]=SYMBOL_A;
-	m_codeSymbols[INDEX_C]=SYMBOL_C;
-	m_codeSymbols[INDEX_G]=SYMBOL_G;
-	m_codeSymbols[INDEX_T]=SYMBOL_T;
+	int position=0;
+
+	memcpy(&m_magicNumber,m_content+position,sizeof(uint32_t));
+
+	if(m_magicNumber!=m_expectedMagicNumber){
+		cout<<"Error: wrong magic number, expected "<<m_expectedMagicNumber<<" actual "<<m_magicNumber<<endl;
+		m_error=true;
+		return;
+	}
+
+	position+=sizeof(uint32_t);
+	memcpy(&m_formatVersion,m_content+position,sizeof(uint32_t));
+
+	if(m_formatVersion!=m_expectedFormatVersion){
+		cout<<"Error: wrong format version, expected "<<m_expectedFormatVersion<<" actual "<<m_formatVersion<<endl;
+		m_error=true;
+		return;
+	}
+
+	position+=sizeof(uint32_t);
+	memcpy(&m_kmerLength,m_content+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+	memcpy(&m_entries,m_content+position,sizeof(uint64_t));
+	position+=sizeof(uint64_t);
 
 	m_entrySize=m_kmerLength+sizeof(uint32_t)+sizeof(uint8_t);
 
-	m_startingPosition=sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t);
-
-	m_active=true;
+	m_startingPosition=position;
 }
 
 void GraphDatabase::closeFile(){
@@ -168,9 +192,19 @@ char GraphDatabase::getSymbol(int code){
 }
 
 GraphDatabase::GraphDatabase(){
-	m_active=false;
-}
+	uint32_t GRAPH_MAGIC_NUMBER=2345678987;
+	uint32_t GRAPH_FORMAT_VERSION=0;
 
+	m_active=false;
+	m_error=false;
+	m_expectedMagicNumber=GRAPH_MAGIC_NUMBER;
+	m_expectedFormatVersion=GRAPH_FORMAT_VERSION;
+
+	m_codeSymbols[INDEX_A]=SYMBOL_A;
+	m_codeSymbols[INDEX_C]=SYMBOL_C;
+	m_codeSymbols[INDEX_G]=SYMBOL_G;
+	m_codeSymbols[INDEX_T]=SYMBOL_T;
+}
 
 void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
@@ -226,10 +260,15 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	FILE*output=fopen(binaryFile,"w");
 
-	int formatVersion=GRAPH_FORMAT_VERSION;
-	fwrite(&formatVersion,sizeof(uint32_t),1,output);
-	fwrite(&kmerLength,sizeof(uint32_t),1,output);
-	fwrite(&entries,sizeof(uint64_t),1,output);
+	m_magicNumber=m_expectedMagicNumber;
+	m_formatVersion=m_expectedFormatVersion;
+	m_kmerLength=kmerLength;
+	m_entries=entries;
+
+	fwrite(&m_magicNumber,sizeof(uint32_t),1,output);
+	fwrite(&m_formatVersion,sizeof(uint32_t),1,output);
+	fwrite(&m_kmerLength,sizeof(uint32_t),1,output);
+	fwrite(&m_entries,sizeof(uint64_t),1,output);
 
 	for(uint64_t i=0;i<entries;i++){
 		char*value=fgets(buffer,1024,stream);
