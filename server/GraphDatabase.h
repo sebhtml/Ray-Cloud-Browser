@@ -37,6 +37,8 @@ class GraphDatabase{
 	uint32_t m_expectedMagicNumber;
 	uint32_t m_expectedFormatVersion;
 
+	int m_requiredBytesPerSequence;
+
 	Mapper m_mapper;
 
 	bool m_active;
@@ -47,6 +49,10 @@ class GraphDatabase{
 	int m_entrySize;
 	int m_startingPosition;
 
+	void setRequiredBytesPerObject();
+	void writeTwoBits(uint8_t*sequenceData,int bitPosition,int code);
+	void readTwoBits(uint8_t*sequenceData,int bitPosition,int*code);
+	int getSymbolCode(char symbol);
 public:
 	GraphDatabase();
 	void openFile(const char*file);

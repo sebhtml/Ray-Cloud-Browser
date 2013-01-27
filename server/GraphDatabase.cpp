@@ -27,6 +27,10 @@
 #include <sstream>
 using namespace std;
 
+#ifdef CONFIG_ASSERT
+#include <assert.h>
+#endif
+
 /*
  * Some implementation-specific sizes.
  */
@@ -38,7 +42,10 @@ using namespace std;
 #define OBJECT_INFORMATION_LENGTH (sizeof(uint32_t)+sizeof(uint8_t))
 
 // number of bits in one byte
-#define BITS_IN_BYTE 8
+#define BITS_PER_BYTE 8
+
+// number of bits per nucleotide
+#define BITS_PER_NUCLEOTIDE 2
 
 // TODO add error management for file operations
 
@@ -69,7 +76,25 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 // first, we only copy the sequence to compare it with what we are looking for
 // we don't load the object meta-information if it's not a match
 
-		memcpy(sequence,myBuffer+position,m_kmerLength);
+		uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
+		memcpy(sequenceData,myBuffer+position,m_requiredBytesPerSequence);
+
+// convert the 2-bit format to the 1-byte-per-nucleotide format
+
+		for(int nucleotidePosition=0;nucleotidePosition<m_kmerLength;nucleotidePosition++){
+			int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
+			int code=-1;
+			readTwoBits(sequenceData,bitPosition,&code);
+
+#ifdef CONFIG_ASSERT
+			assert(code!=-1);
+			assert(code>=0);
+			assert(code<ALPHABET_SIZE);
+#endif
+
+			sequence[nucleotidePosition]=m_codeSymbols[code];
+		}
+
 		sequence[m_kmerLength]='\0';
 
 		int comparisonResult=strcmp(key,sequence);
@@ -80,7 +105,7 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 			uint32_t coverage;
 			uint8_t friendInformation;
 
-			position+=m_kmerLength;
+			position+=m_requiredBytesPerSequence;
 
 // group disk I/O operations here
 			char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
@@ -106,8 +131,8 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 
 				int bit=offset+i;
 
-				value<<=(BITS_IN_BYTE*sizeof(uint64_t)-1-bit);
-				value>>=(BITS_IN_BYTE*sizeof(uint64_t)-1);
+				value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+				value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
 
 				parents[i]=value;
 			}
@@ -119,8 +144,8 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 
 				int bit=offset+i;
 
-				value<<=(BITS_IN_BYTE*sizeof(uint64_t)-1-bit);
-				value>>=(BITS_IN_BYTE*sizeof(uint64_t)-1);
+				value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+				value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
 
 				children[i]=value;
 			}
@@ -150,7 +175,6 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 
 	return found;
 }
-
 
 /**
  * \see http://www.c.happycodings.com/Gnu-Linux/code6.html
@@ -203,7 +227,9 @@ void GraphDatabase::openFile(const char*file){
 		return;
 	}
 
-	m_entrySize=m_kmerLength+sizeof(uint32_t)+sizeof(uint8_t);
+	setRequiredBytesPerObject();
+
+	m_entrySize=m_requiredBytesPerSequence+sizeof(uint32_t)+sizeof(uint8_t);
 
 	m_startingPosition=position;
 }
@@ -284,7 +310,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 				}
 			}
 		}
-
 	}
 
 	fclose(stream);
@@ -300,6 +325,10 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	m_kmerLength=kmerLength;
 	m_entries=entries;
 
+	setRequiredBytesPerObject();
+
+	uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
+
 	fwrite(&m_magicNumber,sizeof(uint32_t),1,output);
 	fwrite(&m_formatVersion,sizeof(uint32_t),1,output);
 	fwrite(&m_kmerLength,sizeof(uint32_t),1,output);
@@ -314,7 +343,28 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 		int available=strlen(buffer);
 
-		fwrite(buffer,kmerLength,1,output);
+		memset(sequenceData,0,CONFIG_MAXKMERLENGTH*sizeof(uint8_t));
+
+		for(int nucleotidePosition=0;nucleotidePosition<m_kmerLength;nucleotidePosition++){
+			char symbol=buffer[nucleotidePosition];
+			int code=getSymbolCode(symbol);
+			int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
+
+			writeTwoBits(sequenceData,bitPosition,code);
+
+#ifdef CONFIG_ASSERT
+			int testCode=-1;
+			readTwoBits(sequenceData,bitPosition,&testCode);
+
+			if(testCode!=code){
+				cout<<"Expected: "<<code<<" Actual: "<<testCode<<" Symbol: "<<symbol<<endl;
+			}
+			assert(testCode==code);
+#endif
+		}
+
+		fwrite(sequenceData,m_requiredBytesPerSequence,1,output);
+		//fwrite(buffer,m_kmerLength,1,output);
 
 		int secondSeparator=kmerLength+1;
 
@@ -393,9 +443,66 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	fclose(stream);
 
 	cout<<"Created "<<binaryFile<<endl;
-
 }
 
 uint64_t GraphDatabase::getEntries(){
 	return m_entries;
+}
+
+void GraphDatabase::setRequiredBytesPerObject(){
+	int requiredBits=m_kmerLength*BITS_PER_NUCLEOTIDE;
+	int requiredBytes=requiredBits/BITS_PER_BYTE;
+
+	if(requiredBits%BITS_PER_BYTE!=0)
+		requiredBytes++;
+
+	m_requiredBytesPerSequence=requiredBytes;
+}
+
+void GraphDatabase::writeTwoBits(uint8_t*sequenceData,int bitPosition,int code){
+
+	int byteNumber=bitPosition/BITS_PER_BYTE;
+	int positionInByte=bitPosition%BITS_PER_BYTE;
+
+	uint64_t currentValue=sequenceData[byteNumber];
+
+	uint64_t mask=code;
+	mask<<=positionInByte;
+	currentValue|=mask;
+
+	sequenceData[byteNumber]=currentValue;
+
+}
+
+void GraphDatabase::readTwoBits(uint8_t*sequenceData,int bitPosition,int*code){
+
+	int byteNumber=bitPosition/BITS_PER_BYTE;
+	int positionInByte=bitPosition%BITS_PER_BYTE;
+
+	uint64_t currentValue=sequenceData[byteNumber];
+
+	currentValue<<=(BITS_PER_BYTE*sizeof(uint64_t)-BITS_PER_NUCLEOTIDE-positionInByte);
+	currentValue>>=(BITS_PER_BYTE*sizeof(uint64_t)-BITS_PER_NUCLEOTIDE);
+
+#ifdef CONFIG_ASSERT
+	assert(currentValue>=0);
+	assert(currentValue<ALPHABET_SIZE);
+#endif
+
+	(*code)=currentValue;
+}
+
+int GraphDatabase::getSymbolCode(char symbol){
+	switch (symbol){
+		case SYMBOL_A:
+			return INDEX_A;
+		case SYMBOL_T:
+			return INDEX_T;
+		case SYMBOL_G:
+			return INDEX_G;
+		case SYMBOL_C:
+			return INDEX_C;
+	}
+
+	return SYMBOL_A;
 }
