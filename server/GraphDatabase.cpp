@@ -121,7 +121,7 @@ void GraphDatabase::openFile(const char*file){
 	m_codeSymbols[INDEX_G]=SYMBOL_G;
 	m_codeSymbols[INDEX_T]=SYMBOL_T;
 
-	m_entrySize=m_kmerLength+sizeof(uint32_t)+ALPHABET_SIZE+ALPHABET_SIZE+sizeof(uint64_t);
+	m_entrySize=m_kmerLength+sizeof(uint32_t)+ALPHABET_SIZE+ALPHABET_SIZE;
 
 	m_startingPosition=sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t);
 
@@ -288,8 +288,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		fwrite(parents,ALPHABET_SIZE*sizeof(char),1,output);
 		fwrite(children,ALPHABET_SIZE*sizeof(char),1,output);
 
-		uint64_t annotationOffset=OFFSET_NULL;
-		fwrite(&annotationOffset,sizeof(uint64_t),1,output);
 	}
 
 	fclose(output);
