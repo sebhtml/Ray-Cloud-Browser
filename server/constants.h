@@ -58,6 +58,7 @@
 #endif
 
 #define BITS_IN_BYTE 8
+#define CONFIG_MAXKMERLENGTH 256
 
 #endif
 

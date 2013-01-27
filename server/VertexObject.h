@@ -29,7 +29,7 @@ using namespace std;
  */
 class VertexObject{
 	uint32_t m_coverage;
-	char m_sequence[256];
+	char m_sequence[CONFIG_MAXKMERLENGTH];
 	char m_parents[4];
 	char m_children[4];
 	

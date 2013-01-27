@@ -125,6 +125,8 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	return found;
 }
 
+#define GRAPH_HEADER_LENGTH (sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t))
+
 /**
  * \see http://www.c.happycodings.com/Gnu-Linux/code6.html
  */
@@ -143,9 +145,26 @@ void GraphDatabase::openFile(const char*file){
 
 	m_content=(uint8_t*)m_mapper.mapFile(file);
 
+	char headerBuffer[GRAPH_HEADER_LENGTH];
+
+/*
+ * Only do 1 single memcpy to fetch the header from the disk.
+ */
+	memcpy(headerBuffer,m_content,GRAPH_HEADER_LENGTH);
+
 	int position=0;
 
-	memcpy(&m_magicNumber,m_content+position,sizeof(uint32_t));
+/*
+ * Get information from header using our own copy.
+ */
+	memcpy(&m_magicNumber,headerBuffer+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+	memcpy(&m_formatVersion,headerBuffer+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+	memcpy(&m_kmerLength,headerBuffer+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+	memcpy(&m_entries,headerBuffer+position,sizeof(uint64_t));
+	position+=sizeof(uint64_t);
 
 	if(m_magicNumber!=m_expectedMagicNumber){
 		cout<<"Error: wrong magic number, expected "<<m_expectedMagicNumber<<" actual "<<m_magicNumber<<endl;
@@ -153,20 +172,11 @@ void GraphDatabase::openFile(const char*file){
 		return;
 	}
 
-	position+=sizeof(uint32_t);
-	memcpy(&m_formatVersion,m_content+position,sizeof(uint32_t));
-
 	if(m_formatVersion!=m_expectedFormatVersion){
 		cout<<"Error: wrong format version, expected "<<m_expectedFormatVersion<<" actual "<<m_formatVersion<<endl;
 		m_error=true;
 		return;
 	}
-
-	position+=sizeof(uint32_t);
-	memcpy(&m_kmerLength,m_content+position,sizeof(uint32_t));
-	position+=sizeof(uint32_t);
-	memcpy(&m_entries,m_content+position,sizeof(uint64_t));
-	position+=sizeof(uint64_t);
 
 	m_entrySize=m_kmerLength+sizeof(uint32_t)+sizeof(uint8_t);
 
