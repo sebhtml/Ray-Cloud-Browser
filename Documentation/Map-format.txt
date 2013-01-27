@@ -1,0 +1,14 @@
+map.dat
+
+<magic>
+<format>
+<kmerLength>
+<entries>
+<kmerSequence><coverage><parents><children>
+<kmerSequence><coverage><parents><children>
+<kmerSequence><coverage><parents><children>
+<kmerSequence><coverage><parents><children>
+<kmerSequence><coverage><parents><children>
+...
+
+

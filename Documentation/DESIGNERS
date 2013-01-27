@@ -6,9 +6,10 @@
 ** Algorithms for Coulomb's law
 ** readahead algorithms
 ** layout algorithms
-** NoSQL server design
+** file format design
 ** Messaging layer
 ** User interface
+** Zooming
 
 * Élénie Godzaridis
 ** Level of details (rendering)
@@ -21,5 +22,4 @@
 
 * Frédéric Raymond
 ** Use one nucleotide per k-mer
-** Zooming
-
+** Zooming experience

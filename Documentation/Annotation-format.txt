@@ -1,0 +1,64 @@
+Design document
+Sébastien Boisvert
+2013-01-27
+
+Purpose: design a reverse-index for sections so that locations for a object found in a map can be enumerated.
+
+magic (64 bits) -> 0x87332cee6ae056aaULL
+version (64 bits) -> 0
+map (256 bytes maximum)
+numberOfSections (256)
+section (256 bytes maximum)
+
+total for header: ~ 65KiB
+
+annotations.dat
+
+<magic>
+<version>
+<map>
+<numberOfSections>
+<section>
+<section>
+...
+<section>
+<annotationOffset>
+<annotationOffset>
+<annotationOffset>
+<annotationOffset>
+<annotationOffset>
+<annotationOffset>
+...
+<annotationOffset>
+<annotationOffset>
+<type><length><content><nextOffset>
+<type><length><content><nextOffset>
+<type><length><content><nextOffset>
+<type><length><content><nextOffset>
+...
+
+Sizes:
+
+* uint8_t m_type;
+* uint8_t m_size;
+* uint8_t*m_content (m_size bytes)
+* uint64_t m_nextOffset
+
+The type ANNOTATION_LOCATION has these:
+
+* uint16_t m_section
+* uint32_t m_region
+* uint32_t m_location
+
+So the size of a ANNOTATION_LOCATION object is:
+
+1+1+2+4+4+8 = 20 bytes
+
+The file for m_section can be obtained with the sections found in the header.
+To look for a object, the map identified in the header must be used.
+For any object, annotations are chained. OFFSET_NULL indicates that there are no more annotations.
+
+Other types (not yet implemented, but the design supports them):
+
+* ANNOTATION_CUSTOM
+

@@ -3,3 +3,8 @@ POST
 -> to add files
 -> to add map
 -> to add section to map
+
+
+GET
+
+get various things, see WebService.cpp
