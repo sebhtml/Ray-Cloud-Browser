@@ -4,6 +4,24 @@ Sébastien Boisvert
 
 Purpose: design a reverse-index for sections so that locations for a object found in a map can be enumerated.
 
+
+The map.dat format is a container for sorted objects.
+
+| x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x |
+
+
+Annotations are added on top of the map.dat offsets, but in a independant file.
+
+
+| x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x |
+  |                                   |                   |
+ [*]                                 [*]                 [*]
+  |                                                       |
+ [*]                                                     [*]
+                                                          |
+                                                         [*]
+
+
 magic (64 bits) -> 0x87332cee6ae056aaULL
 version (64 bits) -> 0
 map (256 bytes maximum)
