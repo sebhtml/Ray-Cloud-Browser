@@ -591,6 +591,23 @@ Screen.prototype.iterate=function(){
 	this.globalGameFrameNumber++;
 }
 
+Screen.prototype.checkScreenSize=function(){
+	return(this.width==window.innerWidth && this.height==window.innerHeight &&
+	this.canvas.width==this.width && this.canvas.heidth==this.height &&
+	this.renderingCanvas.width==this.width && this.renderingCanvas.height==this.height);
+}
+
+Screen.prototype.performScreenSizeChange=function(){
+	var availableWidth=window.innerWidth;
+	var availableHeight=window.innerHeight;
+	this.width=availableWidth;
+	this.height=availableHeight;
+	this.canvas.width=this.width;
+	this.canvas.height=this.height;
+	this.renderingCanvas.width=this.width;
+	this.renderingCanvas.height=this.height;
+}
+
 Screen.prototype.getMilliseconds=function(){
 	return new Date()*1;
 }
@@ -737,6 +754,9 @@ Screen.prototype.draw=function(){
 	this.renderingCanvas.width=this.width;
 	this.renderingCanvas.height=this.height;
 */
+	if(!this.checkScreenSize()){
+		this.performScreenSizeChange();
+	}
 
 	var start=this.getMilliseconds();
 
