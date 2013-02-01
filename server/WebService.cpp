@@ -364,11 +364,30 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 
 	int entries=mock.getEntries();
 
-	int readahead=1024;
-	int start=0;
+	char firstBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundFirst=getValue(queryString,"first",firstBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!foundFirst)
+		return false;
+
+	int first=atoi(firstBuffer);
+
+	if(first<0)
+		first=0;
+
+	if(first>=entries)
+		first=entries-1;
+
+	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundReadahead=getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!foundReadahead)
+		return false;
+
+	int readahead=atoi(readaheadBuffer);
 
 	cout<<"\"count\": "<<entries<<","<<endl;
-	cout<<"\"first\": "<<start<<","<<endl;
+	cout<<"\"first\": "<<first<<","<<endl;
 	cout<<"\"readahead\": "<<readahead<<","<<endl;
 
 	cout<<"\"regions\": ["<<endl;
@@ -381,13 +400,10 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 
 	int printed=0;
 
-	for(int i=0;i<entries;i++){
+	for(int i=first;i<entries;i++){
 
 		if(printed>=readahead)
 			break;
-
-		if(i<start)
-			continue;
 
 		if(isFirst){
 			isFirst=false;
