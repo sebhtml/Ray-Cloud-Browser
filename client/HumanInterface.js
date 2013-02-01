@@ -82,7 +82,8 @@ function HumanInterface(screen,dataStore){
 	this.pageDown=34;
 	this.d=68;
 
-
+	this.sampleInventory.getCloseButton().activateState();
+	this.sampleInventory.getWarpButton().activateState();
 }
 
 /*

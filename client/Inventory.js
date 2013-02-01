@@ -35,7 +35,6 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.height=height/5;
 	this.x=x;
 	this.y=y;
-	this.visible=visible;
 
 	this.moviePeriod=1024;
 
@@ -101,7 +100,7 @@ Inventory.prototype.draw=function(context){
 
 	var height=this.height-5;
 	var drawingY=this.y;
-	if(!this.visible){
+	if(!this.closeButton.getState()){
 		height=this.buttonWidth;
 		drawingY=this.y+5
 	}else{
@@ -111,7 +110,7 @@ Inventory.prototype.draw=function(context){
 // draw the pink overlay
 	context.beginPath();
 
-	if(!this.visible)
+	if(!this.closeButton.getState())
 		context.rect(this.x, drawingY, this.width, 30 );
 	else if(!this.warpButton.getState())
 		context.rect(this.x, drawingY, this.width, 100 );
@@ -127,7 +126,7 @@ Inventory.prototype.draw=function(context){
 	this.overlay.draw(context,null);
 	this.closeButton.draw(context,null);
 	
-	if(this.visible){
+	if(this.closeButton.getState()){
 		context.beginPath();
 		context.rect(this.x+20, this.y+30, 150,30);
 		context.fillStyle = '#FFF8F9';
@@ -180,7 +179,6 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	this.mouseY=y;
 
 	if(this.closeButton.handleMouseDown(x,y)){
-		this.visible=!this.visible;
 		return true;
 	}else if(this.overlay.handleMouseDown(x,y)){
 		this.selected=true;
@@ -299,4 +297,8 @@ Inventory.prototype.getMinimumCoverage=function(){
 
 Inventory.prototype.getWarpButton=function(){
 	return this.warpButton;
+}
+
+Inventory.prototype.getCloseButton=function(){
+	return this.closeButton;
 }
