@@ -27,6 +27,8 @@
  */
 function Screen(gameFrequency,renderingFrequency){
 
+	this.hasLocation=false;
+
 	this.canControlScreen=false;
 	this.periodForControl=1000;
 
@@ -282,6 +284,10 @@ Screen.prototype.handleMouseDown=function(eventObject){
 			this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
 			this.clear();
 			this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
+
+			this.hasLocation=true;
+
+			this.humanInterface.sampleInventory.getWarpButton().resetState();
 		}
 
 		this.graphOperator.setMinimumCoverage(this.humanInterface.getMinimumCoverage());
@@ -646,23 +652,12 @@ Screen.prototype.drawControlPanel=function(){
 		context.fill();
 	}
 
-
 	for(i in this.buttons){
 		this.buttons[i].draw(context,this.blitter);
 	}
 
 	context.fillStyle    = '#000000';
 	context.font         = 'bold 12px Arial';
-/*
-	this.context.fillText("Repulsion: "+this.forceConstant, this.repulsionBase, 25);
-	this.context.fillText("Attraction: "+this.springConstant, this.attractionBase, 25);
-	this.context.fillText("Type: "+this.type, this.typeBase, 25);
-	this.context.fillText("Vertices: "+this.n, this.verticesBase, 25);
-	this.context.fillText("Degree: "+this.degree, this.degreeBase, 25);
-	this.context.fillText("Damping: "+this.damping, this.dampingBase, 25);
-	this.context.fillText("Vertex radius: "+this.vertexRadius, this.radiusBase, 25);
-	this.context.fillText("Edge length: "+this.arcLength, this.arcBase, 25);
-*/
 
 	if(this.selectedVertex!=null){
 		var sequence=this.selectedVertex.getSequence();
@@ -670,13 +665,20 @@ Screen.prototype.drawControlPanel=function(){
 		context.fillText("Item: "+toPrint, this.getWidth()/2-sequence.length*3, 64);
 	}
 
-
-	if(!this.debugMode)
-		return;
-
 	var offsetX=10;
 	var offsetY=115;
 	var stepping=15;
+
+	if(this.hasLocation){
+		context.fillText("map: "+this.locationData["mapName"]+" section: "+this.locationData["sectionName"]+
+			" region: "+this.locationData["regionName"]+" location: "+this.locationData["locationName"],
+			70,15);
+
+		return;
+	}
+
+	if(!this.debugMode)
+		return;
 
 	context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
 		offsetX,this.canvas.height-offsetY);

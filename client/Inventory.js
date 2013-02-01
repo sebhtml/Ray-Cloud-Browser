@@ -116,12 +116,6 @@ Inventory.prototype.draw=function(context){
 	else if(!this.warpButton.getState())
 		context.rect(this.x, drawingY, this.width, 100 );
 
-	context.fillStyle = '#FFF8F9';
-	context.fill();
-	context.lineWidth = 1;
-	context.strokeStyle = 'black';
-	context.stroke();
-
 	context.beginPath();
 	context.rect(this.x, drawingY, this.width,height );
 	context.fillStyle = '#FFFF99';
@@ -134,7 +128,6 @@ Inventory.prototype.draw=function(context){
 	this.closeButton.draw(context,null);
 	
 	if(this.visible){
-
 		context.beginPath();
 		context.rect(this.x+20, this.y+30, 150,30);
 		context.fillStyle = '#FFF8F9';
@@ -159,7 +152,6 @@ Inventory.prototype.draw=function(context){
 		context.strokeStyle = 'black';
 		context.stroke();
 
-
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
 
@@ -176,7 +168,6 @@ Inventory.prototype.draw=function(context){
 		context.fillText("min. coverage: "+this.minimumCoverage, this.x+40,this.y+50);
 		context.fillText("play", this.x+235,this.y+50);
 		context.fillText("speed", this.x+235,this.y+85);
-
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
@@ -304,4 +295,8 @@ Inventory.prototype.getMoviePeriod=function(){
 
 Inventory.prototype.getMinimumCoverage=function(){
 	return this.minimumCoverage;
+}
+
+Inventory.prototype.getWarpButton=function(){
+	return this.warpButton;
 }

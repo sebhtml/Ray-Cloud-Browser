@@ -61,6 +61,7 @@ function Selector(x,y,width,height,dataStore){
  */
 Selector.prototype.draw=function(context){
 
+/*
 	context.beginPath();
 	context.rect(this.x, this.y, this.width, this.height );
 	context.fillStyle = '#FFF8F9';
@@ -68,6 +69,7 @@ Selector.prototype.draw=function(context){
 	context.lineWidth = 1;
 	context.strokeStyle = 'black';
 	context.stroke();
+*/
 
 // some granularity
 	if(this.state==this.SLAVE_MODE_PULL_MAPS){
@@ -331,6 +333,11 @@ Selector.prototype.getLocationData=function(){
 	parameters["kmerLength"]=this.mapFileData["kmerLength"];
 	parameters["regionLength"]=this.regionLength;
 	parameters["map"]=this.mapData[this.mapIndex]["file"];
+
+	parameters["mapName"]=this.mapData[this.mapIndex]["name"];
+	parameters["sectionName"]=this.mapData[this.mapIndex]["sections"][this.sectionIndex]["name"];
+	parameters["regionName"]=this.regionData["regions"][this.regionIndex]["name"];
+	parameters["locationName"]=this.locationIndex+1;
 
 	return parameters;
 }
