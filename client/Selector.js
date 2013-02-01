@@ -86,7 +86,7 @@ Selector.prototype.draw=function(context){
 
 		}else if(this.receivedMaps){
 
-			this.mapWidget=new SelectionWidget(this.x+10,this.y+10,this.width*1.5,this.height,"(1/4) Select map",this.mapChoices);
+			this.mapWidget=new SelectionWidget(this.x,this.y+10,this.width*1.5,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
 			this.state=this.SLAVE_MODE_SELECT_MAP;
 
@@ -133,7 +133,7 @@ Selector.prototype.draw=function(context){
 				choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
 			}
 
-			this.regionWidget=new SelectionWidget(this.x+30,this.y+110,this.width*1.5,this.height,"(3/4) Select region",choices);
+			this.regionWidget=new SelectionWidget(this.x,this.y+110,this.width*1.5,this.height,"(3/4) Select region",choices);
 			this.objects=new Array();
 			this.objects.push(this.regionWidget);
 			this.state=this.SLAVE_MODE_SELECT_REGION;
@@ -197,7 +197,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 			sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
 		}
 
-		this.sectionWidget=new SelectionWidget(this.x+20,this.y+60,this.width*1.5,this.height,"(2/4) Select section",sections);
+		this.sectionWidget=new SelectionWidget(this.x,this.y+60,this.width*1.5,this.height,"(2/4) Select section",sections);
 		this.objects=new Array();
 		this.objects.push(this.sectionWidget);
 		this.state=this.SLAVE_MODE_SELECT_SECTION;
@@ -239,7 +239,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 		var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["kmerLength"]+1;
 		this.regionLength=maximum;
 
-		this.locationWidget=new IntegerSelectionWidget(this.x+40,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
+		this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
 			1,maximum);
 
 		this.objects=new Array();

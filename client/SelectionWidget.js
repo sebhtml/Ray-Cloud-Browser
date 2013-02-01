@@ -216,4 +216,6 @@ SelectionWidget.prototype.getChoice=function(){
 SelectionWidget.prototype.resetState=function(){
 	this.gotFinalChoice=false;
 	this.finished=true;
+
+	this.height=45;
 }

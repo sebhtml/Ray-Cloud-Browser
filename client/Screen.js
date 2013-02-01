@@ -670,8 +670,8 @@ Screen.prototype.drawControlPanel=function(){
 	var stepping=15;
 
 	if(this.hasLocation){
-		context.fillText("map: "+this.locationData["mapName"]+" section: "+this.locationData["sectionName"]+
-			" region: "+this.locationData["regionName"]+" location: "+this.locationData["locationName"],
+		context.fillText("[ map: "+this.locationData["mapName"]+" | section: "+this.locationData["sectionName"]+
+			" | region: "+this.locationData["regionName"]+" | location: "+this.locationData["locationName"]+" ]",
 			70,15);
 
 		return;
