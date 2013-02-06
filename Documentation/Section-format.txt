@@ -1,9 +1,13 @@
-A section is basically just a indexed fasta file.
+ASCII version:
 
+A section is basically just a fasta file.
 A section contains regions and locations can be viewed for regions.
 
 
+binary version:
+
 <magicNumber>
+<format> (TODO)
 <numberOfRegions>
 <nameStart><nameLength><sequenceStart><sequenceLength>
 <nameStart><nameLength><sequenceStart><sequenceLength>

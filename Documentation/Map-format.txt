@@ -1,4 +1,11 @@
-map.dat
+map.csv (ASCII)
+
+This file has no header (in the current version) and a line looks like this.
+
+GCGGTTATGCTTGCGTCCACCGTAAGTTCGGATTCAGACTTAATCAAAGGTTTTAACAAAGCGCTGGCAACCCCACGGCGGGGGTATTCAG;47;T;G
+
+
+map.dat (binary)
 
 <magic>
 <format>
