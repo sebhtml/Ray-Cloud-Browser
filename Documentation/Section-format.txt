@@ -7,7 +7,7 @@ A section contains regions and locations can be viewed for regions.
 binary version:
 
 <magicNumber>
-<format> (TODO)
+<format>
 <numberOfRegions>
 <nameStart><nameLength><sequenceStart><sequenceLength>
 <nameStart><nameLength><sequenceStart><sequenceLength>
