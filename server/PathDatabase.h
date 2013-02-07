@@ -23,8 +23,6 @@
 
 #include <stdint.h>
 
-#define PATH_FORMAT_VERSION 2345678989
-
 /**
  * A class to search objects in a database file.
  *
@@ -33,11 +31,14 @@
 class PathDatabase{
 
 	bool m_active;
-
 	char*m_data;
+
+	uint32_t m_expectedMagicNumber;
+	uint32_t m_expectedFormatVersion;
 
 	Mapper m_mapper;
 
+	uint32_t readInteger32(uint64_t offset);
 	uint64_t readInteger64(uint64_t offset);
 	uint64_t getNameOffset(uint64_t entry);
 	uint64_t getSequenceOffset(uint64_t entry);

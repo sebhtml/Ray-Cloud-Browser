@@ -19,3 +19,4 @@ map.dat (binary)
 ...
 
 
+Reference implementation: GraphDatabase.{h,cpp}

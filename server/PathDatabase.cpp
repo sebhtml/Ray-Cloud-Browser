@@ -49,6 +49,17 @@ void PathDatabase::openFile(const char*file){
 	m_data=(char*)m_mapper.mapFile(file);
 
 	m_active=true;
+
+	uint32_t magic=readInteger32(0);
+	uint32_t format=readInteger32(sizeof(uint32_t));
+
+	if(magic!=m_expectedMagicNumber){
+		cout<<"Error: incorrect magic number"<<endl;
+		closeFile();
+	}else if(format!=m_expectedFormatVersion){
+		cout<<"Error: incorrect format version, expected: "<<m_expectedFormatVersion<<" actual: "<<format<<endl;
+		closeFile();
+	}
 }
 
 void PathDatabase::closeFile(){
@@ -62,6 +73,18 @@ void PathDatabase::closeFile(){
 
 }
 
+uint32_t PathDatabase::readInteger32(uint64_t offset){
+	if(!m_active)
+		return 0;
+
+	uint32_t value;
+
+// skip magic number
+	memcpy(&value,m_data+offset,sizeof(uint32_t));
+
+	return value;
+}
+
 uint64_t PathDatabase::readInteger64(uint64_t offset){
 	if(!m_active)
 		return 0;
@@ -72,14 +95,13 @@ uint64_t PathDatabase::readInteger64(uint64_t offset){
 	memcpy(&value,m_data+offset,sizeof(uint64_t));
 
 	return value;
-
 }
 
 uint64_t PathDatabase::getEntries(){
 	if(!m_active)
 		return 0;
 
-	return readInteger64(sizeof(uint64_t));
+	return readInteger64(sizeof(uint32_t)+sizeof(uint32_t));
 }
 
 uint64_t PathDatabase::getSequenceOffset(uint64_t entry){
@@ -87,7 +109,8 @@ uint64_t PathDatabase::getSequenceOffset(uint64_t entry){
 		return 0;
 
 	uint64_t offset=0;
-	offset+=sizeof(uint64_t); // magic
+	offset+=sizeof(uint32_t); // magic
+	offset+=sizeof(uint32_t); // format
 	offset+=sizeof(uint64_t); // entries
 	offset+=entry*4*sizeof(uint64_t); // previous entries
 	offset+=2*sizeof(uint64_t); // offset within self.
@@ -100,7 +123,8 @@ uint64_t PathDatabase::getNameOffset(uint64_t entry){
 		return 0;
 
 	uint64_t offset=0;
-	offset+=sizeof(uint64_t); // magic
+	offset+=sizeof(uint32_t); // magic
+	offset+=sizeof(uint32_t); // format
 	offset+=sizeof(uint64_t); // entries
 	offset+=entry*4*sizeof(uint64_t); // previous entries
 	offset+=0*sizeof(uint64_t); // offset within self.
@@ -113,7 +137,8 @@ uint64_t PathDatabase::getNameLength(uint64_t entry){
 		return 0;
 
 	uint64_t offset=0;
-	offset+=sizeof(uint64_t); // magic
+	offset+=sizeof(uint32_t); // magic
+	offset+=sizeof(uint32_t); // format
 	offset+=sizeof(uint64_t); // entries
 	offset+=entry*4*sizeof(uint64_t); // previous entries
 	offset+=1*sizeof(uint64_t); // offset within self.
@@ -125,7 +150,7 @@ uint64_t PathDatabase::getSequenceLength(uint64_t entry){
 	if(!m_active)
 		return 0;
 
-	uint64_t offset=(2*sizeof(uint64_t)+4*sizeof(uint64_t)*entry+3*sizeof(uint64_t));
+	uint64_t offset=(sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t)+4*sizeof(uint64_t)*entry+3*sizeof(uint64_t));
 
 	return readInteger64(offset);
 }
@@ -164,11 +189,16 @@ void PathDatabase::getKmer(uint64_t path,int kmerLength,int offset,char*output){
 }
 
 void PathDatabase::terminateString(char*object){
-
 }
 
 PathDatabase::PathDatabase(){
 	m_active=false;
+
+	uint32_t PATH_MAGIC_NUMBER=2345678989;
+	uint32_t PATH_FORMAT_VERSION=0;
+
+	m_expectedMagicNumber=PATH_MAGIC_NUMBER;
+	m_expectedFormatVersion=PATH_FORMAT_VERSION;
 }
 
 void PathDatabase::index(const char*input,const char*output){
@@ -278,7 +308,8 @@ void PathDatabase::index(const char*input,const char*output){
 
 	uint64_t offset=0;
 
-	offset+=1*sizeof(uint64_t); // magic number
+	offset+=1*sizeof(uint32_t); // magic number
+	offset+=1*sizeof(uint32_t); // format
 	offset+=1*sizeof(uint64_t); // entries
 	offset+=entries*4*sizeof(uint64_t); // meta-data
 
@@ -308,9 +339,12 @@ void PathDatabase::index(const char*input,const char*output){
 
 	FILE*outputStream=fopen(output,"w");
 
-	uint64_t magicNumber=PATH_FORMAT_VERSION;
+	uint32_t magicNumber=m_expectedMagicNumber;
+	uint32_t format=m_expectedFormatVersion;
 
-	fwrite(&magicNumber,sizeof(uint64_t),1,outputStream);
+	fwrite(&magicNumber,sizeof(uint32_t),1,outputStream);
+	fwrite(&format,sizeof(uint32_t),1,outputStream);
+
 	fwrite(&entries,sizeof(uint64_t),1,outputStream);
 	
 	for(uint64_t j=0;j<entries;j++){
