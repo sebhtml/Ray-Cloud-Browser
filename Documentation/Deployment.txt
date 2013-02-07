@@ -1,3 +1,9 @@
+For the infrastructure, you can use the cloud.
+
+The setup for our demo is a t1.micro spot instance with a 64 GiB EBS 
+volume attached to the instance. A typical bacterial genome will require
+around 600 MiB of space for the graph and paths (in binary format).
+
 1. Run Ray with -write-kmers on your data
 2. Clone de Ray-Cloud-Browser git repository on your server
 3. Go in server/ and type "make"
