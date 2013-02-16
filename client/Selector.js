@@ -423,3 +423,37 @@ Selector.prototype.selectLocationIndex=function(index){
 	this.consumed=false;
 
 }
+
+Selector.prototype.getCoordinates=function(){
+	var result=new Object();
+	result["map"]=this.mapIndex;
+	result["section"]=this.sectionIndex;
+	result["region"]=this.regionIndex;
+	result["location"]=this.locationIndex;
+
+	return result;
+}
+
+Selector.prototype.getAddress=function(){
+	var parameters=this.getCoordinates();
+
+	var address=this.address.getAddressWithoutQueryString();
+
+	var keys=["map","section","region","location"];
+
+	address+="?";
+
+	var i=0;
+	while(i<keys.length){
+		var token=keys[i];
+
+		address+=""+token+"="+parameters[token];
+
+		if(i!=keys.length-1)
+			address+="&";
+
+		i++;
+	}
+
+	return address;
+}

@@ -84,6 +84,12 @@ function HumanInterface(screen,dataStore){
 
 	this.sampleInventory.getCloseButton().activateState();
 	this.sampleInventory.getWarpButton().activateState();
+
+	this.getLinkButton=new Button(this.buttonWidth*(1.4),
+		this.buttonWidth*(0.9+6.5+0.1)+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"//",false);
+	this.getLinkButton.setBackgroundColor(this.buttonColor);
+	this.getLinkButton.setActiveColor(this.buttonColor);
+	this.getLinkButton.setFontSize(this.buttonFontSize)
 }
 
 /*
@@ -391,6 +397,8 @@ HumanInterface.prototype.draw=function(){
 	this.goRight.draw(context,null);
 	this.zoomOut.draw(context,null);
 	this.zoomIn.draw(context,null);
+
+	this.getLinkButton.draw(context,null);
 }
 
 HumanInterface.prototype.handleMouseDoubleClick=function(x,y){
@@ -446,6 +454,12 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 		aEvent.which=this.upKey;
 		this.processKeyboardEvent(aEvent);
 		return true;
+
+	}else if(this.getLinkButton.handleMouseDown(x,y)){
+
+		var address=this.sampleInventory.getSelector().getAddress();
+
+		alert(address);
 	}
 
 	return false;
@@ -478,4 +492,8 @@ HumanInterface.prototype.getMoviePeriod=function(){
 
 HumanInterface.prototype.getMinimumCoverage=function(){
 	return this.sampleInventory.getMinimumCoverage();
+}
+
+HumanInterface.prototype.getInventory=function(){
+	return this.sampleInventory;
 }

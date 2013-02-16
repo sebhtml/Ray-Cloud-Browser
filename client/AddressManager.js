@@ -17,12 +17,9 @@
 
 function AddressManager(address){
 	this.address=address;
-
-	this.getTokenValue("map");
-	this.getTokenValue("section");
 }
 
-AddressManager.prototype.remoteQueryString=function(){
+AddressManager.prototype.getAddressWithoutQueryString=function(){
 	var i=0;
 	while(i<this.address.length){
 		if(this.address[i]=='?')
@@ -31,6 +28,8 @@ AddressManager.prototype.remoteQueryString=function(){
 	}
 
 	var newAddress=this.address.substring(0,i);
+
+	return newAddress;
 }
 
 AddressManager.prototype.getTokenValue=function(name){

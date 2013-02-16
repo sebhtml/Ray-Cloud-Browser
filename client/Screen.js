@@ -576,12 +576,12 @@ Screen.prototype.iterate=function(){
 }
 
 Screen.prototype.processHumanControls=function(){
-	if(this.humanInterface.sampleInventory.selector.hasChoices()){
+	if(this.humanInterface.getInventory().getSelector().hasChoices()){
 
-		this.locationData=this.humanInterface.sampleInventory.selector.getLocationData();
+		this.locationData=this.humanInterface.getInventory().getSelector().getLocationData();
 
 		//console.log(JSON.stringify(this.locationData));
-		this.humanInterface.sampleInventory.selector.markAsConsumed();
+		this.humanInterface.getInventory().getSelector().markAsConsumed();
 
 		this.kmerLength=this.locationData["kmerLength"];
 		this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
@@ -591,7 +591,7 @@ Screen.prototype.processHumanControls=function(){
 
 		this.hasLocation=true;
 
-		this.humanInterface.sampleInventory.getWarpButton().resetState();
+		this.humanInterface.getInventory().getWarpButton().resetState();
 	}
 
 	this.graphOperator.setMinimumCoverage(this.humanInterface.getMinimumCoverage());

@@ -305,3 +305,7 @@ Inventory.prototype.getWarpButton=function(){
 Inventory.prototype.getCloseButton=function(){
 	return this.closeButton;
 }
+
+Inventory.prototype.getSelector=function(){
+	return this.selector;
+}
