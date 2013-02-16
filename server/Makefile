@@ -31,24 +31,20 @@ RayCloudBrowser-client: client_main.o $(LIBRARY_OBJECTS)
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
-RayCloudBrowser.readJSON: readJSON_main.o $(LIBRARY_OBJECTS)
-	$(Q)echo "CXX $@"
-	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
-
 clean:
 	$(Q)echo "RM"
-	$(Q)$(RM) -f $(TARGETS)  $(LIBRARY_OBJECTS) *.o
+	$(Q)$(RM) -f $(TARGETS) $(LIBRARY_OBJECTS) *.o
 
 check: devel test-first test-store test-not-found
 
 test-store:
-	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=CATGAAAACGGGTTTTCCCATATTGACGCTA" ./RayCloudBrowser.webServer.cgi
+	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=CATGAAAACGGGTTTTCCCATATTGACGCTA" ./RayCloudBrowser.cgi
 
 test-first:
-	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE" ./RayCloudBrowser.webServer.cgi
+	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE" ./RayCloudBrowser.cgi
 
 test-not-found:
-	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=fdfddfjdsfdjsclkk" ./RayCloudBrowser.webServer.cgi
+	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=fdfddfjdsfdjsclkk" ./RayCloudBrowser.cgi
 
 path-index:
 	./RayCloudBrowser-client createPathDatabase ~/Ray-Cloud-Browser-data/Contigs.fasta ~/Ray-Cloud-Browser-data/Contigs.fasta.dat
@@ -57,7 +53,7 @@ graph-index:
 	./RayCloudBrowser-client createGraphDatabase ~/Ray-Cloud-Browser-data/kmers.txt.sorted ~/Ray-Cloud-Browser-data/kmers.txt.dat
 
 debug-path:
-	./RayCloudBrowser-client probePath debug  Contigs.fasta.dat|less
+	./RayCloudBrowser-client probePath debug Contigs.fasta.dat|less
 
 test-json:
-	./RayCloudBrowser.readJSON  test.json
+	./RayCloudBrowser-client readJSON test.json
