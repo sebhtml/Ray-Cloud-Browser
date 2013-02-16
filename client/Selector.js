@@ -63,6 +63,11 @@ Selector.prototype.pumpAddressTokens=function(){
 
 		var map=this.address.getTokenValue("map");
 		this.selectMapIndex(map);
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION && this.address.hasToken("section")){
+
+		var index=this.address.getTokenValue("section");
+		this.selectSectionIndex(index);
 	}
 }
 
@@ -203,15 +208,10 @@ Selector.prototype.handleMouseDown=function(x,y){
 		this.selectMapIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION && this.sectionWidget.hasChoice()){
-		this.sectionIndex=this.sectionWidget.getChoice();
 
-		this.state=this.SLAVE_MODE_PULL_REGIONS;
+		var index=this.sectionWidget.getChoice();
 
-		this.sectionWidget.resetState();
-
-		this.objects=new Array();
-
-		this.deadObjects.push(this.sectionWidget);
+		this.selectSectionIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice() && this.receivedMapFileData){
 
@@ -366,4 +366,21 @@ Selector.prototype.selectMapIndex=function(index){
 	this.receivedMapFileData=true;
 
 	this.mapWidget.setChoice(index);
+}
+
+Selector.prototype.selectSectionIndex=function(index){
+
+	if(!(index<this.mapData[this.mapIndex]["sections"].length))
+		return;
+
+	this.sectionIndex=index;
+
+	this.state=this.SLAVE_MODE_PULL_REGIONS;
+
+	this.sectionWidget.resetState();
+
+	this.objects=new Array();
+	this.deadObjects.push(this.sectionWidget);
+
+	this.sectionWidget.setChoice(index);
 }
