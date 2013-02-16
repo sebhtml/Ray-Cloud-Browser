@@ -26,6 +26,8 @@
  */
 function Selector(x,y,width,height,dataStore){
 
+	this.address=new AddressManager(document.URL);
+
 	this.dataStore=dataStore;
 	this.consumed=false;
 
@@ -55,11 +57,22 @@ function Selector(x,y,width,height,dataStore){
 	this.requestedMaps=false;
 }
 
+Selector.prototype.pumpAddressTokens=function(){
+
+	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.address.hasToken("map")){
+
+		var map=this.address.getTokenValue("map");
+		this.selectMapIndex(map);
+	}
+}
+
 /**
  * Since this method is called several times per second,
  * we'll use it as a progress thread.
  */
 Selector.prototype.draw=function(context){
+
+	this.pumpAddressTokens();
 
 /*
 	context.beginPath();
@@ -95,7 +108,6 @@ Selector.prototype.draw=function(context){
 		}
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_MAP){
-
 
 		this.mapWidget.draw(context);
 
@@ -188,34 +200,7 @@ Selector.prototype.handleMouseDown=function(x,y){
 		var index=this.mapWidget.getChoice();
 		//alert("Choice: # "+index+" "+this.mapChoices[index]);
 
-		this.mapIndex=index;
-
-		var sections=new Array();
-
-		var i=0;
-		while(i<this.mapData[this.mapIndex]["sections"].length){
-			sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
-		}
-
-		this.sectionWidget=new SelectionWidget(this.x,this.y+60,this.width*1.5,this.height,"(2/4) Select section",sections);
-		this.objects=new Array();
-		this.objects.push(this.sectionWidget);
-		this.state=this.SLAVE_MODE_SELECT_SECTION;
-
-		this.deadObjects.push(this.mapWidget);
-
-		this.mapWidget.resetState();
-
-// this is a new communication pattern, you send, but you wait later
-// it is like a readahead messaging
-
-		var parameters=new Object();
-		parameters["map"]=this.mapData[this.mapIndex]["file"];
-
-		var message=new Message(RAY_MESSAGE_TAG_GET_MAP_INFORMATION,this,this.dataStore,parameters);
-		this.dataStore.receiveAndProcessMessage(message);
-
-		this.receivedMapFileData=true;
+		this.selectMapIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION && this.sectionWidget.hasChoice()){
 		this.sectionIndex=this.sectionWidget.getChoice();
@@ -344,4 +329,41 @@ Selector.prototype.getLocationData=function(){
 
 Selector.prototype.markAsConsumed=function(){
 	this.consumed=true;
+}
+
+Selector.prototype.selectMapIndex=function(index){
+
+	if(!(index<this.mapData.length))
+		return;
+
+	this.mapIndex=index;
+
+	var sections=new Array();
+
+	var i=0;
+	while(i<this.mapData[this.mapIndex]["sections"].length){
+		sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
+	}
+
+	this.sectionWidget=new SelectionWidget(this.x,this.y+60,this.width*1.5,this.height,"(2/4) Select section",sections);
+	this.objects=new Array();
+	this.objects.push(this.sectionWidget);
+	this.state=this.SLAVE_MODE_SELECT_SECTION;
+
+	this.deadObjects.push(this.mapWidget);
+
+	this.mapWidget.resetState();
+
+// this is a new communication pattern, you send, but you wait later
+// it is like a readahead messaging
+
+	var parameters=new Object();
+	parameters["map"]=this.mapData[this.mapIndex]["file"];
+
+	var message=new Message(RAY_MESSAGE_TAG_GET_MAP_INFORMATION,this,this.dataStore,parameters);
+	this.dataStore.receiveAndProcessMessage(message);
+
+	this.receivedMapFileData=true;
+
+	this.mapWidget.setChoice(index);
 }

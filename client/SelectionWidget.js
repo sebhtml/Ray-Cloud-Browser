@@ -219,3 +219,7 @@ SelectionWidget.prototype.resetState=function(){
 
 	this.height=45;
 }
+
+SelectionWidget.prototype.setChoice=function(choice){
+	this.finalChoice=choice;
+}
