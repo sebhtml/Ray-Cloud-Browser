@@ -16,6 +16,7 @@
  */
 
 #include <commands/ObjectFetcher.h>
+#include <commands/GraphManager.h>
 
 #include <iostream>
 #include <map>
@@ -37,7 +38,10 @@ int main(int argc,char**argv){
 	map<string,CommandInterface*> dispatcher;
 
 	ObjectFetcher objectFetcher;
+	GraphManager graphManager;
+
 	dispatcher["commandLineClient"]=&objectFetcher;
+	dispatcher["createGraphDatabase"]=&graphManager;
 
 	if(argc==1){
 		showUsage(dispatcher);

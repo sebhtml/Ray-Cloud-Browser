@@ -15,7 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GraphDatabase.h"
+#include "GraphManager.h"
+
+#include <GraphDatabase.h>
 
 #include <iostream>
 using namespace std;
@@ -24,7 +26,7 @@ using namespace std;
  * Create a graph database.
  * \author Sébastien Boisvert
  */
-int main(int argc,char**argv){
+int GraphManager::call(int argc,char**argv){
 
 	if(argc!=3){
 		cout<<"Create an binary read-only index on a Ray-compatible kmers.txt for fast queries"<<endl;
@@ -32,7 +34,7 @@ int main(int argc,char**argv){
 		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
-		cout<<"Usage: "<<argv[0]<<" kmers.txt.sorted kmers.txt.dat"<<endl;
+		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" kmers.txt.sorted kmers.txt.dat"<<endl;
 		cout<<endl;
 		cout<<"You must run Ray with -write-kmers, which will generate a kmers.txt file"<<endl;
 		cout<<"Then, you must create the kmers.txt.sorted file with:"<<endl;
