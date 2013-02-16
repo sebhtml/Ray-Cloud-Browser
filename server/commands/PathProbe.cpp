@@ -15,7 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PathDatabase.h"
+#include "PathProbe.h"
+
+#include <PathDatabase.h>
 
 #include <iostream>
 #include <string>
@@ -29,7 +31,7 @@ using namespace std;
  *
  * \author Sébastien Boisvert
  */
-int main(int argc,char**argv){
+int PathProbe::call(int argc,char**argv){
 
 	if(argc==1){
 		cout<<"Operate a indexed fasta file with various commands"<<endl;
@@ -38,9 +40,9 @@ int main(int argc,char**argv){
 
 
 		cout<<"Usages:"<<endl;
-		cout<<argv[0]<<" info Contigs.fasta.dat"<<endl;
-		cout<<argv[0]<<" debug Contigs.fasta.dat"<<endl;
-		cout<<argv[0]<<" getPathMetaData Contigs.fasta.dat 44"<<endl;
+		cout<<PROGRAM_NAME<<" "<<argv[0]<<" info Contigs.fasta.dat"<<endl;
+		cout<<PROGRAM_NAME<<" "<<argv[0]<<" debug Contigs.fasta.dat"<<endl;
+		cout<<PROGRAM_NAME<<" "<<argv[0]<<" getPathMetaData Contigs.fasta.dat 44"<<endl;
 		cout<<endl;
 
 		return 0;

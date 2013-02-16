@@ -19,6 +19,7 @@
 #include <commands/GraphManager.h>
 #include <commands/PathHelper.h>
 #include <commands/Explorer.h>
+#include <commands/PathProbe.h>
 
 #include <iostream>
 #include <map>
@@ -50,6 +51,8 @@ int main(int argc,char**argv){
 	dispatcher["createPathDatabase"]=&pathHelper;
 	Explorer explorer;
 	dispatcher["getSubgraphWithPath"]=&explorer;
+	PathProbe pathProbe;
+	dispatcher["probePath"]=&pathProbe;
 
 	if(argc==1){
 		showUsage(dispatcher);

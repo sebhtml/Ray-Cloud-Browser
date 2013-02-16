@@ -10,11 +10,10 @@ Q=@
 
 TARGETS=RayCloudBrowser.cgi
 
-EXTRA_TARGETS= RayCloudBrowser.probePath \
-	RayCloudBrowser.readJSON RayCloudBrowser-client
+EXTRA_TARGETS= 	RayCloudBrowser.readJSON RayCloudBrowser-client
 
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o \
-commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o
+commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o commands/PathProbe.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"
@@ -33,10 +32,6 @@ RayCloudBrowser-client: client_main.o $(LIBRARY_OBJECTS)
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.readJSON: readJSON_main.o $(LIBRARY_OBJECTS)
-	$(Q)echo "CXX $@"
-	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
-
-RayCloudBrowser.probePath: probePath_main.o $(LIBRARY_OBJECTS)
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
@@ -59,10 +54,10 @@ path-index:
 	./RayCloudBrowser-client createPathDatabase ~/Ray-Cloud-Browser-data/Contigs.fasta ~/Ray-Cloud-Browser-data/Contigs.fasta.dat
 
 graph-index:
-	./RayCloudBrowser.createGraphDatabase ~/Ray-Cloud-Browser-data/kmers.txt.sorted ~/Ray-Cloud-Browser-data/kmers.txt.dat
+	./RayCloudBrowser-client createGraphDatabase ~/Ray-Cloud-Browser-data/kmers.txt.sorted ~/Ray-Cloud-Browser-data/kmers.txt.dat
 
 debug-path:
-	./RayCloudBrowser.probePath debug  Contigs.fasta.dat|less
+	./RayCloudBrowser-client probePath debug  Contigs.fasta.dat|less
 
 test-json:
 	./RayCloudBrowser.readJSON  test.json
