@@ -24,8 +24,9 @@
  *
  * \author Sébastien Boisvert
  */
-function Selector(x,y,width,height,dataStore){
+function Selector(x,y,width,height,dataStore,useAddress){
 
+	this.useAddress=useAddress;
 	this.address=new AddressManager(document.URL);
 
 	this.dataStore=dataStore;
@@ -58,6 +59,9 @@ function Selector(x,y,width,height,dataStore){
 }
 
 Selector.prototype.pumpAddressTokens=function(){
+
+	if(!this.useAddress)
+		return;
 
 	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.address.hasToken("map")){
 

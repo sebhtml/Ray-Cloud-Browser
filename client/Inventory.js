@@ -26,6 +26,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.originHeight=height;
 	this.dataStore=dataStore;
 
+	this.useAddress=true;
+
 	this.selected=false;
 	this.screen=screen;
 	this.mouseX=0;
@@ -93,7 +95,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 Inventory.prototype.pushSelector=function(){
 
-	this.selector=new Selector(this.x,this.y+this.height+30,this.width,this.originHeight/5*4,this.dataStore);
+	this.selector=new Selector(this.x,this.y+this.height+30,this.width,this.originHeight/5*4,this.dataStore,this.useAddress);
+	this.useAddress=false;
 }
 
 Inventory.prototype.draw=function(context){
