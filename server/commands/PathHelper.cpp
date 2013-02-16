@@ -17,7 +17,7 @@
 
 #include "PathHelper.h"
 
-#include <PathDatabase.h>
+#include <storage/PathDatabase.h>
 
 #include <iostream>
 using namespace std;

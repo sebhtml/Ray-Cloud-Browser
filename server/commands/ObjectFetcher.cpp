@@ -16,7 +16,8 @@
  */
 
 #include "ObjectFetcher.h"
-#include <GraphDatabase.h>
+
+#include <storage/GraphDatabase.h>
 
 #include <iostream>
 using namespace std;

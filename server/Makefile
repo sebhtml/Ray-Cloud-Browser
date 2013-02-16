@@ -10,7 +10,8 @@ Q=@
 
 TARGETS=RayCloudBrowser.cgi RayCloudBrowser-client
 
-LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o \
+LIBRARY_OBJECTS= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o storage/PathDatabase.o \
+JSONParser.o JSONNode.o WebService.o \
 commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o commands/PathProbe.o \
 commands/Parser.o
 

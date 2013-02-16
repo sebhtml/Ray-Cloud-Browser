@@ -19,7 +19,7 @@
 #define _JSONParser_h
 
 #include "JSONNode.h"
-#include "Mapper.h"
+#include <storage/Mapper.h>
 
 #include <string>
 #include <vector>

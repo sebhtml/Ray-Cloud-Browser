@@ -17,7 +17,7 @@
 
 #include "Explorer.h"
 
-#include <GraphDatabase.h>
+#include <storage/GraphDatabase.h>
 
 #include <stdlib.h>
 #include <string.h>

@@ -16,9 +16,10 @@
  */
 
 #include "WebService.h"
-#include "GraphDatabase.h"
-#include "PathDatabase.h"
 #include "JSONParser.h"
+
+#include <storage/GraphDatabase.h>
+#include <storage/PathDatabase.h>
 
 #include <stdlib.h>
 #include <string.h>

@@ -16,7 +16,7 @@
  */
 
 #include "JSONParser.h"
-#include "Mapper.h"
+#include <storage/Mapper.h>
 
 #include <iostream>
 #include <sstream>

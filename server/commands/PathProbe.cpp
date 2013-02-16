@@ -17,7 +17,7 @@
 
 #include "PathProbe.h"
 
-#include <PathDatabase.h>
+#include <storage/PathDatabase.h>
 
 #include <iostream>
 #include <string>
