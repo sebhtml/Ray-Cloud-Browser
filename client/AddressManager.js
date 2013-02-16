@@ -75,3 +75,7 @@ AddressManager.prototype.getTokenValue=function(name){
 AddressManager.prototype.hasToken=function(name){
 	return this.getTokenValue(name)!=null;
 }
+
+AddressManager.prototype.getTokenValueAsInteger=function(name){
+	return parseInt(this.getTokenValue(name));
+}

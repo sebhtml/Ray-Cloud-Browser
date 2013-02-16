@@ -272,26 +272,6 @@ Screen.prototype.handleMouseDown=function(eventObject){
 
 	if(this.humanInterface.handleMouseDown(position[0],position[1])){
 
-		if(this.humanInterface.sampleInventory.selector.hasChoices()){
-
-			this.locationData=this.humanInterface.sampleInventory.selector.getLocationData();
-
-			//console.log(JSON.stringify(this.locationData));
-			this.humanInterface.sampleInventory.selector.markAsConsumed();
-
-			this.kmerLength=this.locationData["kmerLength"];
-			this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
-			this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
-			this.clear();
-			this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
-
-			this.hasLocation=true;
-
-			this.humanInterface.sampleInventory.getWarpButton().resetState();
-		}
-
-		this.graphOperator.setMinimumCoverage(this.humanInterface.getMinimumCoverage());
-
 		return true;
 	}
 
@@ -589,6 +569,32 @@ Screen.prototype.iterate=function(){
 
 	this.gameFrameNumber++;
 	this.globalGameFrameNumber++;
+
+// process human controls
+
+	this.processHumanControls();
+}
+
+Screen.prototype.processHumanControls=function(){
+	if(this.humanInterface.sampleInventory.selector.hasChoices()){
+
+		this.locationData=this.humanInterface.sampleInventory.selector.getLocationData();
+
+		//console.log(JSON.stringify(this.locationData));
+		this.humanInterface.sampleInventory.selector.markAsConsumed();
+
+		this.kmerLength=this.locationData["kmerLength"];
+		this.graphOperator.getDataStore().setMapFile(this.locationData["map"]);
+		this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
+		this.clear();
+		this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
+
+		this.hasLocation=true;
+
+		this.humanInterface.sampleInventory.getWarpButton().resetState();
+	}
+
+	this.graphOperator.setMinimumCoverage(this.humanInterface.getMinimumCoverage());
 }
 
 Screen.prototype.checkScreenSize=function(){

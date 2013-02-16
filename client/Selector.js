@@ -65,18 +65,24 @@ Selector.prototype.pumpAddressTokens=function(){
 
 	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.address.hasToken("map")){
 
-		var map=this.address.getTokenValue("map");
+		var map=this.address.getTokenValueAsInteger("map");
 		this.selectMapIndex(map);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION && this.address.hasToken("section")){
 
-		var index=this.address.getTokenValue("section");
+		var index=this.address.getTokenValueAsInteger("section");
 		this.selectSectionIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.address.hasToken("region") && this.receivedMapFileData){
 
-		var index=this.address.getTokenValue("region");
+		var index=this.address.getTokenValueAsInteger("region");
 		this.selectRegionIndex(index);
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.address.hasToken("location")){
+
+		var index=this.address.getTokenValueAsInteger("location");
+
+		this.selectLocationIndex(index);
 	}
 }
 
@@ -230,15 +236,9 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.locationWidget.hasChoice()){
 
-// we want 0-based positions
-		this.locationIndex=this.locationWidget.getChoice()-1;
-		this.locationWidget.resetState();
+		var index=this.locationWidget.getChoice()-1;
 
-		this.objects=new Array();
-		this.deadObjects.push(this.locationWidget);
-
-		this.state=this.SLAVE_MODE_FINISHED;
-		this.consumed=false;
+		this.selectLocationIndex(index);
 	}
 
 	return result;
@@ -324,6 +324,7 @@ Selector.prototype.getLocationData=function(){
 }
 
 Selector.prototype.markAsConsumed=function(){
+	//console.log("markAsConsumed");
 	this.consumed=true;
 }
 
@@ -404,4 +405,21 @@ Selector.prototype.selectRegionIndex=function(index){
 	this.deadObjects.push(this.regionWidget);
 
 	this.regionWidget.setChoice(index);
+}
+
+Selector.prototype.selectLocationIndex=function(index){
+
+	if(!(index<this.regionLength))
+		return;
+
+// we want 0-based positions
+	this.locationIndex=index;
+	this.locationWidget.resetState();
+
+	this.objects=new Array();
+	this.deadObjects.push(this.locationWidget);
+
+	this.state=this.SLAVE_MODE_FINISHED;
+	this.consumed=false;
+
 }
