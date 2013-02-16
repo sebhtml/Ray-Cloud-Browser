@@ -18,6 +18,7 @@
 #include <commands/ObjectFetcher.h>
 #include <commands/GraphManager.h>
 #include <commands/PathHelper.h>
+#include <commands/Explorer.h>
 
 #include <iostream>
 #include <map>
@@ -47,6 +48,8 @@ int main(int argc,char**argv){
 	dispatcher["createGraphDatabase"]=&graphManager;
 	PathHelper pathHelper;
 	dispatcher["createPathDatabase"]=&pathHelper;
+	Explorer explorer;
+	dispatcher["getSubgraphWithPath"]=&explorer;
 
 	if(argc==1){
 		showUsage(dispatcher);

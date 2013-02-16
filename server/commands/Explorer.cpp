@@ -15,7 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GraphDatabase.h"
+#include "Explorer.h"
+
+#include <GraphDatabase.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -41,14 +43,14 @@ void addKey(map<string,int>*objectsToProcess,string*sequenceKey,int distance,int
 	(*objectsToProcess)[*sequenceKey]=distance;
 }
 
-int main(int argc,char**argv){
+int Explorer::call(int argc,char**argv){
 
 	if(argc!=4){
 		cout<<"Obtain nearby biological objects in a indexed graph"<<endl;
 		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
-		cout<<"Usage: "<<argv[0]<<" kmers.dat sequence.fasta maximumDistance"<<endl;
+		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" kmers.dat sequence.fasta maximumDistance"<<endl;
 		return 0;
 	}
 

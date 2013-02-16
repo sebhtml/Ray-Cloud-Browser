@@ -10,12 +10,11 @@ Q=@
 
 TARGETS=RayCloudBrowser.cgi
 
-EXTRA_TARGETS=  RayCloudBrowser.getSubgraphWithPath \
-	  RayCloudBrowser.probePath \
+EXTRA_TARGETS= RayCloudBrowser.probePath \
 	RayCloudBrowser.readJSON RayCloudBrowser-client
 
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o \
-commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o
+commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"
@@ -34,10 +33,6 @@ RayCloudBrowser-client: client_main.o $(LIBRARY_OBJECTS)
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 RayCloudBrowser.readJSON: readJSON_main.o $(LIBRARY_OBJECTS)
-	$(Q)echo "CXX $@"
-	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
-
-RayCloudBrowser.getSubgraphWithPath: getSubgraphWithPath_main.o $(LIBRARY_OBJECTS)
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
