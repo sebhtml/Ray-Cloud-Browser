@@ -72,6 +72,11 @@ Selector.prototype.pumpAddressTokens=function(){
 
 		var index=this.address.getTokenValue("section");
 		this.selectSectionIndex(index);
+
+	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.address.hasToken("region") && this.receivedMapFileData){
+
+		var index=this.address.getTokenValue("region");
+		this.selectRegionIndex(index);
 	}
 }
 
@@ -219,22 +224,9 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice() && this.receivedMapFileData){
 
-		this.regionIndex=this.regionWidget.getChoice();
+		var index=this.regionWidget.getChoice();
 
-		this.state=this.SLAVE_MODE_SELECT_LOCATION;
-
-		this.regionWidget.resetState();
-
-		var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["kmerLength"]+1;
-		this.regionLength=maximum;
-
-		this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
-			1,maximum);
-
-		this.objects=new Array();
-		this.objects.push(this.locationWidget);
-
-		this.deadObjects.push(this.regionWidget);
+		this.selectRegionIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.locationWidget.hasChoice()){
 
@@ -387,4 +379,29 @@ Selector.prototype.selectSectionIndex=function(index){
 	this.deadObjects.push(this.sectionWidget);
 
 	this.sectionWidget.setChoice(index);
+}
+
+Selector.prototype.selectRegionIndex=function(index){
+
+	if(!(index<this.regionData["regions"].length))
+		return;
+
+	this.regionIndex=index;
+
+	this.state=this.SLAVE_MODE_SELECT_LOCATION;
+
+	this.regionWidget.resetState();
+
+	var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["kmerLength"]+1;
+	this.regionLength=maximum;
+
+	this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
+		1,maximum);
+
+	this.objects=new Array();
+	this.objects.push(this.locationWidget);
+
+	this.deadObjects.push(this.regionWidget);
+
+	this.regionWidget.setChoice(index);
 }
