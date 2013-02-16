@@ -17,6 +17,7 @@
 
 #include <commands/ObjectFetcher.h>
 #include <commands/GraphManager.h>
+#include <commands/PathHelper.h>
 
 #include <iostream>
 #include <map>
@@ -24,8 +25,11 @@
 using namespace std;
 
 void showUsage(map<string,CommandInterface*>&dispatcher){
+	cout<<"This is the command dispatcher"<<endl;
+	cout<<"Author: Sébastien Boisvert"<<endl;
 	cout<<endl;
 	cout<<"Available commands"<<endl;
+	cout<<endl;
 	for(map<string,CommandInterface*>::iterator i=dispatcher.begin();
 		i!=dispatcher.end();i++){
 
@@ -38,10 +42,11 @@ int main(int argc,char**argv){
 	map<string,CommandInterface*> dispatcher;
 
 	ObjectFetcher objectFetcher;
-	GraphManager graphManager;
-
 	dispatcher["commandLineClient"]=&objectFetcher;
+	GraphManager graphManager;
 	dispatcher["createGraphDatabase"]=&graphManager;
+	PathHelper pathHelper;
+	dispatcher["createPathDatabase"]=&pathHelper;
 
 	if(argc==1){
 		showUsage(dispatcher);
