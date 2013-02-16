@@ -20,6 +20,7 @@
 #include <commands/PathHelper.h>
 #include <commands/Explorer.h>
 #include <commands/PathProbe.h>
+#include <commands/Parser.h>
 
 #include <iostream>
 #include <map>
@@ -53,6 +54,8 @@ int main(int argc,char**argv){
 	dispatcher["getSubgraphWithPath"]=&explorer;
 	PathProbe pathProbe;
 	dispatcher["probePath"]=&pathProbe;
+	Parser parser;
+	dispatcher["readJSON"]=&parser;
 
 	if(argc==1){
 		showUsage(dispatcher);

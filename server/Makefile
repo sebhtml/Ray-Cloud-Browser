@@ -8,18 +8,17 @@ CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98 -I.
 RM=rm
 Q=@
 
-TARGETS=RayCloudBrowser.cgi
-
-EXTRA_TARGETS= 	RayCloudBrowser.readJSON RayCloudBrowser-client
+TARGETS=RayCloudBrowser.cgi RayCloudBrowser-client
 
 LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o \
-commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o commands/PathProbe.o
+commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o commands/PathProbe.o \
+commands/Parser.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) -c $? -o $@
 
-all: $(TARGETS) $(EXTRA_TARGETS)
+all: $(TARGETS)
 
 RayCloudBrowser.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	$(Q)echo "CXX $@"
@@ -37,7 +36,7 @@ RayCloudBrowser.readJSON: readJSON_main.o $(LIBRARY_OBJECTS)
 
 clean:
 	$(Q)echo "RM"
-	$(Q)$(RM) -f $(TARGETS) $(EXTRA_TARGETS) $(LIBRARY_OBJECTS)
+	$(Q)$(RM) -f $(TARGETS)  $(LIBRARY_OBJECTS) *.o
 
 check: devel test-first test-store test-not-found
 
