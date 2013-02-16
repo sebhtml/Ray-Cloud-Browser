@@ -24,22 +24,10 @@ Annotations are added on top of the map.dat offsets, but in a independant file.
 
 magic (32 bits) -> 0x87332cee
 version (32 bits) -> 0
-map (256 bytes maximum)
-numberOfSections (256)
-section (256 bytes maximum)
-
-total for header: ~ 65KiB
-
 annotations.dat
 
 <magic>
 <version>
-<map>
-<numberOfSections>
-<section>
-<section>
-...
-<section>
 <annotationOffset>
 <annotationOffset>
 <annotationOffset>
