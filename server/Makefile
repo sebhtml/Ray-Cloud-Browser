@@ -3,18 +3,19 @@
 # Copyright (C) 2012, 2013 Sébastien Boisvert
 
 CXX=g++
-CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98
+CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98 -I.
 #CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
 RM=rm
 Q=@
 
 TARGETS=RayCloudBrowser.cgi
 
-EXTRA_TARGETS=RayCloudBrowser.commandLineClient RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
+EXTRA_TARGETS= RayCloudBrowser.createGraphDatabase RayCloudBrowser.getSubgraphWithPath \
 	 RayCloudBrowser.createPathDatabase RayCloudBrowser.probePath \
-	RayCloudBrowser.readJSON
+	RayCloudBrowser.readJSON RayCloudBrowser-client
 
-LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o
+LIBRARY_OBJECTS=GraphDatabase.o VertexObject.o Mapper.o PathDatabase.o JSONParser.o JSONNode.o WebService.o \
+commands/ObjectFetcher.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"
@@ -28,7 +29,7 @@ RayCloudBrowser.cgi: webServer_main.o $(LIBRARY_OBJECTS)
 	$(Q)chmod g-w $@
 	$(Q)chmod o-w $@
 
-RayCloudBrowser.commandLineClient: commandLineClient_main.o $(LIBRARY_OBJECTS)
+RayCloudBrowser-client: client_main.o $(LIBRARY_OBJECTS)
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
