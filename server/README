@@ -1,14 +1,10 @@
-RayCloudBrowser.cgi is the server and is built with
+RayCloudBrowser.cgi is the resource for the web service and is built with
 
 	make
 
+The other program is RayCloudBrowser-client
+
 Its configuration is config.json.
-
-== Other tools ==
-
-make devel
-
-Programs are prefixed by "RayCloudBrowser."
 
 The server is implemented in C++ 1998.
 

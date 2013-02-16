@@ -18,8 +18,8 @@ Steps
 1. Run Ray with -write-kmers on your data
 2. Clone de Ray-Cloud-Browser git repository on your server
 3. Go in server/ and type "make"
-4. Convert kmers.txt to kmers.dat with RayCloudBrowser.createGraphDatabase
-5. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser.createPathDatabase
+4. Convert kmers.txt to kmers.dat with RayCloudBrowser-client createGraphDatabase
+5. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser-client createPathDatabase
 6. Edit server/config.json
 7. Deploy /server using a webserver (see examples in Documentation/)
 8. Point your browser to http://address.com/client
