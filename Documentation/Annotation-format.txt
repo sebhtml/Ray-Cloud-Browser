@@ -58,13 +58,16 @@ The type ANNOTATION_LOCATION has these:
 
 So the size of a ANNOTATION_LOCATION object is:
 
-1+1+2+4+4+8 = 20 bytes
+1+1+(2+4+4)+8 = 20 bytes
 
-The file for m_section can be obtained with the sections found in the header.
-To look for a object, the map identified in the header must be used.
+The file for m_section can be obtained with the sections found in the 
+configuration file. Only the client needs that information.
+
+To look for a object, the map must be used. The annotation file is named
+mapFile.dat-00000000
 For any object, annotations are chained. OFFSET_NULL indicates that there are no more annotations.
 
 Other types (not yet implemented, but the design supports them):
 
-* ANNOTATION_CUSTOM
+* ANNOTATION_TEXT
 

@@ -19,9 +19,11 @@
 #define _Annotation_h
 
 #define ANNOTATION_LOCATION 0
-#define ANNOTATION_CUSTOM 1
+#define ANNOTATION_TEXT 1
 
 #include <stdint.h>
+
+#define ANNOTATION_CONTENT_SIZE 256
 
 /**
  * An annotation.
@@ -29,7 +31,7 @@
 class Annotation{
 	uint8_t m_type;
 	uint8_t m_size;
-	uint8_t m_content[256];
+	uint8_t m_content[ANNOTATION_CONTENT_SIZE];
 	uint64_t m_nextOffset;
 
 public:
