@@ -61,17 +61,20 @@ class GraphDatabase{
 
 	void setRequiredBytesPerObject();
 	void writeTwoBits(uint8_t*sequenceData,int bitPosition,int code);
-	void readTwoBits(uint8_t*sequenceData,int bitPosition,int*code);
-	int getSymbolCode(char symbol);
-	char getSymbol(int code);
+	void readTwoBits(uint8_t*sequenceData,int bitPosition,int*code)const;
+	int getSymbolCode(char symbol)const;
+	char getSymbol(int code)const;
 
+	void getObjectWithIndex(uint64_t index,VertexObject*object)const;
+	void pullSequence(uint64_t index,char*sequence)const;
 public:
 	GraphDatabase();
 	void openFile(const char*file);
 	void closeFile();
-	bool getObject(const char*key,VertexObject*object);
-	int getKmerLength();
-	uint64_t getEntries();
+	bool getObject(const char*key,VertexObject*object)const;
+	bool getObjectIndex(const char*key,uint64_t*index)const;
+	int getKmerLength()const;
+	uint64_t getEntries()const;
 
 	void index(const char*input,const char*output);
 };

@@ -49,8 +49,20 @@ using namespace std;
 
 // TODO add error management for file operations
 
-bool GraphDatabase::getObject(const char*key,VertexObject*object){
+bool GraphDatabase::getObject(const char*key,VertexObject*object)const{
 
+	uint64_t index=0;
+	bool found=getObjectIndex(key,&index);
+
+	if(!found)
+		return found;
+
+	getObjectWithIndex(index,object);
+
+	return found;
+}
+
+bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 	bool found=false;
 
 	if(!m_active)
@@ -66,103 +78,17 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	while(first<=last){
 	
 		uint64_t middle=first+(last-first)/2;
-		uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
 
 		char sequence[CONFIG_MAXKMERLENGTH];
-
-		char*myBuffer=((char*)m_content)+middlePosition;
-		int position=0;
-
-// first, we only copy the sequence to compare it with what we are looking for
-// we don't load the object meta-information if it's not a match
-
-		uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
-		memcpy(sequenceData,myBuffer+position,m_requiredBytesPerSequence);
-
-// convert the 2-bit format to the 1-byte-per-nucleotide format
-
-		for(int nucleotidePosition=0;nucleotidePosition<m_kmerLength;nucleotidePosition++){
-			int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
-			int code=-1;
-			readTwoBits(sequenceData,bitPosition,&code);
-
-#ifdef CONFIG_ASSERT
-			assert(code!=-1);
-			assert(code>=0);
-			assert(code<ALPHABET_SIZE);
-#endif
-
-			sequence[nucleotidePosition]=m_codeSymbols[code];
-		}
-
-		sequence[m_kmerLength]='\0';
+		pullSequence(middle,sequence);
 
 		int comparisonResult=strcmp(key,sequence);
 
 		if(comparisonResult==match){
+			(*index)=middle;
 			found=true;
-
-			uint32_t coverage;
-			uint8_t friendInformation;
-
-			position+=m_requiredBytesPerSequence;
-
-// group disk I/O operations here
-			char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
-			memcpy(objectBufferForDisk,myBuffer+position,OBJECT_INFORMATION_LENGTH);
-
-// then copy stuff from our memory buffer
-
-			int position=0;
-			memcpy(&coverage,objectBufferForDisk+position,sizeof(uint32_t));
-			position+=sizeof(uint32_t);
-
-			memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
-
-// finally, we build a VertexObject object with the information we extracted in the
-// file
-
-			char parents[ALPHABET_SIZE];
-			char children[ALPHABET_SIZE];
-			int offset=0;
-
-			for(int i=0;i<ALPHABET_SIZE;i++){
-				uint64_t value=friendInformation;
-
-				int bit=offset+i;
-
-				value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
-				value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
-
-				parents[i]=value;
-			}
-
-			offset+=ALPHABET_SIZE;
-
-			for(int i=0;i<ALPHABET_SIZE;i++){
-				uint64_t value=friendInformation;
-
-				int bit=offset+i;
-
-				value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
-				value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
-
-				children[i]=value;
-			}
-
-			object->setSequence(sequence);
-			object->setCoverage(coverage);
-
-			for(int i=0;i<ALPHABET_SIZE;i++){
-				if(parents[i]==MARKER_YES){
-					object->addParent(getSymbol(i));
-				}
-				if(children[i]==MARKER_YES){
-					object->addChild(getSymbol(i));
-				}
-			}
-
 			break;
+
 		}else if(comparisonResult>match){
 
 			first=middle+1;
@@ -174,6 +100,111 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object){
 	}
 
 	return found;
+}
+
+void GraphDatabase::pullSequence(uint64_t middle,char*sequence)const{
+
+	uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
+	const char*myBuffer=((char*)m_content)+middlePosition;
+	int position=0;
+
+// first, we only copy the sequence to compare it with what we are looking for
+// we don't load the object meta-information if it's not a match
+
+	uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
+	memcpy(sequenceData,myBuffer+position,m_requiredBytesPerSequence);
+
+// convert the 2-bit format to the 1-byte-per-nucleotide format
+
+	for(int nucleotidePosition=0;nucleotidePosition<m_kmerLength;nucleotidePosition++){
+		int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
+		int code=-1;
+		readTwoBits(sequenceData,bitPosition,&code);
+
+#ifdef CONFIG_ASSERT
+		assert(code!=-1);
+		assert(code>=0);
+		assert(code<ALPHABET_SIZE);
+#endif
+
+		sequence[nucleotidePosition]=m_codeSymbols[code];
+	}
+
+	sequence[m_kmerLength]='\0';
+}
+
+void GraphDatabase::getObjectWithIndex(uint64_t middle,VertexObject*object)const{
+
+	if(!(middle<m_entries))
+		return;
+
+	char sequence[CONFIG_MAXKMERLENGTH];
+	pullSequence(middle,sequence);
+
+	uint32_t coverage=0;
+	uint8_t friendInformation=0;
+
+	uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
+	const char*myBuffer=((char*)m_content)+middlePosition;
+	int positionFromStart=0;
+
+	positionFromStart+=m_requiredBytesPerSequence;
+
+// group disk I/O operations here
+	char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
+	memcpy(objectBufferForDisk,myBuffer+positionFromStart,OBJECT_INFORMATION_LENGTH);
+
+// then copy stuff from our memory buffer
+
+	int position=0;
+	memcpy(&coverage,objectBufferForDisk+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+
+	memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
+
+// finally, we build a VertexObject object with the information we extracted in the
+// file
+
+	char parents[ALPHABET_SIZE];
+	char children[ALPHABET_SIZE];
+	int offset=0;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		uint64_t value=friendInformation;
+
+		int bit=offset+i;
+
+		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
+
+		parents[i]=value;
+	}
+
+	offset+=ALPHABET_SIZE;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		uint64_t value=friendInformation;
+
+		int bit=offset+i;
+
+		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
+
+		children[i]=value;
+	}
+
+	object->setSequence(sequence);
+	object->setCoverage(coverage);
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		if(parents[i]==MARKER_YES){
+			object->addParent(getSymbol(i));
+		}
+		if(children[i]==MARKER_YES){
+			object->addChild(getSymbol(i));
+		}
+	}
+
 }
 
 /**
@@ -244,11 +275,11 @@ void GraphDatabase::closeFile(){
 	m_active=false;
 }
 
-int GraphDatabase::getKmerLength(){
+int GraphDatabase::getKmerLength()const{
 	return m_kmerLength;
 }
 
-char GraphDatabase::getSymbol(int code){
+char GraphDatabase::getSymbol(int code)const{
 	return m_codeSymbols[code];
 }
 
@@ -451,7 +482,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	cout<<"Created "<<binaryFile<<endl;
 }
 
-uint64_t GraphDatabase::getEntries(){
+uint64_t GraphDatabase::getEntries()const{
 	return m_entries;
 }
 
@@ -480,7 +511,7 @@ void GraphDatabase::writeTwoBits(uint8_t*sequenceData,int bitPosition,int code){
 
 }
 
-void GraphDatabase::readTwoBits(uint8_t*sequenceData,int bitPosition,int*code){
+void GraphDatabase::readTwoBits(uint8_t*sequenceData,int bitPosition,int*code)const{
 
 	int byteNumber=bitPosition/BITS_PER_BYTE;
 	int positionInByte=bitPosition%BITS_PER_BYTE;
@@ -498,7 +529,7 @@ void GraphDatabase::readTwoBits(uint8_t*sequenceData,int bitPosition,int*code){
 	(*code)=currentValue;
 }
 
-int GraphDatabase::getSymbolCode(char symbol){
+int GraphDatabase::getSymbolCode(char symbol)const{
 	switch (symbol){
 		case SYMBOL_A:
 			return INDEX_A;
