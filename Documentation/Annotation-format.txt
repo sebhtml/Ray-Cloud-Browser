@@ -1,4 +1,4 @@
-Design document
+Design document for annotations
 Sébastien Boisvert
 2013-01-27
 
@@ -28,6 +28,7 @@ annotations.dat
 
 <magic>
 <version>
+<entries>
 <annotationOffset>
 <annotationOffset>
 <annotationOffset>
