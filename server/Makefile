@@ -13,7 +13,7 @@ TARGETS=RayCloudBrowser.cgi RayCloudBrowser-client
 LIBRARY_OBJECTS= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o storage/PathDatabase.o \
 JSONParser.o JSONNode.o WebService.o \
 commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o commands/PathProbe.o \
-commands/Parser.o
+commands/Parser.o commands/GraphExporter.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"

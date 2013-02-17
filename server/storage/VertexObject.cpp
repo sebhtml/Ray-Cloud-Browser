@@ -40,11 +40,11 @@ void VertexObject::setCoverage(uint32_t value){
 	m_coverage=value;
 }
 
-uint32_t VertexObject::getCoverage(){
+uint32_t VertexObject::getCoverage()const{
 	return m_coverage;
 }
 
-void VertexObject::writeContentInJSON(ostream*stream){
+void VertexObject::writeContentInJSON(ostream*stream)const{
 	(*stream)<<"{"<<endl;
 	(*stream)<<"	\"value\": \""<<m_sequence<<"\","<<endl;
 	(*stream)<<"	\"coverage\": "<<m_coverage<<","<<endl;
@@ -88,7 +88,7 @@ void VertexObject::addChild(char symbol){
 	m_children[getSymbolCode(symbol)]=MARKER_YES;
 }
 
-int VertexObject::getSymbolCode(char symbol){
+int VertexObject::getSymbolCode(char symbol)const{
 	if(symbol==SYMBOL_A)
 		return INDEX_A;
 	if(symbol==SYMBOL_C)
@@ -101,7 +101,7 @@ int VertexObject::getSymbolCode(char symbol){
 	return INDEX_A;
 }
 
-char VertexObject::getCodeSymbol(int code){
+char VertexObject::getCodeSymbol(int code)const{
 	if(code==INDEX_A)
 		return SYMBOL_A;
 	if(code==INDEX_C)
@@ -114,11 +114,11 @@ char VertexObject::getCodeSymbol(int code){
 	return SYMBOL_A;
 }
 
-void VertexObject::getSequence(string*sequence){
+void VertexObject::getSequence(string*sequence)const{
 	*sequence=m_sequence;
 }
 
-void VertexObject::getParents(vector<string>*parents){
+void VertexObject::getParents(vector<string>*parents)const{
 	string sequence=m_sequence;
 	string base=sequence.substr(0,sequence.length()-1);
 
@@ -131,7 +131,7 @@ void VertexObject::getParents(vector<string>*parents){
 	}
 }
 
-void VertexObject::getChildren(vector<string>*children){
+void VertexObject::getChildren(vector<string>*children)const{
 	string sequence=m_sequence;
 	string base=sequence.substr(1,sequence.length()-1);
 
@@ -144,4 +144,32 @@ void VertexObject::getChildren(vector<string>*children){
 	}
 }
 
+void VertexObject::writeContentInText(ostream*stream)const{
+	(*stream)<<m_sequence<<";";
+	(*stream)<<m_coverage<<";";
 
+	bool gotFirst=false;
+	for(int i=0;i<4;i++){
+		if(m_parents[i]==MARKER_YES){
+			if(gotFirst)
+				(*stream)<<" ";
+			gotFirst=true;
+
+			(*stream)<<getCodeSymbol(i);
+		}
+	}
+
+	(*stream)<<";";
+
+	gotFirst=false;
+	for(int i=0;i<4;i++){
+		if(m_children[i]==MARKER_YES){
+			if(gotFirst)
+				(*stream)<<" ";
+			gotFirst=true;
+
+			(*stream)<<""<<getCodeSymbol(i)<<"";
+		}
+	}
+	(*stream)<<endl;
+}

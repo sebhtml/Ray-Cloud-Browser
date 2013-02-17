@@ -39,17 +39,18 @@ public:
 
 	void setSequence(char*value);
 	void setCoverage(uint32_t value);
-	uint32_t getCoverage();
-	void getSequence(string*sequence);
-	void getParents(vector<string>*parents);
-	void getChildren(vector<string>*children);
-	void writeContentInJSON(ostream*stream);
+	uint32_t getCoverage()const ;
+	void getSequence(string*sequence)const;
+	void getParents(vector<string>*parents)const;
+	void getChildren(vector<string>*children)const;
+
+	void writeContentInJSON(ostream*stream)const;
+	void writeContentInText(ostream*stream)const;
+
 	void addParent(char symbol);
 	void addChild(char symbol);
-	int getSymbolCode(char symbol);
-	char getCodeSymbol(int code);
-	uint64_t getAnnotationOffset();
-	
+	int getSymbolCode(char symbol)const;
+	char getCodeSymbol(int code)const;
 };
 
 #endif

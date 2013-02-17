@@ -21,6 +21,7 @@
 #include <commands/Explorer.h>
 #include <commands/PathProbe.h>
 #include <commands/Parser.h>
+#include <commands/GraphExporter.h>
 
 #include <iostream>
 #include <map>
@@ -56,6 +57,8 @@ int main(int argc,char**argv){
 	dispatcher["probePath"]=&pathProbe;
 	Parser parser;
 	dispatcher["readJSON"]=&parser;
+	GraphExporter graphExporter;
+	dispatcher["exportGraph"]=&graphExporter;
 
 	if(argc==1){
 		showUsage(dispatcher);

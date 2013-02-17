@@ -65,7 +65,6 @@ class GraphDatabase{
 	int getSymbolCode(char symbol)const;
 	char getSymbol(int code)const;
 
-	void getObjectWithIndex(uint64_t index,VertexObject*object)const;
 	void pullSequence(uint64_t index,char*sequence)const;
 public:
 	GraphDatabase();
@@ -73,6 +72,7 @@ public:
 	void closeFile();
 	bool getObject(const char*key,VertexObject*object)const;
 	bool getObjectIndex(const char*key,uint64_t*index)const;
+	void getObjectWithIndex(uint64_t index,VertexObject*object)const;
 	int getKmerLength()const;
 	uint64_t getEntries()const;
 
