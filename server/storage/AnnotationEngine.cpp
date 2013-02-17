@@ -15,34 +15,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AnnotationEngine_h
-#define _AnnotationEngine_h
+#include "AnnotationEngine.h"
 
-#include "GraphDatabase.h"
-#include "Annotation.h"
-#include "LocationAnnotation.h"
+void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotations)const{
+}
 
-#include <vector>
-using namespace std;
+void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph){
+	m_map=graph;
+}
 
-/**
- * The storage engine for annotations.
- */
-class AnnotationEngine{
+void AnnotationEngine::closeFile(){
+}
 
-	GraphDatabase*m_map;
+void AnnotationEngine::getLocations(const char*key,vector<LocationAnnotation>*annotations)const{
+}
 
-	void getAnnotations(const char*key,vector<Annotation>*annotations)const;
+void AnnotationEngine::addLocation(const char*key,LocationAnnotation*annotation){
 
-public:
+	cout<<"<addLocation object=\""<<key<<"\"";
+	annotation->print();
 
-	void openAnnotationFileForMap(GraphDatabase*graph);
-	void closeFile();
+	uint64_t index=0;
+	bool found=m_map->getObjectIndex(key,&index);
 
-	void getLocations(const char*key,vector<LocationAnnotation>*annotations)const;
+	if(found){
+		cout<<" index=\""<<index<<"\"";
+	}
 
-	void addLocation(const char*key,LocationAnnotation*annotation);
-};
-
-#endif
-
+	cout<<" />"<<endl;
+}

@@ -41,6 +41,8 @@ public:
 
 	void read(Annotation*object);
 	void write(Annotation*object)const;
+
+	void print()const;
 };
 
 #endif

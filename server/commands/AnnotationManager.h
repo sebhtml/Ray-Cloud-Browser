@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,34 +15,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AnnotationEngine_h
-#define _AnnotationEngine_h
+#ifndef _AnnotationManager_h_
+#define _AnnotationManager_h_
 
-#include "GraphDatabase.h"
-#include "Annotation.h"
-#include "LocationAnnotation.h"
+#include "CommandInterface.h"
 
-#include <vector>
-using namespace std;
-
-/**
- * The storage engine for annotations.
- */
-class AnnotationEngine{
-
-	GraphDatabase*m_map;
-
-	void getAnnotations(const char*key,vector<Annotation>*annotations)const;
+class AnnotationManager: public CommandInterface{
 
 public:
-
-	void openAnnotationFileForMap(GraphDatabase*graph);
-	void closeFile();
-
-	void getLocations(const char*key,vector<LocationAnnotation>*annotations)const;
-
-	void addLocation(const char*key,LocationAnnotation*annotation);
+	int call(int argc,char**argv);
 };
 
 #endif
-

@@ -40,7 +40,9 @@ public:
 
 	uint8_t getType()const;
 	uint8_t getSize()const;
-	uint8_t*getContent()const;
+	void setSize(uint8_t size);
+
+	uint8_t*getContent();
 	uint64_t getNextOffset()const;
 
 	void read(uint8_t*buffer);

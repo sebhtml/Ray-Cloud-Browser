@@ -10,10 +10,13 @@ Q=@
 
 TARGETS=RayCloudBrowser.cgi RayCloudBrowser-client
 
-LIBRARY_OBJECTS= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o storage/PathDatabase.o \
+LIBRARY_OBJECTS= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o \
+storage/PathDatabase.o storage/AnnotationEngine.o \
+storage/LocationAnnotation.o storage/Annotation.o \
 JSONParser.o JSONNode.o WebService.o \
-commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o commands/Explorer.o commands/PathProbe.o \
-commands/Parser.o commands/GraphExporter.o
+commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o \
+commands/Explorer.o commands/PathProbe.o \
+commands/Parser.o commands/GraphExporter.o commands/AnnotationManager.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"
