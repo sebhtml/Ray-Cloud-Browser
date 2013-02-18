@@ -21,6 +21,7 @@
 #include <actions/WebAction.h>
 #include <actions/StoreRequest.h>
 #include <actions/RegionVisitor.h>
+#include <actions/RegionClerk.h>
 #include <actions/EarlyExplorer.h>
 #include <actions/MapList.h>
 
@@ -63,8 +64,8 @@ class WebService{
 	RegionVisitor m_regionVisitor;
 	EarlyExplorer m_earlyExplorer;
 	MapList m_mapList;
+	RegionClerk m_regionClerk;
 
-	bool call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString);
 
 	bool dispatchQuery(const char*tag,const char*queryString);
