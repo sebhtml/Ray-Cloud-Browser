@@ -23,10 +23,13 @@
 
 #include <stdint.h>
 
+#define OFFSET_NULL 0
 #define ANNOTATION_CONTENT_SIZE 256
 
 /**
  * An annotation.
+ *
+ * \author Sébastien Boisvert
  */
 class Annotation{
 	uint8_t m_type;
@@ -41,6 +44,7 @@ public:
 	uint8_t getType()const;
 	uint8_t getSize()const;
 	void setSize(uint8_t size);
+	void setType(uint8_t type);
 
 	uint8_t*getContent();
 	uint64_t getNextOffset()const;
@@ -49,6 +53,8 @@ public:
 	void write(uint8_t*buffer)const;
 
 	int getBytes()const;
+	void setNextOffset(uint64_t offset);
+	void printXML()const;
 };
 
 #endif

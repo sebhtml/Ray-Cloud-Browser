@@ -24,6 +24,7 @@ Annotations are added on top of the map.dat offsets, but in a independant file.
 
 magic (32 bits) -> 0x87332cee
 version (32 bits) -> 0
+
 annotations.dat
 
 <magic>

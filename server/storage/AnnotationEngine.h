@@ -50,6 +50,12 @@ class AnnotationEngine{
 	void growFile();
 	void openFileForOperations();
 
+	void registerObjectAnnotation(uint64_t objectIndex,uint64_t annotationOffset);
+	void setHeapAddress(uint64_t address);
+	uint64_t getHeapAddress()const;
+
+	uint64_t getInteger64(uint64_t offset)const;
+	void setInteger64(uint64_t offset,uint64_t value);
 public:
 	AnnotationEngine();
 
@@ -57,8 +63,8 @@ public:
 	void closeFile();
 
 	void getLocations(const char*key,vector<LocationAnnotation>*annotations)const;
-
 	void addLocation(const char*key,LocationAnnotation*annotation);
+
 	uint64_t getEntries()const;
 	uint64_t getFreeBytes()const;
 	const char*getFileName()const;

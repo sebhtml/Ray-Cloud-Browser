@@ -23,11 +23,11 @@ using namespace std;
 
 #include <string.h>
 
-#define OFFSET_NULL 0
 #define OFFSET_MAGIC_NUMBER 0
-#define OFFSET_FORMAT_VERSION sizeof(uint32_t)
-#define OFFSET_ENTRIES sizeof(uint32_t)+sizeof(uint32_t)
-#define OFFSET_HEAP sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t)
+#define OFFSET_FORMAT_VERSION ( sizeof(uint32_t) )
+#define OFFSET_ENTRIES ( sizeof(uint32_t)+sizeof(uint32_t) )
+#define OFFSET_HEAP ( sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t) )
+#define OFFSET_BUCKETS ( sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t)+sizeof(uint64_t) )
 
 void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotations)const{
 }
@@ -104,20 +104,55 @@ void AnnotationEngine::addLocation(const char*key,LocationAnnotation*annotation)
 	if(!found)
 		return;
 
-	uint64_t address=0;
-	memcpy(&address,m_content+OFFSET_HEAP,sizeof(uint64_t));
+	Annotation internalAnnotation;
+	annotation->write(&internalAnnotation);
 
-	if(address>=m_mapper.getFileSize()){
+	uint64_t requiredBytes=internalAnnotation.getBytes();
+
+	if(requiredBytes>getFreeBytes()){
+
 		growFile();
 	}
 
-#if 0
-	if(found){
-		cout<<" index=\""<<index<<"\"";
+	uint64_t heap=getHeapAddress();
+	internalAnnotation.write(m_content+heap);
+	setHeapAddress(heap+requiredBytes);
+
+	registerObjectAnnotation(index,heap);
+}
+
+void AnnotationEngine::registerObjectAnnotation(uint64_t objectIndex,uint64_t newAnnotationOffset){
+
+	uint64_t bucketAddress=OFFSET_BUCKETS+objectIndex*sizeof(uint64_t);
+
+	uint64_t annotationAddress=getInteger64(bucketAddress);
+
+// this is the first annotation for this object
+
+	if(annotationAddress==OFFSET_NULL){
+
+		setInteger64(bucketAddress,newAnnotationOffset);
+		return;
 	}
 
-	cout<<" />"<<endl;
-#endif
+// append the annotation to the list
+
+// find the last annotation of the object
+	Annotation annotation;
+	annotation.read(m_content+annotationAddress);
+
+	uint64_t nextAddress=annotation.getNextOffset();
+
+	while(nextAddress!=OFFSET_NULL){
+
+		annotationAddress=nextAddress;
+		annotation.read(m_content+annotationAddress);
+		nextAddress=annotation.getNextOffset();
+	}
+
+// append the annotation here
+	annotation.setNextOffset(newAnnotationOffset);
+	annotation.write(m_content+annotationAddress); /* write-back operation */
 }
 
 void AnnotationEngine::checkFileAvailability(){
@@ -165,7 +200,7 @@ void AnnotationEngine::checkFileAvailability(){
 
 	heap=m_mapper.getFileSize();
 
-	memcpy(m_content+OFFSET_HEAP,&heap,sizeof(uint64_t));
+	setHeapAddress(heap);
 
 	closeFile();
 
@@ -178,7 +213,7 @@ void AnnotationEngine::growFile(){
 
 	m_mapper.unmapFile();
 
-	int bytesOfAdd=1024*1024*BYTES_PER_OPERATION;
+	int bytesOfAdd=1024*BYTES_PER_OPERATION;
 
 	FILE*output=fopen(m_fileName.c_str(),"a");
 	
@@ -221,8 +256,7 @@ uint64_t AnnotationEngine::getEntries()const{
 
 uint64_t AnnotationEngine::getFreeBytes()const{
 
-	uint64_t heap=0;
-	memcpy(&heap,m_content+OFFSET_HEAP,sizeof(uint64_t));
+	uint64_t heap=getHeapAddress();
 
 	uint64_t totalBytes=m_mapper.getFileSize();
 
@@ -242,3 +276,23 @@ bool AnnotationEngine::hasError()const{
 	return m_error;
 }
 
+uint64_t AnnotationEngine::getHeapAddress()const{
+
+	return getInteger64(OFFSET_HEAP);
+}
+
+void AnnotationEngine::setHeapAddress(uint64_t address){
+
+	setInteger64(OFFSET_HEAP,address);
+}
+
+void AnnotationEngine::setInteger64(uint64_t offset,uint64_t value){
+
+	memcpy(m_content+offset,&value,sizeof(uint64_t));
+}
+
+uint64_t AnnotationEngine::getInteger64(uint64_t offset)const{
+	uint64_t value=0;
+	memcpy(&value,m_content+offset,sizeof(uint64_t));
+	return value;
+}

@@ -17,6 +17,9 @@
 
 #include "Annotation.h"
 
+#include <iostream>
+using namespace std;
+
 #include <string.h>
 
 void Annotation::constructor(uint8_t type,uint8_t size,uint8_t*content,uint64_t nextOffset){
@@ -36,6 +39,10 @@ uint8_t Annotation::getSize()const{
 
 void Annotation::setSize(uint8_t size){
 	m_size=size;
+}
+
+void Annotation::setType(uint8_t type){
+	m_type=type;
 }
 
 uint8_t*Annotation::getContent(){
@@ -74,4 +81,19 @@ void Annotation::write(uint8_t*buffer)const{
 
 int Annotation::getBytes()const{
 	return sizeof(uint8_t)+sizeof(uint8_t)+m_size*sizeof(uint8_t)+sizeof(uint64_t);
+}
+
+void Annotation::setNextOffset(uint64_t offset){
+	m_nextOffset=offset;
+}
+
+void Annotation::printXML()const{
+	cout<<"<object class=\"Annotation\"";
+	cout<<" type=\""<<(int)m_type<<"\"";
+	cout<<" size=\""<<(int)m_size<<"\"";
+	cout<<" content=\""<<"..."<<"\"";
+	cout<<" nextOffset=\""<<m_nextOffset<<"\"";
+	cout<<" /> ";
+
+	cout<<endl;
 }

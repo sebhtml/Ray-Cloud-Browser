@@ -66,10 +66,6 @@ void LocationAnnotation::read(Annotation*object){
 }
 
 void LocationAnnotation::write(Annotation*object)const{
-	int type=object->getType();
-
-	if(type!=ANNOTATION_LOCATION)
-		return;
 
 	uint8_t*content=object->getContent();
 
@@ -82,7 +78,9 @@ void LocationAnnotation::write(Annotation*object)const{
 	memcpy(content+position,&m_location,sizeof(uint32_t));
 	position+=sizeof(uint32_t);
 
+	object->setType(ANNOTATION_LOCATION);
 	object->setSize(position);
+	object->setNextOffset(OFFSET_NULL);
 }
 
 void LocationAnnotation::print()const{
