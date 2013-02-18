@@ -17,7 +17,7 @@ JSONParser.o JSONNode.o WebService.o \
 commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o \
 commands/Explorer.o commands/PathProbe.o \
 commands/Parser.o commands/GraphExporter.o commands/AnnotationManager.o \
-commands/AnnotationReporter.o
+commands/AnnotationReporter.o commands/MapDescriber.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"

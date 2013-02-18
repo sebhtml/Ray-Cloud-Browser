@@ -21,6 +21,7 @@
 #include <commands/AnnotationReporter.h>
 #include <commands/PathHelper.h>
 #include <commands/Explorer.h>
+#include <commands/MapDescriber.h>
 #include <commands/PathProbe.h>
 #include <commands/Parser.h>
 #include <commands/GraphExporter.h>
@@ -66,6 +67,8 @@ int main(int argc,char**argv){
 	dispatcher["describeSection"]=&pathProbe;
 	Parser parser;
 	dispatcher["describeJSONFile"]=&parser;
+	MapDescriber mapDescriber;
+	dispatcher["describeMap"]=&mapDescriber;
 	GraphExporter graphExporter;
 	dispatcher["describeGraphObjects"]=&graphExporter;
 
