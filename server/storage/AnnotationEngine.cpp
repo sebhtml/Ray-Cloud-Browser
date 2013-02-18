@@ -27,12 +27,14 @@ using namespace std;
 #define OFFSET_MAGIC_NUMBER 0
 #define OFFSET_FORMAT_VERSION sizeof(uint32_t)
 #define OFFSET_COUNT sizeof(uint32_t)+sizeof(uint32_t)
-#define OFFSET_HEAP sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t);
+#define OFFSET_HEAP sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t)
 
 void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotations)const{
 }
 
-void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph){
+void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph,bool enableWriteOperations){
+
+	m_enableWriteOperations=enableWriteOperations;
 	m_map=graph;
 
 	m_magicNumber=0x87332cee;
@@ -42,15 +44,33 @@ void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph){
 	m_fileName+="-Annotations";
 
 	checkFileAvailability();
+
+	openFileForOperations();
 }
 
 void AnnotationEngine::closeFile(){
+
+	if(!m_active)
+		return;
+
+	m_mapper.unmapFile();
+
+	m_active=false;
 }
 
 void AnnotationEngine::getLocations(const char*key,vector<LocationAnnotation>*annotations)const{
+
+	if(!m_active)
+		return;
 }
 
 void AnnotationEngine::addLocation(const char*key,LocationAnnotation*annotation){
+
+	if(!m_active)
+		return;
+
+	if(!m_enableWriteOperations)
+		return;
 
 #if 0
 	cout<<"<addLocation object=\""<<key<<"\"";
@@ -62,6 +82,14 @@ void AnnotationEngine::addLocation(const char*key,LocationAnnotation*annotation)
 
 	if(!found)
 		return;
+
+	uint64_t address=0;
+	memcpy(&address,m_content+OFFSET_HEAP,sizeof(uint64_t));
+
+	if(address>=m_mapper.getFileSize()){
+		growFile();
+	}
+
 #if 0
 	if(found){
 		cout<<" index=\""<<index<<"\"";
@@ -76,14 +104,17 @@ void AnnotationEngine::checkFileAvailability(){
 	ifstream f(m_fileName.c_str());
 
 	bool fileIsThere=false;
+
 	if(f)
 		fileIsThere=true;
+
 	f.close();
 
 	if(fileIsThere)
 		return;
 
 	FILE*output=fopen(m_fileName.c_str(),"w");
+
 	fwrite(&m_magicNumber,sizeof(uint32_t),1,output);
 	fwrite(&m_formatVersion,sizeof(uint32_t),1,output);
 
@@ -94,7 +125,6 @@ void AnnotationEngine::checkFileAvailability(){
 	fwrite(&heap,sizeof(uint64_t),1,output);
 
 	uint64_t offset=OFFSET_NULL;
-
 	uint64_t index=0;
 
 	while(index<entries){
@@ -118,14 +148,48 @@ void AnnotationEngine::checkFileAvailability(){
 
 	heap=m_mapper.getFileSize();
 
-	setHeap(heap);
+	memcpy(m_content+OFFSET_HEAP,&heap,sizeof(uint64_t));
 
 	m_mapper.unmapFile();
 }
 
-void AnnotationEngine::setHeap(uint64_t heap){
+void AnnotationEngine::growFile(){
 
-	uint64_t offset=OFFSET_HEAP;
+	#define BYTES_PER_OPERATION 1024
 
-	memcpy(m_content+offset,&heap,sizeof(uint64_t));
+	m_mapper.unmapFile();
+
+	int bytesOfAdd=1024*1024*BYTES_PER_OPERATION;
+
+	FILE*output=fopen(m_fileName.c_str(),"a");
+	
+	char oneKibibyte[BYTES_PER_OPERATION];
+	memset(oneKibibyte,0,BYTES_PER_OPERATION);
+
+	int steps=bytesOfAdd/BYTES_PER_OPERATION;
+
+	while(steps--){
+		fwrite(oneKibibyte,1,BYTES_PER_OPERATION,output);
+	}
+
+	fclose(output);
+
+	openFileForOperations();
+}
+
+void AnnotationEngine::openFileForOperations(){
+	m_active=false;
+
+	m_mapper.enableReadOperations();
+
+	if(m_enableWriteOperations){
+		m_mapper.enableWriteOperations();
+	}
+
+	m_content=(uint8_t*)m_mapper.mapFile(m_fileName.c_str());
+
+	if(m_content==NULL)
+		return;
+
+	m_active=true;
 }

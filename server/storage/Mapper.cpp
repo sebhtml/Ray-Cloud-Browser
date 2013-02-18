@@ -103,6 +103,9 @@ void Mapper::unmapFile(){
 	close(m_stream);
 
 	m_mapped=false;
+
+	m_write=false;
+	m_read=false;
 }
 
 uint64_t Mapper::getFileSize(){

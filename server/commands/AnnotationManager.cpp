@@ -53,7 +53,7 @@ int AnnotationManager::call(int argc,char**argv){
 	graphReader.openFile(mapFile);
 
 	AnnotationEngine annotationEngine;
-	annotationEngine.openAnnotationFileForMap(&graphReader);
+	annotationEngine.openAnnotationFileForMap(&graphReader,true);
 
 	PathDatabase pathReader;
 	pathReader.openFile(sectionFile);

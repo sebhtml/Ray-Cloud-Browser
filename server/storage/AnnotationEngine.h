@@ -38,16 +38,20 @@ class AnnotationEngine{
 	string m_fileName;
 	GraphDatabase*m_map;
 
+	bool m_enableWriteOperations;
 	Mapper m_mapper;
 	uint8_t*m_content;
+	bool m_active;
 
 	void getAnnotations(const char*key,vector<Annotation>*annotations)const;
 
 	void checkFileAvailability();
-	void setHeap(uint64_t heap);
+	void growFile();
+	void openFileForOperations();
+
 public:
 
-	void openAnnotationFileForMap(GraphDatabase*graph);
+	void openAnnotationFileForMap(GraphDatabase*graph,bool enableWriteOperations);
 	void closeFile();
 
 	void getLocations(const char*key,vector<LocationAnnotation>*annotations)const;
