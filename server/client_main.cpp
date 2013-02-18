@@ -51,26 +51,27 @@ int main(int argc,char**argv){
 
 	map<string,CommandInterface*> dispatcher;
 
-	ObjectFetcher objectFetcher;
-	dispatcher["describeObject"]=&objectFetcher;
-	GraphManager graphManager;
-	dispatcher["createGraphDatabase"]=&graphManager;
-	AnnotationManager annotationManager;
-	dispatcher["createSectionAnnotations"]=&annotationManager;
-	AnnotationReporter annotationReporter;
-	dispatcher["describeMapAnnotations"]=&annotationReporter;
 	PathHelper pathHelper;
-	dispatcher["createPathDatabase"]=&pathHelper;
+	dispatcher["create-section"]=&pathHelper;
+	GraphManager graphManager;
+	dispatcher["create-map"]=&graphManager;
+	AnnotationManager annotationManager;
+	dispatcher["create-map-annotations-with-section"]=&annotationManager;
+
+	ObjectFetcher objectFetcher;
+	dispatcher["describe-map-object"]=&objectFetcher;
+	AnnotationReporter annotationReporter;
+	dispatcher["describe-map-annotations"]=&annotationReporter;
 	Explorer explorer;
-	dispatcher["describeSubgraphWithPath"]=&explorer;
-	PathProbe pathProbe;
-	dispatcher["describeSection"]=&pathProbe;
-	Parser parser;
-	dispatcher["describeJSONFile"]=&parser;
+	dispatcher["describe-map-with-region"]=&explorer;
 	MapDescriber mapDescriber;
-	dispatcher["describeMap"]=&mapDescriber;
+	dispatcher["describe-map"]=&mapDescriber;
+	PathProbe pathProbe;
+	dispatcher["describe-section"]=&pathProbe;
+	Parser parser;
+	dispatcher["describe-json-file"]=&parser;
 	GraphExporter graphExporter;
-	dispatcher["describeGraphObjects"]=&graphExporter;
+	dispatcher["describe-map-objects"]=&graphExporter;
 
 	if(argc==1){
 		showUsage(dispatcher);

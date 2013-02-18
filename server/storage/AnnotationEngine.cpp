@@ -229,7 +229,7 @@ uint64_t AnnotationEngine::getFreeBytes()const{
 	return totalBytes-heap;
 }
 
-const char*AnnotationEngine::getAnnotationFile()const{
+const char*AnnotationEngine::getFileName()const{
 	return m_fileName.c_str();
 }
 
@@ -241,3 +241,4 @@ AnnotationEngine::AnnotationEngine(){
 bool AnnotationEngine::hasError()const{
 	return m_error;
 }
+

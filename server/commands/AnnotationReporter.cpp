@@ -53,7 +53,7 @@ int AnnotationReporter::call(int argc,char**argv){
 	uint64_t entries=annotationEngine.getEntries();
 	int freeSpace=annotationEngine.getFreeBytes();
 
-	const char*annotationFile=annotationEngine.getAnnotationFile();
+	const char*annotationFile=annotationEngine.getFileName();
 
 	cout<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
 	cout<<"<annotationManager>"<<endl;

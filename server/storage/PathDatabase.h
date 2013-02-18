@@ -21,6 +21,9 @@
 #include "Mapper.h"
 #include "constants.h"
 
+#include <string>
+using namespace std;
+
 #include <stdint.h>
 
 /**
@@ -30,6 +33,7 @@
  */
 class PathDatabase{
 
+	string m_fileName;
 	bool m_active;
 	bool m_error;
 	char*m_data;
@@ -62,6 +66,7 @@ public:
 	
 	void getKmer(uint64_t path,int kmerLength,int offset,char*output);
 	bool hasError()const;
+	const char*getFileName()const;
 };
 
 #endif

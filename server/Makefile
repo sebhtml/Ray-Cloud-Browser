@@ -51,13 +51,13 @@ test-not-found:
 	QUERY_STRING="tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&content=fdfddfjdsfdjsclkk" ./RayCloudBrowser.cgi
 
 path-index:
-	./RayCloudBrowser-client createPathDatabase ~/Ray-Cloud-Browser-data/Contigs.fasta ~/Ray-Cloud-Browser-data/Contigs.fasta.dat
+	./RayCloudBrowser-client create-section ~/Ray-Cloud-Browser-data/Contigs.fasta ~/Ray-Cloud-Browser-data/Contigs.fasta.dat
 
 graph-index:
-	./RayCloudBrowser-client createGraphDatabase ~/Ray-Cloud-Browser-data/kmers.txt.sorted ~/Ray-Cloud-Browser-data/kmers.txt.dat
+	./RayCloudBrowser-client create-map ~/Ray-Cloud-Browser-data/kmers.txt.sorted ~/Ray-Cloud-Browser-data/kmers.txt.dat
 
 debug-path:
-	./RayCloudBrowser-client probePath debug Contigs.fasta.dat|less
+	./RayCloudBrowser-client describe-section debug Contigs.fasta.dat|less
 
 test-json:
-	./RayCloudBrowser-client readJSON test.json
+	./RayCloudBrowser-client describe-json-file test.json

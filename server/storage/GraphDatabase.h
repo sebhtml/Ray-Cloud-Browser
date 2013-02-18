@@ -23,6 +23,7 @@
 #include "constants.h"
 
 #include <string>
+using namespace std;
 
 #include <stdint.h>
 

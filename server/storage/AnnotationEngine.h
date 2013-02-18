@@ -61,7 +61,7 @@ public:
 	void addLocation(const char*key,LocationAnnotation*annotation);
 	uint64_t getEntries()const;
 	uint64_t getFreeBytes()const;
-	const char*getAnnotationFile()const;
+	const char*getFileName()const;
 	bool hasError()const;
 };
 

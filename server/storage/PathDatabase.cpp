@@ -40,7 +40,9 @@ bool myFunction(const vector<int>&a,const vector<int>&b){
 
 
 void PathDatabase::openFile(const char*file){
-	
+
+	m_fileName=file;
+
 	if(m_active)
 		return;
 
@@ -481,4 +483,8 @@ void PathDatabase::debug(){
 
 bool PathDatabase::hasError()const{
 	return m_error;
+}
+
+const char*PathDatabase::getFileName()const{
+	return m_fileName.c_str();
 }

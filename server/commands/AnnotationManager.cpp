@@ -73,9 +73,9 @@ int AnnotationManager::call(int argc,char**argv){
 
 	uint64_t regionIndex=0;
 
-#if 0
-	cout<<"Section: "<<sectionIndex<<" Objects: "<<regions<<endl;
-#endif
+	cout<<"Map: "<<graphReader.getFileName()<<" Objects: "<<graphReader.getEntries()<<endl;
+	cout<<"Section: "<<sectionIndex<<" "<<pathReader.getFileName()<<" Objects: "<<regions<<endl;
+	cout<<"Annotations: "<<annotationEngine.getFileName()<<endl;
 
 	while(regionIndex<regions){
 
