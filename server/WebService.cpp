@@ -186,6 +186,9 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString
 	GraphDatabase database;
 	database.openFile(dataFile);
 
+	if(database.hasError())
+		return false;
+
 	cout<<"{"<<endl;
 	cout<<"\"map\": \""<<dataFile<<"\","<<endl;
 	cout<<"\"kmerLength\": "<<database.getKmerLength()<<","<<endl;

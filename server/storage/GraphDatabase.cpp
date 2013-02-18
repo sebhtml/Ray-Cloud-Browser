@@ -218,11 +218,7 @@ void GraphDatabase::openFile(const char*file){
 	if(m_error)
 		return;
 
-	m_active=true;
-	m_error=false;
-
 	m_mapper.enableReadOperations();
-	m_mapper.enableWriteOperations();
 
 	m_content=(uint8_t*)m_mapper.mapFile(file);
 
@@ -231,6 +227,8 @@ void GraphDatabase::openFile(const char*file){
 		m_error=true;
 		return;
 	}
+
+	m_active=true;
 
 	m_fileName=file;
 
