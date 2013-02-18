@@ -24,6 +24,7 @@
 #include <actions/RegionClerk.h>
 #include <actions/EarlyExplorer.h>
 #include <actions/MapList.h>
+#include <actions/MapSpecialist.h>
 
 #include <map>
 #include <string>
@@ -64,9 +65,8 @@ class WebService{
 	RegionVisitor m_regionVisitor;
 	EarlyExplorer m_earlyExplorer;
 	MapList m_mapList;
+	MapSpecialist m_mapSpecialist;
 	RegionClerk m_regionClerk;
-
-	bool call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString);
 
 	bool dispatchQuery(const char*tag,const char*queryString);
 	void registerAction(const char*actionName,WebAction*actionHandler);

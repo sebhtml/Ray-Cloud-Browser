@@ -17,19 +17,8 @@
 
 #include "WebService.h"
 
-#include <storage/GraphDatabase.h>
-#include <storage/PathDatabase.h>
-
-#include <stdlib.h>
-#include <string.h>
-
 #include <iostream>
-#include <vector>
-#include <string>
-#include <set>
-#include <map>
 using namespace std;
-
 
 /**
  * \see http://www.ietf.org/rfc/rfc4627.txt
@@ -65,6 +54,7 @@ WebService::WebService(){
 	registerAction("RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
 	registerAction("RAY_MESSAGE_TAG_GET_MAPS",&m_mapList);
 	registerAction("RAY_MESSAGE_TAG_GET_REGIONS",&m_regionClerk);
+	registerAction("RAY_MESSAGE_TAG_GET_MAP_INFORMATION",&m_mapSpecialist);
 }
 
 void WebService::registerAction(const char*actionName,WebAction*actionHandler){
@@ -79,46 +69,10 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 		return action->call(queryString);
 	}
 
-	int match=0;
-
-	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAP_INFORMATION")==match){
-		return call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(queryString);
-	}
-
 	cout<<"{ \"message\": \"tag not serviced\" } "<<endl;
 
 // unmatched message tag
 	return false;
-}
-
-bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString){
-
-	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
-
-	bool foundMap=m_storeRequest.getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
-
-	if(!foundMap)
-		return false;
-
-// fail in silence
-	if(!m_storeRequest.isAllowedFile(dataFile))
-		return false;
-
-	GraphDatabase database;
-	database.openFile(dataFile);
-
-	if(database.hasError())
-		return false;
-
-	cout<<"{"<<endl;
-	cout<<"\"map\": \""<<dataFile<<"\","<<endl;
-	cout<<"\"kmerLength\": "<<database.getKmerLength()<<","<<endl;
-	cout<<"\"entries\": "<<database.getEntries()<<endl;
-	cout<<"}"<<endl;
-
-	database.closeFile();
-
-	return true;
 }
 
 
