@@ -18,6 +18,8 @@
 #ifndef _WebService_h
 #define _WebService_h
 
+#include <actions/StoreRequest.h>
+
 /**
  * The Ray Cloud Browser web service.
  * This is used by the interface with the HTTP GET method.
@@ -47,12 +49,10 @@
  */
 class WebService{
 
-	bool getValue(const char*query,const char*name,char*value,int maximumValueLength);
+	StoreRequest m_storeRequest;
+
 	bool dispatchQuery(const char*tag,const char*queryString);
 
-	bool isAllowedFile(const char*file);
-
-	bool call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString);

@@ -18,6 +18,8 @@
 #include "WebService.h"
 #include "JSONParser.h"
 
+#include <actions/WebAction.h>
+
 #include <storage/GraphDatabase.h>
 #include <storage/PathDatabase.h>
 
@@ -28,90 +30,9 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <map>
 using namespace std;
 
-bool WebService::isAllowedFile(const char*file){
-
-// no absolute paths
-	if(file[0]=='/')
-		return false;
-
-	int length=strlen(file);
-
-// no relative paths with '..'
-	for(int i=0;i<length-2;i++){
-		if(file[i]=='.' && file[i+1]=='.')
-			return false;
-	}
-
-	return true;
-
-/* we don't care for the next two rules */
-#if 0
-// must be something + .dat
-	if(length<=4) 
-		return false;
-
-// must end with .dat
-	if(!(
-		/**/file[length-4]=='.'
-		&&file[length-3]=='d'
-		&&file[length-2]=='a'
-		&&file[length-1]=='t')){
-
-		return false;
-	}
-	
-	return true;
-#endif
-}
-
-#define CONFIG_MAXIMUM_VALUE_LENGTH 256
-#define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 4096
-
-bool WebService::getValue(const char*query,const char*name,char*value,int maximumValueLength){
-	for(int i=0;i<(int)strlen(query);i++){
-		bool match=true;
-
-		//cout<<"Query+i: "<<query+i<<endl;
-		//cout<<"Name:    "<<name<<endl;
-
-		for(int j=0;j<(int)strlen(name);j++){
-			if(query[i+j]!=name[j]){
-				match=false;
-				break;
-			}
-		}
-
-		//cout<<"Match: "<<match<<endl;
-
-		if(match){
-			int startingPosition=i+strlen(name)+1;
-			int endingPosition=startingPosition;
-			while(endingPosition<(int)strlen(query)){
-				if(query[endingPosition]=='&')
-					break;
-				endingPosition++;
-			}
-			int count=endingPosition-startingPosition;
-
-/* somebody is trying to break in */
-
-			if(count>maximumValueLength)
-				return false;
-
-			//cout<<"Value= "<<query+startingPosition<<endl;
-			//cout<<"Count= "<<count<<endl;
-
-			memcpy(value,query+startingPosition,count);
-			value[count]='\0';
-
-			return true;
-		}
-	}
-	
-	return false;
-}
 
 /**
  * \see http://www.ietf.org/rfc/rfc4627.txt
@@ -123,17 +44,14 @@ bool WebService::processQuery(const char*queryString){
 	cout<<"Access-Control-Allow-Origin: *"<<endl;
 	cout<<("Content-type: application/json\n\n");
 
-	//cout<<("Content-type: text/html\n\n");
-
 	if(queryString==NULL){
+		cout<<"{ \"message\": \"Error: you must provide a QUERY_STRING.\" }"<<endl;
+
 		return false;
 	}
 
-	//cout<<"QUERY_STRING= "<<queryString<<endl;
-
-
 	char tag[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundTag=getValue(queryString,"tag",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundTag=m_storeRequest.getValue(queryString,"tag",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundTag){
 		//cout<<"Object not found!"<<endl;
@@ -148,11 +66,19 @@ WebService::WebService(){
 
 bool WebService::dispatchQuery(const char*tag,const char*queryString){
 
+	map<string,WebAction*> productManager;
+
+	StoreRequest storeRequest;
+	productManager["RAY_MESSAGE_TAG_GET_KMER_FROM_STORE"]=&storeRequest;
+
+	if(productManager.count(tag)>0){
+		WebAction*action=productManager[tag];
+		return action->call(queryString);
+	}
+
 	int match=0;
 
-	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_KMER_FROM_STORE")==match){
-		return call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(queryString);
-	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION")==match){
+	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION")==match){
 		return call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
 		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
@@ -174,13 +100,13 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString
 
 	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
 
-	bool foundMap=getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundMap=m_storeRequest.getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundMap)
 		return false;
 
 // fail in silence
-	if(!isAllowedFile(dataFile))
+	if(!m_storeRequest.isAllowedFile(dataFile))
 		return false;
 
 	GraphDatabase database;
@@ -200,112 +126,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString
 	return true;
 }
 
-/**
- * Required parameters in QUERY_STRING: tag, object, depth.
- */
-bool WebService::call_RAY_MESSAGE_TAG_GET_KMER_FROM_STORE(const char*queryString){
 
-	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
-	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
-
-	const char*key=NULL;
-
-	//cout<<"Tag: "<<tag<<endl;
-
-	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
-	bool foundMap=getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
-		
-	if(!foundObject)
-		return false;
-
-	if(!foundMap)
-		return false;
-
-// fail in silence
-	if(!isAllowedFile(dataFile))
-		return false;
-
-	key=requestedObject;
-
-	if(key==NULL)
-		return false;
-
-	GraphDatabase database;
-	database.openFile(dataFile);
-
-	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
-
-	char depth[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundDepth=getValue(queryString,"depth",depth,CONFIG_MAXIMUM_VALUE_LENGTH);
-
-/*
- * Use the requested depth.
- */
-	if(foundDepth){
-		int theDepth=atoi(depth);
-
-		if(theDepth<=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS)
-			maximumToVisit=theDepth;
-	}
-
-	vector<string> productionQueue;
-	set<string> visited;
-	int head=0;
-
-	string first=key;
-
-	productionQueue.push_back(first);
-
-	cout<<"{"<<endl;
-
-	cout<<"\"object\": \""<<key<<"\","<<endl;
-	cout<<"\"vertices\": ["<<endl;
-
-	bool printedFirst=false;
-
-	while(head<(int)productionQueue.size() && (int)visited.size()<maximumToVisit){
-	
-		string*stringObject=&(productionQueue[head]);
-
-		head++;
-		visited.insert(*stringObject);
-
-		const char*object=stringObject->c_str();
-
-		VertexObject vertex;
-		bool found = database.getObject(object,&vertex);
-
-		if(!found)
-			continue;
-
-		if(printedFirst){
-			cout<<","<<endl;
-		}
-
-		vertex.writeContentInJSON(&cout);
-
-		vector<string> friends;
-		vertex.getParents(&friends);
-		vertex.getChildren(&friends);
-
-		for(int i=0;i<(int)friends.size();i++){
-			string*friendObject=&(friends[i]);
-
-			if(visited.count(*friendObject)>0)
-				continue;
-
-			productionQueue.push_back(*friendObject);
-		}
-
-		printedFirst=true;
-	}
-
-	cout<<"]}"<<endl;
-
-	database.closeFile();
-
-	return true;
-}
 
 /**
  * Parameters needed in QUERY_STRING: tag, depth.
@@ -350,13 +171,13 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString){
 bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 
 	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool found=m_storeRequest.getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!found)
 		return false;
 
 // fail in silence
-	if(!isAllowedFile(buffer))
+	if(!m_storeRequest.isAllowedFile(buffer))
 		return false;
 
 	PathDatabase mock;
@@ -369,7 +190,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 	int entries=mock.getEntries();
 
 	char firstBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundFirst=getValue(queryString,"first",firstBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundFirst=m_storeRequest.getValue(queryString,"first",firstBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundFirst)
 		return false;
@@ -383,7 +204,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 		first=entries-1;
 
 	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundReadahead=getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundReadahead=m_storeRequest.getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundReadahead)
 		return false;
@@ -449,17 +270,17 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*queryString){
 
 	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool found=m_storeRequest.getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!found)
 		return false;
 
 // fail in silence
-	if(!isAllowedFile(buffer))
+	if(!m_storeRequest.isAllowedFile(buffer))
 		return false;
 
 	char regionBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundRegion=getValue(queryString,"region",regionBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundRegion=m_storeRequest.getValue(queryString,"region",regionBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundRegion)
 		return false;
@@ -478,7 +299,7 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*que
 		return false;
 
 	char kmerLengthBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundKmerLength=getValue(queryString,"kmerLength",kmerLengthBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundKmerLength=m_storeRequest.getValue(queryString,"kmerLength",kmerLengthBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundKmerLength)
 		return false;
@@ -502,13 +323,13 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*que
 	int numberOfKmers=nucleotides-kmerLength+1;
 
 	char locationBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundLocation=getValue(queryString,"location",locationBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundLocation=m_storeRequest.getValue(queryString,"location",locationBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 	if(!foundLocation)
 		return false;
 	int location=atoi(locationBuffer);
 
 	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundReadahead=getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundReadahead=m_storeRequest.getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 	if(!foundReadahead)
 		return false;
 	int readahead=atoi(readaheadBuffer);
