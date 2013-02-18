@@ -34,8 +34,12 @@ void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotati
 
 void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph,bool enableWriteOperations){
 
-	m_enableWriteOperations=enableWriteOperations;
 	m_map=graph;
+
+	if(m_map->hasError())
+		return;
+
+	m_enableWriteOperations=enableWriteOperations;
 
 	m_magicNumber=0x87332cee;
 	m_formatVersion=0;
@@ -227,4 +231,9 @@ uint64_t AnnotationEngine::getFreeBytes()const{
 
 const char*AnnotationEngine::getAnnotationFile()const{
 	return m_fileName.c_str();
+}
+
+AnnotationEngine::AnnotationEngine(){
+	m_error=false;
+	m_active=false;
 }

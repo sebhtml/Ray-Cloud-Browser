@@ -42,6 +42,7 @@ class AnnotationEngine{
 	Mapper m_mapper;
 	uint8_t*m_content;
 	bool m_active;
+	bool m_error;
 
 	void getAnnotations(const char*key,vector<Annotation>*annotations)const;
 
@@ -50,6 +51,7 @@ class AnnotationEngine{
 	void openFileForOperations();
 
 public:
+	AnnotationEngine();
 
 	void openAnnotationFileForMap(GraphDatabase*graph,bool enableWriteOperations);
 	void closeFile();

@@ -83,6 +83,7 @@ public:
 	void index(const char*input,const char*output);
 
 	const char*getFileName()const;
+	bool hasError()const;
 };
 
 #endif

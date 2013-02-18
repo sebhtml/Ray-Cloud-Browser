@@ -255,13 +255,13 @@ void GraphDatabase::openFile(const char*file){
 	position+=sizeof(uint64_t);
 
 	if(m_magicNumber!=m_expectedMagicNumber){
-		cout<<"Error: wrong magic number, expected "<<m_expectedMagicNumber<<" actual "<<m_magicNumber<<endl;
+		cout<<"Error: "<<file<<" is not a map file."<<endl;
 		m_error=true;
 		return;
 	}
 
 	if(m_formatVersion!=m_expectedFormatVersion){
-		cout<<"Error: wrong format version, expected "<<m_expectedFormatVersion<<" actual "<<m_formatVersion<<endl;
+		cout<<"Error: the format version of "<<file<<" is not supported."<<endl;
 		m_error=true;
 		return;
 	}
@@ -554,4 +554,8 @@ int GraphDatabase::getSymbolCode(char symbol)const{
 
 const char*GraphDatabase::getFileName()const{
 	return m_fileName.c_str();
+}
+
+bool GraphDatabase::hasError()const{
+	return m_error;
 }

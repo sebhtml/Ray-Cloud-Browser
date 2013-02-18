@@ -43,6 +43,9 @@ int AnnotationReporter::call(int argc,char**argv){
 	GraphDatabase graphReader;
 	graphReader.openFile(mapFile);
 
+	if(graphReader.hasError())
+		return 1;
+
 	AnnotationEngine annotationEngine;
 	annotationEngine.openAnnotationFileForMap(&graphReader,false);
 
