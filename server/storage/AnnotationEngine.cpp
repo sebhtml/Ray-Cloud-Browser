@@ -29,9 +29,6 @@ using namespace std;
 #define OFFSET_HEAP ( sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t) )
 #define OFFSET_BUCKETS ( sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t)+sizeof(uint64_t) )
 
-void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotations)const{
-}
-
 void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph,bool enableWriteOperations){
 
 	m_map=graph;
@@ -79,10 +76,29 @@ void AnnotationEngine::closeFile(){
 	m_active=false;
 }
 
-void AnnotationEngine::getLocations(const char*key,vector<LocationAnnotation>*annotations)const{
+void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotations)const{
 
 	if(!m_active)
 		return;
+
+	uint64_t index=0;
+	bool found=m_map->getObjectIndex(key,&index);
+
+	if(!found)
+		return;
+
+	uint64_t bucketAddress=OFFSET_BUCKETS+index*sizeof(uint64_t);
+	uint64_t annotationAddress=getInteger64(bucketAddress);
+
+	while(annotationAddress!=OFFSET_NULL){
+
+		Annotation annotation;
+		annotation.read(m_content+annotationAddress);
+
+		annotations->push_back(annotation);
+
+		annotationAddress=annotation.getNextOffset();
+	}
 }
 
 void AnnotationEngine::addLocation(const char*key,LocationAnnotation*annotation){

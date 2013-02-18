@@ -83,8 +83,10 @@ void LocationAnnotation::write(Annotation*object)const{
 	object->setNextOffset(OFFSET_NULL);
 }
 
-void LocationAnnotation::print()const{
+void LocationAnnotation::printXML()const{
+	cout<<"<annotation class=\"LocationAnnotation\"";
 	cout<<" section=\""<<m_section<<"\"";
 	cout<<" region=\""<<m_region<<"\"";
 	cout<<" location=\""<<m_location<<"\"";
+	cout<<" />"<<endl;
 }

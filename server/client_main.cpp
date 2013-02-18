@@ -25,6 +25,7 @@
 #include <commands/PathProbe.h>
 #include <commands/Parser.h>
 #include <commands/GraphExporter.h>
+#include <commands/ObjectAnnotationList.h>
 
 #include <iostream>
 #include <map>
@@ -60,6 +61,8 @@ int main(int argc,char**argv){
 
 	ObjectFetcher objectFetcher;
 	dispatcher["describe-map-object"]=&objectFetcher;
+	ObjectAnnotationList objectAnnotationList;
+	dispatcher["describe-map-object-annotations"]=&objectAnnotationList;
 	AnnotationReporter annotationReporter;
 	dispatcher["describe-map-annotations"]=&annotationReporter;
 	Explorer explorer;

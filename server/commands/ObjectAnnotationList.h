@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,37 +15,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LocationAnnotation_h
-#define _LocationAnnotation_h
+#ifndef _ObjectAnnotationList_h_
+#define _ObjectAnnotationList_h_
 
-#include "Annotation.h"
-
-#include <stdint.h>
+#include "CommandInterface.h"
 
 /**
- * An annotation for a location.
+ * Get the annotations of a object in the graph.
  *
  * \author Sébastien Boisvert
  */
-class LocationAnnotation{
-
-	uint32_t m_region;
-	uint32_t m_location;
-	uint16_t m_section;
+class ObjectAnnotationList: public CommandInterface{
 
 public:
-
-	void constructor(int section,int region,int location);
-
-	int getSectionIndex()const;
-	int getRegionIndex()const;
-	int getLocationIndex()const;
-
-	void read(Annotation*object);
-	void write(Annotation*object)const;
-
-	void printXML()const;
+	int call(int argc,char**argv);
 };
 
 #endif
-
