@@ -228,6 +228,7 @@ void GraphDatabase::openFile(const char*file){
 
 	if(m_content==NULL){
 		cout<<"Error: can not map file "<<file<<endl;
+		m_error=true;
 		return;
 	}
 
