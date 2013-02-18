@@ -17,9 +17,11 @@
 
 #include "Mapper.h"
 
-#include <stdlib.h>
 #include <iostream>
 using namespace std;
+
+#include <stdlib.h>
+#include <errno.h>
 
 #ifdef OS_POSIX
 #include <unistd.h>
@@ -57,19 +59,24 @@ void*Mapper::mapFile(const char*file){
 
 	#ifdef OS_POSIX
 
+	int openFlags=O_RDONLY;
+
 	if(m_write && m_read){
 		m_protection=PROT_READ|PROT_WRITE;
+		openFlags=O_RDWR;
 	}else if(m_write){
 		m_protection=PROT_WRITE;
+		openFlags=O_RDWR;
 	}else if(m_read){
 		m_protection=PROT_READ;
+		openFlags=O_RDONLY;
 	}else{
 		m_protection=PROT_NONE;
 	}
 
 	m_file=file;
 
-	m_stream=open(m_file,O_RDONLY);
+	m_stream=open(m_file,openFlags);
 	m_fileSize=lseek(m_stream,0,SEEK_END);
 	
 	m_flags=MAP_SHARED;
@@ -79,7 +86,6 @@ void*Mapper::mapFile(const char*file){
 	m_mapped=true;
 
 	if(m_content==MAP_FAILED){
-		cout<<"Error: can not map file."<<endl;
 		return NULL;
 	}
 

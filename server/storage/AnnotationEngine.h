@@ -20,9 +20,11 @@
 
 #include "GraphDatabase.h"
 #include "Annotation.h"
+#include "Mapper.h"
 #include "LocationAnnotation.h"
 
 #include <vector>
+#include <string>
 using namespace std;
 
 /**
@@ -30,10 +32,19 @@ using namespace std;
  */
 class AnnotationEngine{
 
+	uint32_t m_magicNumber;
+	uint32_t m_formatVersion;
+
+	string m_fileName;
 	GraphDatabase*m_map;
+
+	Mapper m_mapper;
+	uint8_t*m_content;
 
 	void getAnnotations(const char*key,vector<Annotation>*annotations)const;
 
+	void checkFileAvailability();
+	void setHeap(uint64_t heap);
 public:
 
 	void openAnnotationFileForMap(GraphDatabase*graph);

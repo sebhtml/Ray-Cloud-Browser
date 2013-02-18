@@ -222,8 +222,16 @@ void GraphDatabase::openFile(const char*file){
 	m_error=false;
 
 	m_mapper.enableReadOperations();
+	m_mapper.enableWriteOperations();
 
 	m_content=(uint8_t*)m_mapper.mapFile(file);
+
+	if(m_content==NULL){
+		cout<<"Error: can not map file "<<file<<endl;
+		return;
+	}
+
+	m_fileName=file;
 
 	char headerBufferForDisk[GRAPH_HEADER_LENGTH];
 
@@ -542,4 +550,8 @@ int GraphDatabase::getSymbolCode(char symbol)const{
 	}
 
 	return SYMBOL_A;
+}
+
+const char*GraphDatabase::getFileName()const{
+	return m_fileName.c_str();
 }

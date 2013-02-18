@@ -22,6 +22,8 @@
 #include "VertexObject.h"
 #include "constants.h"
 
+#include <string>
+
 #include <stdint.h>
 
 /**
@@ -39,6 +41,8 @@
  * \author Sébastien Boisvert
  */
 class GraphDatabase{
+
+	string m_fileName;
 
 	uint64_t m_entries;
 	int m_kmerLength;
@@ -77,6 +81,8 @@ public:
 	uint64_t getEntries()const;
 
 	void index(const char*input,const char*output);
+
+	const char*getFileName()const;
 };
 
 #endif
