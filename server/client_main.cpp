@@ -34,6 +34,9 @@ void showUsage(map<string,CommandInterface*>&dispatcher){
 	cout<<"This is the command dispatcher"<<endl;
 	cout<<"Author: Sébastien Boisvert"<<endl;
 	cout<<endl;
+	cout<<"Commands named create* change information in storage buckets"<<endl;
+	cout<<"Commands named describe* perform read-only operations on storage buckets"<<endl;
+	cout<<endl;
 	cout<<"Available commands"<<endl;
 	cout<<endl;
 	for(map<string,CommandInterface*>::iterator i=dispatcher.begin();
@@ -48,23 +51,23 @@ int main(int argc,char**argv){
 	map<string,CommandInterface*> dispatcher;
 
 	ObjectFetcher objectFetcher;
-	dispatcher["commandLineClient"]=&objectFetcher;
+	dispatcher["describeObject"]=&objectFetcher;
 	GraphManager graphManager;
 	dispatcher["createGraphDatabase"]=&graphManager;
 	AnnotationManager annotationManager;
-	dispatcher["annotateSection"]=&annotationManager;
+	dispatcher["createSectionAnnotations"]=&annotationManager;
 	AnnotationReporter annotationReporter;
 	dispatcher["describeMapAnnotations"]=&annotationReporter;
 	PathHelper pathHelper;
 	dispatcher["createPathDatabase"]=&pathHelper;
 	Explorer explorer;
-	dispatcher["getSubgraphWithPath"]=&explorer;
+	dispatcher["describeSubgraphWithPath"]=&explorer;
 	PathProbe pathProbe;
-	dispatcher["probePath"]=&pathProbe;
+	dispatcher["describePath"]=&pathProbe;
 	Parser parser;
-	dispatcher["readJSON"]=&parser;
+	dispatcher["describeJSONFile"]=&parser;
 	GraphExporter graphExporter;
-	dispatcher["exportGraph"]=&graphExporter;
+	dispatcher["describeGraphObjects"]=&graphExporter;
 
 	if(argc==1){
 		showUsage(dispatcher);
