@@ -108,7 +108,7 @@ void Mapper::unmapFile(){
 	m_read=false;
 }
 
-uint64_t Mapper::getFileSize(){
+uint64_t Mapper::getFileSize()const{
 	return m_fileSize;
 }
 

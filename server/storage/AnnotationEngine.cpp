@@ -26,7 +26,7 @@ using namespace std;
 #define OFFSET_NULL 0
 #define OFFSET_MAGIC_NUMBER 0
 #define OFFSET_FORMAT_VERSION sizeof(uint32_t)
-#define OFFSET_COUNT sizeof(uint32_t)+sizeof(uint32_t)
+#define OFFSET_ENTRIES sizeof(uint32_t)+sizeof(uint32_t)
 #define OFFSET_HEAP sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t)
 
 void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotations)const{
@@ -46,6 +46,24 @@ void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph,bool enableW
 	checkFileAvailability();
 
 	openFileForOperations();
+	
+	uint32_t magicNumber=0;
+	memcpy(&magicNumber,m_content+OFFSET_MAGIC_NUMBER,sizeof(uint32_t));
+
+	if(m_magicNumber!=magicNumber){
+		cout<<"Error: "<<m_fileName<<" is not an annotation file."<<endl;
+		closeFile();
+		return;
+	}
+
+	uint32_t formatVersion=0;
+	memcpy(&formatVersion,m_content+OFFSET_FORMAT_VERSION,sizeof(uint32_t));
+
+	if(m_formatVersion!=formatVersion){
+		cout<<"Error: "<<m_fileName<<" is a annotation file, but the format version does not match available implementations."<<endl;
+		closeFile();
+		return;
+	}
 }
 
 void AnnotationEngine::closeFile(){
@@ -54,7 +72,6 @@ void AnnotationEngine::closeFile(){
 		return;
 
 	m_mapper.unmapFile();
-
 	m_active=false;
 }
 
@@ -136,21 +153,19 @@ void AnnotationEngine::checkFileAvailability(){
 
 	fclose(output);
 
-	m_mapper.enableWriteOperations();
-	m_mapper.enableReadOperations();
+	bool oldWriteMode=m_enableWriteOperations;
 
-	m_content=(uint8_t*)m_mapper.mapFile(m_fileName.c_str());
+	m_enableWriteOperations=true;
 
-	if(m_content==NULL){
-		cout<<"Error: failed to map file "<<m_fileName<<endl;
-		return;
-	}
+	openFileForOperations();
 
 	heap=m_mapper.getFileSize();
 
 	memcpy(m_content+OFFSET_HEAP,&heap,sizeof(uint64_t));
 
-	m_mapper.unmapFile();
+	closeFile();
+
+	m_enableWriteOperations=oldWriteMode;
 }
 
 void AnnotationEngine::growFile(){
@@ -192,4 +207,24 @@ void AnnotationEngine::openFileForOperations(){
 		return;
 
 	m_active=true;
+}
+
+uint64_t AnnotationEngine::getEntries()const{
+	uint64_t entries=0;
+	memcpy(&entries,m_content+OFFSET_ENTRIES,sizeof(uint64_t));
+	return entries;
+}
+
+uint64_t AnnotationEngine::getFreeBytes()const{
+
+	uint64_t heap=0;
+	memcpy(&heap,m_content+OFFSET_HEAP,sizeof(uint64_t));
+
+	uint64_t totalBytes=m_mapper.getFileSize();
+
+	return totalBytes-heap;
+}
+
+const char*AnnotationEngine::getAnnotationFile()const{
+	return m_fileName.c_str();
 }

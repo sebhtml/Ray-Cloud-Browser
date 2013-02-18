@@ -18,6 +18,7 @@
 #include <commands/ObjectFetcher.h>
 #include <commands/GraphManager.h>
 #include <commands/AnnotationManager.h>
+#include <commands/AnnotationReporter.h>
 #include <commands/PathHelper.h>
 #include <commands/Explorer.h>
 #include <commands/PathProbe.h>
@@ -52,6 +53,8 @@ int main(int argc,char**argv){
 	dispatcher["createGraphDatabase"]=&graphManager;
 	AnnotationManager annotationManager;
 	dispatcher["annotateSection"]=&annotationManager;
+	AnnotationReporter annotationReporter;
+	dispatcher["describeMapAnnotations"]=&annotationReporter;
 	PathHelper pathHelper;
 	dispatcher["createPathDatabase"]=&pathHelper;
 	Explorer explorer;
