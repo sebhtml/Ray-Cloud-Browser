@@ -19,6 +19,8 @@
 #include "JSONParser.h"
 
 #include <actions/WebAction.h>
+#include <actions/StoreRequest.h>
+#include <actions/RegionVisitor.h>
 
 #include <storage/GraphDatabase.h>
 #include <storage/PathDatabase.h>
@@ -71,6 +73,9 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 	StoreRequest storeRequest;
 	productManager["RAY_MESSAGE_TAG_GET_KMER_FROM_STORE"]=&storeRequest;
 
+	RegionVisitor regionVisitor;
+	productManager["RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION"]=&regionVisitor;
+
 	if(productManager.count(tag)>0){
 		WebAction*action=productManager[tag];
 		return action->call(queryString);
@@ -78,9 +83,7 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 
 	int match=0;
 
-	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION")==match){
-		return call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(queryString);
-	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
+	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
 		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
 		return call_RAY_MESSAGE_TAG_GET_MAPS(queryString);
@@ -264,119 +267,4 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString){
 	return true;
 }
 
-/**
- * Required QUERY_STRING parameters: tag, section.
- */
-bool WebService::call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*queryString){
 
-	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool found=m_storeRequest.getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
-
-	if(!found)
-		return false;
-
-// fail in silence
-	if(!m_storeRequest.isAllowedFile(buffer))
-		return false;
-
-	char regionBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundRegion=m_storeRequest.getValue(queryString,"region",regionBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
-
-	if(!foundRegion)
-		return false;
-
-	int region=atoi(regionBuffer);
-
-	PathDatabase mock;
-	mock.openFile(buffer);
-
-	//mock.debug();
-	
-	int entries=mock.getEntries();
-
-// invalid region
-	if(!(region<entries))
-		return false;
-
-	char kmerLengthBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundKmerLength=m_storeRequest.getValue(queryString,"kmerLength",kmerLengthBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
-
-	if(!foundKmerLength)
-		return false;
-
-	int kmerLength=atoi(kmerLengthBuffer);
-
-	int minimumKmerLength=15;
-	int maximumKmerLength=701;
-
-	if(!(minimumKmerLength <= kmerLength && kmerLength <= maximumKmerLength))
-		return false;
-
-	char name[1024];
-	mock.getName(region,name);
-	int nucleotides=mock.getSequenceLength(region);
-
-// kmer length is too long.
-	if(!(kmerLength<=nucleotides))
-		return false;
-
-	int numberOfKmers=nucleotides-kmerLength+1;
-
-	char locationBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundLocation=m_storeRequest.getValue(queryString,"location",locationBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
-	if(!foundLocation)
-		return false;
-	int location=atoi(locationBuffer);
-
-	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundReadahead=m_storeRequest.getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
-	if(!foundReadahead)
-		return false;
-	int readahead=atoi(readaheadBuffer);
-
-// Now we are ready
-
-	cout<<"{"<<endl;
-	cout<<"\"section\": \""<<buffer<<"\","<<endl;
-	cout<<"\"region\": "<<region<<","<<endl;
-	cout<<"\"kmerLength\": "<<kmerLength<<","<<endl;
-	cout<<"\"location\": "<<location<<","<<endl;
-	cout<<"\"name\":\""<<name<<"\","<<endl;
-	cout<<"\"nucleotides\":"<<nucleotides<<","<<endl;
-	cout<<"\"readahead\": "<<readahead<<","<<endl;
-
-	cout<<"\"vertices\": ["<<endl;
-
-	int printed=0;
-
-	char kmerSequence[512];
-
-	int startingPlace=location-readahead/2;
-
-	if(startingPlace<0)
-		startingPlace=0;
-
-	bool first=true;
-
-	while(startingPlace<numberOfKmers && printed<readahead){
-
-		mock.getKmer(region,kmerLength,startingPlace,kmerSequence);
-
-		if(first)
-			first=false;
-		else
-			cout<<","<<endl;
-
-		cout<<"{\"position\":"<<startingPlace<<",\"value\":\""<<kmerSequence<<"\"}";
-
-		startingPlace++;
-		printed++;
-	}
-
-	cout<<"] }"<<endl;
-
-
-	mock.closeFile();
-
-	return true;
-}

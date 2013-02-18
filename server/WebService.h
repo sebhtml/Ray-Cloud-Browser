@@ -56,7 +56,6 @@ class WebService{
 	bool call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString);
-	bool call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString);
 
 public:

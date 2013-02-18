@@ -14,7 +14,7 @@ STORAGE= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o \
 storage/PathDatabase.o storage/AnnotationEngine.o \
 storage/LocationAnnotation.o storage/Annotation.o
 
-ACTIONS= actions/WebAction.o actions/StoreRequest.o
+ACTIONS= actions/WebAction.o actions/StoreRequest.o actions/RegionVisitor.o
 
 SERVICE= JSONParser.o JSONNode.o WebService.o
 
