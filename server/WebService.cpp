@@ -63,6 +63,7 @@ WebService::WebService(){
 
 	registerAction("RAY_MESSAGE_TAG_GET_KMER_FROM_STORE",&m_storeRequest);
 	registerAction("RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
+	registerAction("RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
 }
 
 void WebService::registerAction(const char*actionName,WebAction*actionHandler){
@@ -79,9 +80,7 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 
 	int match=0;
 
-	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE")==match){
-		return call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(queryString);
-	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
+	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
 		return call_RAY_MESSAGE_TAG_GET_MAPS(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGIONS")==match){
 		return call_RAY_MESSAGE_TAG_GET_REGIONS(queryString);
@@ -121,18 +120,6 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString
 	cout<<"}"<<endl;
 
 	database.closeFile();
-
-	return true;
-}
-
-
-
-/**
- * Parameters needed in QUERY_STRING: tag, depth.
- */
-bool WebService::call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString){
-
-	cout<<"{ \"message\": \"none\" }"<<endl;
 
 	return true;
 }

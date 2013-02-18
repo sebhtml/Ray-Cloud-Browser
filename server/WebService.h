@@ -21,6 +21,7 @@
 #include <actions/WebAction.h>
 #include <actions/StoreRequest.h>
 #include <actions/RegionVisitor.h>
+#include <actions/EarlyExplorer.h>
 
 #include <map>
 #include <string>
@@ -59,6 +60,7 @@ class WebService{
 
 	StoreRequest m_storeRequest;
 	RegionVisitor m_regionVisitor;
+	EarlyExplorer m_earlyExplorer;
 
 	bool call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString);
