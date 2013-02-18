@@ -18,7 +18,13 @@
 #ifndef _WebService_h
 #define _WebService_h
 
+#include <actions/WebAction.h>
 #include <actions/StoreRequest.h>
+#include <actions/RegionVisitor.h>
+
+#include <map>
+#include <string>
+using namespace std;
 
 /**
  * The Ray Cloud Browser web service.
@@ -49,19 +55,22 @@
  */
 class WebService{
 
-	StoreRequest m_storeRequest;
+	map<string,WebAction*> m_productManager;
 
-	bool dispatchQuery(const char*tag,const char*queryString);
+	StoreRequest m_storeRequest;
+	RegionVisitor m_regionVisitor;
 
 	bool call_RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_REGIONS(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString);
 	bool call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString);
 
+	bool dispatchQuery(const char*tag,const char*queryString);
+	void registerAction(const char*actionName,WebAction*actionHandler);
+
 public:
 	WebService();
 	bool processQuery(const char*queryString);
-
 };
 
 #endif

@@ -18,10 +18,6 @@
 #include "WebService.h"
 #include "JSONParser.h"
 
-#include <actions/WebAction.h>
-#include <actions/StoreRequest.h>
-#include <actions/RegionVisitor.h>
-
 #include <storage/GraphDatabase.h>
 #include <storage/PathDatabase.h>
 
@@ -64,20 +60,20 @@ bool WebService::processQuery(const char*queryString){
 }
 
 WebService::WebService(){
+
+	registerAction("RAY_MESSAGE_TAG_GET_KMER_FROM_STORE",&m_storeRequest);
+	registerAction("RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
+}
+
+void WebService::registerAction(const char*actionName,WebAction*actionHandler){
+
+	m_productManager[actionName]=actionHandler;
 }
 
 bool WebService::dispatchQuery(const char*tag,const char*queryString){
 
-	map<string,WebAction*> productManager;
-
-	StoreRequest storeRequest;
-	productManager["RAY_MESSAGE_TAG_GET_KMER_FROM_STORE"]=&storeRequest;
-
-	RegionVisitor regionVisitor;
-	productManager["RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION"]=&regionVisitor;
-
-	if(productManager.count(tag)>0){
-		WebAction*action=productManager[tag];
+	if(m_productManager.count(tag)>0){
+		WebAction*action=m_productManager[tag];
 		return action->call(queryString);
 	}
 
