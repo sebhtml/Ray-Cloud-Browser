@@ -62,6 +62,8 @@ int PathProbe::call(int argc,char**argv){
 		PathDatabase mock;
 
 		mock.openFile(file);
+		if(mock.hasError())
+			return 1;
 
 		uint64_t entries=mock.getEntries();
 
@@ -84,6 +86,8 @@ int PathProbe::call(int argc,char**argv){
 		PathDatabase mock;
 
 		mock.openFile(file);
+		if(mock.hasError())
+			return 1;
 
 		uint64_t nameLength=mock.getNameLength(path);
 
@@ -124,6 +128,8 @@ int PathProbe::call(int argc,char**argv){
 		PathDatabase mock;
 
 		mock.openFile(file);
+		if(mock.hasError())
+			return 1;
 
 		mock.debug();
 

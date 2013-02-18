@@ -201,6 +201,7 @@ void PathDatabase::terminateString(char*object){
 
 PathDatabase::PathDatabase(){
 	m_active=false;
+	m_error=false;
 
 	uint32_t PATH_MAGIC_NUMBER=2345678989;
 	uint32_t PATH_FORMAT_VERSION=0;

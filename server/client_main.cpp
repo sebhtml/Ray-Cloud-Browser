@@ -63,7 +63,7 @@ int main(int argc,char**argv){
 	Explorer explorer;
 	dispatcher["describeSubgraphWithPath"]=&explorer;
 	PathProbe pathProbe;
-	dispatcher["describePath"]=&pathProbe;
+	dispatcher["describeSection"]=&pathProbe;
 	Parser parser;
 	dispatcher["describeJSONFile"]=&parser;
 	GraphExporter graphExporter;
