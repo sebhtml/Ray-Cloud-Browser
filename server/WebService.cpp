@@ -16,7 +16,6 @@
  */
 
 #include "WebService.h"
-#include "JSONParser.h"
 
 #include <storage/GraphDatabase.h>
 #include <storage/PathDatabase.h>
@@ -64,6 +63,7 @@ WebService::WebService(){
 	registerAction("RAY_MESSAGE_TAG_GET_KMER_FROM_STORE",&m_storeRequest);
 	registerAction("RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
 	registerAction("RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
+	registerAction("RAY_MESSAGE_TAG_GET_MAPS",&m_mapList);
 }
 
 void WebService::registerAction(const char*actionName,WebAction*actionHandler){
@@ -80,9 +80,7 @@ bool WebService::dispatchQuery(const char*tag,const char*queryString){
 
 	int match=0;
 
-	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAPS")==match){
-		return call_RAY_MESSAGE_TAG_GET_MAPS(queryString);
-	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGIONS")==match){
+	if(strcmp(tag,"RAY_MESSAGE_TAG_GET_REGIONS")==match){
 		return call_RAY_MESSAGE_TAG_GET_REGIONS(queryString);
 	}else if(strcmp(tag,"RAY_MESSAGE_TAG_GET_MAP_INFORMATION")==match){
 		return call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(queryString);
@@ -120,33 +118,6 @@ bool WebService::call_RAY_MESSAGE_TAG_GET_MAP_INFORMATION(const char*queryString
 	cout<<"}"<<endl;
 
 	database.closeFile();
-
-	return true;
-}
-
-/**
- * QUERY_STRING parameters: tag.
- */
-bool WebService::call_RAY_MESSAGE_TAG_GET_MAPS(const char*queryString){
-
-// We make sure that the configuration is valid...
-	const char*configuration="config.json";
-	JSONParser parser;
-	parser.parse(configuration);
-
-	//parser.printFile();
-
-	//JSONNode*node=parser.getNode();
-
-// just dump directly the json file
-	Mapper theMapper;
-
-	theMapper.enableReadOperations();
-
-	char*content=(char*)theMapper.mapFile(configuration);
-	cout<<content;
-
-	theMapper.unmapFile();
 
 	return true;
 }

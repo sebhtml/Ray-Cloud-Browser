@@ -15,7 +15,7 @@ storage/PathDatabase.o storage/AnnotationEngine.o \
 storage/LocationAnnotation.o storage/Annotation.o
 
 ACTIONS= actions/WebAction.o actions/StoreRequest.o actions/RegionVisitor.o \
-actions/EarlyExplorer.o
+actions/EarlyExplorer.o actions/MapList.o
 
 SERVICE= JSONParser.o JSONNode.o WebService.o
 
