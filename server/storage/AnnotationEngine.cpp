@@ -237,3 +237,7 @@ AnnotationEngine::AnnotationEngine(){
 	m_error=false;
 	m_active=false;
 }
+
+bool AnnotationEngine::hasError()const{
+	return m_error;
+}

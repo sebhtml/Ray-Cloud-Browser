@@ -48,16 +48,24 @@ void PathDatabase::openFile(const char*file){
 
 	m_data=(char*)m_mapper.mapFile(file);
 
+	if(m_data==NULL){
+		cout<<"Error: can not map "<<file<<endl;
+		m_error=true;
+		return;
+	}
+
 	m_active=true;
 
 	uint32_t magic=readInteger32(0);
 	uint32_t format=readInteger32(sizeof(uint32_t));
 
 	if(magic!=m_expectedMagicNumber){
-		cout<<"Error: incorrect magic number"<<endl;
+		cout<<"Error: "<<file<<" is not a section file."<<endl;
+		m_error=true;
 		closeFile();
 	}else if(format!=m_expectedFormatVersion){
-		cout<<"Error: incorrect format version, expected: "<<m_expectedFormatVersion<<" actual: "<<format<<endl;
+		cout<<"Error: incorrect format version for "<<file<<endl;
+		m_error=true;
 		closeFile();
 	}
 }
@@ -468,4 +476,8 @@ void PathDatabase::debug(){
 
 		i++;
 	}
+}
+
+bool PathDatabase::hasError()const{
+	return m_error;
 }

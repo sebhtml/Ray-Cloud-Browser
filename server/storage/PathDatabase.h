@@ -31,6 +31,7 @@
 class PathDatabase{
 
 	bool m_active;
+	bool m_error;
 	char*m_data;
 
 	uint32_t m_expectedMagicNumber;
@@ -60,6 +61,7 @@ public:
 	void debug();
 	
 	void getKmer(uint64_t path,int kmerLength,int offset,char*output);
+	bool hasError()const;
 };
 
 #endif

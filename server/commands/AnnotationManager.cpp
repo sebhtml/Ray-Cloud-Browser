@@ -52,11 +52,20 @@ int AnnotationManager::call(int argc,char**argv){
 	GraphDatabase graphReader;
 	graphReader.openFile(mapFile);
 
+	if(graphReader.hasError())
+		return 1;
+
 	AnnotationEngine annotationEngine;
 	annotationEngine.openAnnotationFileForMap(&graphReader,true);
 
+	if(annotationEngine.hasError())
+		return 1;
+
 	PathDatabase pathReader;
 	pathReader.openFile(sectionFile);
+
+	if(pathReader.hasError())
+		return 1;
 
 	int kmerLength=graphReader.getKmerLength();
 

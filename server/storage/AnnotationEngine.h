@@ -62,6 +62,7 @@ public:
 	uint64_t getEntries()const;
 	uint64_t getFreeBytes()const;
 	const char*getAnnotationFile()const;
+	bool hasError()const;
 };
 
 #endif
