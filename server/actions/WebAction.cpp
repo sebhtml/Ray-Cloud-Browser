@@ -18,6 +18,7 @@
 #include "WebAction.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 bool WebAction::getValue(const char*query,const char*name,char*value,int maximumValueLength)const{
 
@@ -100,4 +101,14 @@ bool WebAction::isAllowedFile(const char*file)const{
 #endif
 }
 
+bool WebAction::getIntegerValue(const char*query,const char*name,int*value)const{
+	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool found=getValue(query,name,buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
+	if(!found)
+		return found;
+
+	int result=atoi(buffer);
+
+	return result;
+}

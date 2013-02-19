@@ -26,6 +26,7 @@
 #include <commands/Parser.h>
 #include <commands/GraphExporter.h>
 #include <commands/ObjectAnnotationList.h>
+#include <commands/ConfigurationReader.h>
 
 #include <iostream>
 #include <map>
@@ -75,6 +76,8 @@ int main(int argc,char**argv){
 	dispatcher["describe-json-file"]=&parser;
 	GraphExporter graphExporter;
 	dispatcher["describe-map-objects"]=&graphExporter;
+	ConfigurationReader configurationReader;
+	dispatcher["describe-configuration"]=&configurationReader;
 
 	if(argc==1){
 		showUsage(dispatcher);

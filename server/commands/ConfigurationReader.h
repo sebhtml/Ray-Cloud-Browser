@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,36 +15,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _JSONParser_h
-#define _JSONParser_h
+#ifndef _ConfigurationReader_h_
+#define _ConfigurationReader_h_
 
-#include "JSONNode.h"
-#include <storage/Mapper.h>
+#include "CommandInterface.h"
 
-#include <string>
-#include <vector>
-using namespace std;
+class ConfigurationReader: public CommandInterface{
 
-/**
- * \author Sébastien Boisvert
- */
-class JSONParser{
-	JSONNode m_root;
-
-	int m_fileSize;
-	const char*m_file;
-
-	Mapper m_mapper;
 public:
-
-	JSONParser();
-
-	void parse(const char*file);
-	void printFile();
-	void destroy();
-
-	JSONNode*getNode();
+	int call(int argc,char**argv);
 };
 
 #endif
-

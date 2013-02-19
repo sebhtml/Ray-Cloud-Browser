@@ -23,7 +23,7 @@ using namespace std;
 
 #include <string.h>
 
-int JSONNode::getType(){
+int JSONNode::getType()const{
 	return m_type;
 }
 
@@ -43,7 +43,6 @@ void JSONNode::parseContent(){
 		parseInteger();
 	else if(m_type==JSONNode_TYPE_DOUBLE)
 		parseDouble();
-
 }
 
 void JSONNode::parseObject(){
@@ -197,11 +196,11 @@ void JSONNode::create(int type,const char*content,int start,int end){
 	parseContent();
 }
 
-int JSONNode::getStart(){
+int JSONNode::getStart()const{
 	return m_start;
 }
 
-int JSONNode::getEnd(){
+int JSONNode::getEnd()const{
 	return m_end;
 }
 
@@ -367,7 +366,7 @@ void JSONNode::debug(){
 	m_debug=!m_debug;
 }
 
-void JSONNode::print(int depth){
+void JSONNode::print(int depth)const{
 
 	if(m_type==JSONNode_TYPE_OBJECT){
 
@@ -403,12 +402,12 @@ void JSONNode::print(int depth){
 	}
 }
 
-void JSONNode::addSpaces(int count){
+void JSONNode::addSpaces(int count)const{
 	while(count--)
 		cout<<"   ";
 }
 
-bool JSONNode::isDigitSymbol(char symbol){
+bool JSONNode::isDigitSymbol(char symbol)const{
 // TODO: don't allow '-' inside a number
 	if(
 	symbol=='-'
@@ -427,32 +426,55 @@ bool JSONNode::isDigitSymbol(char symbol){
 	return false;
 }
 
-int64_t JSONNode::getInteger(){
+int64_t JSONNode::getInteger()const{
 	return m_integerContent;
 }
 
-string*JSONNode::getString(){
-	return &m_stringContent;
+const char*JSONNode::getString()const{
+	return m_stringContent.c_str();
 }
 
-JSONNode*JSONNode::getArrayElement(int index){
+const JSONNode*JSONNode::getArrayElement(int index)const{
 	return &(m_arrayContent[index]);
 }
 
-JSONNode*JSONNode::getObjectKey(int index){
+const JSONNode*JSONNode::getObjectKey(int index)const{
 	return &(m_associativeKeyContent[index]);
 }
 
-JSONNode*JSONNode::getObjectValue(int index){
+const JSONNode*JSONNode::getObjectValue(int index)const{
 	return &(m_associativeValueContent[index]);
 }
 
-int JSONNode::getArraySize(){
+int JSONNode::getArraySize()const{
 	return m_arrayContent.size();
 }
 
-int JSONNode::getObjectSize(){
+int JSONNode::getObjectSize()const{
 	return m_associativeKeyContent.size();
 }
 
+void JSONNode::destroy(){
 
+	m_associativeKeyContent.clear();
+	m_associativeValueContent.clear();
+	m_arrayContent.clear();
+	m_stringContent.clear();
+
+	m_type=JSONNode_TYPE_NULL;
+}
+
+const JSONNode*JSONNode::getObjectValueForKey(const char*key)const{
+	int keys=getObjectSize();
+	int match=0;
+
+	for(int i=0;i<keys;i++){
+		const char*keyValue=getObjectKey(i)->getString();
+
+		if(strcmp(keyValue,key)==match){
+			return getObjectValue(i);
+		}
+	}
+
+	return NULL;
+}

@@ -52,3 +52,7 @@ JSONParser::JSONParser(){
 JSONNode*JSONParser::getNode(){
 	return &m_root;
 }
+
+void JSONParser::destroy(){
+	m_root.destroy();
+}

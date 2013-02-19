@@ -15,35 +15,34 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _JSONParser_h
-#define _JSONParser_h
+#ifndef _Configuration_h
+#define _Configuration_h
 
-#include "JSONNode.h"
-#include <storage/Mapper.h>
+#include <JSONParser.h>
 
-#include <string>
-#include <vector>
 using namespace std;
 
 /**
+ * This is the class in front of the configuration.
+ *
  * \author Sébastien Boisvert
  */
-class JSONParser{
-	JSONNode m_root;
+class Configuration{
+	JSONParser m_parser;
+	JSONNode*m_root;
 
-	int m_fileSize;
-	const char*m_file;
-
-	Mapper m_mapper;
+	const JSONNode*getMap(int map)const;
+	const JSONNode*getMaps()const;
+	const JSONNode*getSections(int map)const;
 public:
+	Configuration();
+	void open(const char*file);
+	void close(const char*file);
+	const char*getMapFile(int map)const;
+	const char*getSectionFile(int map,int section)const;
 
-	JSONParser();
-
-	void parse(const char*file);
-	void printFile();
-	void destroy();
-
-	JSONNode*getNode();
+	int getNumberOfMaps()const;
+	int getNumberOfSections(int map)const;
 };
 
 #endif

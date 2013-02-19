@@ -12,7 +12,7 @@ TARGETS=RayCloudBrowser.cgi RayCloudBrowser-client
 
 STORAGE= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o \
 storage/PathDatabase.o storage/AnnotationEngine.o \
-storage/LocationAnnotation.o storage/Annotation.o
+storage/LocationAnnotation.o storage/Annotation.o storage/Configuration.o
 
 ACTIONS= actions/WebAction.o actions/StoreRequest.o actions/RegionVisitor.o \
 actions/EarlyExplorer.o actions/MapList.o actions/RegionClerk.o actions/MapSpecialist.o \
@@ -23,7 +23,8 @@ SERVICE= JSONParser.o JSONNode.o WebService.o
 COMMANDS= commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o \
 commands/Explorer.o commands/PathProbe.o \
 commands/Parser.o commands/GraphExporter.o commands/AnnotationManager.o \
-commands/AnnotationReporter.o commands/MapDescriber.o commands/ObjectAnnotationList.o
+commands/AnnotationReporter.o commands/MapDescriber.o commands/ObjectAnnotationList.o \
+commands/ConfigurationReader.o
 
 LIBRARY_OBJECTS= $(STORAGE) $(ACTIONS) $(SERVICE) $(COMMANDS)
 

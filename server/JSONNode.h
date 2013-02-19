@@ -23,6 +23,7 @@
 #define JSONNode_TYPE_STRING 2
 #define JSONNode_TYPE_INTEGER 3
 #define JSONNode_TYPE_DOUBLE 4
+#define JSONNode_TYPE_NULL 5
 
 #include <string>
 #include <vector>
@@ -70,27 +71,29 @@ class JSONNode{
 	void pullInteger(JSONNode*node,int position);
 	void pullDouble(JSONNode*node,int position);
 
-	int getStart();
-	int getEnd();
+	int getStart()const;
+	int getEnd()const;
 
-	void addSpaces(int space);
-
-	bool isDigitSymbol(char symbol);
+	void addSpaces(int space)const;
+	bool isDigitSymbol(char symbol)const;
 
 public:
 
 	JSONNode();
 	void create(int type,const char*content,int start,int end);
 	void debug();
-	void print(int depth);
-	int getType();
-	int64_t getInteger();
-	string*getString();
-	JSONNode*getArrayElement(int index);
-	JSONNode*getObjectKey(int index);
-	JSONNode*getObjectValue(int index);
-	int getArraySize();
-	int getObjectSize();
+	void print(int depth)const;
+	int getType()const;
+	int64_t getInteger()const;
+	const char*getString()const;
+	const JSONNode*getArrayElement(int index)const;
+	const JSONNode*getObjectKey(int index)const;
+	const JSONNode*getObjectValue(int index)const;
+	const JSONNode*getObjectValueForKey(const char*key)const;
+	int getArraySize()const;
+	int getObjectSize()const;
+
+	void destroy();
 };
 
 #endif
