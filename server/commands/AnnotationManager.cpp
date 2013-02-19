@@ -17,8 +17,6 @@
 
 #include "AnnotationManager.h"
 
-#include <storage/GraphDatabase.h>
-#include <storage/PathDatabase.h>
 #include <storage/AnnotationEngine.h>
 
 #include <iostream>
@@ -49,65 +47,7 @@ int AnnotationManager::call(int argc,char**argv){
 	const char*sectionFile=argv[2];
 	int sectionIndex=atoi(argv[3]);
 
-	GraphDatabase graphReader;
-	graphReader.openFile(mapFile);
+	AnnotationEngine annotationProcessor;
 
-	if(graphReader.hasError())
-		return 1;
-
-	AnnotationEngine annotationEngine;
-	annotationEngine.openAnnotationFileForMap(&graphReader,true);
-
-	if(annotationEngine.hasError())
-		return 1;
-
-	PathDatabase pathReader;
-	pathReader.openFile(sectionFile);
-
-	if(pathReader.hasError())
-		return 1;
-
-	int kmerLength=graphReader.getKmerLength();
-
-	uint64_t regions=pathReader.getEntries();
-
-	uint64_t regionIndex=0;
-
-	cout<<"Map: "<<graphReader.getFileName()<<" Objects: "<<graphReader.getEntries()<<endl;
-	cout<<"Section: "<<sectionIndex<<" "<<pathReader.getFileName()<<" Objects: "<<regions<<endl;
-	cout<<"Annotations: "<<annotationEngine.getFileName()<<endl;
-
-	while(regionIndex<regions){
-
-		int regionLength=pathReader.getSequenceLength(regionIndex)-kmerLength+1;
-
-		char sequence[1024];
-
-		for(int locationIndex=0;locationIndex<regionLength;locationIndex++){
-
-			pathReader.getKmer(regionIndex,kmerLength,locationIndex,sequence);
-
-			LocationAnnotation locationObject;
-			locationObject.constructor(sectionIndex,regionIndex,locationIndex);
-
-			annotationEngine.addLocation(sequence,&locationObject);
-
-#if 0
-			if(locationIndex%1000!=0)
-				continue;
-
-			cout<<"DEBUG Object: "<<sequence;
-			cout<<" Section: "<<sectionIndex<<" Region: "<<regionIndex;
-			cout<<" Location: "<<locationIndex<<endl;
-#endif
-		}
-
-		regionIndex++;
-	}
-
-	graphReader.closeFile();
-	pathReader.closeFile();
-	annotationEngine.closeFile();
-
-	return 0;
+	return annotationProcessor.index(mapFile,sectionFile,sectionIndex);
 }

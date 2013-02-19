@@ -67,6 +67,8 @@ public:
 	uint64_t getFreeBytes()const;
 	const char*getFileName()const;
 	bool hasError()const;
+
+	int index(const char*mapFile,const char*sectionFile,int sectionIndex);
 };
 
 #endif
