@@ -35,7 +35,6 @@ int PathProbe::call(int argc,char**argv){
 
 	if(argc==1){
 		cout<<"Operate a indexed fasta file with various commands"<<endl;
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 

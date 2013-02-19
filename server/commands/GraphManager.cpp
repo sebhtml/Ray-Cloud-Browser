@@ -31,7 +31,6 @@ int GraphManager::call(int argc,char**argv){
 	if(argc!=3){
 		cout<<"Create an binary read-only index on a Ray-compatible kmers.txt for fast queries"<<endl;
 
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" kmers.txt.sorted kmers.txt.dat"<<endl;

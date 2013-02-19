@@ -33,7 +33,6 @@ int AnnotationManager::call(int argc,char**argv){
 	if(argc!=4){
 		cout<<"Create a reverse-index for annotations."<<endl;
 
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" map.dat section.dat SectionIndex"<<endl;

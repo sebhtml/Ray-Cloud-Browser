@@ -47,7 +47,6 @@ int Explorer::call(int argc,char**argv){
 
 	if(argc!=4){
 		cout<<"Obtain nearby biological objects in a indexed graph"<<endl;
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" kmers.dat sequence.fasta maximumDistance"<<endl;

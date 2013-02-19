@@ -30,7 +30,6 @@ int ObjectAnnotationList::call(int argc,char**argv){
 	if(argc!=3){
 		cout<<"Get annotations of a map object."<<endl;
 
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" map.dat key"<<endl;

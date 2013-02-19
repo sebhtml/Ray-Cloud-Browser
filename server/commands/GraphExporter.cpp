@@ -26,7 +26,6 @@ int GraphExporter::call(int argc,char**argv){
 
 	if(argc!=2){
 		cout<<"Generate a text dump of a packed graph."<<endl;
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 		cout<<"The index must be generated with "<<PROGRAM_NAME<<" createGraphDatabase"<<endl;
 

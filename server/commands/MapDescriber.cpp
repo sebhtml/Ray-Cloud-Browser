@@ -29,7 +29,6 @@ int MapDescriber::call(int argc,char**argv){
 
 	if(argc!=2){
 		cout<<"Describe a map file."<<endl;
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<"A map.dat file is usually generated from a sorted kmers.txt"<<endl;
 
 		cout<<endl;

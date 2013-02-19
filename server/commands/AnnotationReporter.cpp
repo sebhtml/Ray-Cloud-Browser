@@ -30,7 +30,6 @@ int AnnotationReporter::call(int argc,char**argv){
 	if(argc!=2){
 		cout<<"Get the status of annotations of a map file."<<endl;
 
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" map.dat"<<endl;

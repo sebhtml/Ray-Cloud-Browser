@@ -34,7 +34,6 @@ int ConfigurationReader::call(int argc,char**argv){
 
 	if(argc!=2){
 		cout<<"Get information about a configuration file."<<endl;
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 
 		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" config.json"<<endl;

@@ -26,7 +26,6 @@ int ObjectFetcher::call(int argc,char**argv){
 
 	if(argc!=3){
 		cout<<"Fetch information about a k-mer"<<endl;
-		cout<<"Author: Sébastien Boisvert"<<endl;
 		cout<<endl;
 		cout<<"The index must be generated with "<<PROGRAM_NAME<<" createGraphDatabase"<<endl;
 
