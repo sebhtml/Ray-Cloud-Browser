@@ -39,16 +39,28 @@ PathOperator.prototype.startOnPath=function(locationData){
 	this.regionLength=this.locationData["regionLength"];
 	this.currentLocation=this.locationData["location"];
 
-	locationData["readahead"]=512;
 
 	this.dataStore.clear();
 	this.graphOperator.clear();
 
+	var parameters=this.getParametersForRegion();
+
 	var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
-				this,this.dataStore,locationData);
+				this,this.dataStore,parameters);
 
 	message.send();
+}
 
+PathOperator.prototype.getParametersForRegion=function(){
+	var parameters=new Object();
+	parameters["map"]=this.locationData["map"];
+	parameters["section"]=this.locationData["section"];
+	parameters["region"]=this.locationData["region"];
+	parameters["location"]=this.locationData["location"];
+	parameters["readahead"]=512;
+	parameters["kmerLength"]=this.locationData["kmerLength"];
+
+	return parameters;
 }
 
 PathOperator.prototype.receiveAndProcessMessage=function(message){
@@ -182,26 +194,27 @@ PathOperator.prototype.doReadahead=function(){
 	var position=this.currentLocation;
 
 	var buffer=1024;
-	//console.log("doReadahead position "+position+" lastLeft= "+this.lastLeft+" lastRight= "+this.lastRight);
 
 	if(position<this.lastLeft+buffer && this.lastLeft!=0){
 
-		//console.log("doReadahead on the left with lastLeft="+this.lastLeft+" and position "+position);
 		this.active=true;
 		this.locationData["location"]=this.lastLeft;
 
+		var parameters=this.getParametersForRegion();
+
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
-				this,this.dataStore,this.locationData);
+				this,this.dataStore,parameters);
 		message.send();
 
 	}else if(position > this.lastRight-buffer && this.lastRight!=this.regionLength-1){
 
-		//console.log("doReadahead on the right with lastRight="+this.lastRight+" and position "+position);
 		this.active=true;
 		this.locationData["location"]=this.lastRight;
 
+		var parameters=this.getParametersForRegion();
+
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
-				this,this.dataStore,this.locationData);
+				this,this.dataStore,parameters);
 		message.send();
 	}
 }
