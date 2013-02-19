@@ -90,3 +90,11 @@ void LocationAnnotation::printXML()const{
 	cout<<" location=\""<<m_location<<"\"";
 	cout<<" />"<<endl;
 }
+
+void LocationAnnotation::printJSON()const{
+	cout<<"{ \"type\": \"LocationAnnotation\",";
+	cout<<" \"section\": "<<m_section<<", ";
+	cout<<" \"region\": "<<m_region<<", ";
+	cout<<" \"location\": "<<m_location<<"";
+	cout<<" }";
+}

@@ -45,6 +45,7 @@ public:
 	void write(Annotation*object)const;
 
 	void printXML()const;
+	void printJSON()const;
 };
 
 #endif

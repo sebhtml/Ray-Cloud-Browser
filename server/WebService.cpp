@@ -55,6 +55,7 @@ WebService::WebService(){
 	registerAction("RAY_MESSAGE_TAG_GET_MAPS",&m_mapList);
 	registerAction("RAY_MESSAGE_TAG_GET_REGIONS",&m_regionClerk);
 	registerAction("RAY_MESSAGE_TAG_GET_MAP_INFORMATION",&m_mapSpecialist);
+	registerAction("RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS",&m_annotationFetcher);
 }
 
 void WebService::registerAction(const char*actionName,WebAction*actionHandler){

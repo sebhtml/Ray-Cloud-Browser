@@ -25,6 +25,7 @@
 #include <actions/EarlyExplorer.h>
 #include <actions/MapList.h>
 #include <actions/MapSpecialist.h>
+#include <actions/AnnotationFetcher.h>
 
 #include <map>
 #include <string>
@@ -66,6 +67,7 @@ class WebService{
 	EarlyExplorer m_earlyExplorer;
 	MapList m_mapList;
 	MapSpecialist m_mapSpecialist;
+	AnnotationFetcher m_annotationFetcher;
 	RegionClerk m_regionClerk;
 
 	bool dispatchQuery(const char*tag,const char*queryString);
