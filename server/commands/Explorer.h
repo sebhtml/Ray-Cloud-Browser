@@ -20,8 +20,19 @@
 
 #include "CommandInterface.h"
 
+#include <map>
+#include <string>
+#include <set>
+using namespace std;
+
+/**
+ * Obtain nearby biological objects in a indexed graph.
+ *
+ * \author Sébastien Boisvert
+ */
 class Explorer: public CommandInterface{
 
+	void addKey(map<string,int>*objectsToProcess,string*sequenceKey,int distance,int maximumDistance,set<string>*visited);
 public:
 	int call(int argc,char**argv);
 };

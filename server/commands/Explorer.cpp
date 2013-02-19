@@ -29,7 +29,7 @@
 #include <fstream>
 using namespace std;
 
-void addKey(map<string,int>*objectsToProcess,string*sequenceKey,int distance,int maximumDistance,set<string>*visited){
+void Explorer::addKey(map<string,int>*objectsToProcess,string*sequenceKey,int distance,int maximumDistance,set<string>*visited){
 
 	if(visited->count(*sequenceKey)>0)
 		return;
