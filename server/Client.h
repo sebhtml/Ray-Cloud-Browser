@@ -20,6 +20,19 @@
 
 #include <commands/CommandInterface.h>
 
+#include <commands/ObjectFetcher.h>
+#include <commands/GraphManager.h>
+#include <commands/AnnotationManager.h>
+#include <commands/AnnotationReporter.h>
+#include <commands/PathHelper.h>
+#include <commands/Explorer.h>
+#include <commands/MapDescriber.h>
+#include <commands/PathProbe.h>
+#include <commands/Parser.h>
+#include <commands/GraphExporter.h>
+#include <commands/ObjectAnnotationList.h>
+#include <commands/ConfigurationReader.h>
+
 #include <map>
 #include <string>
 using namespace std;
@@ -31,8 +44,26 @@ using namespace std;
  */
 class Client{
 
-	void showUsage(map<string,CommandInterface*>&dispatcher);
+	PathHelper m_pathHelper;
+	GraphManager m_graphManager;
+	AnnotationManager m_annotationManager;
+	ObjectFetcher m_objectFetcher;
+	ObjectAnnotationList m_objectAnnotationList;
+	AnnotationReporter m_annotationReporter;
+	Explorer m_explorer;
+	MapDescriber m_mapDescriber;
+	PathProbe m_pathProbe;
+	Parser m_parser;
+	ConfigurationReader m_configurationReader;
+	GraphExporter m_graphExporter;
+
+	map<string,CommandInterface*> m_dispatcher;
+
+	void showUsage();
+	void registerAction(const char*actionName,CommandInterface*actionHandler);
 public:
+
+	Client();
 	int call(int argc,char**argv);
 };
 
