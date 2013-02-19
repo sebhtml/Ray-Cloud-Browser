@@ -12,13 +12,16 @@ TARGETS=RayCloudBrowser.cgi RayCloudBrowser-client
 
 STORAGE= storage/GraphDatabase.o storage/VertexObject.o storage/Mapper.o \
 storage/PathDatabase.o storage/AnnotationEngine.o \
-storage/LocationAnnotation.o storage/Annotation.o storage/Configuration.o
+storage/LocationAnnotation.o storage/Annotation.o storage/Configuration.o \
+JSONParser.o JSONNode.o
 
 ACTIONS= actions/WebAction.o actions/StoreRequest.o actions/RegionVisitor.o \
 actions/EarlyExplorer.o actions/MapList.o actions/RegionClerk.o actions/MapSpecialist.o \
 actions/AnnotationFetcher.o
 
-SERVICE= JSONParser.o JSONNode.o WebService.o
+SERVICE= webServer_main.o WebService.o
+
+CLIENT= client_main.o Client.o
 
 COMMANDS= commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o \
 commands/Explorer.o commands/PathProbe.o \
@@ -26,27 +29,25 @@ commands/Parser.o commands/GraphExporter.o commands/AnnotationManager.o \
 commands/AnnotationReporter.o commands/MapDescriber.o commands/ObjectAnnotationList.o \
 commands/ConfigurationReader.o
 
-LIBRARY_OBJECTS= $(STORAGE) $(ACTIONS) $(SERVICE) $(COMMANDS)
-
 %.o: %.cpp
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) -c $? -o $@
 
 all: $(TARGETS)
 
-RayCloudBrowser.cgi: webServer_main.o $(LIBRARY_OBJECTS)
+RayCloudBrowser.cgi: $(SERVICE) $(STORAGE) $(ACTIONS)
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 	$(Q)chmod g-w $@
 	$(Q)chmod o-w $@
 
-RayCloudBrowser-client: client_main.o $(LIBRARY_OBJECTS)
+RayCloudBrowser-client: $(CLIENT) $(STORAGE) $(COMMANDS)
 	$(Q)echo "CXX $@"
 	$(Q)$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:
 	$(Q)echo "RM"
-	$(Q)$(RM) -f $(TARGETS) $(LIBRARY_OBJECTS) *.o
+	$(Q)$(RM) -f $(TARGETS) $(STORAGE) $(SERVICE) $(CLIENT) $(COMMANDS) $(ACTIONS)
 
 check: devel test-first test-store test-not-found
 

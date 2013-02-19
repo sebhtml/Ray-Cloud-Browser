@@ -15,11 +15,25 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Client.h"
+#ifndef _Client_h
+#define _Client_h
 
-int main(int argc,char**argv){
+#include <commands/CommandInterface.h>
 
-	Client client;
+#include <map>
+#include <string>
+using namespace std;
 
-	return client.call(argc,argv);
-}
+/**
+ * Command-line client.
+ *
+ * \author Sébastien Boisvert
+ */
+class Client{
+
+	void showUsage(map<string,CommandInterface*>&dispatcher);
+public:
+	int call(int argc,char**argv);
+};
+
+#endif
