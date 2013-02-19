@@ -188,6 +188,9 @@ void AnnotationEngine::checkFileAvailability(){
 	if(fileIsThere)
 		return;
 
+	if(!m_enableWriteOperations)
+		return;
+
 	FILE*output=fopen(m_fileName.c_str(),"w");
 
 	fwrite(&m_magicNumber,sizeof(uint32_t),1,output);
@@ -253,6 +256,16 @@ void AnnotationEngine::growFile(){
 void AnnotationEngine::openFileForOperations(){
 	m_active=false;
 
+	ifstream test(m_fileName.c_str());
+
+	bool fileIsAvailable=false;
+	if(test)
+		fileIsAvailable=true;
+	test.close();
+
+	if(!fileIsAvailable)
+		return;
+
 	m_mapper.enableReadOperations();
 
 	if(m_enableWriteOperations){
@@ -268,12 +281,20 @@ void AnnotationEngine::openFileForOperations(){
 }
 
 uint64_t AnnotationEngine::getEntries()const{
+
 	uint64_t entries=0;
+
+	if(!m_active)
+		return entries;
+
 	memcpy(&entries,m_content+OFFSET_ENTRIES,sizeof(uint64_t));
 	return entries;
 }
 
 uint64_t AnnotationEngine::getFreeBytes()const{
+
+	if(!m_active)
+		return 0;
 
 	uint64_t heap=getHeapAddress();
 
