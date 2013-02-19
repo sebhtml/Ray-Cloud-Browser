@@ -18,18 +18,29 @@
 #include "MapSpecialist.h"
 
 #include <storage/GraphDatabase.h>
+#include <storage/Configuration.h>
 
 #include <iostream>
 using namespace std;
 
 bool MapSpecialist::call(const char*queryString){
 
-	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
-
-	bool foundMap=getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
+	int mapIndex=0;
+	bool foundMap=getValueAsInteger(queryString,"map",&mapIndex);
 
 	if(!foundMap)
 		return false;
+
+	Configuration configuration;
+	configuration.open(CONFIG_FILE);
+
+	int numberOfMaps=configuration.getNumberOfMaps();
+
+	if(!(mapIndex<numberOfMaps))
+		return false;
+
+	const char*dataFile=configuration.getMapFile(mapIndex);
+	configuration.close();
 
 // fail in silence
 	if(!isAllowedFile(dataFile))
@@ -42,7 +53,7 @@ bool MapSpecialist::call(const char*queryString){
 		return false;
 
 	cout<<"{"<<endl;
-	cout<<"\"map\": \""<<dataFile<<"\","<<endl;
+	cout<<"\"map\": "<<mapIndex<<","<<endl;
 	cout<<"\"kmerLength\": "<<database.getKmerLength()<<","<<endl;
 	cout<<"\"entries\": "<<database.getEntries()<<endl;
 	cout<<"}"<<endl;

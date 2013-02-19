@@ -27,7 +27,6 @@ function DataStore(){
 
 	this.firstKmerReceived=false;
 	this.pendingRequests=0;
-	this.mapFile="/dev/null";
 
 	this.clear();
 
@@ -237,8 +236,12 @@ DataStore.prototype.processMessage=function(message){
 	}
 }
 
-DataStore.prototype.setMapFile=function(mapFile){
-	this.mapFile=mapFile;
+DataStore.prototype.setMapIndex=function(map){
+	this.mapIndex=map;
+}
+
+DataStore.prototype.getMapIndex=function(){
+	return this.mapIndex;
 }
 
 DataStore.prototype.forwardMessageOnTheWeb=function(message){
@@ -272,7 +275,7 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 		}
 
 		var parameters=new Object();
-		parameters["map"]=this.mapFile;
+		parameters["map"]=this.mapIndex;
 		parameters["object"]=kmerSequence;
 		parameters["depth"]=this.defaultDepth;
 
@@ -342,8 +345,4 @@ DataStore.prototype.hasPendingQueries=function(){
 
 DataStore.prototype.getDefaultDepth=function(){
 	return this.defaultDepth;
-}
-
-DataStore.prototype.getMapFile=function(){
-	return this.mapFile;
 }

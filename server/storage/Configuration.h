@@ -37,7 +37,7 @@ class Configuration{
 public:
 	Configuration();
 	void open(const char*file);
-	void close(const char*file);
+	void close();
 	const char*getMapFile(int map)const;
 	const char*getSectionFile(int map,int section)const;
 

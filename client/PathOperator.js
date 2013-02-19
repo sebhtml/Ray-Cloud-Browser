@@ -157,16 +157,12 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 		}
 
 		var parameters=new Object();
-		parameters["map"]=this.dataStore.getMapFile();
+		parameters["map"]=this.dataStore.getMapIndex();
 		parameters["object"]=kmerSequence;
 		parameters["depth"]=this.dataStore.getDefaultDepth();
 
-		//console.log("kmerSequence= "+kmerSequence);
-
 		var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
 		this.dataStore.sendMessageOnTheWeb(theMessage);
-
-		//console.log(JSON.stringify(message.getContent()));
 	}
 }
 
@@ -177,7 +173,6 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 PathOperator.prototype.doReadahead=function(){
 
 	if(this.active){
-		//console.log("active.");
 		return;
 	}
 

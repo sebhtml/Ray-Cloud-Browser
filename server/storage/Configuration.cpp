@@ -39,7 +39,9 @@ void Configuration::open(const char*file){
 	m_root=m_parser.getNode();
 }
 
-void Configuration::close(const char*file){
+void Configuration::close(){
+	m_parser.destroy();
+	m_root->destroy();
 }
 
 const char*Configuration::getMapFile(int map)const{

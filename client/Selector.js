@@ -313,7 +313,7 @@ Selector.prototype.getLocationData=function(){
 	parameters["location"]=this.locationIndex;
 	parameters["kmerLength"]=this.mapFileData["kmerLength"];
 	parameters["regionLength"]=this.regionLength;
-	parameters["map"]=this.mapData[this.mapIndex]["file"];
+	parameters["map"]=this.mapIndex;
 
 	parameters["mapName"]=this.mapData[this.mapIndex]["name"];
 	parameters["sectionName"]=this.mapData[this.mapIndex]["sections"][this.sectionIndex]["name"];
@@ -355,7 +355,7 @@ Selector.prototype.selectMapIndex=function(index){
 // it is like a readahead messaging
 
 	var parameters=new Object();
-	parameters["map"]=this.mapData[this.mapIndex]["file"];
+	parameters["map"]=this.mapIndex;
 
 	var message=new Message(RAY_MESSAGE_TAG_GET_MAP_INFORMATION,this,this.dataStore,parameters);
 	this.dataStore.receiveAndProcessMessage(message);

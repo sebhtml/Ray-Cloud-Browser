@@ -59,5 +59,7 @@
 // the maximum length of a object, measured in nucleotide
 #define CONFIG_MAXKMERLENGTH 256
 
+#define CONFIG_FILE "config.json"
+
 #endif
 

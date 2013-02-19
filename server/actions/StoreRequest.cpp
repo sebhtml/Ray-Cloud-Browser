@@ -18,6 +18,7 @@
 #include "StoreRequest.h"
 
 #include <storage/GraphDatabase.h>
+#include <storage/Configuration.h>
 
 #include <iostream>
 #include <vector>
@@ -31,25 +32,35 @@ using namespace std;
  */
 bool StoreRequest::call(const char*queryString){
 
-	char dataFile[CONFIG_MAXIMUM_VALUE_LENGTH];
-	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
-
-	const char*key=NULL;
-
-	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
-	bool foundMap=getValue(queryString,"map",dataFile,CONFIG_MAXIMUM_VALUE_LENGTH);
-		
-	if(!foundObject)
-		return false;
+	int mapIndex=0;
+	bool foundMap=getValueAsInteger(queryString,"map",&mapIndex);
 
 	if(!foundMap)
 		return false;
+
+	Configuration configuration;
+	configuration.open(CONFIG_FILE);
+
+	int numberOfMaps=configuration.getNumberOfMaps();
+
+	if(!(mapIndex<numberOfMaps))
+		return false;
+
+	const char*dataFile=configuration.getMapFile(mapIndex);
+	configuration.close();
 
 // fail in silence
 	if(!isAllowedFile(dataFile))
 		return false;
 
-	key=requestedObject;
+	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
+
+	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	if(!foundObject)
+		return false;
+
+	const char*key=requestedObject;
 
 	if(key==NULL)
 		return false;
@@ -88,7 +99,7 @@ bool StoreRequest::call(const char*queryString){
 	bool printedFirst=false;
 
 	while(head<(int)productionQueue.size() && (int)visited.size()<maximumToVisit){
-	
+
 		string*stringObject=&(productionQueue[head]);
 
 		head++;

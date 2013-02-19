@@ -101,14 +101,16 @@ bool WebAction::isAllowedFile(const char*file)const{
 #endif
 }
 
-bool WebAction::getIntegerValue(const char*query,const char*name,int*value)const{
+bool WebAction::getValueAsInteger(const char*query,const char*name,int*value)const{
 	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
 	bool found=getValue(query,name,buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!found)
-		return found;
+		return false;
 
 	int result=atoi(buffer);
 
-	return result;
+	(*value)=result;
+
+	return true;
 }
