@@ -50,7 +50,10 @@ void AnnotationEngine::openAnnotationFileForMap(GraphDatabase*graph,bool enableW
 	checkFileAvailability();
 
 	openFileForOperations();
-	
+
+	if(!m_active)
+		return;
+
 	uint32_t magicNumber=0;
 	memcpy(&magicNumber,m_content+OFFSET_MAGIC_NUMBER,sizeof(uint32_t));
 
