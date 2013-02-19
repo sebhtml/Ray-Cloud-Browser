@@ -34,12 +34,16 @@ class Configuration{
 	const JSONNode*getMap(int map)const;
 	const JSONNode*getMaps()const;
 	const JSONNode*getSections(int map)const;
+	const char*getMapAttribute(int map,const char*key)const;
+	const char*getSectionAttribute(int map,int section,const char*key)const;
 public:
 	Configuration();
 	void open(const char*file);
 	void close();
 	const char*getMapFile(int map)const;
 	const char*getSectionFile(int map,int section)const;
+	const char*getMapName(int map)const;
+	const char*getSectionName(int map,int section)const;
 
 	int getNumberOfMaps()const;
 	int getNumberOfSections(int map)const;

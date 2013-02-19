@@ -18,6 +18,7 @@
 #include "MapList.h"
 
 #include <JSONParser.h>
+#include <storage/Configuration.h>
 
 #include <iostream>
 using namespace std;
@@ -28,25 +29,36 @@ using namespace std;
 bool MapList::call(const char*queryString){
 
 // We make sure that the configuration is valid...
-	const char*configuration="config.json";
-	JSONParser parser;
-	parser.parse(configuration);
+	Configuration configuration;
+	configuration.open(CONFIG_FILE);
 
-	//parser.printFile();
+	cout<<"{\"maps\": ["<<endl;
 
-	//JSONNode*node=parser.getNode();
+	int numberOfMaps=configuration.getNumberOfMaps();
 
-// just dump directly the json file
-	Mapper theMapper;
+	for(int i=0;i<numberOfMaps;i++){
+		cout<<"{	\"name\": \""<<configuration.getMapName(i)<<"\","<<endl;
 
-	theMapper.enableReadOperations();
+		int numberOfSections=configuration.getNumberOfSections(i);
 
-	char*content=(char*)theMapper.mapFile(configuration);
-	cout<<content;
+		cout<<"	\"sections\": ["<<endl;
 
-	theMapper.unmapFile();
+		for(int j=0;j<numberOfSections;j++){
+			cout<<"		{ \"name\": \""<<configuration.getSectionName(i,j)<<"\", ";
+			cout<<" \"file\": \""<<configuration.getSectionFile(i,j)<<"\"}";
+			if(j!=numberOfSections-1)
+				cout<<",";
+			cout<<endl;
+		}
 
+		cout<<"] }";
+
+		if(i!=numberOfMaps-1)
+			cout<<",";
+
+		cout<<endl;
+	}
+
+	cout<<"]}"<<endl;
 	return true;
 }
-
-

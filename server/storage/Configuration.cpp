@@ -46,12 +46,21 @@ void Configuration::close(){
 
 const char*Configuration::getMapFile(int map)const{
 
+	return getMapAttribute(map,"file");
+}
+
+const char*Configuration::getMapAttribute(int map,const char*key)const{
 	const JSONNode*mapObject=getMap(map);
 
 	if(mapObject==NULL)
 		return NULL;
 
-	return mapObject->getObjectValueForKey("file")->getString();
+	const JSONNode*keyObject=mapObject->getObjectValueForKey(key);
+
+	if(keyObject==NULL)
+		return NULL;
+
+	return keyObject->getString();
 }
 
 const JSONNode*Configuration::getMap(int map)const{
@@ -86,22 +95,7 @@ const JSONNode*Configuration::getSections(int map)const{
 
 const char*Configuration::getSectionFile(int map,int section)const{
 
-	const JSONNode*sections=getSections(map);
-
-	if(!(section<sections->getArraySize()))
-		return NULL;
-
-	const JSONNode*sectionObject=sections->getArrayElement(section);
-
-	if(sectionObject==NULL)
-		return NULL;
-
-	const JSONNode*fileObject=sectionObject->getObjectValueForKey("file");
-
-	if(fileObject==NULL)
-		return NULL;
-
-	return fileObject->getString();
+	return getSectionAttribute(map,section,"file");
 }
 
 const JSONNode*Configuration::getMaps()const{
@@ -140,4 +134,34 @@ int Configuration::getNumberOfSections(int map)const{
 		return 0;
 
 	return sections->getArraySize();
+}
+
+const char*Configuration::getMapName(int map)const{
+
+	return getMapAttribute(map,"name");
+}
+
+const char*Configuration::getSectionName(int map,int section)const{
+
+	return getSectionAttribute(map,section,"name");
+}
+
+const char*Configuration::getSectionAttribute(int map,int section,const char*key)const{
+
+	const JSONNode*sections=getSections(map);
+
+	if(!(section<sections->getArraySize()))
+		return NULL;
+
+	const JSONNode*sectionObject=sections->getArrayElement(section);
+
+	if(sectionObject==NULL)
+		return NULL;
+
+	const JSONNode*nameObject=sectionObject->getObjectValueForKey(key);
+
+	if(nameObject==NULL)
+		return NULL;
+
+	return nameObject->getString();
 }
