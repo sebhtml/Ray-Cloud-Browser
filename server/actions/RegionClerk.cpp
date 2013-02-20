@@ -59,7 +59,8 @@ bool RegionClerk::call(const char*queryString){
 	PathDatabase mock;
 	mock.openFile(buffer);
 
-	cout<<"{ \"section\": \""<<buffer<<"\","<<endl;
+	cout<<"{ \"map\": "<<mapIndex<<","<<endl;
+	cout<<"\"section\": "<<sectionIndex<<","<<endl;
 
 	int entries=mock.getEntries();
 
