@@ -48,7 +48,6 @@ bool StoreRequest::call(const char*queryString){
 		return false;
 
 	const char*dataFile=configuration.getMapFile(mapIndex);
-	configuration.close();
 
 // fail in silence
 	if(!isAllowedFile(dataFile))
@@ -143,6 +142,7 @@ bool StoreRequest::call(const char*queryString){
 	cout<<"]}"<<endl;
 
 	database.closeFile();
+	configuration.close();
 
 	return true;
 }
