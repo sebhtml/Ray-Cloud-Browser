@@ -26,11 +26,11 @@ using namespace std;
 
 void JSONParser::parse(const char*file){
 
+	m_file=file;
 	m_mapper.enableReadOperations();
 
-	char*content=(char*)m_mapper.mapFile(file);
+	char*content=(char*)m_mapper.mapFile(m_file);
 	int start=0;
-	m_file=file;
 	m_fileSize=m_mapper.getFileSize();
 	int end=m_fileSize-1;
 
@@ -55,4 +55,8 @@ JSONNode*JSONParser::getNode(){
 
 void JSONParser::destroy(){
 	m_root.destroy();
+}
+
+const char*JSONParser::getFileName()const{
+	return m_file;
 }

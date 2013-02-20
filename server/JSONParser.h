@@ -44,6 +44,7 @@ public:
 	void destroy();
 
 	JSONNode*getNode();
+	const char*getFileName()const;
 };
 
 #endif

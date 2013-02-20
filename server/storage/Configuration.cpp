@@ -238,19 +238,25 @@ void Configuration::printXML()const{
 	int maps=getNumberOfMaps();
 
 	cout<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
-	cout<<"<ConfigurationReader>"<<endl;
+	cout<<"<object>";
+	cout<<"<configurationFile>"<<m_parser.getFileName()<<"</configurationFile>"<<endl;
+	cout<<"<maps>"<<endl;
 	for(int i=0;i<maps;i++){
-		cout<<"<map index=\""<<i<<"\" file=\""<<getMapFile(i)<<"\">"<<endl;
+		cout<<"	<map index=\""<<i<<"\" name=\""<<getMapName(i)<<"\" file=\""<<getMapFile(i)<<"\">"<<endl;
+		cout<<"		<sections>"<<endl;
 
 		int sections=getNumberOfSections(i);
 
 		for(int j=0;j<sections;j++){
 
-			cout<<"	<section index=\""<<j<<"\" file=\""<<getSectionFile(i,j)<<"\" />"<<endl;
+			cout<<"			";
+			cout<<"<section index=\""<<j<<"\" name=\""<<getSectionName(i,j)<<"\" file=\""<<getSectionFile(i,j)<<"\" />"<<endl;
 		}
 
-		cout<<"</map>"<<endl;
+		cout<<"		</sections>"<<endl;
+		cout<<"	</map>"<<endl;
 	}
 
-	cout<<"</ConfigurationReader>"<<endl;
+	cout<<"</maps>"<<endl;
+	cout<<"</object>"<<endl;
 }
