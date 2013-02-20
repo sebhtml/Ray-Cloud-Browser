@@ -18,6 +18,7 @@
 #include "Configuration.h"
 
 #include <fstream>
+#include <iostream>
 using namespace std;
 
 Configuration::Configuration(){
@@ -26,13 +27,17 @@ Configuration::Configuration(){
 
 void Configuration::open(const char*file){
 
-	ifstream f(file);
+	ifstream test2(file);
 	bool exists=false;
-	if(f)
+	if(test2)
 		exists=true;
-	f.close();
-	if(!exists)
-		return;
+	test2.close();
+
+	if(!exists){
+		ofstream initialConfiguration(file);
+		initialConfiguration<<"{ \"maps\": [ ] } ";
+		initialConfiguration.close();
+	}
 
 	m_parser.parse(file);
 
@@ -164,4 +169,88 @@ const char*Configuration::getSectionAttribute(int map,int section,const char*key
 		return NULL;
 
 	return nameObject->getString();
+}
+
+void Configuration::addMap(const char*name,const char*file){
+
+	if(m_root==NULL)
+		return;
+
+	if(m_root->getType()!=JSONNode_TYPE_OBJECT)
+		return;
+
+	JSONNode*maps=m_root->getObjectMutableValueForKey("maps");
+
+	if(maps==NULL)
+		return;
+
+	if(maps->getType()!=JSONNode_TYPE_ARRAY)
+		return;
+
+	JSONNode mapEntry;
+	mapEntry.setType(JSONNode_TYPE_OBJECT);
+
+	JSONNode nameKey;
+	nameKey.setType(JSONNode_TYPE_STRING);
+	nameKey.setString("name");
+
+	JSONNode nameValue;
+	nameValue.setType(JSONNode_TYPE_STRING);
+	nameValue.setString(name);
+
+	mapEntry.addObjectKeyAndValue(&nameKey,&nameValue);
+
+	JSONNode fileKey;
+	fileKey.setType(JSONNode_TYPE_STRING);
+	fileKey.setString("file");
+
+	JSONNode fileValue;
+	fileValue.setType(JSONNode_TYPE_STRING);
+	fileValue.setString(file);
+
+	mapEntry.addObjectKeyAndValue(&fileKey,&fileValue);
+
+	JSONNode keyForSections;
+	keyForSections.setType(JSONNode_TYPE_STRING);
+	keyForSections.setString("sections");
+
+	JSONNode valueForSections;
+	valueForSections.setType(JSONNode_TYPE_ARRAY);
+
+#if 0
+	JSONNode nullObject;
+	nullObject.setType(JSONNode_TYPE_NULL);
+
+	valueForSections.addArrayElement(&nullObject);
+#endif
+
+	mapEntry.addObjectKeyAndValue(&keyForSections,&valueForSections);
+
+	maps->addArrayElement(&mapEntry);
+
+	ofstream output(CONFIG_FILE);
+	m_root->write(&output);
+	output.close();
+}
+
+void Configuration::printXML()const{
+
+	int maps=getNumberOfMaps();
+
+	cout<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
+	cout<<"<ConfigurationReader>"<<endl;
+	for(int i=0;i<maps;i++){
+		cout<<"<map index=\""<<i<<"\" file=\""<<getMapFile(i)<<"\">"<<endl;
+
+		int sections=getNumberOfSections(i);
+
+		for(int j=0;j<sections;j++){
+
+			cout<<"	<section index=\""<<j<<"\" file=\""<<getSectionFile(i,j)<<"\" />"<<endl;
+		}
+
+		cout<<"</map>"<<endl;
+	}
+
+	cout<<"</ConfigurationReader>"<<endl;
 }

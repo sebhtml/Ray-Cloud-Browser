@@ -75,6 +75,8 @@ Client::Client(){
 	registerAction("create-section",&m_pathHelper);
 	registerAction("create-map",&m_graphManager);
 	registerAction("create-map-annotations-with-section",&m_annotationManager);
+	registerAction("create-map-annotations-with-section",&m_annotationManager);
+
 	registerAction("describe-map-object",&m_objectFetcher);
 	registerAction("describe-map-object-annotations",&m_objectAnnotationList);
 	registerAction("describe-map-annotations",&m_annotationReporter);
@@ -84,4 +86,6 @@ Client::Client(){
 	registerAction("describe-json-file",&m_parser);
 	registerAction("describe-map-objects",&m_graphExporter);
 	registerAction("describe-configuration",&m_configurationReader);
+
+	registerAction("add-map",&m_mapPusher);
 }

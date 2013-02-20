@@ -23,6 +23,10 @@ using namespace std;
 
 #include <string.h>
 
+#ifdef CONFIG_ASSERT
+#include <assert.h>
+#endif
+
 int JSONNode::getType()const{
 	return m_type;
 }
@@ -370,41 +374,46 @@ void JSONNode::print(int depth)const{
 
 	if(m_type==JSONNode_TYPE_OBJECT){
 
-		addSpaces(depth);
+		addSpaces(&cout,depth);
 		cout<<"Type: Object"<<endl;
 
 		for(int i=0;i<(int)m_associativeKeyContent.size();i++){
-			addSpaces(depth);
+
+#ifdef CONFIG_ASSERT
+			assert(m_associativeKeyContent.size()==m_associativeValueContent.size());
+#endif
+
+			addSpaces(&cout,depth);
 			cout<<"Key "<<i<<endl;
 			m_associativeKeyContent[i].print(depth+1);
 
-			addSpaces(depth);
+			addSpaces(&cout,depth);
 			cout<<"Value "<<i<<endl;
 			m_associativeValueContent[i].print(depth+1);
 		}
 	}else if(m_type==JSONNode_TYPE_STRING){
-		addSpaces(depth);
+		addSpaces(&cout,depth);
 		cout<<"Type: String"<<" Value \""<<m_stringContent<<"\""<<endl;
 	}else if(m_type==JSONNode_TYPE_INTEGER){
-		addSpaces(depth);
+		addSpaces(&cout,depth);
 		cout<<"Type: Integer"<<" Value "<<m_integerContent<<endl;
 	}else if(m_type==JSONNode_TYPE_ARRAY){
 
-		addSpaces(depth);
+		addSpaces(&cout,depth);
 		cout<<"Type: Array"<<endl;
 
 		for(int i=0;i<(int)m_arrayContent.size();i++){
-			addSpaces(depth);
+			addSpaces(&cout,depth);
 			cout<<"Value "<<i<<endl;
 			m_arrayContent[i].print(depth+1);
-
 		}
 	}
 }
 
-void JSONNode::addSpaces(int count)const{
+void JSONNode::addSpaces(ostream*output,int count)const{
+	string content="  ";
 	while(count--)
-		cout<<"   ";
+		(*output)<<content;
 }
 
 bool JSONNode::isDigitSymbol(char symbol)const{
@@ -442,6 +451,10 @@ const JSONNode*JSONNode::getObjectKey(int index)const{
 	return &(m_associativeKeyContent[index]);
 }
 
+JSONNode*JSONNode::getObjectMutableValue(int index){
+	return &(m_associativeValueContent[index]);
+}
+
 const JSONNode*JSONNode::getObjectValue(int index)const{
 	return &(m_associativeValueContent[index]);
 }
@@ -464,6 +477,21 @@ void JSONNode::destroy(){
 	m_type=JSONNode_TYPE_NULL;
 }
 
+JSONNode*JSONNode::getObjectMutableValueForKey(const char*key){
+	int keys=getObjectSize();
+	int match=0;
+
+	for(int i=0;i<keys;i++){
+		const char*keyValue=getObjectKey(i)->getString();
+
+		if(strcmp(keyValue,key)==match){
+			return getObjectMutableValue(i);
+		}
+	}
+
+	return NULL;
+}
+
 const JSONNode*JSONNode::getObjectValueForKey(const char*key)const{
 	int keys=getObjectSize();
 	int match=0;
@@ -477,4 +505,114 @@ const JSONNode*JSONNode::getObjectValueForKey(const char*key)const{
 	}
 
 	return NULL;
+}
+
+void JSONNode::setType(int type){
+	m_type=type;
+}
+
+void JSONNode::addObjectKeyAndValue(JSONNode*key,JSONNode*value){
+	m_associativeKeyContent.push_back(*key);
+	m_associativeValueContent.push_back(*value);
+}
+
+void JSONNode::setString(const char*value){
+	m_stringContent=value;
+}
+
+void JSONNode::write(ostream*output)const{
+	writeObject(output,0,true);
+}
+
+void JSONNode::writeObject(ostream*output,int depth,bool addIndentation)const{
+
+	if(m_type==JSONNode_TYPE_OBJECT){
+
+		if(addIndentation)
+			addSpaces(output,depth);
+		else
+			(*output)<<" ";
+		(*output)<<"{";
+
+		for(int i=0;i<(int)m_associativeKeyContent.size();i++){
+			if(addIndentation)
+				addSpaces(output,depth);
+
+			bool useIndentation=true;
+			m_associativeKeyContent[i].writeObject(output,depth+1,useIndentation);
+
+			(*output)<<" :";
+
+			m_associativeValueContent[i].writeObject(output,depth+1,false);
+
+			if(i!=(int)m_associativeValueContent.size()-1)
+				(*output)<<",";
+		}
+
+		addIndentation=false;
+
+		if(addIndentation)
+			addSpaces(output,depth);
+		else
+			(*output)<<" ";
+		(*output)<<"}";
+
+	}else if(m_type==JSONNode_TYPE_STRING){
+		if(addIndentation){
+			(*output)<<endl;
+			addSpaces(output,depth+1);
+		}
+		(*output)<<"\""<<m_stringContent<<"\"";
+	}else if(m_type==JSONNode_TYPE_INTEGER){
+		if(addIndentation){
+			(*output)<<endl;
+			addSpaces(output,depth+1);
+		}
+		(*output)<<m_integerContent;
+	}else if(m_type==JSONNode_TYPE_ARRAY){
+
+		if(addIndentation)
+			addSpaces(output,depth);
+		else
+			(*output)<<" ";
+		(*output)<<"[";
+
+		for(int i=0;i<(int)m_arrayContent.size();i++){
+
+			if(addIndentation)
+				addSpaces(output,depth);
+
+			int childType=m_arrayContent[i].getType();
+			bool useIndentation=true;
+
+			if(i==0 && (childType==JSONNode_TYPE_ARRAY || childType==JSONNode_TYPE_OBJECT))
+				useIndentation=false;
+
+			m_arrayContent[i].writeObject(output,depth+1,useIndentation);
+
+			if(i!=(int)m_arrayContent.size()-1)
+				(*output)<<","<<endl;
+		}
+
+		addIndentation=false;
+
+		if(addIndentation)
+			addSpaces(output,depth);
+		else
+			(*output)<<" ";
+
+		(*output)<<"]";
+	}else if(m_type==JSONNode_TYPE_NULL){
+
+		if(addIndentation){
+			(*output)<<endl;
+			addSpaces(output,depth+1);
+		}
+
+		(*output)<<"null";
+	}
+}
+
+void JSONNode::addArrayElement(JSONNode*value){
+	m_arrayContent.push_back(*value);
 }

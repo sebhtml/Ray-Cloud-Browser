@@ -47,6 +47,9 @@ public:
 
 	int getNumberOfMaps()const;
 	int getNumberOfSections(int map)const;
+
+	void addMap(const char*name,const char*file);
+	void printXML()const;
 };
 
 #endif

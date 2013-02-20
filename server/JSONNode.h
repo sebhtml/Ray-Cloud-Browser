@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 using namespace std;
 
 #include <stdint.h>
@@ -74,9 +75,10 @@ class JSONNode{
 	int getStart()const;
 	int getEnd()const;
 
-	void addSpaces(int space)const;
+	void addSpaces(ostream*output,int space)const;
 	bool isDigitSymbol(char symbol)const;
 
+	void writeObject(ostream*output,int depth,bool addIndentation)const;
 public:
 
 	JSONNode();
@@ -89,11 +91,21 @@ public:
 	const JSONNode*getArrayElement(int index)const;
 	const JSONNode*getObjectKey(int index)const;
 	const JSONNode*getObjectValue(int index)const;
+	JSONNode*getObjectMutableValue(int index);
 	const JSONNode*getObjectValueForKey(const char*key)const;
+	JSONNode*getObjectMutableValueForKey(const char*key);
 	int getArraySize()const;
 	int getObjectSize()const;
 
+	void setType(int type);
+
 	void destroy();
+
+	void addObjectKeyAndValue(JSONNode*key,JSONNode*value);
+	void addArrayElement(JSONNode*value);
+	void setString(const char*value);
+
+	void write(ostream*output)const;
 };
 
 #endif

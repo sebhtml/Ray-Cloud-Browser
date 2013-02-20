@@ -32,6 +32,7 @@
 #include <commands/GraphExporter.h>
 #include <commands/ObjectAnnotationList.h>
 #include <commands/ConfigurationReader.h>
+#include <commands/MapPusher.h>
 
 #include <map>
 #include <string>
@@ -56,6 +57,7 @@ class Client{
 	Parser m_parser;
 	ConfigurationReader m_configurationReader;
 	GraphExporter m_graphExporter;
+	MapPusher m_mapPusher;
 
 	map<string,CommandInterface*> m_dispatcher;
 

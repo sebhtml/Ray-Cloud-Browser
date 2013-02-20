@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013 Sébastien Boisvert
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,36 +15,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ConfigurationReader.h"
+#ifndef _MapPusher_h_
+#define _MapPusher_h_
 
-#include <storage/GraphDatabase.h>
-#include <storage/Configuration.h>
+#include "CommandInterface.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <iostream>
-#include <sstream>
-#include <map>
-#include <set>
-#include <string>
-#include <fstream>
-using namespace std;
+class MapPusher: public CommandInterface{
 
-int ConfigurationReader::call(int argc,char**argv){
+public:
+	int call(int argc,char**argv);
+};
 
-	if(argc!=2){
-		cout<<"Get information about a configuration file."<<endl;
-		cout<<endl;
-
-		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" config.json"<<endl;
-		return 0;
-	}
-
-	const char*file=argv[1];
-	Configuration configuration;
-	configuration.open(file);
-	configuration.printXML();
-	configuration.close();
-
-	return 0;
-}
+#endif

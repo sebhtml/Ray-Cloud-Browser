@@ -3,8 +3,7 @@
 # Copyright (C) 2012, 2013 Sébastien Boisvert
 
 CXX=g++
-CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98 -I.
-#CXXFLAGS=-O0 -g -D CONFIG_ASSERT -Wall -std=c++98
+CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98 -I. -D CONFIG_ASSERT
 RM=rm
 Q=@
 
@@ -27,7 +26,7 @@ COMMANDS= commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o
 commands/Explorer.o commands/PathProbe.o \
 commands/Parser.o commands/GraphExporter.o commands/AnnotationManager.o \
 commands/AnnotationReporter.o commands/MapDescriber.o commands/ObjectAnnotationList.o \
-commands/ConfigurationReader.o
+commands/ConfigurationReader.o commands/MapPusher.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"
