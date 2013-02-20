@@ -43,15 +43,14 @@ int ObjectFetcher::call(int argc,char**argv){
 
 	bool found = database.getObject(key,&vertex);
 
-	cout<<"{"<<endl;
+	cout<<"{ \"objects\": ["<<endl;
 
 	if(found){
-		cout<<"\""<<key<<"\": ";
 		vertex.writeContentInJSON(&cout);
 	}
 
 	cout<<endl;
-	cout<<"}"<<endl;
+	cout<<"]}"<<endl;
 
 	database.closeFile();
 
