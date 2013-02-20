@@ -44,8 +44,7 @@ bool MapList::call(const char*queryString){
 		cout<<"	\"sections\": ["<<endl;
 
 		for(int j=0;j<numberOfSections;j++){
-			cout<<"		{ \"name\": \""<<configuration.getSectionName(i,j)<<"\", ";
-			cout<<" \"file\": \""<<configuration.getSectionFile(i,j)<<"\"}";
+			cout<<"		{ \"name\": \""<<configuration.getSectionName(i,j)<<"\" } ";
 			if(j!=numberOfSections-1)
 				cout<<",";
 			cout<<endl;
