@@ -122,32 +122,7 @@ bool StoreRequest::call(const char*queryString){
 			cout<<","<<endl;
 		}
 
-		cout<<"{";
 		vertex.writeContentInJSON(&cout);
-
-		cout<<"\"annotations\": ["<<endl;
-
-		vector<Annotation> annotations;
-		annotationEngine.getAnnotations(object,&annotations);
-
-		for(int i=0;i<(int)annotations.size();i++){
-
-			Annotation*annotation=&(annotations[i]);
-
-			if(annotation->getType()==ANNOTATION_LOCATION){
-				LocationAnnotation locationAnnotation;
-				locationAnnotation.read(annotation);
-				locationAnnotation.printJSON();
-
-				if(i!=(int)annotations.size()-1)
-					cout<<",";
-				cout<<endl;
-			}
-		}
-
-		cout<<"]"<<endl;
-
-		cout<<"}";
 
 		vector<string> friends;
 		vertex.getParents(&friends);
