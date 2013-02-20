@@ -33,10 +33,10 @@ using namespace std;
 int MapPusher::call(int argc,char**argv){
 
 	if(argc!=4){
-		cout<<"Add a map in a configuration file."<<endl;
+		cout<<"Add a map to a configuration file."<<endl;
 		cout<<endl;
 
-		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" config.json \"map name\" \"map.dat\""<<endl;
+		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" config.json \"map name\" map.dat"<<endl;
 		return 0;
 	}
 
