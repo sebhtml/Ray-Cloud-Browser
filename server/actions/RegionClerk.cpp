@@ -18,6 +18,7 @@
 #include "RegionClerk.h"
 
 #include <storage/PathDatabase.h>
+#include <storage/Configuration.h>
 
 #include <iostream>
 using namespace std;
@@ -30,10 +31,25 @@ using namespace std;
  */
 bool RegionClerk::call(const char*queryString){
 
-	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
+	int mapIndex=0;
+	bool foundMap=getValueAsInteger(queryString,"map",&mapIndex);
+
+	if(!foundMap)
+		return false;
+
+	int sectionIndex=0;
+	bool found=getValueAsInteger(queryString,"section",&sectionIndex);
 
 	if(!found)
+		return false;
+
+	Configuration configuration;
+	configuration.open(CONFIG_FILE);
+	const char*buffer=configuration.getSectionFile(mapIndex,sectionIndex);
+	configuration.close();
+
+	if(buffer==NULL)
 		return false;
 
 // fail in silence
@@ -42,8 +58,6 @@ bool RegionClerk::call(const char*queryString){
 
 	PathDatabase mock;
 	mock.openFile(buffer);
-
-	//mock.debug();
 
 	cout<<"{ \"section\": \""<<buffer<<"\","<<endl;
 

@@ -17,7 +17,9 @@
 
 #include "RegionVisitor.h"
 
+#include <storage/GraphDatabase.h>
 #include <storage/PathDatabase.h>
+#include <storage/Configuration.h>
 
 #include <iostream>
 using namespace std;
@@ -29,10 +31,23 @@ using namespace std;
  */
 bool RegionVisitor::call(const char*queryString){
 
-	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool found=getValue(queryString,"section",buffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	int mapIndex=0;
+	bool foundMap=getValueAsInteger(queryString,"map",&mapIndex);
+
+	if(!foundMap)
+		return false;
+
+	int sectionIndex=0;
+	bool found=getValueAsInteger(queryString,"section",&sectionIndex);
 
 	if(!found)
+		return false;
+
+	Configuration configuration;
+	configuration.open(CONFIG_FILE);
+	const char*buffer=configuration.getSectionFile(mapIndex,sectionIndex);
+
+	if(buffer==NULL)
 		return false;
 
 // fail in silence
@@ -58,13 +73,11 @@ bool RegionVisitor::call(const char*queryString){
 	if(!(region<entries))
 		return false;
 
-	char kmerLengthBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundKmerLength=getValue(queryString,"kmerLength",kmerLengthBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
-
-	if(!foundKmerLength)
-		return false;
-
-	int kmerLength=atoi(kmerLengthBuffer);
+	const char*mapFile=configuration.getMapFile(mapIndex);
+	GraphDatabase mapObject;
+	mapObject.openFile(mapFile);
+	int kmerLength=mapObject.getKmerLength();
+	mapObject.closeFile();
 
 	int minimumKmerLength=15;
 	int maximumKmerLength=701;
@@ -97,7 +110,8 @@ bool RegionVisitor::call(const char*queryString){
 // Now we are ready
 
 	cout<<"{"<<endl;
-	cout<<"\"section\": \""<<buffer<<"\","<<endl;
+	cout<<"\"map\": "<<mapIndex<<","<<endl;
+	cout<<"\"section\": "<<sectionIndex<<","<<endl;
 	cout<<"\"region\": "<<region<<","<<endl;
 	cout<<"\"kmerLength\": "<<kmerLength<<","<<endl;
 	cout<<"\"location\": "<<location<<","<<endl;
@@ -137,6 +151,7 @@ bool RegionVisitor::call(const char*queryString){
 
 
 	mock.closeFile();
+	configuration.close();
 
 	return true;
 }

@@ -93,6 +93,7 @@ bool StoreRequest::call(const char*queryString){
 
 	cout<<"{"<<endl;
 
+	cout<<"\"map\": "<<mapIndex<<","<<endl;
 	cout<<"\"object\": \""<<key<<"\","<<endl;
 	cout<<"\"vertices\": ["<<endl;
 

@@ -58,7 +58,6 @@ PathOperator.prototype.getParametersForRegion=function(){
 	parameters["region"]=this.locationData["region"];
 	parameters["location"]=this.locationData["location"];
 	parameters["readahead"]=512;
-	parameters["kmerLength"]=this.locationData["kmerLength"];
 
 	return parameters;
 }
@@ -68,21 +67,11 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 	if(tag==RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY){
 
-		//console.log("Received RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY");
-
 		this.active=false;
-/*
-		var kmer=new Kmer(kmerSequence,coverage,parents,children);
-
-		var message=new Message(RAY_MESSAGE_TAG_ADD_KMER,this,graphOperator,kmer);
-		graphOperator.receiveMessage(message);
-*/
 
 		var content=message.getContent();
 
-		//console.log(content);
 		var vertices=content["vertices"]
-
 
 		var i=0;
 		while(i<vertices.length){

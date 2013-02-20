@@ -143,8 +143,8 @@ Selector.prototype.draw=function(context){
 
 		if(!this.requestedRegions){
 			var parameters=new Object();
-			this.sectionFile=this.mapData[this.mapIndex]["sections"][this.sectionIndex]["file"];
-			parameters["section"]=this.sectionFile;
+			parameters["map"]=this.mapIndex;
+			parameters["section"]=this.sectionIndex;
 			parameters["first"]=0;
 			parameters["readahead"]=4096;
 
@@ -308,7 +308,7 @@ Selector.prototype.hasChoices=function(){
 Selector.prototype.getLocationData=function(){
 
 	var parameters=new Object();
-	parameters["section"]=this.sectionFile;
+	parameters["section"]=this.sectionIndex;
 	parameters["region"]=this.regionIndex;
 	parameters["location"]=this.locationIndex;
 	parameters["kmerLength"]=this.mapFileData["kmerLength"];
