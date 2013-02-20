@@ -228,7 +228,7 @@ void Configuration::addMap(const char*name,const char*file){
 
 	maps->addArrayElement(&mapEntry);
 
-	ofstream output(CONFIG_FILE);
+	ofstream output(m_parser.getFileName());
 	m_root->write(&output);
 	output.close();
 }
@@ -290,7 +290,7 @@ void Configuration::addSection(int mapIndex,const char*name,const char*file){
 
 	sections->addArrayElement(&sectionEntry);
 
-	ofstream output(CONFIG_FILE);
+	ofstream output(m_parser.getFileName());
 	m_root->write(&output);
 	output.close();
 }

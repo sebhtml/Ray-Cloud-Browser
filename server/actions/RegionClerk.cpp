@@ -47,7 +47,6 @@ bool RegionClerk::call(const char*queryString){
 	Configuration configuration;
 	configuration.open(CONFIG_FILE);
 	const char*buffer=configuration.getSectionFile(mapIndex,sectionIndex);
-	configuration.close();
 
 	if(buffer==NULL)
 		return false;
@@ -135,6 +134,8 @@ bool RegionClerk::call(const char*queryString){
 	cout<<" ] }"<<endl;
 
 	mock.closeFile();
+
+	configuration.close();
 
 	return true;
 }
