@@ -260,3 +260,85 @@ void Configuration::printXML()const{
 	cout<<"</maps>"<<endl;
 	cout<<"</object>"<<endl;
 }
+
+void Configuration::addSection(int mapIndex,const char*name,const char*file){
+
+	JSONNode*sections=getMutableSections(mapIndex);
+
+	JSONNode sectionEntry;
+	sectionEntry.setType(JSONNode_TYPE_OBJECT);
+
+	JSONNode nameKey;
+	nameKey.setType(JSONNode_TYPE_STRING);
+	nameKey.setString("name");
+
+	JSONNode nameValue;
+	nameValue.setType(JSONNode_TYPE_STRING);
+	nameValue.setString(name);
+
+	sectionEntry.addObjectKeyAndValue(&nameKey,&nameValue);
+
+	JSONNode fileKey;
+	fileKey.setType(JSONNode_TYPE_STRING);
+	fileKey.setString("file");
+
+	JSONNode fileValue;
+	fileValue.setType(JSONNode_TYPE_STRING);
+	fileValue.setString(file);
+
+	sectionEntry.addObjectKeyAndValue(&fileKey,&fileValue);
+
+	sections->addArrayElement(&sectionEntry);
+
+	ofstream output(CONFIG_FILE);
+	m_root->write(&output);
+	output.close();
+}
+
+JSONNode*Configuration::getMutableSections(int map){
+	JSONNode*mapObject=getMutableMap(map);
+
+	if(mapObject==NULL)
+		return NULL;
+
+	JSONNode*sections=mapObject->getObjectMutableValueForKey("sections");
+
+	if(sections==NULL)
+		return NULL;
+
+	if(sections->getType()!=JSONNode_TYPE_ARRAY)
+		return NULL;
+
+	return sections;
+}
+
+JSONNode*Configuration::getMutableMap(int map){
+
+	JSONNode*maps=getMutableMaps();
+
+	if(maps==NULL)
+		return NULL;
+
+	if(!(map<maps->getArraySize()))
+		return NULL;
+
+	return maps->getArrayMutableElement(map);
+}
+
+JSONNode*Configuration::getMutableMaps(){
+	if(m_root==NULL)
+		return NULL;
+
+	if(m_root->getType()!=JSONNode_TYPE_OBJECT)
+		return NULL;
+
+	JSONNode*maps=m_root->getObjectMutableValueForKey("maps");
+
+	if(maps==NULL)
+		return NULL;
+
+	if(maps->getType()!=JSONNode_TYPE_ARRAY)
+		return NULL;
+
+	return maps;
+}

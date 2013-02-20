@@ -26,7 +26,7 @@ COMMANDS= commands/ObjectFetcher.o commands/GraphManager.o commands/PathHelper.o
 commands/Explorer.o commands/PathProbe.o \
 commands/Parser.o commands/GraphExporter.o commands/AnnotationManager.o \
 commands/AnnotationReporter.o commands/MapDescriber.o commands/ObjectAnnotationList.o \
-commands/ConfigurationReader.o commands/MapPusher.o
+commands/ConfigurationReader.o commands/MapPusher.o commands/SectionPusher.o
 
 %.o: %.cpp
 	$(Q)echo "CXX $@"

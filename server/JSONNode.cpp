@@ -447,6 +447,10 @@ const JSONNode*JSONNode::getArrayElement(int index)const{
 	return &(m_arrayContent[index]);
 }
 
+JSONNode*JSONNode::getArrayMutableElement(int index){
+	return &(m_arrayContent[index]);
+}
+
 const JSONNode*JSONNode::getObjectKey(int index)const{
 	return &(m_associativeKeyContent[index]);
 }

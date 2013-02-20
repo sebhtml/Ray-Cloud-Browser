@@ -88,4 +88,5 @@ Client::Client(){
 	registerAction("describe-configuration",&m_configurationReader);
 
 	registerAction("add-map",&m_mapPusher);
+	registerAction("add-section",&m_sectionPusher);
 }

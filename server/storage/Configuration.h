@@ -36,6 +36,10 @@ class Configuration{
 	const JSONNode*getSections(int map)const;
 	const char*getMapAttribute(int map,const char*key)const;
 	const char*getSectionAttribute(int map,int section,const char*key)const;
+
+	JSONNode*getMutableSections(int map);
+	JSONNode*getMutableMap(int map);
+	JSONNode*getMutableMaps();
 public:
 	Configuration();
 	void open(const char*file);
@@ -49,6 +53,7 @@ public:
 	int getNumberOfSections(int map)const;
 
 	void addMap(const char*name,const char*file);
+	void addSection(int mapIndex,const char*name,const char*file);
 	void printXML()const;
 };
 

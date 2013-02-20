@@ -89,6 +89,7 @@ public:
 	int64_t getInteger()const;
 	const char*getString()const;
 	const JSONNode*getArrayElement(int index)const;
+	JSONNode*getArrayMutableElement(int index);
 	const JSONNode*getObjectKey(int index)const;
 	const JSONNode*getObjectValue(int index)const;
 	JSONNode*getObjectMutableValue(int index);
