@@ -173,18 +173,9 @@ const char*Configuration::getSectionAttribute(int map,int section,const char*key
 
 void Configuration::addMap(const char*name,const char*file){
 
-	if(m_root==NULL)
-		return;
-
-	if(m_root->getType()!=JSONNode_TYPE_OBJECT)
-		return;
-
-	JSONNode*maps=m_root->getObjectMutableValueForKey("maps");
+	JSONNode*maps=getMutableMaps();
 
 	if(maps==NULL)
-		return;
-
-	if(maps->getType()!=JSONNode_TYPE_ARRAY)
 		return;
 
 	JSONNode mapEntry;
