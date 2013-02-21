@@ -309,3 +309,8 @@ Inventory.prototype.getCloseButton=function(){
 Inventory.prototype.getSelector=function(){
 	return this.selector;
 }
+
+Inventory.prototype.setAddressManager=function(address){
+	this.address=address;
+	this.selector.setAddressManager(this.address);
+}

@@ -27,7 +27,6 @@
 function Selector(x,y,width,height,dataStore,useAddress){
 
 	this.useAddress=useAddress;
-	this.address=new AddressManager(document.URL);
 
 	this.dataStore=dataStore;
 	this.consumed=false;
@@ -456,4 +455,8 @@ Selector.prototype.getAddress=function(){
 	}
 
 	return address;
+}
+
+Selector.prototype.setAddressManager=function(address){
+	this.address=address;
 }

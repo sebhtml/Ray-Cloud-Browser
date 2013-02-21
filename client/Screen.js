@@ -964,8 +964,12 @@ Screen.prototype.updateOrigin=function(originX,originY,originXSpeed,originYSpeed
 	this.originY=originY;
 	this.originXSpeed=originXSpeed;
 	this.originYSpeed=originYSpeed;
-	this.zoomValue=zoomValue;
+	this.setZoomValue(zoomValue);
 	this.zoomValueSpeed=zoomValueSpeed;
+}
+
+Screen.prototype.setZoomValue=function(zoomValue){
+	this.zoomValue=zoomValue;
 }
 
 Screen.prototype.toggleDebugMode=function(){

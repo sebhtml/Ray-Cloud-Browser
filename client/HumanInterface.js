@@ -22,7 +22,11 @@
  */
 function HumanInterface(screen,dataStore){
 
+	this.address=new AddressManager(document.URL);
+
 	this.sampleInventory=new Inventory(130,20,300,400,false,screen,dataStore);
+	this.sampleInventory.setAddressManager(this.address);
+
 	this.consumedLocation=false;
 	this.screen=screen;
 
@@ -90,6 +94,14 @@ function HumanInterface(screen,dataStore){
 	this.getLinkButton.setBackgroundColor(this.buttonColor);
 	this.getLinkButton.setActiveColor(this.buttonColor);
 	this.getLinkButton.setFontSize(this.buttonFontSize)
+
+	if(this.address.hasToken("zoom")){
+
+		var zoom=this.address.getTokenValueAsFloat("zoom");
+
+		if(zoom>0)
+			this.screen.setZoomValue(zoom);
+	}
 }
 
 /*
@@ -457,7 +469,7 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.getLinkButton.handleMouseDown(x,y)){
 
-		var address=this.sampleInventory.getSelector().getAddress();
+		var address=this.sampleInventory.getSelector().getAddress()+"&zoom="+this.screen.getZoomValue();
 
 		alert(address);
 	}
