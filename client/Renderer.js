@@ -527,8 +527,8 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 }
 
 Renderer.prototype.draw=function(objects){
-	this.drawPathVertices(objects);
 	this.drawVertexPowers(objects);
+	this.drawPathVertices(objects);
 	this.drawArcs(objects);
 	this.drawVertices(objects);
 }
