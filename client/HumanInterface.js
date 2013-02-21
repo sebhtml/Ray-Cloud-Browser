@@ -102,6 +102,17 @@ function HumanInterface(screen,dataStore){
 		if(zoom>0)
 			this.screen.setZoomValue(zoom);
 	}
+
+	if(this.address.hasToken("play")){
+
+		var direction=this.address.getTokenValue("play");
+
+		if(direction=="backward"){
+			this.sampleInventory.getPreviousButton().activateState();
+		}else if(direction=="forward"){
+			this.sampleInventory.getNextButton().activateState();
+		}
+	}
 }
 
 /*
@@ -469,7 +480,13 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.getLinkButton.handleMouseDown(x,y)){
 
-		var address=this.sampleInventory.getSelector().getAddress()+"&zoom="+this.screen.getZoomValue();
+		var address=this.sampleInventory.getSelector().getAddress();
+		address+="&zoom="+this.screen.getZoomValue();
+
+		if(this.goPrevious())
+			address+="&play=backward";
+		else if(this.goNext())
+			address+="&play=forward";
 
 		alert(address);
 	}
