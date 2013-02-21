@@ -1,6 +1,9 @@
-map.csv (ASCII)
+map.csv (ASCII) (called kmers.txt in Ray)
 
-This file has no header (in the current version) and a line looks like this.
+The file is tab-separated, any line starting with a '#' is a comment.
+
+
+A line looks like this.
 
 GCGGTTATGCTTGCGTCCACCGTAAGTTCGGATTCAGACTTAATCAAAGGTTTTAACAAAGCGCTGGCAACCCCACGGCGGGGGTATTCAG;47;T;G
 
@@ -20,3 +23,8 @@ map.dat (binary)
 
 
 Reference implementation: GraphDatabase.{h,cpp}
+
+To generate map.dat on a sorted kmers.txt:
+
+
+RayCloudBrowser-client create-map kmers.txt.sorted map.dat
