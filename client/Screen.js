@@ -696,8 +696,6 @@ Screen.prototype.drawControlPanel=function(){
 		context.fillText("[ map: "+this.locationData["mapName"]+" | section: "+this.locationData["sectionName"]+
 			" | region: "+this.locationData["regionName"]+" | location: "+this.locationData["locationName"]+" ]",
 			70,15);
-
-		return;
 	}
 
 	if(!this.debugMode)
