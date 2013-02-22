@@ -1,6 +1,5 @@
 This is a short guide to get started using Ray Cloud Browser.
 
-
 For the infrastructure, you can use the cloud. It's easy, secure, and cheap.
 
 The setup for our demo is a t1.micro spot instance with a 64 GiB EBS 
@@ -20,7 +19,8 @@ Steps
 3. Go in server/ and type "make"
 4. Convert kmers.txt to kmers.dat with RayCloudBrowser-client create-map
 5. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser-client create-section
-6. Edit server/config.json
+6. Add the map file with RayCloudBrowser-client add-map
+6. Add the section file with RayCloudBrowser-client add-section
 7. Deploy /server using a webserver (see examples in Documentation/)
 8. Point your browser to http://address.com/client
 
