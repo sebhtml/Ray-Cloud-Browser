@@ -41,7 +41,6 @@ bool AnnotationFetcher::call(const char*queryString){
 		return false;
 
 	const char*dataFile=configuration.getMapFile(mapIndex);
-	configuration.close();
 
 // fail in silence
 	if(!isAllowedFile(dataFile))
@@ -91,6 +90,7 @@ bool AnnotationFetcher::call(const char*queryString){
 
 	graphReader.closeFile();
 	annotationEngine.closeFile();
+	configuration.close();
 
 	return 0;
 }
