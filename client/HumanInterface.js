@@ -22,6 +22,8 @@
  */
 function HumanInterface(screen,dataStore){
 
+	this.hasLocation=false;
+
 	this.address=new AddressManager(document.URL);
 
 	this.sampleInventory=new Inventory(130,20,300,400,false,screen,dataStore);
@@ -164,8 +166,6 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 
 		zoomValueSpeed+=(newZoom-zoomValue);
 
-		//console.log("Old "+zoomValue+" New "+newZoom+" Delta "+zoomValueSpeed);
-
 	}else if(key==this.pageUp){
 
 		this.zoomOut.activateColor();
@@ -173,14 +173,7 @@ HumanInterface.prototype.processKeyboardEvent=function(e){
 		var newZoom=zoomValue/this.zoomingChange;
 
 		zoomValueSpeed+=(newZoom-zoomValue);
-
-		//console.log("Old "+zoomValue+" New "+newZoom+" Delta "+zoomValueSpeed);
 	}
-
-/*
-	if(this.zoomValue>=1)
-		this.zoomValue=1;
-*/
 
 	this.screen.updateOrigin(originX,originY,originXSpeed,originYSpeed,zoomValue,zoomValueSpeed);
 }
@@ -189,7 +182,6 @@ HumanInterface.prototype.createButtons=function(){
 	this.buttons=new Array();
 
 	this.timeControlButton=new Button(30,35,40,50,"time",true);
-	//this.buttons.push(this.timeControlButton);
 
 	this.repulsionBase=280;
 	this.attractionBase=180;
@@ -410,7 +402,6 @@ HumanInterface.prototype.processButtons=function(){
 */
 
 HumanInterface.prototype.draw=function(){
-	//console.log("Draw UI");
 
 	var context=this.screen.getContext();
 	this.sampleInventory.draw(context);
@@ -421,7 +412,17 @@ HumanInterface.prototype.draw=function(){
 	this.zoomOut.draw(context,null);
 	this.zoomIn.draw(context,null);
 
-	this.getLinkButton.draw(context,null);
+	if(this.hasLocation)
+		this.getLinkButton.draw(context,null);
+
+	if(this.hasLocation){
+		context.fillStyle    = '#000000';
+		context.font         = 'bold 12px Arial';
+
+		context.fillText("[ map: "+this.locationData["mapName"]+" | section: "+this.locationData["sectionName"]+
+			" | region: "+this.locationData["regionName"]+" | location: "+this.locationData["locationName"]+" ]",
+			70,15);
+	}
 }
 
 HumanInterface.prototype.handleMouseDoubleClick=function(x,y){
@@ -478,7 +479,7 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 		this.processKeyboardEvent(aEvent);
 		return true;
 
-	}else if(this.getLinkButton.handleMouseDown(x,y)){
+	}else if(this.hasLocation && this.getLinkButton.handleMouseDown(x,y)){
 
 		var address=this.sampleInventory.getSelector().getAddress();
 		address+="&zoom="+this.screen.getZoomValue();
@@ -525,4 +526,13 @@ HumanInterface.prototype.getMinimumCoverage=function(){
 
 HumanInterface.prototype.getInventory=function(){
 	return this.sampleInventory;
+}
+
+HumanInterface.prototype.iterate=function(){
+
+	if(!this.hasLocation && this.getInventory().getSelector().hasChoices()){
+		this.locationData=this.getInventory().getSelector().getLocationData();
+
+		this.hasLocation=true;
+	}
 }

@@ -27,8 +27,6 @@
  */
 function Screen(gameFrequency,renderingFrequency){
 
-	this.hasLocation=false;
-
 	this.canControlScreen=false;
 	this.periodForControl=1000;
 
@@ -471,6 +469,7 @@ Screen.prototype.roundNumber=function(number,precision){
 Screen.prototype.iterate=function(){
 
 	this.graphOperator.iterate();
+	this.humanInterface.iterate();
 
 	if(this.pathOperator.hasVertex()){
 		var object=this.pathOperator.getVertex();
@@ -580,7 +579,6 @@ Screen.prototype.processHumanControls=function(){
 
 		this.locationData=this.humanInterface.getInventory().getSelector().getLocationData();
 
-		//console.log(JSON.stringify(this.locationData));
 		this.humanInterface.getInventory().getSelector().markAsConsumed();
 
 		this.kmerLength=this.locationData["kmerLength"];
@@ -588,8 +586,6 @@ Screen.prototype.processHumanControls=function(){
 		this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
 		this.clear();
 		this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
-
-		this.hasLocation=true;
 
 		this.humanInterface.getInventory().getWarpButton().resetState();
 	}
@@ -691,12 +687,6 @@ Screen.prototype.drawControlPanel=function(){
 	var offsetX=10;
 	var offsetY=115;
 	var stepping=15;
-
-	if(this.hasLocation){
-		context.fillText("[ map: "+this.locationData["mapName"]+" | section: "+this.locationData["sectionName"]+
-			" | region: "+this.locationData["regionName"]+" | location: "+this.locationData["locationName"]+" ]",
-			70,15);
-	}
 
 	if(!this.debugMode)
 		return;
