@@ -128,10 +128,10 @@ DataStore.prototype.pullData=function(){
 	var body=new Object();
 	body["depth"]=this.defaultDepthFirst;
 
-	var tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE;
+	var tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY;
 
 	var theMessage=new Message(tag,this,this,body);
-	this.sendMessageOnTheWeb(theMessage);
+	this.processMessage(theMessage);
 }
 
 DataStore.prototype.finishConstruction=function(){
