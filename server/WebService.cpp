@@ -21,14 +21,26 @@
 using namespace std;
 
 /**
+ * The application/json Media Type for JavaScript Object Notation (JSON) is returned.
+ * See this for information:
+ *
  * \see http://www.ietf.org/rfc/rfc4627.txt
- * ( The application/json Media Type for JavaScript Object Notation (JSON) )
+ *
+ * For the HTTP response, see:
+ *
+ * \see http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
  */
 bool WebService::processQuery(const char*queryString){
 
-	cout<<"X-Powered-By: Ray Cloud Browser by Ray Technologies"<<endl;
-	cout<<"Access-Control-Allow-Origin: *"<<endl;
-	cout<<("Content-type: application/json\n\n");
+	const char CRLF[]="\r\n";
+
+	cout<<"X-Powered-By: Ray Cloud Browser by Ray Technologies";
+	cout<<CRLF;
+	cout<<"Access-Control-Allow-Origin: *";
+	cout<<CRLF;
+	cout<<("Content-type: application/json");
+	cout<<CRLF;
+	cout<<CRLF;
 
 	if(queryString==NULL){
 		cout<<"{ \"message\": \"Error: you must provide a QUERY_STRING.\" }"<<endl;
