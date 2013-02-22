@@ -161,6 +161,30 @@ Vertex.prototype.update=function(timeStep,timeState){
 		this.x=this.x+this.velocityX*timeStep;
 		this.y=this.y+this.velocityY*timeStep;
 	}
+
+	this.updatePower();
+}
+
+Vertex.prototype.updatePower=function(){
+
+	if(this.power==0)
+		return;
+
+	if(this.growPower){
+		this.power+=2;
+
+		if(this.power>12){
+			this.growPower=false;
+			this.shrinkPower=true;
+		}
+	}else if(this.shrinkPower){
+
+		this.power--;
+	}
+
+	if(this.power<0){
+		this.resetPower();
+	}
 }
 
 Vertex.prototype.updateVelocity=function(forceX,forceY){
@@ -249,7 +273,9 @@ Vertex.prototype.handleMouseDown=function(x,y){
 
 		if(this.power==0){
 			this.resetPower();
-			this.power=10;
+			this.power=1;
+			this.growPower=true;
+			this.shrinkPower=false;
 		}
 
 		this.followMouse=true;
@@ -408,6 +434,8 @@ Vertex.prototype.addChild=function(value){
 }
 
 Vertex.prototype.getPower=function(){
+
+/*
 	if(this.power>0 && this.powerIteration%5==0){
 		if(this.powerIteration<10){
 			this.power+=this.powerChange;
@@ -418,9 +446,8 @@ Vertex.prototype.getPower=function(){
 		}
 	}
 	this.powerIteration++;
-	if(this.power<0){
-		this.resetPower();
-	}
+*/
+
 	return this.power;
 }
 
