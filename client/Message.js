@@ -15,7 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /**
  * A message.
  *
@@ -48,7 +47,6 @@ Message.prototype.getDestination=function(){
 Message.prototype.getContent=function(){
 	return this.content;
 }
-
 
 Message.prototype.send=function(){
 	this.destination.receiveAndProcessMessage(this);

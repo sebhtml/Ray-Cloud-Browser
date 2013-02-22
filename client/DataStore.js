@@ -96,7 +96,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 	
 	var processed=new Object();
 
-	var queryString="tag="+messageSymbols[messageTag];
+	var queryString="action="+messageSymbols[messageTag];
 	processed["tag"]=true;
 
 	for(var key in content){

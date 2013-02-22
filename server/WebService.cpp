@@ -37,7 +37,7 @@ bool WebService::processQuery(const char*queryString){
 	}
 
 	char tag[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundTag=m_storeRequest.getValue(queryString,"tag",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundTag=m_storeRequest.getValue(queryString,"action",tag,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundTag){
 		//cout<<"Object not found!"<<endl;
@@ -49,13 +49,13 @@ bool WebService::processQuery(const char*queryString){
 
 WebService::WebService(){
 
-	registerAction("RAY_MESSAGE_TAG_GET_KMER_FROM_STORE",&m_storeRequest);
-	registerAction("RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
-	registerAction("RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
-	registerAction("RAY_MESSAGE_TAG_GET_MAPS",&m_mapList);
-	registerAction("RAY_MESSAGE_TAG_GET_REGIONS",&m_regionClerk);
-	registerAction("RAY_MESSAGE_TAG_GET_MAP_INFORMATION",&m_mapSpecialist);
-	registerAction("RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS",&m_annotationFetcher);
+	registerAction("GET_KMER_FROM_STORE",&m_storeRequest);
+	registerAction("GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
+	registerAction("GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
+	registerAction("GET_MAPS",&m_mapList);
+	registerAction("GET_REGIONS",&m_regionClerk);
+	registerAction("GET_MAP_INFORMATION",&m_mapSpecialist);
+	registerAction("GET_OBJECT_ANNOTATIONS",&m_annotationFetcher);
 }
 
 void WebService::registerAction(const char*actionName,WebAction*actionHandler){
