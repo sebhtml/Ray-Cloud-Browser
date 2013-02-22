@@ -25,7 +25,6 @@ using namespace std;
 void Client::showUsage(){
 
 	cout<<"This is the command dispatcher"<<endl;
-	cout<<"Author: Sébastien Boisvert"<<endl;
 	cout<<endl;
 	cout<<"Commands named create* change information in storage buckets"<<endl;
 	cout<<"Commands named describe* perform read-only operations on storage buckets"<<endl;
