@@ -64,9 +64,9 @@ WebService::WebService(){
 	registerAction("GET_KMER_FROM_STORE",&m_storeRequest);
 	registerAction("GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
 	registerAction("GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
-	registerAction("GET_MAPS",&m_mapList);
-	registerAction("GET_REGIONS",&m_regionClerk);
-	registerAction("GET_MAP_INFORMATION",&m_mapSpecialist);
+	registerAction("getMaps",&m_mapList);
+	registerAction("getRegions",&m_regionClerk);
+	registerAction("getMapAttributes",&m_mapSpecialist);
 	registerAction("GET_OBJECT_ANNOTATIONS",&m_annotationFetcher);
 }
 

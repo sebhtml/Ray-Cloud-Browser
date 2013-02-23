@@ -144,7 +144,7 @@ Selector.prototype.draw=function(context){
 			var parameters=new Object();
 			parameters["map"]=this.mapIndex;
 			parameters["section"]=this.sectionIndex;
-			parameters["first"]=0;
+			parameters["start"]=0;
 			parameters["count"]=4096;
 
 			var message=new Message(RAY_MESSAGE_TAG_GET_REGIONS,this,this.dataStore,parameters);

@@ -64,7 +64,7 @@ bool RegionClerk::call(const char*queryString){
 	int entries=mock.getEntries();
 
 	char firstBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundFirst=getValue(queryString,"first",firstBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundFirst=getValue(queryString,"start",firstBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundFirst)
 		return false;

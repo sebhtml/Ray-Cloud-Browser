@@ -27,26 +27,6 @@
  *
  * Example of HTTP API calls:
  *
- * => /server/?action=GET_MAPS
- * => getMaps
- *
- * => /server/?action=GET_MAP_INFORMATION&map=0
- * => getMapAttributes
- *
- * => /server/?action=GET_REGIONS&map=0&section=0&first=0&count=4096
- * => getRegions
- * => first => start
- *
- * => /server/?action=GET_REGION_KMER_AT_LOCATION&map=0&section=0&region=4&location=2020&count=512
- * => getSequencesAroundLocation
- *
- * => /server/?action=GET_KMER_FROM_STORE&map=0&object=GCCTCTGGGCAGTTTTTTGCCGTCGGAAAGTGTGATATTGAGTAATGCACGGCGTTGTGTT&count=512
- * => getSequenceAttributes
- * object => sequence
- *
- * => /server/?action=GET_OBJECT_ANNOTATIONS&map=0&object=GCCTCTGGGCAGTTTTTTGCCGTCGGAAAGTGTGATATTGAGTAATGCACGGCGTTGTGTT&count=200
- * => getSequenceAnnotations
- * object => sequence
  *
  * \author Sébastien Boisvert
  */
