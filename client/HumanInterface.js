@@ -570,4 +570,5 @@ HumanInterface.prototype.iterate=function(){
 HumanInterface.prototype.setCurrentLocation=function(value){
 
 	this.locationData["location"]=value;
+	this.locationData["locationName"]=value+1;
 }
