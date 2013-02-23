@@ -93,6 +93,11 @@ void AnnotationEngine::getAnnotations(const char*key,vector<Annotation>*annotati
 	if(!found)
 		return;
 
+	getAnnotationsWithIndex(index,annotations);
+}
+
+void AnnotationEngine::getAnnotationsWithIndex(uint64_t index,vector<Annotation>*annotations)const{
+
 	uint64_t bucketAddress=OFFSET_BUCKETS+index*sizeof(uint64_t);
 	uint64_t annotationAddress=getInteger64(bucketAddress);
 
@@ -403,4 +408,30 @@ int AnnotationEngine::index(const char*mapFile,const char*sectionFile,int sectio
 	annotationEngine.closeFile();
 
 	return 0;
+}
+
+void AnnotationEngine::printAnnotations(const char*requestedObject,VertexObject*vertex)const{
+	vector<Annotation> annotations;
+	getAnnotations(requestedObject,&annotations);
+
+	cout<<"{ \"object\": \""<<requestedObject<<"\","<<endl;
+	cout<<"\"annotations\": ["<<endl;
+
+	for(int i=0;i<(int)annotations.size();i++){
+
+		Annotation*annotation=&(annotations[i]);
+
+		if(annotation->getType()==ANNOTATION_LOCATION){
+			LocationAnnotation locationAnnotation;
+			locationAnnotation.read(annotation);
+			locationAnnotation.printJSON();
+
+			if(i!=(int)annotations.size()-1)
+				cout<<",";
+			cout<<endl;
+		}
+	}
+
+	cout<<"]"<<endl;
+	cout<<"}"<<endl;
 }

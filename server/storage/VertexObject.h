@@ -16,6 +16,7 @@
  */
 
 #ifndef _VertexObject_h
+#define _VertexObject_h
 
 #include "constants.h"
 

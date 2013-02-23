@@ -19,7 +19,6 @@
 
 #include <storage/GraphDatabase.h>
 #include <storage/Configuration.h>
-#include <storage/AnnotationEngine.h>
 
 #include <iostream>
 #include <vector>
@@ -67,9 +66,6 @@ bool StoreRequest::call(const char*queryString){
 
 	GraphDatabase database;
 	database.openFile(dataFile);
-
-	AnnotationEngine annotationEngine;
-	annotationEngine.openAnnotationFileForMap(&database,false);
 
 	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
 

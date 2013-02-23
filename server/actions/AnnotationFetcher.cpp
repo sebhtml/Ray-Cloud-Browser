@@ -22,6 +22,7 @@
 #include <storage/Configuration.h>
 
 #include <iostream>
+#include <set>
 using namespace std;
 
 #include <stdlib.h>
@@ -37,7 +38,9 @@ bool AnnotationFetcher::call(const char*queryString){
 	Configuration configuration;
 	configuration.open(CONFIG_FILE);
 
-	if(!(mapIndex<configuration.getNumberOfMaps()))
+	int numberOfMaps=configuration.getNumberOfMaps();
+
+	if(!(mapIndex<numberOfMaps))
 		return false;
 
 	const char*dataFile=configuration.getMapFile(mapIndex);
@@ -49,48 +52,94 @@ bool AnnotationFetcher::call(const char*queryString){
 	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
 
 	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
-		
+
 	if(!foundObject)
 		return false;
 
-	GraphDatabase graphReader;
-	graphReader.openFile(dataFile);
+	const char*key=requestedObject;
 
-	if(graphReader.hasError())
+	if(key==NULL)
 		return false;
 
+	GraphDatabase database;
+	database.openFile(dataFile);
+
 	AnnotationEngine annotationEngine;
-	annotationEngine.openAnnotationFileForMap(&graphReader,false);
+	annotationEngine.openAnnotationFileForMap(&database,false);
 
-	vector<Annotation> annotations;
-	annotationEngine.getAnnotations(requestedObject,&annotations);
+	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
 
-	cout<<"{"<<endl;
-	cout<<"\"results\": ["<<endl;
-	cout<<"{ \"object\": \""<<requestedObject<<"\","<<endl;
-	cout<<"\"annotations\": ["<<endl;
+	char depth[CONFIG_MAXIMUM_VALUE_LENGTH];
+	bool foundDepth=getValue(queryString,"count",depth,CONFIG_MAXIMUM_VALUE_LENGTH);
 
-	for(int i=0;i<(int)annotations.size();i++){
+/*
+ * Use the requested depth.
+ */
+	if(foundDepth){
+		int theDepth=atoi(depth);
 
-		Annotation*annotation=&(annotations[i]);
-
-		if(annotation->getType()==ANNOTATION_LOCATION){
-			LocationAnnotation locationAnnotation;
-			locationAnnotation.read(annotation);
-			locationAnnotation.printJSON();
-
-			if(i!=(int)annotations.size()-1)
-				cout<<",";
-			cout<<endl;
-		}
+		if(theDepth<=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS)
+			maximumToVisit=theDepth;
 	}
 
-	cout<<"]"<<endl;
-	cout<<"}]}"<<endl;
+	vector<string> productionQueue;
+	set<string> visited;
+	int head=0;
 
-	graphReader.closeFile();
-	annotationEngine.closeFile();
+	string first=key;
+
+	productionQueue.push_back(first);
+
+	cout<<"{"<<endl;
+
+	cout<<"\"map\": "<<mapIndex<<","<<endl;
+	cout<<"\"object\": \""<<key<<"\","<<endl;
+	cout<<"\"vertices\": ["<<endl;
+
+	bool printedFirst=false;
+
+	while(head<(int)productionQueue.size() && (int)visited.size()<maximumToVisit){
+
+		string*stringObject=&(productionQueue[head]);
+
+		head++;
+		visited.insert(*stringObject);
+
+		const char*object=stringObject->c_str();
+
+		VertexObject vertex;
+		bool found = database.getObject(object,&vertex);
+
+		if(!found)
+			continue;
+
+		if(printedFirst){
+			cout<<","<<endl;
+		}
+
+		annotationEngine.printAnnotations(object,&vertex);
+
+		vector<string> friends;
+		vertex.getParents(&friends);
+		vertex.getChildren(&friends);
+
+		for(int i=0;i<(int)friends.size();i++){
+			string*friendObject=&(friends[i]);
+
+			if(visited.count(*friendObject)>0)
+				continue;
+
+			productionQueue.push_back(*friendObject);
+		}
+
+		printedFirst=true;
+	}
+
+	cout<<"]}"<<endl;
+
+	database.closeFile();
 	configuration.close();
+	annotationEngine.closeFile();
 
-	return 0;
+	return true;
 }

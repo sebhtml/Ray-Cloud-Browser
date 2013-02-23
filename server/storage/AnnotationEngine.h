@@ -61,6 +61,7 @@ public:
 	void closeFile();
 
 	void getAnnotations(const char*key,vector<Annotation>*annotations)const;
+	void getAnnotationsWithIndex(uint64_t index,vector<Annotation>*annotations)const;
 	void addLocation(const char*key,LocationAnnotation*annotation);
 
 	uint64_t getEntries()const;
@@ -69,6 +70,7 @@ public:
 	bool hasError()const;
 
 	int index(const char*mapFile,const char*sectionFile,int sectionIndex);
+	void printAnnotations(const char*requestedObject,VertexObject*vertex)const;
 };
 
 #endif

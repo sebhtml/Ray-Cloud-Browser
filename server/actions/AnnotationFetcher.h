@@ -23,11 +23,23 @@
 /**
  * Get annotations for a list of objects.
  *
+ * Example:
+ *
+ * http://localhost/server/?action=GET_OBJECT_ANNOTATIONS&map=0&object=GCCTCTGGGCAGTTTTTTGCCGTCGGAAAGTGTGATATTGAGTAATGCACGGCGTTGTGTT&count=200
+ *
  * \author Sébastien Boisvert
  */
 class AnnotationFetcher: public WebAction{
 
 public:
+
+/**
+ * Parameters in QUERY_STRING:
+ *
+ * map	the map to use
+ * object	the object to start at
+ * count	the number of objects to process
+ */
 	bool call(const char*queryString);
 };
 
