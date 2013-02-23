@@ -34,6 +34,7 @@ function PathOperator(dataStore,graphOperator){
  * tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
  */
 PathOperator.prototype.startOnPath=function(locationData){
+
 	this.reset();
 	this.locationData=locationData;
 	this.regionLength=this.locationData["regionLength"];
@@ -212,8 +213,6 @@ PathOperator.prototype.isVertexInPath=function(vertex){
 
 	if(vertex in this.keys){
 
-		//this.doReadahead(vertex);
-
 		return true;
 	}
 
@@ -222,6 +221,7 @@ PathOperator.prototype.isVertexInPath=function(vertex){
 
 PathOperator.prototype.reset=function(){
 
+	this.centered=false;
 	this.active=false;
 
 	this.keys=new Object();
@@ -296,4 +296,12 @@ PathOperator.prototype.getVertexPositions=function(sequence){
 PathOperator.prototype.getCurrentLocation=function(){
 
 	return this.currentLocation;
+}
+
+PathOperator.prototype.isCentered=function(){
+	return this.centered;
+}
+
+PathOperator.prototype.setCenteredState=function(){
+	this.centered=true;
 }

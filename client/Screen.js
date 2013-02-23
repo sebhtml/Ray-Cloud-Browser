@@ -476,22 +476,25 @@ Screen.prototype.iterate=function(){
 		this.humanInterface.setCurrentLocation(this.pathOperator.getCurrentLocation());
 
 		var object=this.pathOperator.getVertex();
-
 		var vertex=this.graph.getVertex(object);
+
+		if(vertex!=null && !this.pathOperator.isCentered()){
+			this.centerOnObject(vertex);
+			this.pathOperator.setCenteredState();
+		}
+
 		if(vertex!=null && this.canControlScreen){
 
 			if(this.humanInterface.goNext()){
-				this.center(vertex.getX(),vertex.getY());
+				this.centerOnObject(vertex);
 				this.pathOperator.next();
 				this.canControlScreen=false;
 			}else if(this.humanInterface.goPrevious()){
-				this.center(vertex.getX(),vertex.getY());
+				this.centerOnObject(vertex);
 				this.pathOperator.previous();
 				this.canControlScreen=false;
 			}
 		}
-	//}else{
-		//console.log("PathOperator does not have vertex");
 	}
 
 	var start=this.getMilliseconds();
@@ -515,8 +518,6 @@ Screen.prototype.iterate=function(){
 		this.lastUpdate=start;
 
 		this.periodForControl=this.humanInterface.getMoviePeriod();
-
-		//console.log("PeriodForControl= "+this.periodForControl);
 	}
 
 	this.engine.applyForces(this.getActiveObjects());
@@ -654,8 +655,6 @@ Screen.prototype.performZoomOperations=function(){
 			this.zoomValueSpeed=0;
 		}
 	}
-
-
 }
 
 Screen.prototype.drawControlPanel=function(){
@@ -980,3 +979,6 @@ Screen.prototype.center=function(x,y){
 	this.originYSpeed*=softModifier;
 }
 
+Screen.prototype.centerOnObject=function(object){
+	this.center(object.getX(),object.getY());
+}

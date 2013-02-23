@@ -487,7 +487,9 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 	}else if(this.hasLocation && this.getLinkButton.handleMouseDown(x,y)){
 
 		var address=this.getAddress();
-		address+="&zoom="+this.screen.getZoomValue();
+
+		if(this.screen.getZoomValue()!=1)
+			address+="&zoom="+this.screen.getZoomValue();
 
 		if(this.goPrevious())
 			address+="&play=backward";
