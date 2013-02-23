@@ -62,7 +62,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.warpButton=new Button(this.x+this.buttonWidth+6*this.buttonWidth/2,
 		this.y+3.3*this.buttonWidth,
-		4.5*this.buttonWidth,this.buttonWidth,"Go somewhere",false);
+		4.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
 	this.buttonWidth=20;
 
