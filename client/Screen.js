@@ -499,6 +499,15 @@ Screen.prototype.iterate=function(){
 
 	var start=this.getMilliseconds();
 
+/*
+ *
+ * == TODO ==
+ * This system of control (canControlScreen) does not work at scale because
+ * at 256 obj. / 1000 iterations, the period is around ~4 iterations.
+ * For at least 1000 obj. / 1000 iterations, that's ~1 iteration and anything above 
+ * is the same.
+ *
+ */
 	if(start>=this.lastUpdateForControl+this.periodForControl){
 		this.canControlScreen=true;
 		this.lastUpdateForControl=start;

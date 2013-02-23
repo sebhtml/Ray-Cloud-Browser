@@ -27,6 +27,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.dataStore=dataStore;
 
 	this.useAddress=true;
+	this.usedAddressForSpeed=false;
 
 	this.selected=false;
 	this.screen=screen;
@@ -38,7 +39,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.x=x;
 	this.y=y;
 
-	this.moviePeriod=1024;
+	this.speedInObjectsPer1000Iterations=1;
 
 	this.buttonWidth=25;
 
@@ -213,18 +214,18 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 	}else if(this.increaseButton.handleMouseDown(x,y)){
-		this.moviePeriod/=2;
 
-		var minimum=2;
-		if(this.moviePeriod<minimum)
-			this.moviePeriod=minimum;
+		this.speedInObjectsPer1000Iterations*=2;
+		this.checkSpeedBounds();
 
 		this.increaseButton.resetState();
 
 		return true;
 
 	}else if(this.decreaseButton.handleMouseDown(x,y)){
-		this.moviePeriod*=2;
+
+		this.speedInObjectsPer1000Iterations/=2;
+		this.checkSpeedBounds();
 
 		this.decreaseButton.resetState();
 		return true;
@@ -290,8 +291,19 @@ Inventory.prototype.getNextButton=function(){
 	return this.nextButton;
 }
 
+/**
+ * 256 objects / 1000 iterations
+ *
+ * 1000 iterations / 256 objects
+ *
+ * ~4 iterations / object
+ */
 Inventory.prototype.getMoviePeriod=function(){
-	return this.moviePeriod;
+	return 1000.0/this.speedInObjectsPer1000Iterations
+}
+
+Inventory.prototype.getSpeed=function(){
+	return this.speedInObjectsPer1000Iterations;
 }
 
 Inventory.prototype.getMinimumCoverage=function(){
@@ -313,4 +325,19 @@ Inventory.prototype.getSelector=function(){
 Inventory.prototype.setAddressManager=function(address){
 	this.address=address;
 	this.selector.setAddressManager(this.address);
+
+	if(!this.usedAddressForSpeed){
+		if(this.address.hasToken("speed")){
+			this.speedInObjectsPer1000Iterations=this.address.getTokenValueAsInteger("speed");
+
+			this.checkSpeedBounds();
+		}
+
+		this.usedAddressForSpeed=true;
+	}
+}
+
+Inventory.prototype.checkSpeedBounds=function(){
+	if(this.speedInObjectsPer1000Iterations<1)
+		this.speedInObjectsPer1000Iterations=1;
 }

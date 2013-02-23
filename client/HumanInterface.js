@@ -491,10 +491,14 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 		if(this.screen.getZoomValue()!=1)
 			address+="&zoom="+this.screen.getZoomValue();
 
-		if(this.goPrevious())
+
+		if(this.goPrevious()){
 			address+="&play=backward";
-		else if(this.goNext())
+			address+="&speed="+this.getInventory().getSpeed();
+		}else if(this.goNext()){
 			address+="&play=forward";
+			address+="&speed="+this.getInventory().getSpeed();
+		}
 
 		alert(address);
 	}
