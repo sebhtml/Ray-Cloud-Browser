@@ -102,7 +102,8 @@ bool RegionVisitor::call(const char*queryString){
 	int location=atoi(locationBuffer);
 
 	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundReadahead=getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundReadahead=getValue(queryString,"count",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+
 	if(!foundReadahead)
 		return false;
 	int readahead=atoi(readaheadBuffer);
@@ -117,7 +118,6 @@ bool RegionVisitor::call(const char*queryString){
 	cout<<"\"location\": "<<location<<","<<endl;
 	cout<<"\"name\":\""<<name<<"\","<<endl;
 	cout<<"\"nucleotides\":"<<nucleotides<<","<<endl;
-	cout<<"\"readahead\": "<<readahead<<","<<endl;
 
 	cout<<"\"vertices\": ["<<endl;
 

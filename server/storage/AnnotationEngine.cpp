@@ -432,6 +432,5 @@ void AnnotationEngine::printAnnotations(const char*requestedObject,VertexObject*
 		}
 	}
 
-	cout<<"]"<<endl;
-	cout<<"}"<<endl;
+	cout<<"]}";
 }

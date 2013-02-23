@@ -70,7 +70,7 @@ bool StoreRequest::call(const char*queryString){
 	int maximumToVisit=CONFIG_MAXIMUM_OBJECTS_TO_PROCESS;
 
 	char depth[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundDepth=getValue(queryString,"depth",depth,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundDepth=getValue(queryString,"count",depth,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 /*
  * Use the requested depth.

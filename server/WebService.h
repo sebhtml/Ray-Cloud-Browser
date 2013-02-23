@@ -33,28 +33,8 @@ using namespace std;
 
 /**
  * The Ray Cloud Browser web service.
+ *
  * This is used by the interface with the HTTP GET method.
- *
- * QUERY_STRING for the supported services with method GET:
- *
- * - list maps: 
- *   	tag=RAY_MESSAGE_TAG_GET_MAPS
- *
- * - start somewhere hard-coded:
- *   	tag=RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE&depth=32
- *
- * - get kmers from a map:
- *   	tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE&map=kmers.txt.dat&object=ACGACCGGCGACCTGGGTGTAAAGCTGAGCGAAACGCTCTGCCGAGCGAAAATCGGCAGAA&depth=512
- *
- * - get a list of regions:
- *   	tag=RAY_MESSAGE_TAG_GET_REGIONS&section=Contigs.fasta.dat
- *
- * - get kmers from a region:
- *	tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
- *
- * Development server: 
- *
- * http://localhost/~seb/Ray-Cloud-Browser/server/RayCloudBrowser.cgi
  *
  * \author Sébastien Boisvert
  */

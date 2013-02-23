@@ -78,16 +78,15 @@ bool RegionClerk::call(const char*queryString){
 		first=entries-1;
 
 	char readaheadBuffer[CONFIG_MAXIMUM_VALUE_LENGTH];
-	bool foundReadahead=getValue(queryString,"readahead",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundReadahead=getValue(queryString,"count",readaheadBuffer,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundReadahead)
 		return false;
 
 	int readahead=atoi(readaheadBuffer);
 
-	cout<<"\"count\": "<<entries<<","<<endl;
+	cout<<"\"total\": "<<entries<<","<<endl;
 	cout<<"\"first\": "<<first<<","<<endl;
-	cout<<"\"readahead\": "<<readahead<<","<<endl;
 
 	cout<<"\"regions\": ["<<endl;
 

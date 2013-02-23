@@ -29,10 +29,6 @@ function PathOperator(dataStore,graphOperator){
 	this.reset();
 }
 
-/**
- * QUERY_STRING:
- * tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
- */
 PathOperator.prototype.startOnPath=function(locationData){
 
 	this.reset();
@@ -58,7 +54,7 @@ PathOperator.prototype.getParametersForRegion=function(){
 	parameters["section"]=this.locationData["section"];
 	parameters["region"]=this.locationData["region"];
 	parameters["location"]=this.locationData["location"];
-	parameters["readahead"]=512;
+	parameters["count"]=512;
 
 	return parameters;
 }
@@ -161,17 +157,13 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 		var parameters=new Object();
 		parameters["map"]=this.dataStore.getMapIndex();
 		parameters["object"]=kmerSequence;
-		parameters["depth"]=this.dataStore.getDefaultDepth();
+		parameters["count"]=this.dataStore.getDefaultDepth();
 
 		var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
 		this.dataStore.sendMessageOnTheWeb(theMessage);
 	}
 }
 
-/**
- * QUERY_STRING:
- * tag=RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION&section=Contigs.fasta.dat&region=0&location=34&kmerLength=31&readahead=512
- */
 PathOperator.prototype.doReadahead=function(){
 
 	if(this.active){

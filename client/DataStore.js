@@ -252,8 +252,6 @@ DataStore.prototype.forwardMessageOnTheWeb=function(message){
 
 DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
-	//console.log("getKmerInformation "+kmerSequence);
-
 // TODO: this should be done only once
 	this.graphOperator=graphOperator;
 
