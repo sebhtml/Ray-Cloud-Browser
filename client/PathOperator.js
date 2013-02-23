@@ -156,7 +156,7 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		var parameters=new Object();
 		parameters["map"]=this.dataStore.getMapIndex();
-		parameters["object"]=kmerSequence;
+		parameters["sequence"]=kmerSequence;
 		parameters["count"]=this.dataStore.getDefaultDepth();
 
 		var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);

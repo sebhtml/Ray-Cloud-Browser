@@ -274,8 +274,8 @@ DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
 
 		var parameters=new Object();
 		parameters["map"]=this.mapIndex;
-		parameters["object"]=kmerSequence;
-		parameters["depth"]=this.defaultDepth;
+		parameters["sequence"]=kmerSequence;
+		parameters["count"]=this.defaultDepth;
 
 		var tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE;
 		var theMessage=new Message(tag,this,this,parameters);

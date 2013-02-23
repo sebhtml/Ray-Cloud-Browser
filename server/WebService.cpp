@@ -61,8 +61,8 @@ bool WebService::processQuery(const char*queryString){
 
 WebService::WebService(){
 
-	registerAction("GET_KMER_FROM_STORE",&m_storeRequest);
-	registerAction("GET_REGION_KMER_AT_LOCATION",&m_regionVisitor);
+	registerAction("getSequenceAttributes",&m_storeRequest);
+	registerAction("getSequencesAroundLocation",&m_regionVisitor);
 	registerAction("GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
 	registerAction("getMaps",&m_mapList);
 	registerAction("getRegions",&m_regionClerk);
