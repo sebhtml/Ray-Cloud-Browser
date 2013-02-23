@@ -53,8 +53,8 @@ bool MapSpecialist::call(const char*queryString){
 
 	cout<<"{"<<endl;
 	cout<<"\"map\": "<<mapIndex<<","<<endl;
-	cout<<"\"kmerLength\": "<<database.getKmerLength()<<","<<endl;
-	cout<<"\"entries\": "<<database.getEntries()<<endl;
+	cout<<"\"sequenceLength\": "<<database.getKmerLength()<<","<<endl;
+	cout<<"\"sequences\": "<<database.getEntries()<<endl;
 	cout<<"}"<<endl;
 
 	database.closeFile();

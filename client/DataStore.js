@@ -199,7 +199,6 @@ DataStore.prototype.processMessage=function(message){
 	}else if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE_REPLY){
 
 		this.clear();
-		//this.addDataInStore(message.getContent());
 
 		this.finishConstruction();
 	}else if(tag==RAY_MESSAGE_TAG_GET_KMER_FROM_STORE_REPLY){
@@ -207,7 +206,7 @@ DataStore.prototype.processMessage=function(message){
 		var text=message.getContent();
 		this.addDataInStore(text);
 
-		var kmerSequence=text["object"];
+		var kmerSequence=text["sequence"];
 // do a fancy recursive call !
 
 		this.getKmerInformation(kmerSequence,this.graphOperator);
@@ -321,7 +320,7 @@ DataStore.prototype.addDataInStore=function(content){
 
 	var i=0;
 	while(i<kmerData.length){
-		var kmerSequenceIterator=kmerData[i]["value"];
+		var kmerSequenceIterator=kmerData[i]["sequence"];
 
 		if(!(kmerSequenceIterator in this.store))
 			this.store[kmerSequenceIterator]=kmerData[i];

@@ -414,8 +414,9 @@ void AnnotationEngine::printAnnotations(const char*requestedObject,VertexObject*
 	vector<Annotation> annotations;
 	getAnnotations(requestedObject,&annotations);
 
-	cout<<"{ \"object\": \""<<requestedObject<<"\","<<endl;
-	cout<<"\"annotations\": ["<<endl;
+	cout<<"{"<<endl;
+	cout<<"	\"sequence\": \""<<requestedObject<<"\","<<endl;
+	cout<<"	\"annotations\": ["<<endl;
 
 	for(int i=0;i<(int)annotations.size();i++){
 
@@ -424,6 +425,8 @@ void AnnotationEngine::printAnnotations(const char*requestedObject,VertexObject*
 		if(annotation->getType()==ANNOTATION_LOCATION){
 			LocationAnnotation locationAnnotation;
 			locationAnnotation.read(annotation);
+
+			cout<<"	";
 			locationAnnotation.printJSON();
 
 			if(i!=(int)annotations.size()-1)

@@ -73,7 +73,7 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 		var i=0;
 		while(i<vertices.length){
 
-			var sequence=vertices[i]["value"];
+			var sequence=vertices[i]["sequence"];
 			var position=vertices[i]["position"];
 
 			this.vertexAtPosition[position]=sequence;
@@ -137,11 +137,11 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 		//console.log(vertices.length);
 
 // pick up a middle position
-		var kmerSequence=vertices[Math.floor(vertices.length/2)]["value"];
+		var kmerSequence=vertices[Math.floor(vertices.length/2)]["sequence"];
 
 		var i=0;
 		while(i<vertices.length){
-			var sequence=vertices[i]["value"];
+			var sequence=vertices[i]["sequence"];
 			var position=vertices[i]["position"];
 
 			if(position==locationInRegion){

@@ -194,7 +194,7 @@ Selector.prototype.draw=function(context){
 	if(this.receivedMapFileData){
 		context.fillStyle    = '#000000';
 		context.font         = 'bold '+this.fontSize+'px Arial';
-		context.fillText(this.metaData, this.x+200,this.y+30);
+		context.fillText(this.metaData, this.x+170,this.y+30);
 	}
 }
 
@@ -296,7 +296,7 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 		this.mapFileData=message.getContent();
 		this.receivedMapFileData=true;
 
-		this.metaData="Kmer length: "+this.mapFileData["kmerLength"]+" entries: "+this.mapFileData["entries"];
+		this.metaData="Sequence length: "+this.mapFileData["sequenceLength"]+" sequences: "+this.mapFileData["sequences"];
 	}
 }
 
@@ -310,7 +310,7 @@ Selector.prototype.getLocationData=function(){
 	parameters["section"]=this.sectionIndex;
 	parameters["region"]=this.regionIndex;
 	parameters["location"]=this.locationIndex;
-	parameters["kmerLength"]=this.mapFileData["kmerLength"];
+	parameters["sequenceLength"]=this.mapFileData["sequenceLength"];
 	parameters["regionLength"]=this.regionLength;
 	parameters["map"]=this.mapIndex;
 
@@ -392,7 +392,7 @@ Selector.prototype.selectRegionIndex=function(index){
 
 	this.regionWidget.resetState();
 
-	var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["kmerLength"]+1;
+	var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["sequenceLength"]+1;
 	this.regionLength=maximum;
 
 	this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.5,this.height,"(4/4) Select location",

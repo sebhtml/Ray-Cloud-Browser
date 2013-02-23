@@ -592,7 +592,7 @@ Screen.prototype.processHumanControls=function(){
 
 		this.humanInterface.getInventory().getSelector().markAsConsumed();
 
-		this.kmerLength=this.locationData["kmerLength"];
+		this.kmerLength=this.locationData["sequenceLength"];
 		this.graphOperator.getDataStore().setMapIndex(this.locationData["map"]);
 		this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
 		this.clear();

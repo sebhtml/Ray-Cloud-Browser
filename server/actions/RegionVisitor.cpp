@@ -114,7 +114,7 @@ bool RegionVisitor::call(const char*queryString){
 	cout<<"\"map\": "<<mapIndex<<","<<endl;
 	cout<<"\"section\": "<<sectionIndex<<","<<endl;
 	cout<<"\"region\": "<<region<<","<<endl;
-	cout<<"\"kmerLength\": "<<kmerLength<<","<<endl;
+	cout<<"\"sequenceLength\": "<<kmerLength<<","<<endl;
 	cout<<"\"location\": "<<location<<","<<endl;
 	cout<<"\"name\":\""<<name<<"\","<<endl;
 	cout<<"\"nucleotides\":"<<nucleotides<<","<<endl;
@@ -141,14 +141,13 @@ bool RegionVisitor::call(const char*queryString){
 		else
 			cout<<","<<endl;
 
-		cout<<"{\"position\":"<<startingPlace<<",\"value\":\""<<kmerSequence<<"\"}";
+		cout<<"{\"position\": "<<startingPlace<<", \"sequence\": \""<<kmerSequence<<"\"}";
 
 		startingPlace++;
 		printed++;
 	}
 
 	cout<<"] }"<<endl;
-
 
 	mock.closeFile();
 	configuration.close();

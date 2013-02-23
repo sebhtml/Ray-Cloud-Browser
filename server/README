@@ -22,3 +22,19 @@ CGI 1.1   The Common Gateway Interface (CGI) Version 1.1
 
 The messages are passed with the Hyper Text Transfer Protocol (method: GET).
 
+
+
+HTTP API:
+
+* /server/?action=getMaps
+
+* /server/?action=getMapAttributes&map=0
+
+* /server/?action=getRegions&map=0&section=0&start=5&count=4096
+
+* /server/?action=getSequencesAroundLocation&map=0&section=0&region=4&location=1000&count=512
+
+* /server/?action=getSequenceAttributes&map=0&sequence=GCCTCTGGGCAGTTTTTTGCCGTCGGAAAGTGTGATATTGAGTAATGCACGGCGTTGTGTT&count=512
+
+* /server/?action=getSequenceAnnotations&map=0&sequence=GCCTCTGGGCAGTTTTTTGCCGTCGGAAAGTGTGATATTGAGTAATGCACGGCGTTGTGTT&count=300
+
