@@ -395,8 +395,8 @@ Screen.prototype.handleMouseDown=function(eventObject){
 			this.translateY(position[1]))){
 
 // select this vertex
-
 			this.pathOperator.setCurrentVertex(vertex.getSequence());
+
 			return;
 		}
 	}
@@ -472,12 +472,13 @@ Screen.prototype.iterate=function(){
 	this.humanInterface.iterate();
 
 	if(this.pathOperator.hasVertex()){
+
+		this.humanInterface.setCurrentLocation(this.pathOperator.getCurrentLocation());
+
 		var object=this.pathOperator.getVertex();
 
-		//console.log("operator has vertex");
 		var vertex=this.graph.getVertex(object);
 		if(vertex!=null && this.canControlScreen){
-			//console.log("Graph has vertex too");
 
 			if(this.humanInterface.goNext()){
 				this.center(vertex.getX(),vertex.getY());

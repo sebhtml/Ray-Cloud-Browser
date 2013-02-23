@@ -292,3 +292,8 @@ PathOperator.prototype.getVertexPositions=function(sequence){
 
 	return [];
 }
+
+PathOperator.prototype.getCurrentLocation=function(){
+
+	return this.currentLocation;
+}

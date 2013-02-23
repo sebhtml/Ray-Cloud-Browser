@@ -441,6 +441,11 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	if(this.sampleInventory.handleMouseDown(x,y)){
 
+		if(this.getInventory().getSelector().hasChoices()){
+
+			this.locationData=this.getInventory().getSelector().getLocationData();
+		}
+
 		return true;
 
 	}else if(this.goLeft.handleMouseDown(x,y)){
@@ -481,7 +486,7 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.hasLocation && this.getLinkButton.handleMouseDown(x,y)){
 
-		var address=this.sampleInventory.getSelector().getAddress();
+		var address=this.getAddress();
 		address+="&zoom="+this.screen.getZoomValue();
 
 		if(this.goPrevious())
@@ -493,6 +498,31 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 	}
 
 	return false;
+}
+
+HumanInterface.prototype.getAddress=function(){
+
+	var parameters=this.locationData;
+
+	var address=this.address.getAddressWithoutQueryString();
+
+	var keys=["map","section","region","location"];
+
+	address+="?";
+
+	var i=0;
+	while(i<keys.length){
+		var token=keys[i];
+
+		address+=""+token+"="+parameters[token];
+
+		if(i!=keys.length-1)
+			address+="&";
+
+		i++;
+	}
+
+	return address;
 }
 
 HumanInterface.prototype.handleMouseUp=function(x,y){
@@ -535,4 +565,9 @@ HumanInterface.prototype.iterate=function(){
 
 		this.hasLocation=true;
 	}
+}
+
+HumanInterface.prototype.setCurrentLocation=function(value){
+
+	this.locationData["location"]=value;
 }
