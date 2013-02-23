@@ -51,7 +51,7 @@ bool AnnotationFetcher::call(const char*queryString){
 
 	char requestedObject[CONFIG_MAXIMUM_VALUE_LENGTH];
 
-	bool foundObject=getValue(queryString,"object",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
+	bool foundObject=getValue(queryString,"sequence",requestedObject,CONFIG_MAXIMUM_VALUE_LENGTH);
 
 	if(!foundObject)
 		return false;

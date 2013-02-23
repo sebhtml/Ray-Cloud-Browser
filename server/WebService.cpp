@@ -63,11 +63,13 @@ WebService::WebService(){
 
 	registerAction("getSequenceAttributes",&m_storeRequest);
 	registerAction("getSequencesAroundLocation",&m_regionVisitor);
-	registerAction("GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
 	registerAction("getMaps",&m_mapList);
 	registerAction("getRegions",&m_regionClerk);
 	registerAction("getMapAttributes",&m_mapSpecialist);
-	registerAction("GET_OBJECT_ANNOTATIONS",&m_annotationFetcher);
+	registerAction("getSequenceAnnotations",&m_annotationFetcher);
+
+// deprecated API calls:
+	registerAction("GET_FIRST_KMER_FROM_STORE",&m_earlyExplorer);
 }
 
 void WebService::registerAction(const char*actionName,WebAction*actionHandler){
