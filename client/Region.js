@@ -43,6 +43,38 @@ function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName
 
 	this.pathColor=color;
 	this.regionLength=regionLength;
+
+	this.lastLeft=0;
+	this.lastRight=0;
+
+	this.hasLeft=false;
+	this.hasRight=false;
+}
+
+Region.prototype.hasRightPosition=function(){
+	return this.hasRight;
+}
+
+Region.prototype.hasLeftPosition=function(){
+	return this.hasLeft;
+}
+
+Region.prototype.setRightPosition=function(value){
+	this.lastRight=value;
+	this.hasRight=true;
+}
+
+Region.prototype.getRightPosition=function(value){
+	return this.lastRight;
+}
+
+Region.prototype.setLeftPosition=function(value){
+	this.lastLeft=value;
+	this.hasLeft=true;
+}
+
+Region.prototype.getLeftPosition=function(value){
+	return this.lastLeft;
 }
 
 Region.prototype.getRegionLength=function(){

@@ -136,15 +136,9 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 			this.vertexAtPosition[position]=sequence;
 
-			if(!this.hasLeft|| position<this.lastLeft){
-				this.lastLeft=position;
-				this.hasLeft=true;
+			if(!this.getSelectedRegion().hasLeftPosition() || position<this.getSelectedRegion().getLeftPosition()){
+				this.getSelectedRegion().setLeftPosition(position);
 			}
-
-/*
-			if(position<10)
-				console.log("position= "+position);
-*/
 
 			this.keys[sequence]=true;
 			if(!(sequence in this.pathPositions)){
@@ -175,9 +169,8 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 			}
 */
 
-			if(!this.hasRight|| position>this.lastRight){
-				this.lastRight=position;
-				this.hasRight=true;
+			if(!this.getSelectedRegion().hasRightPosition() || position>this.getSelectedRegion().getRightPosition()){
+				this.getSelectedRegion().setRightPosition(position);
 			}
 
 			i++;
@@ -226,7 +219,7 @@ PathOperator.prototype.doReadahead=function(){
 		return;
 	}
 
-	if(!(this.hasLeft && this.hasRight))
+	if(!this.hasSelectedRegion() || !(this.getSelectedRegion().hasLeftPosition() && this.getSelectedRegion().hasRightPosition()))
 		return;
 
 	var currentLocation=this.getSelectedRegion().getLocation();
@@ -235,23 +228,24 @@ PathOperator.prototype.doReadahead=function(){
 
 	var buffer=1024;
 
-	if(position<this.lastLeft+buffer && this.lastLeft!=0){
+	if(position<this.getSelectedRegion().getLeftPosition()+buffer && this.getSelectedRegion().getLeftPosition()!=0){
 
 		this.active=true;
 
 		var parameters=this.getParametersForRegion();
-		parameters["location"]=this.lastLeft;
+		parameters["location"]=this.getSelectedRegion().getLeftPosition();
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
 		message.send();
 
-	}else if(position > this.lastRight-buffer && this.lastRight!=this.getSelectedRegion().getRegionLength()-1){
+	}else if(position > this.getSelectedRegion().getRightPosition()-buffer 
+		&& this.getSelectedRegion().getRightPosition() !=this.getSelectedRegion().getRegionLength()-1){
 
 		this.active=true;
 
 		var parameters=this.getParametersForRegion();
-		parameters["location"]=this.lastRight;
+		parameters["location"]=this.getSelectedRegion().getRightPosition();
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
@@ -279,11 +273,6 @@ PathOperator.prototype.reset=function(){
 	this.vertexAtPosition=new Object();
 
 	this.started=false;
-	this.lastLeft=0;
-	this.lastRight=0;
-	this.hasLeft=false;
-	this.hasRight=false;
-
 	this.hasLocation=false;
 }
 
