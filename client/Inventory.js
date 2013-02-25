@@ -94,15 +94,32 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.pushSelector();
 
-	this.registeredRegions=new Array();
-
-	this.createRegionSelector();
+	this.pathOperator=null;
+	this.registeredRegions=[];
 }
 
 Inventory.prototype.createRegionSelector=function(){
+
+	if(this.pathOperator==null)
+		return;
+
+	var regions=this.pathOperator.getRegions();
+
+	var registeredRegions=[];
+	var colors=[];
+
+	var i=0;
+	while(i<regions.length){
+		registeredRegions.push(regions[i].getName());
+		colors.push(regions[i].getColor());
+		i++;
+	}
+
 	this.regionSelector=new SelectionWidget(this.x+this.width+10,this.y+10,
-					this.width,this.height+30*this.registeredRegions.length,
-					"regions",this.registeredRegions);
+					this.width,this.height+30*registeredRegions.length,
+					"regions",registeredRegions);
+
+	this.regionSelector.setColors(colors);
 }
 
 Inventory.prototype.pushSelector=function(){
@@ -131,7 +148,7 @@ Inventory.prototype.draw=function(context){
 		context.rect(this.x, drawingY, this.width, 100 );
 
 	if(this.closeButton.getState() && !this.warpButton.getState())
-		if(this.registeredRegions.length>0)
+		if(this.regionSelector.getNumberOfChoices())
 			this.regionSelector.draw(context);
 
 	context.beginPath();
@@ -219,12 +236,6 @@ Inventory.prototype.draw=function(context){
 	}
 }
 
-Inventory.prototype.addRegion=function(name){
-	this.registeredRegions.push(name);
-
-	this.createRegionSelector();
-}
-
 Inventory.prototype.handleMouseDown=function(x,y){
 
 	this.mouseX=x;
@@ -306,7 +317,6 @@ Inventory.prototype.handleMouseDown=function(x,y){
 Inventory.prototype.setLocation=function(){
 
 	this.locationData=this.getSelector().getLocationData();
-	this.registeredRegions=[];
 }
 
 Inventory.prototype.handleMouseMove=function(x,y){
@@ -415,4 +425,10 @@ Inventory.prototype.checkSpeedBounds=function(){
 Inventory.prototype.setCurrentLocation=function(value){
 	this.locationData["location"]=value;
 	this.locationData["locationName"]=value+1;
+}
+
+Inventory.prototype.setPathOperator=function(value){
+	this.pathOperator=value;
+
+	this.createRegionSelector();
 }

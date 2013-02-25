@@ -96,6 +96,11 @@ SelectionWidget.prototype.createButtons=function(offset){
 	this.buttons.push(this.okButton);
 }
 
+SelectionWidget.prototype.setColors=function(colors){
+	if(this.colors.length==colors.length)
+		this.colors=colors;
+}
+
 SelectionWidget.prototype.draw=function(context){
 
 	context.beginPath();
@@ -128,11 +133,13 @@ SelectionWidget.prototype.draw=function(context){
 		var button=this.buttons[i];
 
 		if(i<this.colors.length && this.colors[i]!="#FFFFFF"){
-			var width=button.getWidth()+10;
-			var height=button.getHeight()+10;
+			var plusValue=20;
+			var width=button.getWidth()+plusValue
+			var height=button.getHeight()+plusValue/5;
 
 			context.beginPath();
-			context.rect(button.getX()-width/2,button.getY()-height/2,width,height);
+			context.rect(button.getX()-width/2-(plusValue/2-plusValue/5),
+				button.getY()-height/2,width,height);
 			context.fillStyle =this.colors[i];
 			context.fill();
 		}
@@ -243,4 +250,8 @@ SelectionWidget.prototype.resetState=function(){
 
 SelectionWidget.prototype.setChoice=function(choice){
 	this.finalChoice=choice;
+}
+
+SelectionWidget.prototype.getNumberOfChoices=function(){
+	return this.choices.length;
 }

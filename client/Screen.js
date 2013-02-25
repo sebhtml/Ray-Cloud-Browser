@@ -106,7 +106,9 @@ function Screen(gameFrequency,renderingFrequency){
 	this.humanInterface=new HumanInterface(this,this.graphOperator.getDataStore());
 	this.pathOperator=new PathOperator(this.graphOperator.getDataStore(),this.graphOperator);
 
+	this.renderer.setPathOperator(this.pathOperator);
 	this.graphOperator.setPathOperator(this.pathOperator);
+	this.humanInterface.getInventory().setPathOperator(this.pathOperator);
 
 	this.engine=new PhysicsEngine(this);
 
@@ -599,7 +601,7 @@ Screen.prototype.processHumanControls=function(){
 		this.clear();
 		this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
 
-		this.humanInterface.getInventory().addRegion(this.locationData["regionName"]);
+		this.humanInterface.getInventory().createRegionSelector();
 
 		this.humanInterface.getInventory().getWarpButton().resetState();
 	}

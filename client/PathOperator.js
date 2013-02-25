@@ -25,13 +25,35 @@
 function PathOperator(dataStore,graphOperator){
 	this.dataStore=dataStore;
 	this.graphOperator=graphOperator;
+	this.regions=[];
 
 	this.reset();
+}
+
+PathOperator.prototype.getRegions=function(){
+	return this.regions;
+}
+
+PathOperator.prototype.getRegion=function(index){
+	if(!(index<this.regions.length))
+		return null;
+
+	return this.regions[index];
 }
 
 PathOperator.prototype.startOnPath=function(locationData){
 
 	this.reset();
+
+	var region=new Region(
+			locationData["map"],locationData["mapName"],
+			locationData["section"],locationData["sectionName"],
+			locationData["region"],locationData["regionName"],
+			locationData["location"],locationData["locationName"]
+			);
+
+	this.regions.push(region);
+
 	this.locationData=locationData;
 	this.regionLength=this.locationData["regionLength"];
 	this.currentLocation=this.locationData["location"];

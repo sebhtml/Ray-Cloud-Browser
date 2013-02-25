@@ -32,8 +32,6 @@ function Renderer(screen){
 	this.zoomForLevelOfDetailsForCoverage=0.5
 	this.lineWidth=2;
 
-	this.pathColor="rgb(80,80,255)";
-
 	this.screen=screen;
 	this.blitter=new Blitter();
 	this.renderingBuffer=10;
@@ -42,6 +40,10 @@ function Renderer(screen){
  * Enable the blitter for better graphics.
  */
 	this.useBlitter=false;
+}
+
+Renderer.prototype.setPathOperator=function(value){
+	this.pathOperator=value;
 }
 
 Renderer.prototype.drawVertices=function(vertices){
@@ -263,9 +265,11 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	}
 */
 
+	var pathColor=this.pathOperator.getRegion(0).getColor();
+
 	if(importantArc){
 		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-			lineWidth*this.pathMultiplierForArc,this.pathColor);
+			lineWidth*this.pathMultiplierForArc,pathColor);
 	}
 
 // only draw the small line if it won't be done later on
@@ -316,12 +320,14 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 
 	if(importantArc){
 
+		var pathColor=this.pathOperator.getRegion(0).getColor();
+
 // draw the 2 big lines
 		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-			lineWidth*this.pathMultiplierForArc,this.pathColor);
+			lineWidth*this.pathMultiplierForArc,pathColor);
 
 		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-			lineWidth*this.pathMultiplierForArc,this.pathColor);
+			lineWidth*this.pathMultiplierForArc,pathColor);
 
 		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
 	}
@@ -448,11 +454,13 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 	context.fillStyle    = '#000000';
 	context.font         = 'bold '+Math.floor(12*zoomValue)+'px Arial';
 
+	var pathColor=this.pathOperator.getRegion(0).getColor();
+
 	if(vertex.isColored()){
 		context.fillStyle="black";
 		context.fillText(vertex.getLabel(),(x-radius/2)*zoomValue,(y+radius/2)*zoomValue);
 	}else if(vertex.isPositionVertex()){
-		context.fillStyle=this.pathColor;
+		context.fillStyle=pathColor;
 		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
 	}else{
 		context.fillStyle="black";
@@ -510,10 +518,12 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 	var blitY=blit.getY()+cacheWidth/2;
 */
 
+	var pathColor=this.pathOperator.getRegion(0).getColor();
+
 	if(vertex.isInPath()){
 
 		context.beginPath();
-		context.fillStyle = this.pathColor;
+		context.fillStyle = pathColor;
 		context.strokeStyle = "rgb(0,0,0)";
 		context.lineWidth=this.lineWidth*zoomValue;
 		context.arc((x)*zoomValue,
