@@ -85,6 +85,7 @@ PathOperator.prototype.startOnPath=function(locationData){
 			locationData["section"],locationData["sectionName"],
 			locationData["region"],locationData["regionName"],
 			locationData["location"],locationData["locationName"],
+			locationData["regionLength"],
 			color
 			);
 
@@ -93,8 +94,6 @@ PathOperator.prototype.startOnPath=function(locationData){
 	this.regions.push(region);
 
 	this.locationData=locationData;
-	this.regionLength=this.locationData["regionLength"];
-	this.currentLocation=this.locationData["location"];
 	this.hasLocation=true;
 
 	this.dataStore.clear();
@@ -233,7 +232,9 @@ PathOperator.prototype.doReadahead=function(){
 	if(!(this.hasLeft && this.hasRight))
 		return;
 
-	var position=this.currentLocation;
+	var currentLocation=this.getSelectedRegion().getLocation();
+
+	var position=currentLocation;
 
 	var buffer=1024;
 
@@ -248,7 +249,7 @@ PathOperator.prototype.doReadahead=function(){
 				this,this.dataStore,parameters);
 		message.send();
 
-	}else if(position > this.lastRight-buffer && this.lastRight!=this.regionLength-1){
+	}else if(position > this.lastRight-buffer && this.lastRight!=this.getSelectedRegion().getRegionLength()-1){
 
 		this.active=true;
 		this.locationData["location"]=this.lastRight;
@@ -286,9 +287,6 @@ PathOperator.prototype.reset=function(){
 	this.hasLeft=false;
 	this.hasRight=false;
 
-	this.currentLocation=0;
-	this.regionLength=0;
-
 	this.hasLocation=false;
 }
 
@@ -308,12 +306,18 @@ PathOperator.prototype.getVertexPosition=function(sequence){
 
 PathOperator.prototype.hasVertex=function(){
 
-	return this.currentLocation<this.regionLength && this.currentLocation>=0;
+	if(!this.hasSelectedRegion())
+		return false;
+
+	var currentLocation=this.getSelectedRegion().getLocation();
+
+	return currentLocation<this.getSelectedRegion().getRegionLength()&& currentLocation>=0;
 }
 
 PathOperator.prototype.setCurrentVertex=function(sequence){
 	if(sequence in this.pathPositions){
-		this.currentLocation=this.pathPositions[sequence][0];
+
+		this.getSelectedRegion().setLocation(this.pathPositions[sequence][0]);
 		this.hasLocation=true;
 	}
 }
@@ -322,20 +326,17 @@ PathOperator.prototype.getVertex=function(){
 	if(!this.hasVertex)
 		return null;
 
-	return this.vertexAtPosition[this.currentLocation];
+	var currentLocation=this.getSelectedRegion().getLocation();
+
+	return this.vertexAtPosition[currentLocation];
 }
 
 PathOperator.prototype.next=function(){
-	this.currentLocation++;
-
-	if(this.currentLocation>=this.regionLength)
-		this.currentLocation=this.regionLength-1;
+	this.getSelectedRegion().next();
 }
 
 PathOperator.prototype.previous=function(){
-	this.currentLocation--;
-	if(this.currentLocation<0)
-		this.currentLocation=0;
+	this.getSelectedRegion().previous();
 }
 
 PathOperator.prototype.getVertexPositions=function(sequence){
@@ -352,7 +353,7 @@ PathOperator.prototype.hasCurrentLocation=function(){
 
 PathOperator.prototype.getCurrentLocation=function(){
 
-	return this.currentLocation;
+	return this.getSelectedRegion().getLocation();
 }
 
 PathOperator.prototype.isCentered=function(){

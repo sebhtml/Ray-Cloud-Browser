@@ -28,14 +28,21 @@
  *
  * \author Sébastien Boisvert
  */
-function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,color){
+function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,
+	regionLength,color){
 
 	this.mapName=mapName;
 	this.sectionName=sectionName;
 	this.regionName=regionName;
 	this.locationName=locationName;
+	this.locationIndex=locationIndex;
 
 	this.pathColor=color;
+	this.regionLength=regionLength;
+}
+
+Region.prototype.getRegionLength=function(){
+	return this.regionLength;
 }
 
 Region.prototype.getColor=function(){
@@ -59,5 +66,26 @@ Region.prototype.getRegionName=function(){
 }
 
 Region.prototype.getLocationName=function(){
-	return this.locationName;
+	return this.locationIndex+1;
+}
+
+Region.prototype.getLocation=function(){
+	return this.locationIndex;
+}
+
+Region.prototype.setLocation=function(value){
+	this.locationIndex=value;
+}
+
+Region.prototype.next=function(){
+	this.locationIndex++;
+
+	if(this.locationIndex>=this.regionLength)
+		this.locationIndex=this.regionLength-1;
+}
+
+Region.prototype.previous=function(){
+	this.locationIndex--;
+	if(this.locationIndex<0)
+		this.locationIndex=0;
 }
