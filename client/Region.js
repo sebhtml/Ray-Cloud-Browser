@@ -30,7 +30,11 @@
  */
 function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,color){
 
+	this.mapName=mapName;
+	this.sectionName=sectionName;
 	this.regionName=regionName;
+	this.locationName=locationName;
+
 	this.pathColor=color;
 }
 
@@ -40,4 +44,20 @@ Region.prototype.getColor=function(){
 
 Region.prototype.getName=function(){
 	return this.regionName;
+}
+
+Region.prototype.getMapName=function(){
+	return this.mapName;
+}
+
+Region.prototype.getSectionName=function(){
+	return this.sectionName;
+}
+
+Region.prototype.getRegionName=function(){
+	return this.regionName;
+}
+
+Region.prototype.getLocationName=function(){
+	return this.locationName;
 }

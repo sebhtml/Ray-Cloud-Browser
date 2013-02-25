@@ -471,9 +471,6 @@ Screen.prototype.iterate=function(){
 
 	if(this.pathOperator.hasVertex()){
 
-		if(this.pathOperator.hasCurrentLocation())
-			this.humanInterface.setCurrentLocation(this.pathOperator.getCurrentLocation());
-
 		var object=this.pathOperator.getVertex();
 		var vertex=this.graph.getVertex(object);
 

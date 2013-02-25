@@ -208,7 +208,7 @@ Inventory.prototype.draw=function(context){
 		if(this.warpButton.getState())
 			this.selector.draw(context);
 
-		if(!this.warpButton.getState()){
+		if(!this.warpButton.getState() && this.pathOperator.hasSelectedRegion()){
 
 			context.beginPath();
 			context.fillStyle = '#FFF8F9';
@@ -228,10 +228,12 @@ Inventory.prototype.draw=function(context){
 
 			context.font         = '12px Arial';
 
-			context.fillText(this.locationData["mapName"],this.x+80,this.y+130);
-			context.fillText(this.locationData["sectionName"],this.x+80,this.y+145);
-			context.fillText(this.locationData["regionName"],this.x+80,this.y+160);
-			context.fillText(this.locationData["locationName"],this.x+80,this.y+175);
+			var region=this.pathOperator.getSelectedRegion();
+
+			context.fillText(region.getMapName(),this.x+80,this.y+130);
+			context.fillText(region.getSectionName(),this.x+80,this.y+145);
+			context.fillText(region.getRegionName(),this.x+80,this.y+160);
+			context.fillText(region.getLocationName(),this.x+80,this.y+175);
 		}
 	}
 }
@@ -314,11 +316,6 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	return false;
 }
 
-Inventory.prototype.setLocation=function(){
-
-	this.locationData=this.getSelector().getLocationData();
-}
-
 Inventory.prototype.handleMouseMove=function(x,y){
 	if(this.selected){
 		var deltaX=x-this.mouseX;
@@ -363,12 +360,6 @@ Inventory.prototype.getNextButton=function(){
 }
 
 Inventory.prototype.iterate=function(){
-
-	if(!this.hasLocation && this.selector.hasChoices()){
-
-		this.setLocation();
-		this.hasLocation=true;
-	}
 }
 
 /**
@@ -420,11 +411,6 @@ Inventory.prototype.setAddressManager=function(address){
 Inventory.prototype.checkSpeedBounds=function(){
 	if(this.speedInObjectsPer1000Iterations<1)
 		this.speedInObjectsPer1000Iterations=1;
-}
-
-Inventory.prototype.setCurrentLocation=function(value){
-	this.locationData["location"]=value;
-	this.locationData["locationName"]=value+1;
 }
 
 Inventory.prototype.setPathOperator=function(value){
