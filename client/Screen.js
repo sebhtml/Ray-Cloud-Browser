@@ -469,7 +469,8 @@ Screen.prototype.iterate=function(){
 
 	if(this.pathOperator.hasVertex()){
 
-		this.humanInterface.setCurrentLocation(this.pathOperator.getCurrentLocation());
+		if(this.pathOperator.hasCurrentLocation())
+			this.humanInterface.setCurrentLocation(this.pathOperator.getCurrentLocation());
 
 		var object=this.pathOperator.getVertex();
 		var vertex=this.graph.getVertex(object);
@@ -690,16 +691,21 @@ Screen.prototype.drawControlPanel=function(){
 		var sequence=this.selectedVertex.getSequence();
 		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
 
-		var width=sequence.length*10;
+		var width=sequence.length*10+100;
 		context.beginPath();
-		context.rect(this.getWidth()/2-width/3, 64/3*2,width, 30 );
-		context.fillStyle = '#DDDDDD';
+		context.lineWidth=1;
+		context.strokeStyle = "rgb(0,0,0)";
+		context.fillStyle = '#FFF8F9';
+		context.rect(10, this.canvas.height-50,width, 35);
 		context.fill();
+		context.stroke();
 
 		context.fillStyle    = '#000000';
-		context.font         = 'bold 12px Arial';
 
-		context.fillText("Item: "+toPrint, this.getWidth()/2-sequence.length*3, 64);
+		context.font         = 'bold 12px Arial';
+		context.fillText("sequence: ", 20, this.canvas.height-25);
+		context.font         = '12px Arial';
+		context.fillText(toPrint, 90, this.canvas.height-25);
 	}
 
 	var offsetX=10;
@@ -709,6 +715,8 @@ Screen.prototype.drawControlPanel=function(){
 	if(!this.debugMode)
 		return;
 
+	context.fillStyle    = '#000000';
+	context.font         = 'bold 12px Arial';
 	context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
 		offsetX,this.canvas.height-offsetY);
 	offsetY-=stepping;

@@ -35,7 +35,7 @@ PathOperator.prototype.startOnPath=function(locationData){
 	this.locationData=locationData;
 	this.regionLength=this.locationData["regionLength"];
 	this.currentLocation=this.locationData["location"];
-
+	this.hasLocation=true;
 
 	this.dataStore.clear();
 	this.graphOperator.clear();
@@ -228,6 +228,8 @@ PathOperator.prototype.reset=function(){
 
 	this.currentLocation=0;
 	this.regionLength=0;
+
+	this.hasLocation=false;
 }
 
 PathOperator.prototype.getVertexPosition=function(sequence){
@@ -246,14 +248,13 @@ PathOperator.prototype.getVertexPosition=function(sequence){
 
 PathOperator.prototype.hasVertex=function(){
 
-	//console.log(this.currentLocation+" -- "+this.regionLength);
-
 	return this.currentLocation<this.regionLength && this.currentLocation>=0;
 }
 
 PathOperator.prototype.setCurrentVertex=function(sequence){
 	if(sequence in this.pathPositions){
 		this.currentLocation=this.pathPositions[sequence][0];
+		this.hasLocation=true;
 	}
 }
 
@@ -283,6 +284,10 @@ PathOperator.prototype.getVertexPositions=function(sequence){
 	}
 
 	return [];
+}
+
+PathOperator.prototype.hasCurrentLocation=function(){
+	return this.hasLocation;
 }
 
 PathOperator.prototype.getCurrentLocation=function(){

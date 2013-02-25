@@ -26,7 +26,7 @@ function HumanInterface(screen,dataStore){
 
 	this.address=new AddressManager(document.URL);
 
-	this.sampleInventory=new Inventory(130,20,300,400,false,screen,dataStore);
+	this.sampleInventory=new Inventory(80,8,300,400,false,screen,dataStore);
 	this.sampleInventory.setAddressManager(this.address);
 
 	this.consumedLocation=false;
@@ -414,15 +414,6 @@ HumanInterface.prototype.draw=function(){
 
 	if(this.hasLocation)
 		this.getLinkButton.draw(context,null);
-
-	if(this.hasLocation){
-		context.fillStyle    = '#000000';
-		context.font         = 'bold 12px Arial';
-
-		context.fillText("[ map: "+this.locationData["mapName"]+" | section: "+this.locationData["sectionName"]+
-			" | region: "+this.locationData["regionName"]+" | location: "+this.locationData["locationName"]+" ]",
-			70,15);
-	}
 }
 
 HumanInterface.prototype.handleMouseDoubleClick=function(x,y){
@@ -566,6 +557,8 @@ HumanInterface.prototype.getInventory=function(){
 
 HumanInterface.prototype.iterate=function(){
 
+	this.getInventory().iterate();
+
 	if(!this.hasLocation && this.getInventory().getSelector().hasChoices()){
 		this.locationData=this.getInventory().getSelector().getLocationData();
 
@@ -575,6 +568,5 @@ HumanInterface.prototype.iterate=function(){
 
 HumanInterface.prototype.setCurrentLocation=function(value){
 
-	this.locationData["location"]=value;
-	this.locationData["locationName"]=value+1;
+	this.getInventory().setCurrentLocation(value);
 }

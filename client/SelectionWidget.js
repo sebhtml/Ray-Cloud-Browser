@@ -99,8 +99,8 @@ SelectionWidget.prototype.createButtons=function(offset){
 SelectionWidget.prototype.draw=function(context){
 
 	context.beginPath();
-	context.rect(this.x, this.y, this.width, this.height );
 	context.fillStyle = '#FFF8F9';
+	context.rect(this.x, this.y, this.width, this.height );
 	context.fill();
 	context.lineWidth = 1;
 	context.strokeStyle = 'black';

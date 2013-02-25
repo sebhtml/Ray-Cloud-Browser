@@ -323,7 +323,6 @@ Selector.prototype.getLocationData=function(){
 }
 
 Selector.prototype.markAsConsumed=function(){
-	//console.log("markAsConsumed");
 	this.consumed=true;
 }
 

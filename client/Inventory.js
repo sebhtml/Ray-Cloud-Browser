@@ -22,6 +22,7 @@
  */
 function Inventory(x,y,width,height,visible,screen,dataStore){
 
+	this.hasLocation=false;
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
 	this.dataStore=dataStore;
@@ -101,7 +102,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 Inventory.prototype.createRegionSelector=function(){
 	this.regionSelector=new SelectionWidget(this.x+this.width+10,this.y+10,
 					this.width,this.height+30*this.registeredRegions.length,
-					"Regions",this.registeredRegions);
+					"regions",this.registeredRegions);
 }
 
 Inventory.prototype.pushSelector=function(){
@@ -145,6 +146,7 @@ Inventory.prototype.draw=function(context){
 	this.closeButton.draw(context,null);
 	
 	if(this.closeButton.getState()){
+
 		context.beginPath();
 		context.rect(this.x+20, this.y+30, 150,30);
 		context.fillStyle = '#FFF8F9';
@@ -189,6 +191,31 @@ Inventory.prototype.draw=function(context){
 		if(this.warpButton.getState())
 			this.selector.draw(context);
 
+		if(!this.warpButton.getState()){
+
+			context.beginPath();
+			context.fillStyle = '#FFF8F9';
+			context.rect(this.x, this.y+110, this.width, this.height );
+			context.fill();
+			context.lineWidth = 1;
+			context.strokeStyle = 'black';
+			context.stroke();
+
+			context.fillStyle    = '#000000';
+			context.font         = 'bold 12px Arial';
+
+			context.fillText("map: ",this.x+20,this.y+130);
+			context.fillText("section: ",this.x+20,this.y+145);
+			context.fillText("region: ",this.x+20,this.y+160);
+			context.fillText("location: ",this.x+20,this.y+175);
+
+			context.font         = '12px Arial';
+
+			context.fillText(this.locationData["mapName"],this.x+80,this.y+130);
+			context.fillText(this.locationData["sectionName"],this.x+80,this.y+145);
+			context.fillText(this.locationData["regionName"],this.x+80,this.y+160);
+			context.fillText(this.locationData["locationName"],this.x+80,this.y+175);
+		}
 	}
 }
 
@@ -220,9 +247,6 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 	}else if(this.selector.handleMouseDown(x,y)){
-
-		if(this.selector.hasChoices())
-			this.registeredRegions=[];
 
 		return true;
 	}else if(this.nextButton.handleMouseDown(x,y)){
@@ -279,6 +303,12 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	return false;
 }
 
+Inventory.prototype.setLocation=function(){
+
+	this.locationData=this.getSelector().getLocationData();
+	this.registeredRegions=[];
+}
+
 Inventory.prototype.handleMouseMove=function(x,y){
 	if(this.selected){
 		var deltaX=x-this.mouseX;
@@ -320,6 +350,15 @@ Inventory.prototype.getPreviousButton=function(){
 
 Inventory.prototype.getNextButton=function(){
 	return this.nextButton;
+}
+
+Inventory.prototype.iterate=function(){
+
+	if(!this.hasLocation && this.selector.hasChoices()){
+
+		this.setLocation();
+		this.hasLocation=true;
+	}
 }
 
 /**
@@ -371,4 +410,9 @@ Inventory.prototype.setAddressManager=function(address){
 Inventory.prototype.checkSpeedBounds=function(){
 	if(this.speedInObjectsPer1000Iterations<1)
 		this.speedInObjectsPer1000Iterations=1;
+}
+
+Inventory.prototype.setCurrentLocation=function(value){
+	this.locationData["location"]=value;
+	this.locationData["locationName"]=value+1;
 }
