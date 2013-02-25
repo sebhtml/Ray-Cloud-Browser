@@ -204,10 +204,6 @@ Screen.prototype.start=function(){
 	this.actualRenderingFrameLength=0;
 }
 
-Screen.prototype.pull=function(){
-	this.graphOperator.pullObjects();
-}
-
 Screen.prototype.handleMouseMove=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 
@@ -583,6 +579,10 @@ Screen.prototype.iterate=function(){
 // process human controls
 
 	this.processHumanControls();
+
+// Pull data from the network
+
+	this.graphOperator.pullObjects();
 }
 
 Screen.prototype.processHumanControls=function(){
@@ -970,8 +970,9 @@ Screen.prototype.setZoomValue=function(zoomValue){
 }
 
 Screen.prototype.toggleDebugMode=function(){
-	//console.log("Debug mode.");
 	this.debugMode=!this.debugMode;
+
+	this.graphOperator.getDataStore().setDebugMode(this.debugMode);
 }
 
 Screen.prototype.clear=function(){

@@ -29,6 +29,8 @@ function GraphOperator(screen){
 	this.screen=screen;
 	this.dataStore=new DataStore();
 
+	this.dataStore.setGraphOperator(this);
+
 	this.resetProductionQueue();
 	this.positionsToAdd=[];
 
@@ -55,17 +57,46 @@ GraphOperator.prototype.createGraph=function(graph){
 
 GraphOperator.prototype.receiveMessage=function(message){
 
-	if(message.getTag()==RAY_MESSAGE_TAG_GET_KMER_LENGTH){
+	var tag=message.getTag();
+
+	if(tag==RAY_MESSAGE_TAG_GET_KMER_LENGTH){
 		var message=new Message(RAY_MESSAGE_TAG_GET_KMER_LENGTH_REPLY,this,message.getSource(),
 			this.kmerLength);
 		message.getSource().receiveMessage(message);
 
-	}else if(message.getTag()==RAY_MESSAGE_TAG_ADD_KMER){
+	}else if(tag==RAY_MESSAGE_TAG_ADD_KMER){
 		this.receiveObject(message.getContent());
+
+	}else if(tag==RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS_REPLY){
+
+		var body=message.getContent();
+
+		var i=0;
+		while(i<body["vertices"].length){
+
+			var entry=body["vertices"][i];
+
+			this.addedAnnotations[entry["sequence"]]=true;
+
+			var annotations=entry["annotations"];
+
+			i++;
+		}
+
+		this.requestedAnnotations=false;
 	}
 }
 
+GraphOperator.prototype.receiveAndProcessMessage=function(message){
+	this.receiveMessage(message);
+}
+
 GraphOperator.prototype.receiveFirstKmer=function(firstKmer){
+
+	if(firstKmer==undefined){
+		return;
+	}
+
 	this.productionQueue.push(firstKmer);
 }
 
@@ -73,7 +104,9 @@ GraphOperator.prototype.pullObjects=function(){
 
 	while(this.head < this.productionQueue.length){
 
-		var kmerObject=this.productionQueue[this.head++];
+		var kmerObject=this.productionQueue[this.head];
+
+		this.head++;
 
 		if(kmerObject in this.added){
 			continue;
@@ -82,10 +115,12 @@ GraphOperator.prototype.pullObjects=function(){
 /*
  * Only fetch one object everytime.
  /*/
-		//console.log("pullObjects with "+kmerObject);
 		this.dataStore.getKmerInformation(kmerObject,this);
 		return;
 	}
+
+	if(this.pullAnnotations())
+		return;
 
 	this.resetProductionQueue();
 
@@ -109,6 +144,73 @@ GraphOperator.prototype.pullObjects=function(){
 		this.productionQueue.push(key);
 		added++;
 	}
+}
+
+GraphOperator.prototype.pullAnnotations=function(){
+
+	if(this.requestedAnnotations)
+		return;
+
+	while(this.headForAnnotations < this.productionQueue.length){
+
+		var kmerObject=this.productionQueue[this.headForAnnotations];
+
+		this.headForAnnotations++;
+
+		if(kmerObject in this.addedAnnotations){
+			continue;
+		}
+
+/*
+ * Fetch annotations
+ */
+
+		var parameters=new Object();
+		parameters["map"]=this.dataStore.getMapIndex();
+		parameters["sequence"]=kmerObject;
+		parameters["count"]=this.dataStore.getDefaultDepth();
+
+		var message=new Message(RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS,
+			this,
+			this.dataStore,
+			parameters);
+
+		this.dataStore.forwardMessageOnTheWeb(message);
+
+// probe the other DNA strand too
+		parameters["sequence"]=this.getReverseComplement(kmerObject);
+
+		var message2=new Message(RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS,
+			this,
+			this.dataStore,
+			parameters);
+
+		this.dataStore.forwardMessageOnTheWeb(message2);
+
+		this.requestedAnnotations=true;
+
+		return true;
+	}
+
+	return false;
+}
+
+GraphOperator.prototype.getReverseComplement=function(sequence){
+	var table=new Object();
+	table["A"]="T";
+	table["T"]="A";
+	table["C"]="G";
+	table["G"]="C";
+
+	var output="";
+
+	var i=sequence.length-1;
+
+	while(i>=0){
+		output+=table[sequence[i--]];
+	}
+
+	return output;
 }
 
 GraphOperator.prototype.receiveObject=function(kmerData){
@@ -167,8 +269,8 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 GraphOperator.prototype.resetProductionQueue=function(){
 
-	this.added=new Object();
 	this.head=0;
+	this.headForAnnotations=0;
 	this.productionQueue=new Array();
 }
 
@@ -181,7 +283,17 @@ GraphOperator.prototype.getDataStore=function(){
 }
 
 GraphOperator.prototype.clear=function(){
+
+/**
+ * == TODO ==
+ * This elements (added and addedAnnotations) will likely be large
+ * at some point.
+ */
+
 	this.graph.clear();
+	this.addedAnnotations=new Object();
+	this.added=new Object();
+	this.requestedAnnotations=false;
 }
 
 GraphOperator.prototype.setPathOperator=function(pathOperator){
@@ -228,10 +340,7 @@ GraphOperator.prototype.iterate=function(){
 		if(vertex!=null){
 			var position=this.positionsToAdd[i][1];
 			this.graph.addPosition(sequence,position+1);
-/*
-			if(position==230)
-				console.log("addPosition 230");
-*/
+
 		}else{
 			newArray.push(this.positionsToAdd[i]);
 		}

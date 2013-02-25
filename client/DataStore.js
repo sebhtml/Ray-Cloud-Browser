@@ -69,34 +69,11 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 
 	var xmlHttp=null;
 
-/*
- * This won't work with older browser, things before IE7.
- */
-	if(window.XMLHttpRequest){
-		xmlHttp=new XMLHttpRequest();
-	}
-
-	xmlHttp.onreadystatechange=function(){
-		if(xmlHttp.readyState==4){
-
-			var content=JSON.parse(xmlHttp.responseText);
-
-			var message=new Message(replyTag,
-						source,
-						destination,
-						content);
-
-			source.pendingRequests--;
-
-			destination.receiveAndProcessMessage(message);
-		}
-	}
-
 	var cgiProgram=CONFIG_WEB_SERVER;
 	
 	var processed=new Object();
 
-	var queryString="action="+messageSymbols[messageTag];
+	var queryString="action="+messageActions[messageTag];
 	processed["tag"]=true;
 
 	for(var key in content){
@@ -112,15 +89,50 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 	var method="GET";
 
 	var address=cgiProgram+"?"+queryString;
+/*
+ * This won't work with older browser, things before IE7.
+ */
+	if(window.XMLHttpRequest){
+		xmlHttp=new XMLHttpRequest();
+	}
 
 	xmlHttp.open(method,address,true);
 	xmlHttp.send();
 
-	//console.log(address);
+	var debug=this.debugMode;
+	var query=this.httpRequests;
+
+	if(debug){
+		console.log("HTTP Request # "+query+" "+address);
+	}
+
+	xmlHttp.onreadystatechange=function(){
+		if(xmlHttp.readyState==4){
+
+			var content=JSON.parse(xmlHttp.responseText);
+
+			var message=new Message(replyTag,
+						source,
+						destination,
+						content);
+
+			source.pendingRequests--;
+
+			if(debug){
+				console.log("HTTP Response # "+query+" "+address);
+			}
+
+			destination.receiveAndProcessMessage(message);
+		}
+	}
 
 	this.pendingRequests++;
 
 	this.httpRequests++;
+}
+
+DataStore.prototype.setDebugMode=function(value){
+	this.debugMode=value;
 }
 
 DataStore.prototype.pullData=function(){
@@ -209,7 +221,7 @@ DataStore.prototype.processMessage=function(message){
 		var kmerSequence=text["sequence"];
 // do a fancy recursive call !
 
-		this.getKmerInformation(kmerSequence,this.graphOperator);
+		this.getKmerInformation(kmerSequence);
 		this.activeQueries--;
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_MAPS){
@@ -243,16 +255,21 @@ DataStore.prototype.getMapIndex=function(){
 	return this.mapIndex;
 }
 
+/**
+ * This is the method to use if a message must be sent on the web
+ * using DataStore as a proxy.
+ */
 DataStore.prototype.forwardMessageOnTheWeb=function(message){
 
 	var theMessage=new Message(message.getTag(),this,message.getSource(),message.getContent());
 	this.sendMessageOnTheWeb(theMessage);
 }
 
-DataStore.prototype.getKmerInformation=function(kmerSequence,graphOperator){
-
-// TODO: this should be done only once
+DataStore.prototype.setGraphOperator=function(graphOperator){
 	this.graphOperator=graphOperator;
+}
+
+DataStore.prototype.getKmerInformation=function(kmerSequence){
 
 	if(kmerSequence == undefined){
 		return;

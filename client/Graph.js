@@ -27,7 +27,6 @@ function Graph(width,height){
 	this.height=height;
 
 	this.clear();
-	
 }
 
 Graph.prototype.addVertex=function(sequence){
