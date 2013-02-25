@@ -35,6 +35,10 @@ function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName
 	this.sectionName=sectionName;
 	this.regionName=regionName;
 	this.locationName=locationName;
+
+	this.mapIndex=mapIndex;
+	this.sectionIndex=sectionIndex;
+	this.regionIndex=regionIndex;
 	this.locationIndex=locationIndex;
 
 	this.pathColor=color;
@@ -88,4 +92,16 @@ Region.prototype.previous=function(){
 	this.locationIndex--;
 	if(this.locationIndex<0)
 		this.locationIndex=0;
+}
+
+Region.prototype.getMap=function(){
+	return this.mapIndex;
+}
+
+Region.prototype.getSection=function(){
+	return this.sectionIndex;
+}
+
+Region.prototype.getRegion=function(){
+	return this.regionIndex;
 }

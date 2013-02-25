@@ -28,6 +28,7 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 	this.maximum=maximum;
 	this.gotFinalChoice=false;
 	this.finalChoice=minimum;
+	this.fontSize=12;
 
 	var digits=0;
 

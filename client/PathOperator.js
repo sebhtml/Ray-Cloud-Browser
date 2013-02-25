@@ -93,7 +93,6 @@ PathOperator.prototype.startOnPath=function(locationData){
 	this.selectedRegionIndex=this.regions.length;
 	this.regions.push(region);
 
-	this.locationData=locationData;
 	this.hasLocation=true;
 
 	this.dataStore.clear();
@@ -109,10 +108,10 @@ PathOperator.prototype.startOnPath=function(locationData){
 
 PathOperator.prototype.getParametersForRegion=function(){
 	var parameters=new Object();
-	parameters["map"]=this.locationData["map"];
-	parameters["section"]=this.locationData["section"];
-	parameters["region"]=this.locationData["region"];
-	parameters["location"]=this.locationData["location"];
+	parameters["map"]=this.getSelectedRegion().getMap();
+	parameters["section"]=this.getSelectedRegion().getSection();
+	parameters["region"]=this.getSelectedRegion().getRegion();
+	parameters["location"]=this.getSelectedRegion().getLocation();
 	parameters["count"]=512;
 
 	return parameters;
@@ -192,8 +191,7 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 		this.started=true;
 
-		var locationInRegion=this.locationData["location"];
-		//console.log(vertices.length);
+		var locationInRegion=this.getSelectedRegion().getLocation();
 
 // pick up a middle position
 		var kmerSequence=vertices[Math.floor(vertices.length/2)]["sequence"];
@@ -206,7 +204,6 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 			if(position==locationInRegion){
 				kmerSequence=sequence;
 
-				//console.log("Found starting point");
 				break;
 			}
 
@@ -241,9 +238,9 @@ PathOperator.prototype.doReadahead=function(){
 	if(position<this.lastLeft+buffer && this.lastLeft!=0){
 
 		this.active=true;
-		this.locationData["location"]=this.lastLeft;
 
 		var parameters=this.getParametersForRegion();
+		parameters["location"]=this.lastLeft;
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
@@ -252,9 +249,9 @@ PathOperator.prototype.doReadahead=function(){
 	}else if(position > this.lastRight-buffer && this.lastRight!=this.getSelectedRegion().getRegionLength()-1){
 
 		this.active=true;
-		this.locationData["location"]=this.lastRight;
 
 		var parameters=this.getParametersForRegion();
+		parameters["location"]=this.lastRight;
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
@@ -362,4 +359,8 @@ PathOperator.prototype.isCentered=function(){
 
 PathOperator.prototype.setCenteredState=function(){
 	this.centered=true;
+}
+
+PathOperator.prototype.selectRegion=function(index){
+
 }

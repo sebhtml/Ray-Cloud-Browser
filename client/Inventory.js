@@ -312,7 +312,10 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		if(this.regionSelector.hasChoice()){
 			var index=this.regionSelector.getChoice();
-			this.regionSelector.resetState();
+
+			this.pathOperator.selectRegion(index);
+
+			this.createRegionSelector();
 		}
 
 		return true;
