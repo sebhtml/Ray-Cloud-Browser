@@ -34,6 +34,7 @@ function SelectionWidget(x,y,width,height,title,choices){
 		i++;
 	}
 
+	this.fontSize=12;
 	this.width=width;
 	this.height=height;
 
@@ -148,6 +149,7 @@ SelectionWidget.prototype.draw=function(context){
 
 		i++;
 	}
+
 }
 
 SelectionWidget.prototype.move=function(x,y){

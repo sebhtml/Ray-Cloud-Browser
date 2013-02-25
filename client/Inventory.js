@@ -310,6 +310,11 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.regionSelector.handleMouseDown(x,y)){
 
+		if(this.regionSelector.hasChoice()){
+			var index=this.regionSelector.getChoice();
+			this.regionSelector.resetState();
+		}
+
 		return true;
 	}
 
