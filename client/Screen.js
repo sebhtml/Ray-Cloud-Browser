@@ -598,6 +598,8 @@ Screen.prototype.processHumanControls=function(){
 		this.clear();
 		this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
 
+		this.humanInterface.getInventory().addRegion(this.locationData["regionName"]);
+
 		this.humanInterface.getInventory().getWarpButton().resetState();
 	}
 
@@ -684,12 +686,19 @@ Screen.prototype.drawControlPanel=function(){
 		this.buttons[i].draw(context,this.blitter);
 	}
 
-	context.fillStyle    = '#000000';
-	context.font         = 'bold 12px Arial';
-
 	if(this.selectedVertex!=null){
 		var sequence=this.selectedVertex.getSequence();
 		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
+
+		var width=sequence.length*10;
+		context.beginPath();
+		context.rect(this.getWidth()/2-width/3, 64/3*2,width, 30 );
+		context.fillStyle = '#DDDDDD';
+		context.fill();
+
+		context.fillStyle    = '#000000';
+		context.font         = 'bold 12px Arial';
+
 		context.fillText("Item: "+toPrint, this.getWidth()/2-sequence.length*3, 64);
 	}
 

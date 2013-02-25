@@ -123,7 +123,6 @@ Button.prototype.draw=function(context,blitter){
 	if(this.clickedTicks>0)
 		context2.fillStyle = this.mouseDownColor;
 	
-
 	var width=this.width;
 	var height=this.height;
 
@@ -201,5 +200,12 @@ Button.prototype.computeVertices=function(){
 	this.y3=y+height/2;
 	this.x4=x-width/2;
 	this.y4=y+height/2;
+}
 
+Button.prototype.getX=function(){
+	return this.x;
+}
+
+Button.prototype.getY=function(){
+	return this.y;
 }

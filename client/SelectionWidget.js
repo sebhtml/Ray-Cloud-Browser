@@ -27,6 +27,13 @@ function SelectionWidget(x,y,width,height,title,choices){
 	this.choices=choices;
 	this.gotFinalChoice=false;
 
+	this.colors=[];
+	var i=0;
+	while(i<this.choices.length){
+		this.colors.push("#FFFFFF");
+		i++;
+	}
+
 	this.width=width;
 	this.height=height;
 
@@ -117,9 +124,23 @@ SelectionWidget.prototype.draw=function(context){
 	}
 
 	for(var i in this.buttons){
-		this.buttons[i++].draw(context,null);
-	}
 
+		var button=this.buttons[i];
+
+		if(i<this.colors.length && this.colors[i]!="#FFFFFF"){
+			var width=button.getWidth()+10;
+			var height=button.getHeight()+10;
+
+			context.beginPath();
+			context.rect(button.getX()-width/2,button.getY()-height/2,width,height);
+			context.fillStyle =this.colors[i];
+			context.fill();
+		}
+
+		button.draw(context,null);
+
+		i++;
+	}
 }
 
 SelectionWidget.prototype.move=function(x,y){

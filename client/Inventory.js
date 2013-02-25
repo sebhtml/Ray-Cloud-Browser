@@ -92,6 +92,16 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
 	this.pushSelector();
+
+	this.registeredRegions=new Array();
+
+	this.createRegionSelector();
+}
+
+Inventory.prototype.createRegionSelector=function(){
+	this.regionSelector=new SelectionWidget(this.x+this.width+10,this.y+10,
+					this.width,this.height+30*this.registeredRegions.length,
+					"Regions",this.registeredRegions);
 }
 
 Inventory.prototype.pushSelector=function(){
@@ -118,6 +128,10 @@ Inventory.prototype.draw=function(context){
 		context.rect(this.x, drawingY, this.width, 30 );
 	else if(!this.warpButton.getState())
 		context.rect(this.x, drawingY, this.width, 100 );
+
+	if(this.closeButton.getState() && !this.warpButton.getState())
+		if(this.registeredRegions.length>0)
+			this.regionSelector.draw(context);
 
 	context.beginPath();
 	context.rect(this.x, drawingY, this.width,height );
@@ -174,7 +188,14 @@ Inventory.prototype.draw=function(context){
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
+
 	}
+}
+
+Inventory.prototype.addRegion=function(name){
+	this.registeredRegions.push(name);
+
+	this.createRegionSelector();
 }
 
 Inventory.prototype.handleMouseDown=function(x,y){
@@ -199,6 +220,9 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 	}else if(this.selector.handleMouseDown(x,y)){
+
+		if(this.selector.hasChoices())
+			this.registeredRegions=[];
 
 		return true;
 	}else if(this.nextButton.handleMouseDown(x,y)){
@@ -246,6 +270,10 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		this.increaseCoverageButton.resetState();
 
 		return true;
+
+	}else if(this.regionSelector.handleMouseDown(x,y)){
+
+		return true;
 	}
 
 	return false;
@@ -267,6 +295,9 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.increaseCoverageButton.move(deltaX,deltaY);
 		this.nextButton.move(deltaX,deltaY);
 		this.previousButton.move(deltaX,deltaY);
+
+		this.regionSelector.move(deltaX,deltaY);
+
 		this.x+=deltaX;
 		this.y+=deltaY;
 	}

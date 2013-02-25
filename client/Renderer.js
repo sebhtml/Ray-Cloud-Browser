@@ -26,12 +26,13 @@
  */
 function Renderer(screen){
 
-	this.pathColor="rgb(80,80,255)";
 	this.pathMultiplierForVertex=1.5;
 	this.pathMultiplierForArc=3;
 	this.zoomForLevelOfDetails=0.12;
 	this.zoomForLevelOfDetailsForCoverage=0.5
 	this.lineWidth=2;
+
+	this.pathColor="rgb(80,80,255)";
 
 	this.screen=screen;
 	this.blitter=new Blitter();
@@ -40,7 +41,7 @@ function Renderer(screen){
 /*
  * Enable the blitter for better graphics.
  */
-	this.useBlitter=true;
+	this.useBlitter=false;
 }
 
 Renderer.prototype.drawVertices=function(vertices){
@@ -387,8 +388,6 @@ Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,ve
 	}
 
 }
-
-
 
 Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
 

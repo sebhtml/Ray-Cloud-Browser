@@ -41,6 +41,8 @@ function Vertex(name,colored){
 	this.colored=colored;
 	this.name=name;
 
+	this.pathColor="rgb(80,80,255)";
+
 	this.inPath=false;
 
 	if(this.colored){
@@ -456,4 +458,8 @@ Vertex.prototype.resetPower=function(){
 	this.powerChange=1;
 	this.powerIteration=0;
 
+}
+
+Vertex.prototype.getPathColor=function(){
+	return this.pathColor;
 }
