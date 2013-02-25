@@ -92,33 +92,65 @@ Renderer.prototype.drawVertexPowers=function(vertices){
 	}
 }
 
-/**
- * This gene was duplicated from Renderer.prototype.drawVertices.
- * The function of this gene changed over time.
- */
-Renderer.prototype.drawPathVertices=function(vertices){
+Renderer.prototype.drawPaths=function(vertices){
+
+	var context=this.screen.getContext();
+	context.lineWidth=this.lineWidth;
 
 	var zoomValue=this.screen.getZoomValue();
+	
+	var fullDetails=true;
 
 	if(zoomValue<=this.zoomForLevelOfDetails)
-		return;
+		fullDetails=false;
 
-// draw selection
-	var i=0;
-
-	while(i<vertices.length){
+	// draw arcs
+	for(var i in vertices){
 		var vertex=vertices[i];
 
-		if(!vertex.isEnabled() || this.screen.isOutside(vertex,this.renderingBuffer)){
-			i++;
+		if(!vertex.isEnabled())
 			continue;
-		}
 
 		this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
 			zoomValue,vertex);
-		i++;
+
+		var arcs=vertex.getArcs();
+		for(var j in arcs){
+
+			var vertex2=arcs[j];
+
+			if(this.screen.isOutside(vertex,this.renderingBuffer)
+				 && this.screen.isOutside(vertex2,this.renderingBuffer)){
+				continue;
+			}
+
+			if(!vertex2.isEnabled())
+				continue;
+
+			var originX=this.screen.getOriginX();
+			var originY=this.screen.getOriginY();
+
+			var importantArc=false;
+
+			if(vertex.isInPath() && vertex2.isInPath())
+				importantArc=true;
+
+			if(importantArc){
+				this.drawPathArc(context,vertex.getX()-originX,vertex.getY()-originY,
+					vertex2.getX()-originX,vertex2.getY()-originY,
+					this.screen.getZoomValue(),
+					vertex2.getRadius(),fullDetails);
+			}
+		}
 	}
 
+/*
+ * Only stroke once.
+ * \see http://gamedev.stackexchange.com/questions/5314/how-does-one-optimize-an-html5-canvas-and-javascript-web-application-for-mobile
+ * "In case of line drawing, combine as many lineTo commands before calling stroke."
+ * --Petteri Hietavirta
+ */
+	context.stroke();
 }
 
 Renderer.prototype.drawArcs=function(vertices){
@@ -164,8 +196,7 @@ Renderer.prototype.drawArcs=function(vertices){
 			this.drawArc(context,vertex.getX()-originX,vertex.getY()-originY,
 				vertex2.getX()-originX,vertex2.getY()-originY,
 				this.screen.getZoomValue(),
-				vertex2.getRadius(),fullDetails,importantArc);
-
+				vertex2.getRadius(),fullDetails);
 		}
 	}
 
@@ -203,7 +234,7 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,l
  *                   /
  *                  .
  */
-Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,importantArc){
+Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails){
 
 	var lineWidth=this.lineWidth;
 	var color='black';
@@ -267,14 +298,8 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 
 	var pathColor=this.pathOperator.getRegion(0).getColor();
 
-	if(importantArc){
-		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-			lineWidth*this.pathMultiplierForArc,pathColor);
-	}
-
 // only draw the small line if it won't be done later on
-	if(!importantArc)
-		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
 
 	//return;
 
@@ -318,22 +343,66 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	if(importantArc){
-
-		var pathColor=this.pathOperator.getRegion(0).getColor();
-
-// draw the 2 big lines
-		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-			lineWidth*this.pathMultiplierForArc,pathColor);
-
-		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-			lineWidth*this.pathMultiplierForArc,pathColor);
-
-		this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
-	}
-
 	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue,fullDetails,lineWidth,color);
 	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails,lineWidth,color);
+}
+
+Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails){
+
+	var lineWidth=this.lineWidth;
+	var color='black';
+
+	var pathColor=this.pathOperator.getRegion(0).getColor();
+
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+		lineWidth*this.pathMultiplierForArc,pathColor);
+
+
+	if(!fullDetails)
+		return;
+
+	var arrowPartLength=5;
+	var ab_x=bx-ax;
+	var ab_y=by-ay;
+
+	var ab_length=Math.sqrt(ab_x*ab_x+ab_y*ab_y);
+	//var ab_length=ab_x*ab_x+ab_y*ab_y;
+
+/* G is a point, see above */
+
+
+	var pointRatioForC=(ab_length-radius)/(0.0+ab_length);
+	var cx=ax+pointRatioForC*ab_x;
+	var cy=ay+pointRatioForC*ab_y;
+	
+	var pointRatio=(ab_length-radius-arrowPartLength)/(0.0+ab_length);
+	var gx=ax+pointRatio*ab_x;
+	var gy=ay+pointRatio*ab_y;
+
+	var gc_x=cx-gx;
+	var gc_y=cy-gy;
+
+	var ge_x=gc_y;
+	var ge_y=-gc_x;
+
+	var gd_x=-gc_y;
+	var gd_y=gc_x;
+
+	var dx=gx+gd_x;
+	var dy=gy+gd_y;
+	var ex=gx+ge_x;
+	var ey=gy+ge_y;
+
+	var pathColor=this.pathOperator.getRegion(0).getColor();
+
+// draw the 2 big lines
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+		lineWidth*this.pathMultiplierForArc,pathColor);
+
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+		lineWidth*this.pathMultiplierForArc,pathColor);
+
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
 }
 
 Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,vertex){
@@ -487,37 +556,6 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 	var x=vertex.getX()-originX;
 	var y=vertex.getY()-originY;
 
-/*
-	if(this.blitter.hasBlit(key)){
-		var blit=this.blitter.getBlit(key);
-
-		var width=blit.getWidth();
-		var height=blit.getHeight();
-
-		//blit.print();
-
-		context.drawImage(blit.getCanvas(),blit.getX(),blit.getY(),width,height,
-			(x-width/2)*zoomValue,(y-height/2)*zoomValue,width*zoomValue,height*zoomValue);
-
-		return;
-	}
-*/
-
-	//3var context2=context;
-
-/*
-	if(this.useBlitter){
-		var blit=this.blitter.allocateBlit(key,4+3*radius,4+3*radius);
-		context2=blit.getCanvas().getContext("2d");
-	}
-*/
-
-/*
-	var cacheWidth=blit.getWidth();
-	var blitX=blit.getX()+cacheWidth/2;
-	var blitY=blit.getY()+cacheWidth/2;
-*/
-
 	var pathColor=this.pathOperator.getRegion(0).getColor();
 
 	if(vertex.isInPath()){
@@ -537,7 +575,9 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 
 Renderer.prototype.draw=function(objects){
 	this.drawVertexPowers(objects);
-	this.drawPathVertices(objects);
+
+	this.drawPaths(objects);
+
 	this.drawArcs(objects);
 	this.drawVertices(objects);
 }
