@@ -28,6 +28,8 @@ function PathOperator(dataStore,graphOperator){
 	this.regions=[];
 
 	this.reset();
+
+	this.defineColors();
 }
 
 PathOperator.prototype.getRegions=function(){
@@ -41,15 +43,36 @@ PathOperator.prototype.getRegion=function(index){
 	return this.regions[index];
 }
 
+PathOperator.prototype.defineColors=function(){
+
+	this.availableColors=[];
+	this.availableColors.push("rgb(80,80,255)");
+	this.availableColors.push("rgb(255,80,80)");
+	this.availableColors.push("rgb(80,255,80)");
+
+	this.colorIndex=0;
+}
+
+PathOperator.prototype.allocateColor=function(){
+
+	var color=this.availableColors[this.colorIndex++];
+
+	this.colorIndex%=this.availableColors.length;
+
+	return color;
+}
+
 PathOperator.prototype.startOnPath=function(locationData){
 
 	this.reset();
 
+	var color=this.allocateColor();
 	var region=new Region(
 			locationData["map"],locationData["mapName"],
 			locationData["section"],locationData["sectionName"],
 			locationData["region"],locationData["regionName"],
-			locationData["location"],locationData["locationName"]
+			locationData["location"],locationData["locationName"],
+			color
 			);
 
 	this.regions.push(region);

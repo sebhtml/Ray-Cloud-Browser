@@ -28,10 +28,10 @@
  *
  * \author Sébastien Boisvert
  */
-function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName){
+function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,color){
 
 	this.regionName=regionName;
-	this.pathColor="rgb(80,80,255)";
+	this.pathColor=color;
 }
 
 Region.prototype.getColor=function(){
