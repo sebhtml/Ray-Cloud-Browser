@@ -23,7 +23,6 @@
 function PathOperator(dataStore,graphOperator){
 	this.dataStore=dataStore;
 	this.graphOperator=graphOperator;
-	this.regions=[];
 
 	this.reset();
 
@@ -325,6 +324,7 @@ PathOperator.prototype.reset=function(){
 	this.started=false;
 	this.hasLocation=false;
 	this.index=new Object();
+	this.regions=[];
 }
 
 PathOperator.prototype.getVertexPosition=function(sequence){

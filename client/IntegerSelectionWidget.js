@@ -85,11 +85,11 @@ function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
 
 	this.minButton=new Button(this.x+this.width/2+buttonDimension/2,
 		this.y+this.height-buttonDimension/2-stepping,
-		buttonDimension+stepping,buttonDimension,"Min",false);
+		buttonDimension+stepping,buttonDimension,"first",false);
 
 	this.maxButton=new Button(this.x+this.width/2+buttonDimension/2+8*stepping,
 		this.y+this.height-buttonDimension/2-stepping,
-		buttonDimension+stepping,buttonDimension,"Max",false);
+		buttonDimension+stepping,buttonDimension,"last",false);
 
 	this.finished=false;
 
