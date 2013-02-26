@@ -77,7 +77,6 @@ SelectionWidget.prototype.createButtons=function(offset){
 		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.1*buttonHeight,
 			this.width-40,buttonHeight,this.choices[i++],false);
 
-		//this.buttons.push(fancyButton);
 		this.choiceButtons.push(fancyButton);
 
 		processed++;
@@ -114,7 +113,7 @@ SelectionWidget.prototype.draw=function(context){
 
 	context.fillStyle    = '#000000';
 	context.font         = 'bold '+this.fontSize+'px Arial';
-	context.fillText(this.title, this.x+this.width/20,this.y+20);
+	context.fillText(this.title+" ("+this.getNumberOfChoices()+")", this.x+this.width/20,this.y+20);
 
 // show choices
 	var i=0;
