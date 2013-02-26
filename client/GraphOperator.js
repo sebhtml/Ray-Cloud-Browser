@@ -71,19 +71,50 @@ GraphOperator.prototype.receiveMessage=function(message){
 
 		var body=message.getContent();
 
+		var added=new Object();
 		var i=0;
 		while(i<body["vertices"].length){
 
 			var entry=body["vertices"][i];
-
-			this.addedAnnotations[entry["sequence"]]=true;
+			var sequence=entry["sequence"];
+			this.addedAnnotations[sequence]=true;
 
 			var annotations=entry["annotations"];
+
+			this.addAnnotations(annotations,added);
 
 			i++;
 		}
 
 		this.requestedAnnotations=false;
+	}
+}
+
+GraphOperator.prototype.addAnnotations=function(annotations,added){
+
+	var iterator=0;
+
+	while(iterator<annotations.length){
+
+		var annotation=annotations[iterator];
+
+		if(annotation["type"]=="LocationAnnotation"){
+			var mapIndex=this.dataStore.getMapIndex();
+			var sectionIndex=annotation["section"];
+			var regionIndex=annotation["region"];
+			var locationIndex=annotation["location"];
+
+			var key="map"+mapIndex+"section"+sectionIndex+"region"+regionIndex;
+
+			if(!(key in added)){
+
+				this.pathOperator.addRegion(mapIndex,sectionIndex,regionIndex,locationIndex);
+
+				added[key]=true;
+			}
+		}
+
+		iterator++;
 	}
 }
 
@@ -310,8 +341,6 @@ GraphOperator.prototype.addPositionForVertex=function(sequence,position){
 }
 
 GraphOperator.prototype.iterate=function(){
-
-	this.pathOperator.doReadahead();
 
 	//console.log("Iterate");
 

@@ -73,35 +73,58 @@ PathOperator.prototype.hasSelectedRegion=function(){
 	return this.selectedRegion;
 }
 
-PathOperator.prototype.startOnPath=function(locationData){
+PathOperator.prototype.getKey=function(mapIndex,sectionIndex,regionIndex){
 
-	this.reset();
+	return "map"+mapIndex+"section"+sectionIndex+"region"+regionIndex;
+}
+
+PathOperator.prototype.startOnPath=function(mapIndex,mapName,
+			sectionIndex,sectionName,
+			regionIndex,regionName,
+			locationIndex,locationName,
+			regionLength,
+			isANewStart
+){
+	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
 
 	var color=this.allocateColor();
-	var region=new Region(
-			locationData["map"],locationData["mapName"],
-			locationData["section"],locationData["sectionName"],
-			locationData["region"],locationData["regionName"],
-			locationData["location"],locationData["locationName"],
-			locationData["regionLength"],
+
+	var region=new Region(mapIndex,mapName,
+			sectionIndex,sectionName,
+			regionIndex,regionName,
+			locationIndex,locationName,
+			regionLength,
 			color
 			);
 
-	this.selectedRegion=true;
-	this.selectedRegionIndex=this.regions.length;
+	if(isANewStart){
+		this.reset();
+
+		this.selectedRegion=true;
+		this.selectedRegionIndex=this.regions.length;
+		this.dataStore.clear();
+		this.graphOperator.clear();
+	}
+
+	this.index[key]=region;
+
 	this.regions.push(region);
 
 	this.hasLocation=true;
 
-	this.dataStore.clear();
-	this.graphOperator.clear();
-
-	var parameters=this.getParametersForRegion();
+	var parameters=new Object();
+	parameters["map"]=mapIndex;
+	parameters["section"]=sectionIndex;
+	parameters["region"]=regionIndex;
+	parameters["location"]=locationIndex;
+	parameters["count"]=512;
 
 	var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
 
-	message.send();
+	this.dataStore.forwardMessageOnTheWeb(message);
+
+	this.active=true;
 }
 
 PathOperator.prototype.getParametersForRegion=function(){
@@ -120,87 +143,131 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 
 	if(tag==RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY){
 
-		this.active=false;
+		this.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY(message);
 
-		var content=message.getContent();
+	}else if(tag==RAY_MESSAGE_TAG_GET_REGIONS_REPLY){
 
-		var vertices=content["vertices"]
+		this.call_RAY_MESSAGE_TAG_GET_REGIONS_REPLY(message);
+	}
+}
 
-		var i=0;
-		while(i<vertices.length){
+PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGIONS_REPLY=function(message){
 
-			var sequence=vertices[i]["sequence"];
-			var position=vertices[i]["position"];
+	var content=message.getContent();
 
-			this.getSelectedRegion().addVertexAtPosition(position,sequence);
+	var mapIndex=content["map"];
+	var mapName="???????";
+	var sectionIndex=content["section"];
+	var sectionName="???????";
+	var regionIndex=content["start"];
+	var regionName=content["regions"][0]["name"];
+	var locationIndex=0;
+	var locationName=locationIndex+1;
 
-			if(!this.getSelectedRegion().hasLeftPosition() || position<this.getSelectedRegion().getLeftPosition()){
-				this.getSelectedRegion().setLeftPosition(position);
-			}
+	var regionLength=content["regions"][0]["nucleotides"]-this.dataStore.getKmerLength()+1;
 
-			var pathPositions=this.getSelectedRegion().getPathPositions();
+/* call start in stuff */
 
-			if(!(sequence in pathPositions)){
-				pathPositions[sequence]=new Array();
-			}
+	this.startOnPath(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,
+		locationIndex,locationName,regionLength,false);
+}
 
-			var found=false;
-			var iterator=0;
-			while(iterator<pathPositions[sequence].length){
-				if(pathPositions[sequence][iterator++]==position){
-					found=true;
-					break;
-				}
-			}
+PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=function(message){
 
-			if(!found){
-				pathPositions[sequence].push(position);
+	this.active=false;
 
-				this.graphOperator.addPositionForVertex(sequence,position);
-			}
+	var content=message.getContent();
 
-			if(!this.getSelectedRegion().hasRightPosition() || position>this.getSelectedRegion().getRightPosition()){
-				this.getSelectedRegion().setRightPosition(position);
-			}
+	var mapIndex=content["map"];
+	var sectionIndex=content["section"];
+	var regionIndex=content["region"];
 
-			i++;
+	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
+
+	var regionEntry=this.index[key];
+
+	var vertices=content["vertices"];
+
+	var i=0;
+	while(i<vertices.length){
+
+		var sequence=vertices[i]["sequence"];
+		var position=vertices[i]["position"];
+
+		regionEntry.addVertexAtPosition(position,sequence);
+
+		if(!regionEntry.hasLeftPosition() || position<regionEntry.getLeftPosition()){
+			regionEntry.setLeftPosition(position);
 		}
 
-/*
- * We only need to bootstrap the beast once.
- */
-		if(this.started)
-			return;
+		var pathPositions=regionEntry.getPathPositions();
 
-		this.started=true;
+		if(!(sequence in pathPositions)){
+			pathPositions[sequence]=new Array();
+		}
 
-		var locationInRegion=this.getSelectedRegion().getLocation();
-
-// pick up a middle position
-		var kmerSequence=vertices[Math.floor(vertices.length/2)]["sequence"];
-
-		var i=0;
-		while(i<vertices.length){
-			var sequence=vertices[i]["sequence"];
-			var position=vertices[i]["position"];
-
-			if(position==locationInRegion){
-				kmerSequence=sequence;
-
+		var found=false;
+		var iterator=0;
+		while(iterator<pathPositions[sequence].length){
+			if(pathPositions[sequence][iterator++]==position){
+				found=true;
 				break;
 			}
-
-			i++;
 		}
 
-		var parameters=new Object();
-		parameters["map"]=this.dataStore.getMapIndex();
-		parameters["sequence"]=kmerSequence;
-		parameters["count"]=this.dataStore.getDefaultDepth();
+		if(!found){
+			pathPositions[sequence].push(position);
 
-		var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
-		this.dataStore.sendMessageOnTheWeb(theMessage);
+			this.graphOperator.addPositionForVertex(sequence,position);
+		}
+
+		if(!regionEntry.hasRightPosition() || position>regionEntry.getRightPosition()){
+			regionEntry.setRightPosition(position);
+		}
+
+		i++;
 	}
+
+// need to bootstrap the beast once.
+// the code below this line is only used once to kickstart the whole
+// thing.
+
+	if(this.started){
+		return;
+	}
+
+	this.started=true;
+
+	var locationInRegion=this.getSelectedRegion().getLocation();
+
+// pick up a middle position
+	var kmerSequence=vertices[Math.floor(vertices.length/2)]["sequence"];
+
+	var i=0;
+	while(i<vertices.length){
+		var sequence=vertices[i]["sequence"];
+		var position=vertices[i]["position"];
+
+		if(position==locationInRegion){
+			kmerSequence=sequence;
+
+			break;
+		}
+
+		i++;
+	}
+
+	var parameters=new Object();
+	parameters["map"]=this.dataStore.getMapIndex();
+	parameters["sequence"]=kmerSequence;
+	parameters["count"]=this.dataStore.getDefaultDepth();
+
+	var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
+	this.dataStore.sendMessageOnTheWeb(theMessage);
+}
+
+PathOperator.prototype.iterate=function(){
+	this.doReadahead();
 }
 
 PathOperator.prototype.doReadahead=function(){
@@ -227,7 +294,8 @@ PathOperator.prototype.doReadahead=function(){
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
-		message.send();
+
+		this.dataStore.forwardMessageOnTheWeb(message);
 
 	}else if(position > this.getSelectedRegion().getRightPosition()-buffer 
 		&& this.getSelectedRegion().getRightPosition() !=this.getSelectedRegion().getRegionLength()-1){
@@ -239,7 +307,8 @@ PathOperator.prototype.doReadahead=function(){
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
-		message.send();
+
+		this.dataStore.forwardMessageOnTheWeb(message);
 	}
 }
 
@@ -255,6 +324,7 @@ PathOperator.prototype.reset=function(){
 
 	this.started=false;
 	this.hasLocation=false;
+	this.index=new Object();
 }
 
 PathOperator.prototype.getVertexPosition=function(sequence){
@@ -316,4 +386,33 @@ PathOperator.prototype.setCenteredState=function(){
 
 PathOperator.prototype.selectRegion=function(index){
 
+}
+
+/**
+ * Send a message to obtain information for this
+ * region.
+ *
+ * The name can be obtained with this query:
+ *
+ * http://localhost/server/?action=getRegions&map=0&section=0&start=5&count=1
+ */
+PathOperator.prototype.addRegion=function(mapIndex,sectionIndex,regionIndex,locationIndex){
+
+	var parameters=new Object();
+	parameters["map"]=mapIndex;
+	parameters["section"]=sectionIndex;
+	parameters["start"]=regionIndex;
+	parameters["count"]=1;
+
+	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
+
+	if(key in this.index)
+		return;
+
+	var message=new Message(RAY_MESSAGE_TAG_GET_REGIONS,
+				this,this.dataStore,parameters);
+
+	this.dataStore.forwardMessageOnTheWeb(message);
+
+	this.index[key]=true;
 }

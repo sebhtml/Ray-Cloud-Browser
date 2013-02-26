@@ -468,6 +468,7 @@ Screen.prototype.iterate=function(){
 
 	this.graphOperator.iterate();
 	this.humanInterface.iterate();
+	this.pathOperator.iterate();
 
 	if(this.pathOperator.hasVertex()){
 
@@ -588,15 +589,20 @@ Screen.prototype.iterate=function(){
 Screen.prototype.processHumanControls=function(){
 	if(this.humanInterface.getInventory().getSelector().hasChoices()){
 
-		this.locationData=this.humanInterface.getInventory().getSelector().getLocationData();
+		var locationData=this.humanInterface.getInventory().getSelector().getLocationData();
 
 		this.humanInterface.getInventory().getSelector().markAsConsumed();
 
-		this.kmerLength=this.locationData["sequenceLength"];
-		this.graphOperator.getDataStore().setMapIndex(this.locationData["map"]);
+		this.kmerLength=locationData["sequenceLength"];
+		this.graphOperator.getDataStore().setMapIndex(locationData["map"]);
 		this.graphOperator.getDataStore().setKmerLength(this.kmerLength);
 		this.clear();
-		this.pathOperator.startOnPath(this.locationData,this.graphOperator.getDataStore());
+
+		this.pathOperator.startOnPath(locationData["map"],locationData["mapName"],
+			locationData["section"],locationData["sectionName"],
+			locationData["region"],locationData["regionName"],
+			locationData["location"],locationData["locationName"],
+			locationData["regionLength"],true);
 
 		this.humanInterface.getInventory().createRegionSelector();
 

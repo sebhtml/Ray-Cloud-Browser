@@ -115,8 +115,13 @@ Inventory.prototype.createRegionSelector=function(){
 		i++;
 	}
 
+	var heightToAdd=registeredRegions.length;
+	if(heightToAdd>10)
+		heightToAdd=10;
+	heightToAdd*=30;
+
 	this.regionSelector=new SelectionWidget(this.x+this.width+10,this.y+10,
-					this.width,this.height+30*registeredRegions.length,
+					this.width,this.height+heightToAdd,
 					"regions",registeredRegions);
 
 	this.regionSelector.setColors(colors);
@@ -368,6 +373,15 @@ Inventory.prototype.getNextButton=function(){
 }
 
 Inventory.prototype.iterate=function(){
+
+/*
+ * Rebuild the menu if new elements are available.
+ */
+	if(this.pathOperator!=null
+		&& this.pathOperator.getRegions().length != this.regionSelector.getNumberOfChoices()){
+
+		this.createRegionSelector();
+	}
 }
 
 /**

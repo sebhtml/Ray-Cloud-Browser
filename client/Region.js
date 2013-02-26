@@ -179,7 +179,7 @@ Region.prototype.setCurrentVertex=function(sequence){
 
 	if(sequence in this.pathPositions){
 
-		this.getSelectedRegion().setLocation(this.pathPositions[sequence][0]);
+		this.setLocation(this.pathPositions[sequence][0]);
 		this.hasLocation=true;
 	}
 }

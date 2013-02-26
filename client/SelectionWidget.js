@@ -77,9 +77,9 @@ SelectionWidget.prototype.createButtons=function(offset){
 		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.1*buttonHeight,
 			this.width-40,buttonHeight,this.choices[i++],false);
 
-		this.buttons.push(fancyButton);
+		//this.buttons.push(fancyButton);
 		this.choiceButtons.push(fancyButton);
-		
+
 		processed++;
 	}
 
@@ -125,13 +125,14 @@ SelectionWidget.prototype.draw=function(context){
 	if(this.finished){
 
 		context.fillText(this.choices[this.finalChoice], this.x+this.width/9,this.y+40);
-		
+
 		return;
 	}
 
-	for(var i in this.buttons){
+	var i=0;
+	while(i<this.choiceButtons.length){
 
-		var button=this.buttons[i];
+		var button=this.choiceButtons[i];
 
 		if(i<this.colors.length && this.colors[i]!="#FFFFFF"){
 			var plusValue=20;
@@ -146,10 +147,16 @@ SelectionWidget.prototype.draw=function(context){
 		}
 
 		button.draw(context,null);
-
 		i++;
 	}
 
+	i=0;
+	while(i<this.buttons.length){
+
+		var button=this.buttons[i];
+		button.draw(context,null);
+		i++;
+	}
 }
 
 SelectionWidget.prototype.move=function(x,y){
@@ -177,7 +184,16 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 		i++;
 	}
 
+	for(var i in this.choiceButtons){
+		if(this.choiceButtons[i].handleMouseDown(x,y)){
+			result=true;
+			break;
+		}
+	}
+
 	for(var i in this.buttons){
+		if(result)
+			break;
 		if(this.buttons[i].handleMouseDown(x,y)){
 			result=true;
 			break;
@@ -207,7 +223,6 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 			if(this.choiceButtons[i].getState()){
 				this.finalChoice=this.offset+i;
 
-				//console.log((typeof(this.offset))+" "+(typeof(i)));
 				selected++;
 				this.gotFinalChoice=true;
 			}

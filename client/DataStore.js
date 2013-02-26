@@ -240,10 +240,6 @@ DataStore.prototype.processMessage=function(message){
 
 		var theMessage=new Message(tag,this,message.getSource(),message.getContent());
 		this.sendMessageOnTheWeb(theMessage);
-
-	}else if(tag==RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION){
-
-		this.forwardMessageOnTheWeb(message);
 	}
 }
 
