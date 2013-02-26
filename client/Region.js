@@ -49,6 +49,9 @@ function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName
 
 	this.hasLeft=false;
 	this.hasRight=false;
+
+	this.pathPositions=new Object();
+	this.vertexAtPosition=new Object();
 }
 
 Region.prototype.hasRightPosition=function(){
@@ -136,4 +139,61 @@ Region.prototype.getSection=function(){
 
 Region.prototype.getRegion=function(){
 	return this.regionIndex;
+}
+
+Region.prototype.isVertexInPath=function(vertex){
+
+	if(vertex in this.pathPositions){
+
+		return true;
+	}
+
+	return false;
+}
+
+Region.prototype.getVertexPosition=function(sequence){
+
+	if(sequence in this.pathPositions){
+		if(this.pathPositions[sequence].length==1){
+			return this.pathPositions[sequence][0];
+		}else{
+// TODO show many coverages when there are many
+			return this.pathPositions[sequence][0];
+		}
+
+	}
+
+	return -1;
+}
+
+Region.prototype.getVertexPositions=function(sequence){
+
+	if(sequence in this.pathPositions){
+		return this.pathPositions[sequence];
+	}
+
+	return [];
+}
+
+Region.prototype.setCurrentVertex=function(sequence){
+
+	if(sequence in this.pathPositions){
+
+		this.getSelectedRegion().setLocation(this.pathPositions[sequence][0]);
+		this.hasLocation=true;
+	}
+}
+
+Region.prototype.getPathPositions=function(){
+	return this.pathPositions;
+}
+
+Region.prototype.getVertex=function(){
+	var currentLocation=this.getLocation();
+
+	return this.vertexAtPosition[currentLocation];
+}
+
+Region.prototype.addVertexAtPosition=function(position,sequence){
+	this.vertexAtPosition[position]=sequence;
 }

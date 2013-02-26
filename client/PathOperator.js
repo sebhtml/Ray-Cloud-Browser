@@ -15,8 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 /**
  * Operate on paths
  *
@@ -134,40 +132,32 @@ PathOperator.prototype.receiveAndProcessMessage=function(message){
 			var sequence=vertices[i]["sequence"];
 			var position=vertices[i]["position"];
 
-			this.vertexAtPosition[position]=sequence;
+			this.getSelectedRegion().addVertexAtPosition(position,sequence);
 
 			if(!this.getSelectedRegion().hasLeftPosition() || position<this.getSelectedRegion().getLeftPosition()){
 				this.getSelectedRegion().setLeftPosition(position);
 			}
 
-			this.keys[sequence]=true;
-			if(!(sequence in this.pathPositions)){
-				this.pathPositions[sequence]=new Array();
+			var pathPositions=this.getSelectedRegion().getPathPositions();
+
+			if(!(sequence in pathPositions)){
+				pathPositions[sequence]=new Array();
 			}
 
 			var found=false;
 			var iterator=0;
-			while(iterator<this.pathPositions[sequence].length){
-				if(this.pathPositions[sequence][iterator++]==position){
+			while(iterator<pathPositions[sequence].length){
+				if(pathPositions[sequence][iterator++]==position){
 					found=true;
 					break;
 				}
 			}
 
 			if(!found){
-				this.pathPositions[sequence].push(position);
+				pathPositions[sequence].push(position);
 
 				this.graphOperator.addPositionForVertex(sequence,position);
 			}
-
-/*
-			if(this.pathPositions[sequence].length>1){
-				console.log("More than 1 position for "+sequence+" with");
-
-				for(var k in this.pathPositions[sequence])
- 					console.log(" ->"+this.pathPositions[sequence][k]);
-			}
-*/
 
 			if(!this.getSelectedRegion().hasRightPosition() || position>this.getSelectedRegion().getRightPosition()){
 				this.getSelectedRegion().setRightPosition(position);
@@ -255,12 +245,7 @@ PathOperator.prototype.doReadahead=function(){
 
 PathOperator.prototype.isVertexInPath=function(vertex){
 
-	if(vertex in this.keys){
-
-		return true;
-	}
-
-	return false;
+	return this.getSelectedRegion().isVertexInPath(vertex);
 }
 
 PathOperator.prototype.reset=function(){
@@ -268,26 +253,13 @@ PathOperator.prototype.reset=function(){
 	this.centered=false;
 	this.active=false;
 
-	this.keys=new Object();
-	this.pathPositions=new Object();
-	this.vertexAtPosition=new Object();
-
 	this.started=false;
 	this.hasLocation=false;
 }
 
 PathOperator.prototype.getVertexPosition=function(sequence){
-	if(sequence in this.pathPositions){
-		if(this.pathPositions[sequence].length==1){
-			return this.pathPositions[sequence][0];
-		}else{
-// TODO show many coverages when there are many
-			return this.pathPositions[sequence][0];
-		}
 
-	}
-
-	return -1;
+	return this.getSelectedRegion().getVertexPosition(sequence);
 }
 
 PathOperator.prototype.hasVertex=function(){
@@ -301,20 +273,15 @@ PathOperator.prototype.hasVertex=function(){
 }
 
 PathOperator.prototype.setCurrentVertex=function(sequence){
-	if(sequence in this.pathPositions){
 
-		this.getSelectedRegion().setLocation(this.pathPositions[sequence][0]);
-		this.hasLocation=true;
-	}
+	this.getSelectedRegion().setCurrentVertex(sequence);
 }
 
 PathOperator.prototype.getVertex=function(){
 	if(!this.hasVertex)
 		return null;
 
-	var currentLocation=this.getSelectedRegion().getLocation();
-
-	return this.vertexAtPosition[currentLocation];
+	return this.getSelectedRegion().getVertex();
 }
 
 PathOperator.prototype.next=function(){
@@ -326,11 +293,8 @@ PathOperator.prototype.previous=function(){
 }
 
 PathOperator.prototype.getVertexPositions=function(sequence){
-	if(sequence in this.pathPositions){
-		return this.pathPositions[sequence];
-	}
 
-	return [];
+	return this.getSelectedRegion().getVertexPositions(sequence);
 }
 
 PathOperator.prototype.hasCurrentLocation=function(){
