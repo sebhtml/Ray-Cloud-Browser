@@ -276,8 +276,19 @@ IntegerSelectionWidget.prototype.move=function(x,y){
 	this.x+=x;
 	this.y+=y;
 
-	for(var i in this.buttons){
+	var i=0;
+	while(i<this.buttons.length){
 		this.buttons[i++].move(x,y);
+	}
+
+	i=0;
+	while(i<this.downButtons.length){
+		this.downButtons[i++].move(x,y);
+	}
+
+	i=0;
+	while(i<this.upButtons.length){
+		this.upButtons[i++].move(x,y);
 	}
 }
 

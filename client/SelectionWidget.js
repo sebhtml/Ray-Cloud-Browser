@@ -162,8 +162,14 @@ SelectionWidget.prototype.move=function(x,y){
 	this.x+=x;
 	this.y+=y;
 
-	for(var i in this.buttons){
+	var i=0;
+	while(i<this.buttons.length){
 		this.buttons[i++].move(x,y);
+	}
+
+	i=0;
+	while(i<this.choiceButtons.length){
+		this.choiceButtons[i++].move(x,y);
 	}
 }
 
