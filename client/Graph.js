@@ -81,6 +81,9 @@ Graph.prototype.addCoverage=function(sequence,coverage){
 
 Graph.prototype.addPosition=function(sequence,position){
 
+/*
+ * TODO: remove this code.
+ *
 	var vertex1=this.addVertex(sequence);
 
 	if(vertex1.hasAnnotation("position="+position)){
@@ -98,6 +101,7 @@ Graph.prototype.addPosition=function(sequence,position){
 	this.vertices.push(positionVertex);
 
 	vertex1.registerAnnotation("position="+position);
+*/
 }
 
 Graph.prototype.addParents=function(sequence,parents){

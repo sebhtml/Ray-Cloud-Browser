@@ -55,6 +55,7 @@ PathOperator.prototype.defineColors=function(){
 	this.availableColors.push("rgb(80,80,255)");
 	this.availableColors.push("rgb(255,80,80)");
 	this.availableColors.push("rgb(80,255,80)");
+	this.availableColors.push("rgb(180,255,80)");
 
 	this.colorIndex=0;
 }
@@ -415,4 +416,60 @@ PathOperator.prototype.addRegion=function(mapIndex,sectionIndex,regionIndex,loca
 	this.dataStore.forwardMessageOnTheWeb(message);
 
 	this.index[key]=true;
+}
+
+/**
+ * TODO: perform caching for this.
+ */
+PathOperator.prototype.getColors=function(vertex){
+	var regions=this.getRegions();
+
+	var i=0;
+	var sequence=vertex.getSequence();
+	var reverse=this.graphOperator.getReverseComplement(sequence);
+
+	var colors=new Array();
+
+	while(i<regions.length){
+		var region=regions[i++];
+
+
+		if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
+			continue;
+
+		var pathColor=region.getColor();
+
+		colors.push(pathColor);
+	}
+
+	return colors;
+}
+
+PathOperator.prototype.getColorsForPair=function(vertex,vertex2){
+	var regions=this.getRegions();
+
+	var i=0;
+	var sequence=vertex.getSequence();
+	var reverse=this.graphOperator.getReverseComplement(sequence);
+
+	var sequence2=vertex2.getSequence();
+	var reverse2=this.graphOperator.getReverseComplement(sequence2);
+
+	var colors=new Array();
+
+	while(i<regions.length){
+		var region=regions[i++];
+
+		if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
+			continue;
+
+		if(!region.isVertexInPath(sequence2) && !region.isVertexInPath(reverse2))
+			continue;
+
+		var pathColor=region.getColor();
+
+		colors.push(pathColor);
+	}
+
+	return colors;
 }
