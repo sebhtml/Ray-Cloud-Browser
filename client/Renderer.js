@@ -217,10 +217,7 @@ Renderer.prototype.drawArcs=function(vertices){
 
 Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,lineWidth,color){
 
-	if(fullDetails)
-		context.lineWidth=lineWidth*zoomValue;
-	else
-		context.lineWidth=lineWidth;
+	context.lineWidth=lineWidth*zoomValue;
 
 	context.strokeStyle=color;
 	context.beginPath();
@@ -245,85 +242,19 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var lineWidth=this.lineWidth;
 	var color='black';
 
-	//var headWasCorrected=false;
-
-/*
- * Calculate boundaries.
- *
- * y = m*x + z
- *
- * m = (by-ay) / (bx-xa)
- *
- * z = y - m*x
- */
-
-/*
-	var aIsOutside=this.screen.isPointOutside(ax,ay,10);
-	var bIsOutside=this.screen.isPointOutside(bx,by,10);
-
-	if(aIsOutside || bIsOutside){
-
-		var m1=(by-ay);
-		if((bx-ax)!=0)
-			m1/=(bx-ax);
-
-		var z1=ay-m1*ax;
-		var m2=(bx-ax);
-
-		if((by-ay)!=0)
-			m2/=(by-ay);
-
-		if(aIsOutside){
-			if(ax<0){
-				ax=0;
-			}
-			if(ax>=this.screen.getWidth()){
-				ax=this.screen.getWidth()-1;
-				ax/=this.screen.getZoomValue();
-			}
-
-			ay=m1*ax+z1;
-		}
-
-		if(bIsOutside){
-			if(bx<0){
-				bx=0;
-			}
-			if(bx>=this.screen.getWidth()){
-				bx=this.screen.getWidth()-1;
-				bx/=this.screen.getZoomValue();
-			}
-
-			by=m1*bx+z1;
-
-
-			headWasCorrected=true;
-		}
-	}
-*/
-
 // only draw the small line if it won't be done later on
 	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
 
-	//return;
-
 	if(!fullDetails)
 		return;
-
-/*
-	if(headWasCorrected)
-		return;
-*/
 
 	var arrowPartLength=5;
 	var ab_x=bx-ax;
 	var ab_y=by-ay;
 
 	var ab_length=Math.sqrt(ab_x*ab_x+ab_y*ab_y);
-	//var ab_length=ab_x*ab_x+ab_y*ab_y;
 
 /* G is a point, see above */
-
 
 	var pointRatioForC=(ab_length-radius)/(0.0+ab_length);
 	var cx=ax+pointRatioForC*ab_x;
@@ -353,12 +284,10 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra){
 
-	var lineWidth=this.lineWidth;
-	var color='black';
+	var lineWidth=(this.lineWidth+extra)*this.pathMultiplierForArc;
 
 	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-		(lineWidth+extra)*this.pathMultiplierForArc,pathColor);
-
+		lineWidth,pathColor);
 }
 
 Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,vertex){
