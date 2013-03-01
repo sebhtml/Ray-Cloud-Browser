@@ -332,8 +332,15 @@ DataStore.prototype.addDataInStore=function(content){
 	var kmerData=content["vertices"];
 
 	var i=0;
+
+	var query=content["sequence"];
+	var gotQuery=false;
+
 	while(i<kmerData.length){
 		var kmerSequenceIterator=kmerData[i]["sequence"];
+
+		if(kmerSequenceIterator==query)
+			gotQuery=true;
 
 		if(!(kmerSequenceIterator in this.store))
 			this.store[kmerSequenceIterator]=kmerData[i];
@@ -341,6 +348,14 @@ DataStore.prototype.addDataInStore=function(content){
 		i++;
 	}
 
+	if(!gotQuery){
+		var dummy=new Object();
+		dummy["coverage"]=0;
+		dummy["parents"]=[];
+		dummy["children"]=[];
+
+		this.store[query]=dummy;
+	}
 }
 
 DataStore.prototype.receiveAndProcessMessage=function(message){
