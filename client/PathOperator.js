@@ -52,10 +52,21 @@ PathOperator.prototype.getRegion=function(index){
 PathOperator.prototype.defineColors=function(){
 
 	this.availableColors=[];
-	this.availableColors.push("rgb(80,80,255)");
-	this.availableColors.push("rgb(255,80,80)");
-	this.availableColors.push("rgb(80,255,80)");
-	this.availableColors.push("rgb(180,255,80)");
+
+	var count=32;
+
+	while(count--){
+
+		var red=Math.round(100+Math.random()*154);
+		var green=Math.round(100+Math.random()*154);
+		var blue=Math.round(100+Math.random()*154);
+
+		var color="rgb("+red+","+green+","+blue+")";
+
+		console.log("Add color "+color);
+
+		this.availableColors.push(color);
+	}
 
 	this.colorIndex=0;
 }
