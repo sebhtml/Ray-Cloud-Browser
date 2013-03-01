@@ -112,6 +112,7 @@ SelectionWidget.prototype.draw=function(context){
 	context.stroke();
 
 	context.fillStyle    = '#000000';
+	context.textAlign="left";
 	context.font         = 'bold '+this.fontSize+'px Arial';
 	context.fillText(this.title+" ("+this.getNumberOfChoices()+")", this.x+this.width/20,this.y+20);
 

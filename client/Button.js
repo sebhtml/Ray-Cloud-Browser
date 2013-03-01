@@ -59,7 +59,6 @@ Button.prototype.handleMouseDown=function(x,y){
 		return false;
 	}
 
-	//console.log("handleMouseClick");
 	this.state=!this.state;
 	
 	this.activateColor();
@@ -77,10 +76,7 @@ Button.prototype.getState=function(){
 
 Button.prototype.draw=function(context,blitter){
 
-	//console.log("Drawing self="+this.name+" x "+this.x+" y "+this.y);
-
-	//var key=this.name+"-"+this.width+"-"+this.height+"-"+this.state;
-
+/*
 	if(blitter!=null && blitter.hasBlit(key)){
 		var blit=blitter.getBlit(key);
 
@@ -94,12 +90,14 @@ Button.prototype.draw=function(context,blitter){
 
 		return;
 	}
+*/
 
 	var x=this.x;
 	var y=this.y;
 
 	var context2=context;
 
+/*
 	if(blitter!=null){
 		var blit=blitter.allocateBlit(key,4+this.width,4+this.height);
 
@@ -110,6 +108,7 @@ Button.prototype.draw=function(context,blitter){
 		var x=blit.getX()+cacheWidth/2;
 		var y=blit.getY()+cacheHeight/2;
 	}
+*/
 
 	context2.fillStyle = this.color;
 	context2.lineWidth=1;
@@ -146,7 +145,8 @@ Button.prototype.draw=function(context,blitter){
 
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold '+this.fontSize+'px Arial';
-	context2.fillText(this.name, x-(this.width/2)*0.7, y+6);
+	context2.textAlign="center";
+	context2.fillText(this.name, x, y+6);
 
 	if(blitter!=null)
 		this.draw(context,blitter);

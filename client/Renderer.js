@@ -383,17 +383,9 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 
 	if(vertex.isColored()){
 		context.fillStyle="black";
-		context.fillText(vertex.getLabel(),(x-radius/2)*zoomValue,(y+radius/2)*zoomValue);
+		context.textAlign="center";
+		context.fillText(vertex.getLabel(),(x)*zoomValue,(y+radius/2)*zoomValue);
 
-	//}else if(vertex.isPositionVertex()){
-/**
- * TODO: use the color of the path.
- */
-/*
-		var pathColor="#000000";
-		context.fillStyle=pathColor;
-		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
-*/
 	}else{
 		context.fillStyle="black";
 		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);

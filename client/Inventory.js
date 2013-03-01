@@ -213,6 +213,7 @@ Inventory.prototype.draw=function(context){
 		context.fillStyle    = '#000000';
 		context.font         = 'bold '+this.fontSize+'px Arial';
 
+		context.textAlign="left";
 		context.fillText("min. coverage: "+this.minimumCoverage, this.x+40,this.y+50);
 		context.fillText("play", this.x+235,this.y+50);
 		context.fillText("speed", this.x+235,this.y+85);
@@ -233,6 +234,7 @@ Inventory.prototype.draw=function(context){
 			context.fillStyle    = '#000000';
 			context.font         = 'bold 12px Arial';
 
+			context.textAlign="left";
 			context.fillText("map: ",this.x+10,this.y+130);
 			context.fillText("section: ",this.x+10,this.y+145);
 			context.fillText("region: ",this.x+10,this.y+160);
