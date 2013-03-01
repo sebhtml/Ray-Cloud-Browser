@@ -734,6 +734,7 @@ Screen.prototype.drawControlPanel=function(){
 	if(!this.debugMode)
 		return;
 
+	context.textAlign="left";
 	context.fillStyle    = '#000000';
 	context.font         = 'bold 12px Arial';
 	context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
