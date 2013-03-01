@@ -53,20 +53,38 @@ PathOperator.prototype.defineColors=function(){
 
 	this.availableColors=[];
 
+	var colors=new Object();
+
+	var zoneWidth=32;
+	var zoneStart=0;
+	var zoneFinalWidth=255;
+
 	var count=32;
 
-	while(count--){
+	while(count){
 
-		var red=Math.round(100+Math.random()*154);
-		var green=Math.round(100+Math.random()*154);
-		var blue=Math.round(100+Math.random()*154);
+		var red=Math.round(zoneStart+Math.random()*zoneFinalWidth);
+		var green=Math.round(zoneStart+Math.random()*zoneFinalWidth);
+		var blue=Math.round(zoneStart+Math.random()*zoneFinalWidth);
+
+		var key=Math.round(red/zoneWidth)+"-"+Math.round(green/zoneWidth)+"-"+Math.round(blue/zoneWidth);
+
+		if(key in colors)
+			continue;
+
+		colors[key]=true;
+
+		//console.log("key= "+key);
 
 		var color="rgb("+red+","+green+","+blue+")";
 
+		count--;
 		//console.log("Add color "+color);
 
 		this.availableColors.push(color);
 	}
+
+	//console.log("Colors: "+this.availableColors.length);
 
 	this.colorIndex=0;
 }
