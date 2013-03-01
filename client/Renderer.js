@@ -41,6 +41,9 @@ function Renderer(screen){
  * Enable the blitter for better graphics.
  */
 	this.useBlitter=false;
+
+	this.outstandingOperations=new Object();
+	this.layers=0;
 }
 
 Renderer.prototype.setPathOperator=function(value){
@@ -141,7 +144,7 @@ Renderer.prototype.drawPaths=function(vertices){
 				this.drawPathArc(context,vertex.getX()-originX,vertex.getY()-originY,
 					vertex2.getX()-originX,vertex2.getY()-originY,
 					this.screen.getZoomValue(),
-					vertex2.getRadius(),fullDetails,colors1[k],extra);
+					vertex2.getRadius(),fullDetails,colors1[k],extra,k);
 
 				extra-=this.extraMultiplier;
 
@@ -149,14 +152,6 @@ Renderer.prototype.drawPaths=function(vertices){
 			}
 		}
 	}
-
-/*
- * Only stroke once.
- * \see http://gamedev.stackexchange.com/questions/5314/how-does-one-optimize-an-html5-canvas-and-javascript-web-application-for-mobile
- * "In case of line drawing, combine as many lineTo commands before calling stroke."
- * --Petteri Hietavirta
- */
-	context.stroke();
 }
 
 Renderer.prototype.drawArcs=function(vertices){
@@ -206,25 +201,28 @@ Renderer.prototype.drawArcs=function(vertices){
 		}
 	}
 
-/*
- * Only stroke once.
- * \see http://gamedev.stackexchange.com/questions/5314/how-does-one-optimize-an-html5-canvas-and-javascript-web-application-for-mobile
- * "In case of line drawing, combine as many lineTo commands before calling stroke."
- * --Petteri Hietavirta
- */
-	context.stroke();
 }
 
 Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,lineWidth,color){
 
-	context.lineWidth=lineWidth*zoomValue;
-
-	context.strokeStyle=color;
 	context.beginPath();
+	context.lineWidth=lineWidth*zoomValue;
+	context.strokeStyle=color;
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
-	context.stroke();
 	context.closePath();
+	context.stroke();
+}
+
+Renderer.prototype.drawBufferedLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,lineWidth,color,layer){
+
+	context.beginPath();
+	context.lineWidth=lineWidth*zoomValue;
+	context.strokeStyle=color;
+	context.moveTo(ax,ay);
+	context.lineTo(bx,by);
+	context.closePath();
+	context.stroke();
 }
 
 /*
@@ -282,12 +280,12 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails,lineWidth,color);
 }
 
-Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra){
+Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
 
 	var lineWidth=(this.lineWidth+extra)*this.pathMultiplierForArc;
 
-	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-		lineWidth,pathColor);
+	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
+		lineWidth,pathColor,layer);
 }
 
 Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,vertex){
@@ -311,7 +309,6 @@ Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,ve
 				(y)*zoomValue,zoomValue*radius*power, 0, Math.PI*2, true);
 
 		context.fill();
-		context.stroke();
 		context.closePath();
 	}
 }
@@ -336,8 +333,8 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 				(y)*zoomValue,zoomValue*radius, 0, Math.PI*2, true);
 
 		context.fill();
-		context.stroke();
 		context.closePath();
+		context.stroke();
 	}
 
 	context.fillStyle    = '#000000';
@@ -387,19 +384,28 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 
 		var pathColor=colors[i];
 
-		context.beginPath();
-		context.fillStyle = pathColor;
-		context.strokeStyle = "rgb(0,0,0)";
-		context.lineWidth=(this.lineWidth+extra)*zoomValue;
-		context.arc((x)*zoomValue,
-				(y)*zoomValue,this.pathMultiplierForVertex*zoomValue*(radius+extra), 0, Math.PI*2, true);
+		var radius2=this.pathMultiplierForVertex*zoomValue*(radius+extra);
 
-		context.fill();
-		context.closePath();
+		var layer=i;
+		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2,
+			pathColor,layer);
 
 		i++;
 		extra-=this.extraMultiplier;
 	}
+}
+
+Renderer.prototype.drawBufferedCircle=function(context,x,y,radius,color,layer){
+	context.beginPath();
+	context.fillStyle =color;
+/*
+	context.strokeStyle = "rgb(0,0,0)";
+	context.lineWidth=lineWidth;
+*/
+	context.arc(x,y,radius, 0, Math.PI*2, true);
+
+	context.fill();
+	context.closePath();
 }
 
 Renderer.prototype.draw=function(objects){
@@ -409,4 +415,14 @@ Renderer.prototype.draw=function(objects){
 
 	this.drawArcs(objects);
 	this.drawVertices(objects);
+
+/*
+ * Only stroke once.
+ * \see http://gamedev.stackexchange.com/questions/5314/how-does-one-optimize-an-html5-canvas-and-javascript-web-application-for-mobile
+ * "In case of line drawing, combine as many lineTo commands before calling stroke."
+ * --Petteri Hietavirta
+ */
+	var context=this.screen.getContext();
+	context.stroke();
+
 }
