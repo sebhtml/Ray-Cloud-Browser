@@ -106,9 +106,7 @@ Selector.prototype.draw=function(context){
 // some granularity
 	if(this.state==this.SLAVE_MODE_PULL_MAPS){
 
-
 		if(!this.requestedMaps){
-
 
 			this.receivedMaps=false;
 			this.requestedMaps=true;
@@ -118,12 +116,11 @@ Selector.prototype.draw=function(context){
 
 		}else if(this.receivedMaps){
 
-			this.mapWidget=new SelectionWidget(this.x,this.y+10,this.width*1.5,this.height,"(1/4) Select map",this.mapChoices);
+			this.mapWidget=new SelectionWidget(this.x,this.y+10,this.width*1.0,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
 			this.state=this.SLAVE_MODE_SELECT_MAP;
 
 			this.requestedRegions=false;
-
 		}
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_MAP){
@@ -164,7 +161,7 @@ Selector.prototype.draw=function(context){
 				choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
 			}
 
-			this.regionWidget=new SelectionWidget(this.x,this.y+110,this.width*1.5,this.height,"(3/4) Select region",choices);
+			this.regionWidget=new SelectionWidget(this.x,this.y+110,this.width*1.0,this.height,"(3/4) Select region",choices);
 			this.objects=new Array();
 			this.objects.push(this.regionWidget);
 			this.state=this.SLAVE_MODE_SELECT_REGION;
@@ -194,7 +191,9 @@ Selector.prototype.draw=function(context){
 	if(this.receivedMapFileData){
 		context.fillStyle    = '#000000';
 		context.font         = 'bold '+this.fontSize+'px Arial';
-		context.fillText(this.metaData, this.x+170,this.y+30);
+
+		context.fillText("Sequence length: "+this.mapFileData["sequenceLength"], this.x+160,this.y+30);
+		context.fillText("Sequences: "+this.mapFileData["sequences"], this.x+160,this.y+50);
 	}
 }
 
@@ -296,7 +295,6 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 		this.mapFileData=message.getContent();
 		this.receivedMapFileData=true;
 
-		this.metaData="Sequence length: "+this.mapFileData["sequenceLength"]+" sequences: "+this.mapFileData["sequences"];
 	}
 }
 
@@ -340,7 +338,7 @@ Selector.prototype.selectMapIndex=function(index){
 		sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
 	}
 
-	this.sectionWidget=new SelectionWidget(this.x,this.y+60,this.width*1.5,this.height,"(2/4) Select section",sections);
+	this.sectionWidget=new SelectionWidget(this.x,this.y+60,this.width*1.0,this.height,"(2/4) Select section",sections);
 	this.objects=new Array();
 	this.objects.push(this.sectionWidget);
 	this.state=this.SLAVE_MODE_SELECT_SECTION;
@@ -394,7 +392,7 @@ Selector.prototype.selectRegionIndex=function(index){
 	var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["sequenceLength"]+1;
 	this.regionLength=maximum;
 
-	this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.5,this.height,"(4/4) Select location",
+	this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.0,this.height,"(4/4) Select location",
 		1,maximum);
 
 	this.objects=new Array();

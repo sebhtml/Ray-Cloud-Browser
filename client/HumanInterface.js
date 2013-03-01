@@ -26,7 +26,7 @@ function HumanInterface(screen,dataStore){
 
 	this.address=new AddressManager(document.URL);
 
-	this.sampleInventory=new Inventory(screen.getWidth()-320,30,300,400,false,screen,dataStore);
+	this.sampleInventory=new Inventory(screen.getWidth()-310,10,300,400,false,screen,dataStore);
 	this.sampleInventory.setAddressManager(this.address);
 
 	this.consumedLocation=false;

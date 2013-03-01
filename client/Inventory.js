@@ -61,7 +61,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
 */
 
-	this.warpButton=new Button(this.x+this.buttonWidth+6*this.buttonWidth/2,
+	this.warpButton=new Button(this.x+this.buttonWidth+4*this.buttonWidth/2,
 		this.y+3.3*this.buttonWidth,
 		4.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
@@ -233,24 +233,23 @@ Inventory.prototype.draw=function(context){
 			context.fillStyle    = '#000000';
 			context.font         = 'bold 12px Arial';
 
-			context.fillText("map: ",this.x+20,this.y+130);
-			context.fillText("section: ",this.x+20,this.y+145);
-			context.fillText("region: ",this.x+20,this.y+160);
-			context.fillText("location: ",this.x+20,this.y+175);
+			context.fillText("map: ",this.x+10,this.y+130);
+			context.fillText("section: ",this.x+10,this.y+145);
+			context.fillText("region: ",this.x+10,this.y+160);
+			context.fillText("location: ",this.x+10,this.y+175);
 
 			context.font         = '12px Arial';
 
 			var region=this.pathOperator.getSelectedRegion();
 
-			context.fillText(region.getMapName(),this.x+80,this.y+130);
-			context.fillText(region.getSectionName(),this.x+80,this.y+145);
-			context.fillText(region.getRegionName(),this.x+80,this.y+160);
-			context.fillText(region.getLocationName(),this.x+80,this.y+175);
+			context.fillText(region.getMapName(),this.x+60,this.y+130);
+			context.fillText(region.getSectionName(),this.x+60,this.y+145);
+			context.fillText(region.getRegionName(),this.x+60,this.y+160);
+			context.fillText(region.getLocationName(),this.x+60,this.y+175);
 
 			this.getLinkButton.draw(context,null);
 		}
 	}
-
 }
 
 Inventory.prototype.handleMouseDown=function(x,y){
