@@ -22,7 +22,6 @@
  */
 function Inventory(x,y,width,height,visible,screen,dataStore){
 
-	this.hasLocation=false;
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
 	this.dataStore=dataStore;
@@ -49,10 +48,10 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.closeButton.setFontSize(24);
 
-	var title="Navigation";
+	var title="Ray Cloud Browser";
 
 	this.overlay=new Button(this.x+this.width/2,this.y+this.buttonWidth/2,
-		this.width,this.buttonWidth,"     "+title,false);
+		this.width,this.buttonWidth,""+title,false);
 	this.overlay.setBackgroundColor("#99CCCC");
 	this.overlay.setActiveColor("#99CCCC");
 
@@ -92,6 +91,14 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+4.0*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
+	this.getLinkButton=new Button(this.x+this.buttonWidth*13.2,
+		this.y+this.buttonWidth*8.8,this.buttonWidth*3,this.buttonWidth,"http://",false);
+/*
+	this.getLinkButton.setBackgroundColor(this.buttonColor);
+	this.getLinkButton.setActiveColor(this.buttonColor);
+	this.getLinkButton.setFontSize(this.buttonFontSize)
+*/
+
 	this.pushSelector();
 
 	this.pathOperator=null;
@@ -120,7 +127,7 @@ Inventory.prototype.createRegionSelector=function(){
 		heightToAdd=10;
 	heightToAdd*=30;
 
-	this.regionSelector=new SelectionWidget(this.x+this.width+10,this.y+10,
+	this.regionSelector=new SelectionWidget(this.x,this.y+200,
 					this.width,this.height+heightToAdd,
 					"regions",registeredRegions);
 
@@ -239,8 +246,11 @@ Inventory.prototype.draw=function(context){
 			context.fillText(region.getSectionName(),this.x+80,this.y+145);
 			context.fillText(region.getRegionName(),this.x+80,this.y+160);
 			context.fillText(region.getLocationName(),this.x+80,this.y+175);
+
+			this.getLinkButton.draw(context,null);
 		}
 	}
+
 }
 
 Inventory.prototype.handleMouseDown=function(x,y){
@@ -324,6 +334,29 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		}
 
 		return true;
+
+	}else if(this.closeButton.getState() &&
+		!this.warpButton.getState() && this.pathOperator.hasSelectedRegion()
+		&& this.getLinkButton.handleMouseDown(x,y)){
+
+		var address=this.getAddress();
+
+		//console.log("Bang");
+
+		if(this.screen.getZoomValue()!=1)
+			address+="&zoom="+this.screen.getZoomValue();
+
+		if(this.getPreviousButton().getState()){
+			address+="&play=backward";
+			address+="&speed="+this.getSpeed();
+		}else if(this.getNextButton().getState()){
+			address+="&play=forward";
+			address+="&speed="+this.getSpeed();
+		}
+
+		alert(address);
+
+		this.getLinkButton.resetState();
 	}
 
 	return false;
@@ -345,6 +378,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.increaseCoverageButton.move(deltaX,deltaY);
 		this.nextButton.move(deltaX,deltaY);
 		this.previousButton.move(deltaX,deltaY);
+		this.getLinkButton.move(deltaX,deltaY);
 
 		this.regionSelector.move(deltaX,deltaY);
 
@@ -439,4 +473,18 @@ Inventory.prototype.setPathOperator=function(value){
 	this.pathOperator=value;
 
 	this.createRegionSelector();
+}
+
+Inventory.prototype.getAddress=function(){
+
+	var address=this.address.getAddressWithoutQueryString();
+
+	var region=this.pathOperator.getSelectedRegion();
+	address+="?";
+	address+="map="+region.getMap();
+	address+="&section="+region.getSection();
+	address+="&region="+region.getRegion();
+	address+="&location="+region.getLocation();
+
+	return address;
 }

@@ -26,7 +26,7 @@ function HumanInterface(screen,dataStore){
 
 	this.address=new AddressManager(document.URL);
 
-	this.sampleInventory=new Inventory(80,8,300,400,false,screen,dataStore);
+	this.sampleInventory=new Inventory(screen.getWidth()-320,30,300,400,false,screen,dataStore);
 	this.sampleInventory.setAddressManager(this.address);
 
 	this.consumedLocation=false;
@@ -90,12 +90,6 @@ function HumanInterface(screen,dataStore){
 
 	this.sampleInventory.getCloseButton().activateState();
 	this.sampleInventory.getWarpButton().activateState();
-
-	this.getLinkButton=new Button(this.buttonWidth*(1.4),
-		this.buttonWidth*(0.9+6.5+0.1)+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"//",false);
-	this.getLinkButton.setBackgroundColor(this.buttonColor);
-	this.getLinkButton.setActiveColor(this.buttonColor);
-	this.getLinkButton.setFontSize(this.buttonFontSize)
 
 	if(this.address.hasToken("zoom")){
 
@@ -411,9 +405,6 @@ HumanInterface.prototype.draw=function(){
 	this.goRight.draw(context,null);
 	this.zoomOut.draw(context,null);
 	this.zoomIn.draw(context,null);
-
-	if(this.hasLocation)
-		this.getLinkButton.draw(context,null);
 }
 
 HumanInterface.prototype.handleMouseDoubleClick=function(x,y){
@@ -474,52 +465,9 @@ HumanInterface.prototype.handleMouseDown=function(x,y){
 		aEvent.which=this.upKey;
 		this.processKeyboardEvent(aEvent);
 		return true;
-
-	}else if(this.hasLocation && this.getLinkButton.handleMouseDown(x,y)){
-
-		var address=this.getAddress();
-
-		if(this.screen.getZoomValue()!=1)
-			address+="&zoom="+this.screen.getZoomValue();
-
-
-		if(this.goPrevious()){
-			address+="&play=backward";
-			address+="&speed="+this.getInventory().getSpeed();
-		}else if(this.goNext()){
-			address+="&play=forward";
-			address+="&speed="+this.getInventory().getSpeed();
-		}
-
-		alert(address);
 	}
 
 	return false;
-}
-
-HumanInterface.prototype.getAddress=function(){
-
-	var parameters=this.locationData;
-
-	var address=this.address.getAddressWithoutQueryString();
-
-	var keys=["map","section","region","location"];
-
-	address+="?";
-
-	var i=0;
-	while(i<keys.length){
-		var token=keys[i];
-
-		address+=""+token+"="+parameters[token];
-
-		if(i!=keys.length-1)
-			address+="&";
-
-		i++;
-	}
-
-	return address;
 }
 
 HumanInterface.prototype.handleMouseUp=function(x,y){

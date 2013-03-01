@@ -785,6 +785,10 @@ Screen.prototype.draw=function(){
 
 	var start=this.getMilliseconds();
 
+/*
+ *
+ * This draws a brand name
+ *
 	var context=this.getContext();
 	context.clearRect(0,0,this.width,this.height);
 
@@ -801,7 +805,7 @@ Screen.prototype.draw=function(){
 	context.fillStyle    = '#000000';
 	context.font         = '13px Arial';
 	context.fillText("Ray Cloud Browser", this.width-120,15);
-
+*/
 
 /*
  * Draw a line around the canvas.

@@ -63,7 +63,7 @@ PathOperator.prototype.defineColors=function(){
 
 		var color="rgb("+red+","+green+","+blue+")";
 
-		console.log("Add color "+color);
+		//console.log("Add color "+color);
 
 		this.availableColors.push(color);
 	}
