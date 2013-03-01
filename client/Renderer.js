@@ -19,6 +19,9 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
+var RENDERER_LINE=0;
+var RENDERER_CIRCLE=1;
+
 /**
  * The renderer draws objects in a canvas.
  *
@@ -42,7 +45,7 @@ function Renderer(screen){
  */
 	this.useBlitter=false;
 
-	this.outstandingOperations=new Object();
+	this.bufferedOperations=new Object();
 	this.layers=0;
 }
 
@@ -144,14 +147,54 @@ Renderer.prototype.drawPaths=function(vertices){
 				this.drawPathArc(context,vertex.getX()-originX,vertex.getY()-originY,
 					vertex2.getX()-originX,vertex2.getY()-originY,
 					this.screen.getZoomValue(),
-					vertex2.getRadius(),fullDetails,colors1[k],extra,k);
+					vertex2.getRadius(),fullDetails,colors1[k],extra,colors1.length-k-1);
 
 				extra-=this.extraMultiplier;
 
 				k++;
 			}
+
+/*
+ * Update layers
+ */
+			if(this.layers<colors1.length)
+				this.layers=colors1.length;
 		}
 	}
+
+	this.drawBufferedOperations(context);
+}
+
+Renderer.prototype.drawBufferedOperations=function(context){
+
+	while(this.layers>0){
+		this.layers--;
+		var layer=this.layers;
+
+		if(!(layer in this.bufferedOperations))
+			continue;
+
+		var operations=this.bufferedOperations[layer];
+
+		var i=0;
+		while(i<operations.length){
+			var operation=operations[i++];
+
+			if(operation[0]==RENDERER_LINE){
+
+				this.drawLine(context,operation[1],operation[2],operation[3],
+					operation[4],operation[5],operation[6]);
+
+			}else if(operation[0]==RENDERER_CIRCLE){
+
+				this.drawCircle(context,operation[1],operation[2],operation[3],
+					operation[4]);
+			}
+		}
+	}
+
+	this.layers=0;
+	this.bufferedOperations=new Object();
 }
 
 Renderer.prototype.drawArcs=function(vertices){
@@ -200,13 +243,12 @@ Renderer.prototype.drawArcs=function(vertices){
 				vertex2.getRadius(),fullDetails);
 		}
 	}
-
 }
 
-Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,lineWidth,color){
+Renderer.prototype.drawLine=function(context,ax,ay,bx,by,lineWidth,color){
 
 	context.beginPath();
-	context.lineWidth=lineWidth*zoomValue;
+	context.lineWidth=lineWidth;
 	context.strokeStyle=color;
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
@@ -214,15 +256,14 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,l
 	context.stroke();
 }
 
-Renderer.prototype.drawBufferedLine=function(context,ax,ay,bx,by,zoomValue,fullDetails,lineWidth,color,layer){
+Renderer.prototype.drawBufferedLine=function(context,ax,ay,bx,by,lineWidth,color,layer){
 
-	context.beginPath();
-	context.lineWidth=lineWidth*zoomValue;
-	context.strokeStyle=color;
-	context.moveTo(ax,ay);
-	context.lineTo(bx,by);
-	context.closePath();
-	context.stroke();
+	var operation=[RENDERER_LINE,ax,ay,bx,by,lineWidth,color];
+
+	if(!(layer in this.bufferedOperations))
+		this.bufferedOperations[layer]=[];
+
+	this.bufferedOperations[layer].push(operation);
 }
 
 /*
@@ -241,7 +282,7 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var color='black';
 
 // only draw the small line if it won't be done later on
-	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,lineWidth,color);
+	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue*lineWidth,color);
 
 	if(!fullDetails)
 		return;
@@ -276,16 +317,16 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue,fullDetails,lineWidth,color);
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue,fullDetails,lineWidth,color);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue*lineWidth,color);
+	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue*lineWidth,color);
 }
 
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
 
 	var lineWidth=(this.lineWidth+extra)*this.pathMultiplierForArc;
 
-	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue,fullDetails,
-		lineWidth,pathColor,layer);
+	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,
+		lineWidth*zoomValue,pathColor,layer);
 }
 
 Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,vertex){
@@ -386,26 +427,29 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 
 		var radius2=this.pathMultiplierForVertex*zoomValue*(radius+extra);
 
-		var layer=i;
 		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2,
-			pathColor,layer);
+			pathColor,colors.length-i-1);
 
 		i++;
 		extra-=this.extraMultiplier;
 	}
 }
 
-Renderer.prototype.drawBufferedCircle=function(context,x,y,radius,color,layer){
+Renderer.prototype.drawCircle=function(context,x,y,radius,color){
 	context.beginPath();
 	context.fillStyle =color;
-/*
-	context.strokeStyle = "rgb(0,0,0)";
-	context.lineWidth=lineWidth;
-*/
 	context.arc(x,y,radius, 0, Math.PI*2, true);
-
 	context.fill();
 	context.closePath();
+}
+
+Renderer.prototype.drawBufferedCircle=function(context,x,y,radius,color,layer){
+	var operation=[RENDERER_CIRCLE,x,y,radius,color];
+
+	if(!(layer in this.bufferedOperations))
+		this.bufferedOperations[layer]=[];
+
+	this.bufferedOperations[layer].push(operation);
 }
 
 Renderer.prototype.draw=function(objects){
