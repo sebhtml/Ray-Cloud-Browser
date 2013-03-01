@@ -38,7 +38,7 @@ function HumanInterface(screen,dataStore){
 	this.buttonColor="#6699FF";
 	this.buttonFontSize=22;
 
-	var arrowVerticalOffset=10;
+	var arrowVerticalOffset=0;
 
 	this.goUp=new Button(this.buttonWidth*1.4,
 		this.buttonWidth*0.9+arrowVerticalOffset,this.buttonWidth,this.buttonWidth,"↑",false);

@@ -27,6 +27,7 @@
  */
 function Screen(gameFrequency,renderingFrequency){
 
+	this.rectangles=0;
 	this.canControlScreen=false;
 	this.periodForControl=1000;
 
@@ -678,14 +679,27 @@ Screen.prototype.drawControlPanel=function(){
 
 	var context=this.getContext();
 
-
 // show a loading icon
 	if(this.graphOperator.getDataStore().hasPendingQueries()){
 		var width=16;
-		context.beginPath();
-		context.rect(width*0.5, width*0.5, width, width/2 );
-		context.fillStyle = '#7788FF';
-		context.fill();
+		var maximum=16;
+
+		var count=maximum/4;
+		var start=this.rectangles;
+
+		while(count--){
+			context.beginPath();
+			context.rect(this.getWidth()/2-maximum*width+start*width*2, width*0.5, width, width);
+			context.fillStyle = '#7788FF';
+			context.fill();
+			context.closePath();
+
+			start++;
+			start%=maximum;
+		}
+
+		this.rectangles++;
+		this.rectangles%=maximum;
 	}
 
 	for(i in this.buttons){

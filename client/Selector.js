@@ -356,7 +356,7 @@ Selector.prototype.selectMapIndex=function(index){
 	var message=new Message(RAY_MESSAGE_TAG_GET_MAP_INFORMATION,this,this.dataStore,parameters);
 	this.dataStore.receiveAndProcessMessage(message);
 
-	this.receivedMapFileData=true;
+	//this.receivedMapFileData=true;
 
 	this.mapWidget.setChoice(index);
 }
