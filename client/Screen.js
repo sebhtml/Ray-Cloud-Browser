@@ -721,6 +721,7 @@ Screen.prototype.drawControlPanel=function(){
 
 		context.fillStyle    = '#000000';
 
+		context.textAlign="left";
 		context.font         = 'bold 12px Arial';
 		context.fillText("sequence: ", 20, this.canvas.height-25);
 		context.font         = '12px Arial';
