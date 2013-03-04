@@ -392,14 +392,7 @@ PathOperator.prototype.hasVertex=function(){
 	if(!this.hasSelectedRegion())
 		return false;
 
-	var currentLocation=this.getSelectedRegion().getLocation();
-
-	return currentLocation<this.getSelectedRegion().getRegionLength()&& currentLocation>=0;
-}
-
-PathOperator.prototype.setCurrentVertex=function(sequence){
-
-	this.getSelectedRegion().setCurrentVertex(sequence);
+	return this.getSelectedRegion().hasVertex()
 }
 
 PathOperator.prototype.getVertex=function(){

@@ -198,6 +198,19 @@ Region.prototype.addVertexAtPosition=function(position,sequence){
 	this.vertexAtPosition[position]=sequence;
 }
 
+Region.prototype.hasVertex=function(){
+	if(!(this.locationIndex<this.regionLength))
+		return false;
+
+	if(!(this.locationIndex>=0))
+		return false;
+
+	if(!(this.locationIndex in this.vertexAtPosition))
+		return false;
+
+	return true;
+}
+
 Region.prototype.print=function(){
 	console.log("Current: "+this.locationIndex+" Left: "+this.lastLeft+" Right: "+this.lastRight);
 	console.log("Geometry: ("+this.mapIndex+","+this.sectionIndex+","+this.regionIndex+","+this.locationIndex+")");

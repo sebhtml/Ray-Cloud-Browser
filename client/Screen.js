@@ -473,12 +473,13 @@ Screen.prototype.iterate=function(){
 
 	if(this.pathOperator.hasVertex()){
 
-		var object=this.pathOperator.getVertex();
-		var vertex=this.graph.getVertex(object);
+		var sequence=this.pathOperator.getVertex();
+		var vertex=this.graph.getVertex(sequence);
 
 // try the reverse complement
 		if(vertex==null){
-			var object2=this.graphOperator.getReverseComplement(object);
+			//console.log("VAlue: "+sequence);
+			var object2=this.graphOperator.getReverseComplement(sequence);
 			vertex=this.graph.getVertex(object2);
 		}
 
