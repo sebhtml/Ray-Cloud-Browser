@@ -40,6 +40,11 @@ function Button(x,y,width,height,name,defaultState){
 	this.fontSize=12;
 
 	this.computeVertices();
+	this.center=true;
+}
+
+Button.prototype.putOnLeft=function(){
+	this.center=false;
 }
 
 Button.prototype.setFontSize=function(size){
@@ -145,8 +150,17 @@ Button.prototype.draw=function(context,blitter){
 
 	context2.fillStyle    = '#000000';
 	context2.font         = 'bold '+this.fontSize+'px Arial';
-	context2.textAlign="center";
-	context2.fillText(this.name, x, y+6);
+
+	var alignment="center";
+	var position=x;
+
+	if(!this.center){
+		alignment="left";
+		position-=this.width/2-4;
+	}
+
+	context2.textAlign=alignment;
+	context2.fillText(this.name, position, y+6);
 
 	if(blitter!=null)
 		this.draw(context,blitter);

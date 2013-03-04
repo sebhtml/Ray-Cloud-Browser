@@ -77,6 +77,7 @@ SelectionWidget.prototype.createButtons=function(offset){
 		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.1*buttonHeight,
 			this.width-40,buttonHeight,this.choices[i++],false);
 
+		fancyButton.putOnLeft();
 		this.choiceButtons.push(fancyButton);
 
 		processed++;
