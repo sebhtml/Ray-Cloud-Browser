@@ -487,6 +487,11 @@ PathOperator.prototype.getColors=function(vertex){
 		colors.push(pathColor);
 	}
 
+/*
+ * The ordering must always be the same.
+ */
+	//colors.sort();
+
 	return colors;
 }
 
@@ -515,6 +520,11 @@ PathOperator.prototype.getColorsForPair=function(vertex,vertex2){
 
 		colors.push(pathColor);
 	}
+
+/*
+ * The ordering must be consistent for the renderer to work properly.
+ */
+	//colors.sort();
 
 	return colors;
 }

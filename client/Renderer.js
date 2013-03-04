@@ -454,7 +454,8 @@ Renderer.prototype.drawBufferedCircle=function(context,x,y,radius,color,layer){
 Renderer.prototype.draw=function(objects){
 	this.drawVertexPowers(objects);
 
-	this.drawPaths(objects);
+	if(this.screen.getHumanInterface().getInventory().useColorsForRendering())
+		this.drawPaths(objects);
 
 	this.drawArcs(objects);
 	this.drawVertices(objects);

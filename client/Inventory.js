@@ -65,6 +65,12 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+3.3*this.buttonWidth,
 		4.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
+	this.useColors=new Button(this.x+this.buttonWidth+11.5*this.buttonWidth/2,
+		this.y+3.3*this.buttonWidth,
+		2.2*this.buttonWidth,this.buttonWidth,"colors",false);
+
+	this.useColors.activateState();
+
 	this.buttonWidth=20;
 
 	this.increaseCoverageButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
@@ -93,11 +99,6 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.getLinkButton=new Button(this.x+this.buttonWidth*13.2,
 		this.y+this.buttonWidth*8.8,this.buttonWidth*3,this.buttonWidth,"http://",false);
-/*
-	this.getLinkButton.setBackgroundColor(this.buttonColor);
-	this.getLinkButton.setActiveColor(this.buttonColor);
-	this.getLinkButton.setFontSize(this.buttonFontSize)
-*/
 
 	this.pushSelector();
 
@@ -202,7 +203,7 @@ Inventory.prototype.draw=function(context){
 
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
-
+		this.useColors.draw(context,null);
 		this.nextButton.draw(context,null);
 		this.previousButton.draw(context,null);
 		this.increaseButton.draw(context,null);
@@ -273,6 +274,9 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	
 		if(this.warpButton.getState())
 			this.pushSelector();
+
+		return true;
+	}else if(this.useColors.handleMouseDown(x,y)){
 
 		return true;
 	}else if(this.selector.handleMouseDown(x,y)){
@@ -372,6 +376,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.overlay.move(deltaX,deltaY);
 		//this.debugButton.move(deltaX,deltaY);
 		this.warpButton.move(deltaX,deltaY);
+		this.useColors.move(deltaX,deltaY);
 		this.selector.move(deltaX,deltaY);
 		this.decreaseButton.move(deltaX,deltaY);
 		this.increaseButton.move(deltaX,deltaY);
@@ -488,4 +493,8 @@ Inventory.prototype.getAddress=function(){
 	address+="&location="+region.getLocation();
 
 	return address;
+}
+
+Inventory.prototype.useColorsForRendering=function(){
+	return this.useColors.getState();
 }

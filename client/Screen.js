@@ -1048,3 +1048,7 @@ Screen.prototype.center=function(x,y){
 Screen.prototype.centerOnObject=function(object){
 	this.center(object.getX(),object.getY());
 }
+
+Screen.prototype.getHumanInterface=function(){
+	return this.humanInterface;
+}
