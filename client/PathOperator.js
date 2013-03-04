@@ -31,6 +31,8 @@ function PathOperator(dataStore,graphOperator){
 	this.defineColors();
 
 	this.readaheadConfiguration=4096;
+
+	this.selector=0;
 }
 
 PathOperator.prototype.getSelectedRegion=function(){
@@ -312,10 +314,12 @@ PathOperator.prototype.doReadahead=function(){
 		return;
 	}
 
-	if(!this.hasSelectedRegion())
+	if(this.regions.length==0)
 		return;
 
-	var region=this.getSelectedRegion();
+	var region=this.regions[this.selector++];
+
+	this.selector%=this.regions.length;
 
 	this.pull(region);
 }
