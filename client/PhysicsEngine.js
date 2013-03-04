@@ -70,7 +70,7 @@ function PhysicsEngine(screen){
 	this.timeStep=1;
 	this.damping=0.5;
 
-	this.grid=new Grid(100);
+	this.grid=new Grid(32);
 
 	if(this.simulatedAnnealing)
 		this.charge=300;
@@ -138,8 +138,6 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		if(this.useGrid){
 			var keys=this.grid.getEntries(vertex1.getX(),vertex1.getY());
 			
-			//console.log("Keys with hit: "+keys.length);
-
 			var keyNumber=0;
 			while(keyNumber<keys.length){
 				var keyValue=keys[keyNumber];
@@ -161,15 +159,10 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			hits=vertices;
 		}
 
-		//console.log("Hits= "+hits.length);
-
 		var hitNumber=0;
-		//console.log("Self= "+i);
 		while(hitNumber<hits.length){
 
 			var vertex2=hits[hitNumber];
-
-			//console.log(vertex2);
 
 			hitNumber++;
 /*
@@ -180,18 +173,6 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 				vertex2.getSequence())
 				continue;
 
-/*
-			if(vertex1.isColored() && !vertex2.isColored())
-				continue;
-*/
-/*
-			if(!vertex1.isColored() && !vertex2.isColored())
-				continue
-*/
-/*
-			if(this.screen.isOutside(vertex2))
-				continue;
-*/
 			var force2=this.getRepulsionForce(vertex1,vertex2);
 
 			force=this.addForces(force,force2);
@@ -330,7 +311,6 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 		vertex.update(this.timeStep,true);
 
 		if(this.useGrid){
-			//console.log("Update entry");
 			this.grid.updateEntry(vertex);
 
 		}
@@ -342,4 +322,3 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 PhysicsEngine.prototype.resetActiveIndex=function(){
 	this.activeIndex=0;
 }
-

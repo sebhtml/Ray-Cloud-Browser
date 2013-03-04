@@ -24,20 +24,18 @@
  *
  * \author Sébastien Boisvert
  */
-function Grid(step){
+function Grid(boxSize){
 	this.resetUpdatedCount();
 	this.maximumUpdatesInOneIteration=500;
 
 	this.cells=new Object();
-	this.step=step;
-
 	this.keyCells=new Object();
 
-	this.boxSize=100;
+	this.boxSize=boxSize;
 }
 
 Grid.prototype.removeEntry=function(key){
-	
+
 	if(!(key in this.keyCells)){
 		return;
 	}
@@ -128,20 +126,16 @@ Grid.prototype.getEntries=function(centerX,centerY){
 
 Grid.prototype.getCells=function(centerX,centerY,width,height){
 
-	//console.log("getCells"+" "+centerX+" "+centerY+" "+width+" "+height);
-
 	var minX=Math.floor(centerX-width/2);
-	minX=minX - minX%this.step;
+	minX=minX - minX%this.boxSize;
 	var maxX=Math.floor(centerX+width/2);
-	maxX=maxX- maxX%this.step+this.step;
+	maxX=maxX- maxX%this.boxSize+this.boxSize;
 	var minY=Math.floor(centerY-height/2);
-	minY=minY - minY%this.step;
+	minY=minY - minY%this.boxSize;
 	var maxY=Math.floor(centerY+height/2);
-	maxY=maxY - maxY%this.step+this.step;
-	
-	var cells=new Array();
+	maxY=maxY - maxY%this.boxSize+this.boxSize;
 
-	//console.log("Range "+minX+" "+maxX+" "+minY+" "+maxY);
+	var cells=new Array();
 
 	var i=minX;
 	while(i<=maxX){
@@ -152,7 +146,7 @@ Grid.prototype.getCells=function(centerX,centerY,width,height){
 		}
 
 		while(j<=maxY){
-			
+
 			if(!(j in this.cells[i])){
 				this.cells[i][j]=new Object();
 			}
@@ -161,10 +155,10 @@ Grid.prototype.getCells=function(centerX,centerY,width,height){
 
 			cells.push(cell);
 
-			j+=this.step;
+			j+=this.boxSize;
 		}
 
-		i+=this.step;
+		i+=this.boxSize;
 	}
 
 	return cells;
@@ -180,7 +174,6 @@ Grid.prototype.updateEntry=function(vertex){
 
 	var objectKey=vertex.getSequence();
 	this.removeEntry(objectKey);
-	//console.log("vertices "+this.vertices.length+" i= "+i+" name= "+vertex.getName());
 	this.addEntry(objectKey,vertex.getX(),vertex.getY());
 
 	this.maximumUpdatesInOneIteration++;
