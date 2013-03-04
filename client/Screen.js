@@ -888,11 +888,22 @@ Screen.prototype.getHeight=function(){
 	return this.canvas.height;
 }
 
+/**
+ * We need to normalize any geometrical object.
+ * Points are discrete and don't need to be normalized -- it
+ * is just display view port that matters.
+ */
 Screen.prototype.isPointOutside=function(x,y,buffer){
 
+	x-=this.originX;
+	y-=this.originY;
 
-	var width=this.width/this.zoomValue;
-	var height=this.height/this.zoomValue;
+	var width=this.width;
+	var height=this.height;
+
+	buffer/=this.zoomValue;
+	width/=this.zoomValue;
+	height/=this.zoomValue;
 
 /*
  * The buffer region around the screen.
@@ -912,12 +923,15 @@ Screen.prototype.isPointOutside=function(x,y,buffer){
 	return false;
 }
 
-
-
+/**
+ * Reports if an object is outside.
+ *
+ * Coordinates are native, not the the one displayed.
+ */
 Screen.prototype.isOutside=function(vertex,buffer){
 
-	var x=vertex.getX()-this.getOriginX();
-	var y=vertex.getY()-this.getOriginY();
+	var x=vertex.getX();
+	var y=vertex.getY();
 
 	return this.isPointOutside(x,y,buffer);
 }

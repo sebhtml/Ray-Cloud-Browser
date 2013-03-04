@@ -129,10 +129,8 @@ Vertex.prototype.getColor=function(){
 
 	var color="rgb("+red+","+green+","+blue+")";
 
-
 	return color;
 }
-
 
 Vertex.prototype.getX=function(){
 	return this.x;
