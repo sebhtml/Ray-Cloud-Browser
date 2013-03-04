@@ -29,16 +29,17 @@ var RENDERER_CIRCLE=1;
  */
 function Renderer(screen){
 
-	this.pathMultiplierForVertex=2;
-	this.pathMultiplierForArc=7;
+	this.pathMultiplierForVertex=1.5;
+	this.pathMultiplierForArc=2;
 	this.zoomForLevelOfDetails=0.12;
 	this.zoomForLevelOfDetailsForCoverage=0.5
 	this.lineWidth=2;
+	this.lineWidthForPath=5;
 
 	this.screen=screen;
 	this.blitter=new Blitter();
 	this.renderingBuffer=10;
-	this.extraMultiplier=3;
+	this.extraMultiplier=5;
 	this.pathMultiplierMacro=8;
 
 /*
@@ -324,7 +325,7 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
 
-	var lineWidth=(this.lineWidth+extra)*this.pathMultiplierForArc;
+	var lineWidth=(this.lineWidthForPath+extra)*this.pathMultiplierForArc;
 
 	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,
 		lineWidth*zoomValue,pathColor,layer);
