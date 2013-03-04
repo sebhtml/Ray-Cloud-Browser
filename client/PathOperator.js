@@ -403,7 +403,7 @@ PathOperator.prototype.setCurrentVertex=function(sequence){
 }
 
 PathOperator.prototype.getVertex=function(){
-	if(!this.hasVertex)
+	if(!this.hasVertex())
 		return null;
 
 	return this.getSelectedRegion().getVertex();
