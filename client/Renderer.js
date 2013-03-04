@@ -388,7 +388,7 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 		context.textAlign="center";
 		context.fillText(vertex.getLabel(),(x)*zoomValue,(y+radius/2)*zoomValue);
 
-	}else{
+	}else if(this.m_showCoverage){
 		context.fillStyle="black";
 		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
 	}
@@ -458,6 +458,8 @@ Renderer.prototype.draw=function(objects){
 		this.drawPaths(objects);
 
 	this.drawArcs(objects);
+
+	this.m_showCoverage=this.screen.getHumanInterface().getInventory().showCoverageForRendering();
 	this.drawVertices(objects);
 
 /*

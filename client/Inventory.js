@@ -35,7 +35,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.mouseY=0;
 
 	this.width=width;
-	this.height=height/5;
+	this.height=height/4;
 	this.x=x;
 	this.y=y;
 
@@ -50,10 +50,11 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	var title="Ray Cloud Browser";
 
+	var color="#6699FF";
 	this.overlay=new Button(this.x+this.width/2,this.y+this.buttonWidth/2,
 		this.width,this.buttonWidth,""+title,false);
-	this.overlay.setBackgroundColor("#99CCCC");
-	this.overlay.setActiveColor("#99CCCC");
+	this.overlay.setBackgroundColor(color);
+	this.overlay.setActiveColor(color);
 
 /*
 	this.debugButton=new Button(this.x+this.buttonWidth+5*this.buttonWidth/2,
@@ -61,44 +62,48 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
 */
 
-	this.warpButton=new Button(this.x+this.buttonWidth+4*this.buttonWidth/2,
-		this.y+3.3*this.buttonWidth,
-		4.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
+	this.warpButton=new Button(this.x+this.width/2,
+		this.y+4.3*this.buttonWidth,
+		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
 	this.useColors=new Button(this.x+this.buttonWidth+11.5*this.buttonWidth/2,
-		this.y+3.3*this.buttonWidth,
+		this.y+3.0*this.buttonWidth,
 		2.2*this.buttonWidth,this.buttonWidth,"colors",false);
 
 	this.useColors.activateState();
 
-	this.buttonWidth=20;
+	this.useCoverage=new Button(this.x+this.buttonWidth+3.4*this.buttonWidth/2,
+		this.y+3.4*this.buttonWidth,
+		1.9*this.buttonWidth,this.buttonWidth,"depth",false);
 
-	this.increaseCoverageButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
-		this.y+2.2*this.buttonWidth,
+	this.useCoverage.activateState();
+
+	this.increaseCoverageButton=new Button(this.x+this.buttonWidth+9.5*this.buttonWidth/2,
+		this.y+1.5*this.buttonWidth+10,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
-	this.decreaseCoverageButton=new Button(this.x+this.buttonWidth+0.1*this.buttonWidth/2,
-		this.y+2.2*this.buttonWidth,
+	this.decreaseCoverageButton=new Button(this.x+20,
+		this.y+1.5*this.buttonWidth+10,
 		1*this.buttonWidth,this.buttonWidth,"-",false);
 
-	this.previousButton=new Button(this.x+this.buttonWidth+19.5*this.buttonWidth/2,
-		this.y+2.3*this.buttonWidth,
-		1*this.buttonWidth,this.buttonWidth,"<<",false);
+	this.previousButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
+		this.y+1.5*this.buttonWidth+10,
+		1*this.buttonWidth,this.buttonWidth,"<",false);
 
-	this.nextButton=new Button(this.x+this.buttonWidth+26.5*this.buttonWidth/2,
-		this.y+2.3*this.buttonWidth,
-		1*this.buttonWidth,this.buttonWidth,">>",false);
+	this.nextButton=new Button(this.x+this.buttonWidth+20.5*this.buttonWidth/2,
+		this.y+1.5*this.buttonWidth+10,
+		1*this.buttonWidth,this.buttonWidth,">",false);
 
-	this.decreaseButton=new Button(this.x+this.buttonWidth+19.5*this.buttonWidth/2,
-		this.y+4.0*this.buttonWidth,
+	this.decreaseButton=new Button(this.x+this.buttonWidth+15.5*this.buttonWidth/2,
+		this.y+3.3*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"-",false);
 
-	this.increaseButton=new Button(this.x+this.buttonWidth+26.5*this.buttonWidth/2,
-		this.y+4.0*this.buttonWidth,
+	this.increaseButton=new Button(this.x+this.buttonWidth+20.5*this.buttonWidth/2,
+		this.y+3.3*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
-	this.getLinkButton=new Button(this.x+this.buttonWidth*13.2,
-		this.y+this.buttonWidth*8.8,this.buttonWidth*3,this.buttonWidth,"http://",false);
+	this.getLinkButton=new Button(this.x+this.buttonWidth*10.8,
+		this.y+this.height+110,this.buttonWidth*2,this.buttonWidth,"http://",false);
 
 	this.pushSelector();
 
@@ -178,7 +183,7 @@ Inventory.prototype.draw=function(context){
 	if(this.closeButton.getState()){
 
 		context.beginPath();
-		context.rect(this.x+20, this.y+30, 150,30);
+		context.rect(this.x+20, this.y+this.buttonWidth+10, 120,this.buttonWidth);
 		context.fillStyle = '#FFF8F9';
 		context.fill();
 		context.lineWidth = 1;
@@ -186,7 +191,7 @@ Inventory.prototype.draw=function(context){
 		context.stroke();
 
 		context.beginPath();
-		context.rect(this.x+210, this.y+30, 80,30);
+		context.rect(this.x+210, this.y+this.buttonWidth+10, 80,this.buttonWidth);
 		context.fillStyle = '#FFF8F9';
 		context.fill();
 		context.lineWidth = 1;
@@ -194,7 +199,7 @@ Inventory.prototype.draw=function(context){
 		context.stroke();
 
 		context.beginPath();
-		context.rect(this.x+210, this.y+65, 80,30);
+		context.rect(this.x+210, this.y+2*(this.buttonWidth+10), 80,this.buttonWidth);
 		context.fillStyle = '#FFF8F9';
 		context.fill();
 		context.lineWidth = 1;
@@ -204,6 +209,7 @@ Inventory.prototype.draw=function(context){
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
 		this.useColors.draw(context,null);
+		this.useCoverage.draw(context,null);
 		this.nextButton.draw(context,null);
 		this.previousButton.draw(context,null);
 		this.increaseButton.draw(context,null);
@@ -215,7 +221,7 @@ Inventory.prototype.draw=function(context){
 		context.font         = 'bold '+this.fontSize+'px Arial';
 
 		context.textAlign="left";
-		context.fillText("min. coverage: "+this.minimumCoverage, this.x+40,this.y+50);
+		context.fillText("min. depth: "+this.minimumCoverage, this.x+40,this.y+50);
 		context.fillText("play", this.x+235,this.y+50);
 		context.fillText("speed", this.x+235,this.y+85);
 
@@ -224,9 +230,10 @@ Inventory.prototype.draw=function(context){
 
 		if(!this.warpButton.getState() && this.pathOperator.hasSelectedRegion()){
 
+			var startingY=this.y+this.height+30;
 			context.beginPath();
 			context.fillStyle = '#FFF8F9';
-			context.rect(this.x, this.y+110, this.width, this.height );
+			context.rect(this.x, startingY, this.width, this.height );
 			context.fill();
 			context.lineWidth = 1;
 			context.strokeStyle = 'black';
@@ -236,19 +243,19 @@ Inventory.prototype.draw=function(context){
 			context.font         = 'bold 12px Arial';
 
 			context.textAlign="left";
-			context.fillText("map: ",this.x+10,this.y+130);
-			context.fillText("section: ",this.x+10,this.y+145);
-			context.fillText("region: ",this.x+10,this.y+160);
-			context.fillText("location: ",this.x+10,this.y+175);
+			context.fillText("map: ",this.x+10,startingY+20);
+			context.fillText("section: ",this.x+10,startingY+40);
+			context.fillText("region: ",this.x+10,startingY+60);
+			context.fillText("location: ",this.x+10,startingY+80);
 
 			context.font         = '12px Arial';
 
 			var region=this.pathOperator.getSelectedRegion();
 
-			context.fillText(region.getMapName(),this.x+60,this.y+130);
-			context.fillText(region.getSectionName(),this.x+60,this.y+145);
-			context.fillText(region.getRegionName(),this.x+60,this.y+160);
-			context.fillText(region.getLocationName(),this.x+60,this.y+175);
+			context.fillText(region.getMapName(),this.x+60,startingY+20);
+			context.fillText(region.getSectionName(),this.x+60,startingY+40);
+			context.fillText(region.getRegionName(),this.x+60,startingY+60);
+			context.fillText(region.getLocationName(),this.x+60,startingY+80);
 
 			this.getLinkButton.draw(context,null);
 		}
@@ -279,6 +286,10 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	}else if(this.useColors.handleMouseDown(x,y)){
 
 		return true;
+	}else if(this.useCoverage.handleMouseDown(x,y)){
+
+		return true;
+
 	}else if(this.selector.handleMouseDown(x,y)){
 
 		return true;
@@ -377,6 +388,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		//this.debugButton.move(deltaX,deltaY);
 		this.warpButton.move(deltaX,deltaY);
 		this.useColors.move(deltaX,deltaY);
+		this.useCoverage.move(deltaX,deltaY);
 		this.selector.move(deltaX,deltaY);
 		this.decreaseButton.move(deltaX,deltaY);
 		this.increaseButton.move(deltaX,deltaY);
@@ -497,4 +509,8 @@ Inventory.prototype.getAddress=function(){
 
 Inventory.prototype.useColorsForRendering=function(){
 	return this.useColors.getState();
+}
+
+Inventory.prototype.showCoverageForRendering=function(){
+	return this.useCoverage.getState();
 }
