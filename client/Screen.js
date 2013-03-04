@@ -476,9 +476,25 @@ Screen.prototype.iterate=function(){
 		var object=this.pathOperator.getVertex();
 		var vertex=this.graph.getVertex(object);
 
+// try the reverse complement
+		if(vertex==null){
+			var object2=this.graphOperator.getReverseComplement(object);
+			vertex=this.graph.getVertex(object2);
+		}
+
 		if(vertex!=null && !this.pathOperator.isCentered()){
+
 			this.centerOnObject(vertex);
 			this.pathOperator.setCenteredState();
+
+/*
+		}else if(vertex==null){
+			if(this.pathOperator.getSelectedRegion().getRegionLength()==55611){
+				console.log("Has object, but not found in graph");
+
+				this.pathOperator.getSelectedRegion().print();
+			}
+*/
 		}
 
 		if(vertex!=null && this.canControlScreen){

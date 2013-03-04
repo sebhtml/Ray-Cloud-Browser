@@ -266,6 +266,8 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 
 		this.mapData=message.getContent()["maps"];
 
+		this.dataStore.setMapData(this.mapData);
+
 		this.mapChoices=new Array();
 
 		for(var i in this.mapData){

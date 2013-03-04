@@ -133,7 +133,7 @@ Inventory.prototype.createRegionSelector=function(){
 		heightToAdd=10;
 	heightToAdd*=30;
 
-	this.regionSelector=new SelectionWidget(this.x,this.y+200,
+	this.regionSelector=new SelectionWidget(this.x,this.y+this.height+135,
 					this.width,this.height+heightToAdd,
 					"regions",registeredRegions);
 

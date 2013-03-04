@@ -197,3 +197,10 @@ Region.prototype.getVertex=function(){
 Region.prototype.addVertexAtPosition=function(position,sequence){
 	this.vertexAtPosition[position]=sequence;
 }
+
+Region.prototype.print=function(){
+	console.log("Current: "+this.locationIndex+" Left: "+this.lastLeft+" Right: "+this.lastRight);
+	console.log("Geometry: ("+this.mapIndex+","+this.sectionIndex+","+this.regionIndex+","+this.locationIndex+")");
+	console.log("Length: "+this.getRegionLength());
+	console.log(" ---> "+this.getVertex());
+}

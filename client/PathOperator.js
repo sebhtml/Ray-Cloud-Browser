@@ -187,12 +187,17 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGIONS_REPLY=function(message){
 	var content=message.getContent();
 
 	var mapIndex=content["map"];
-	var mapName="???????";
+	var mapName=this.dataStore.getMapName(mapIndex);
 	var sectionIndex=content["section"];
-	var sectionName="???????";
+	var sectionName=this.dataStore.getSectionName(mapIndex,sectionIndex);
 	var regionIndex=content["start"];
 	var regionName=content["regions"][0]["name"];
-	var locationIndex=0;
+
+	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
+
+// fetch location from cache memory
+	var locationIndex=this.index[key][3];
+
 	var locationName=locationIndex+1;
 
 	var regionLength=content["regions"][0]["nucleotides"]-this.dataStore.getKmerLength()+1;
@@ -347,7 +352,7 @@ PathOperator.prototype.pull=function(region){
 
 		this.active=true;
 
-		var parameters=this.getParametersForRegion();
+		var parameters=this.getParametersForRegion(region);
 		parameters["location"]=region.getRightPosition()
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
@@ -431,7 +436,17 @@ PathOperator.prototype.setCenteredState=function(){
 }
 
 PathOperator.prototype.selectRegion=function(index){
+	if(!(index<this.regions.length))
+		return;
 
+	if(index==this.selectedRegionIndex)
+		return;
+
+	this.selectedRegionIndex=index;
+
+	//this.getSelectedRegion().print();
+
+	this.centered=false;
 }
 
 /**
@@ -460,7 +475,7 @@ PathOperator.prototype.addRegion=function(mapIndex,sectionIndex,regionIndex,loca
 
 	this.dataStore.forwardMessageOnTheWeb(message);
 
-	this.index[key]=true;
+	this.index[key]=[mapIndex,sectionIndex,regionIndex,locationIndex];
 }
 
 /**

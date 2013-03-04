@@ -251,6 +251,18 @@ DataStore.prototype.getMapIndex=function(){
 	return this.mapIndex;
 }
 
+DataStore.prototype.getMapName=function(index){
+	return this.mapData[index]["name"];
+}
+
+DataStore.prototype.setMapData=function(data){
+	this.mapData=data;
+}
+
+DataStore.prototype.getSectionName=function(index1,index2){
+	return this.mapData[index1]["sections"][index2]["name"];
+}
+
 /**
  * This is the method to use if a message must be sent on the web
  * using DataStore as a proxy.
