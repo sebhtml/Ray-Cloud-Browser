@@ -156,13 +156,13 @@ PathOperator.prototype.startOnPath=function(mapIndex,mapName,
 	this.active=true;
 }
 
-PathOperator.prototype.getParametersForRegion=function(){
+PathOperator.prototype.getParametersForRegion=function(region){
 	var parameters=new Object();
-	parameters["map"]=this.getSelectedRegion().getMap();
-	parameters["section"]=this.getSelectedRegion().getSection();
-	parameters["region"]=this.getSelectedRegion().getRegion();
-	parameters["location"]=this.getSelectedRegion().getLocation();
-	parameters["count"]=512;
+	parameters["map"]=region.getMap();
+	parameters["section"]=region.getSection();
+	parameters["region"]=region.getRegion();
+	parameters["location"]=region.getLocation();
+	parameters["count"]=4096;
 
 	return parameters;
 }
@@ -305,34 +305,48 @@ PathOperator.prototype.doReadahead=function(){
 		return;
 	}
 
-	if(!this.hasSelectedRegion() || !(this.getSelectedRegion().hasLeftPosition() && this.getSelectedRegion().hasRightPosition()))
+	if(!this.hasSelectedRegion())
 		return;
 
-	var currentLocation=this.getSelectedRegion().getLocation();
+	var region=this.getSelectedRegion();
 
-	var position=currentLocation;
+	this.pull(region);
+}
+
+PathOperator.prototype.pull=function(region){
+
+	if(!(region.hasLeftPosition() && region.hasRightPosition()))
+		return;
+
+	var position=region.getLocation();
 
 	var buffer=1024;
 
-	if(position<this.getSelectedRegion().getLeftPosition()+buffer && this.getSelectedRegion().getLeftPosition()!=0){
+/*
+ * We can not pull before 0.
+ */
+	if(position<region.getLeftPosition()+buffer && region.getLeftPosition()!=0){
 
 		this.active=true;
 
-		var parameters=this.getParametersForRegion();
-		parameters["location"]=this.getSelectedRegion().getLeftPosition();
+		var parameters=this.getParametersForRegion(region);
+		parameters["location"]=region.getLeftPosition();
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
 
 		this.dataStore.forwardMessageOnTheWeb(message);
 
-	}else if(position > this.getSelectedRegion().getRightPosition()-buffer 
-		&& this.getSelectedRegion().getRightPosition() !=this.getSelectedRegion().getRegionLength()-1){
+/*
+ * It is impossible to pull after LENGTH-1
+ */
+	}else if(position > region.getRightPosition()-buffer 
+		&& region.getRightPosition() !=region.getRegionLength()-1){
 
 		this.active=true;
 
 		var parameters=this.getParametersForRegion();
-		parameters["location"]=this.getSelectedRegion().getRightPosition();
+		parameters["location"]=region.getRightPosition()
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
