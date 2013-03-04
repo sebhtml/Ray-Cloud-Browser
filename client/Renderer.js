@@ -29,8 +29,8 @@ var RENDERER_CIRCLE=1;
  */
 function Renderer(screen){
 
-	this.pathMultiplierForVertex=1.5;
-	this.pathMultiplierForArc=3;
+	this.pathMultiplierForVertex=2;
+	this.pathMultiplierForArc=7;
 	this.zoomForLevelOfDetails=0.12;
 	this.zoomForLevelOfDetailsForCoverage=0.5
 	this.lineWidth=2;
@@ -39,6 +39,7 @@ function Renderer(screen){
 	this.blitter=new Blitter();
 	this.renderingBuffer=10;
 	this.extraMultiplier=3;
+	this.pathMultiplierMacro=8;
 
 /*
  * Enable the blitter for better graphics.
@@ -143,7 +144,7 @@ Renderer.prototype.drawPaths=function(vertices){
 
 			var k=0;
 
-			while(k<colors1.length){
+			while(k<colors1.length && fullDetails){
 				this.drawPathArc(context,vertex.getX()-originX,vertex.getY()-originY,
 					vertex2.getX()-originX,vertex2.getY()-originY,
 					this.screen.getZoomValue(),
@@ -394,8 +395,10 @@ Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex)
 
 Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,vertex){
 
-	if(zoomValue<=this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
+	if(!vertex.isColored())
 		return;
+
+	var withDetails=!(zoomValue<=this.zoomForLevelOfDetails);
 
 	var radius=vertex.getRadius();
 	var theColor= vertex.getColor();
@@ -418,6 +421,9 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 		var pathColor=colors[i];
 
 		var radius2=this.pathMultiplierForVertex*zoomValue*(radius+extra);
+
+		if(!withDetails)
+			radius2*=this.pathMultiplierMacro;
 
 		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2,
 			pathColor,colors.length-i-1);
