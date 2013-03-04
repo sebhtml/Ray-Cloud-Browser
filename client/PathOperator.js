@@ -29,6 +29,8 @@ function PathOperator(dataStore,graphOperator){
 	this.selectedRegionIndex=0;
 	this.selectedRegion=false;
 	this.defineColors();
+
+	this.readaheadConfiguration=4096;
 }
 
 PathOperator.prototype.getSelectedRegion=function(){
@@ -162,7 +164,7 @@ PathOperator.prototype.getParametersForRegion=function(region){
 	parameters["section"]=region.getSection();
 	parameters["region"]=region.getRegion();
 	parameters["location"]=region.getLocation();
-	parameters["count"]=4096;
+	parameters["count"]=this.readaheadConfiguration;
 
 	return parameters;
 }
@@ -330,7 +332,7 @@ PathOperator.prototype.pull=function(region){
 		this.active=true;
 
 		var parameters=this.getParametersForRegion(region);
-		parameters["location"]=region.getLeftPosition();
+		parameters["location"]=region.getLeftPosition()-this.readaheadConfiguration;
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);

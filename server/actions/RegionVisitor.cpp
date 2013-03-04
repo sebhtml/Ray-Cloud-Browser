@@ -108,6 +108,12 @@ bool RegionVisitor::call(const char*queryString){
 		return false;
 	int readahead=atoi(readaheadBuffer);
 
+	int maximumForReadahead=4096;
+
+	if(readahead>maximumForReadahead){
+		readahead=maximumForReadahead;
+	}
+
 // Now we are ready
 
 	cout<<"{"<<endl;
@@ -125,7 +131,7 @@ bool RegionVisitor::call(const char*queryString){
 
 	char kmerSequence[512];
 
-	int startingPlace=location-readahead/2;
+	int startingPlace=location;
 
 	if(startingPlace<0)
 		startingPlace=0;
