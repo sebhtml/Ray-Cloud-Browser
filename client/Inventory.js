@@ -66,8 +66,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+4.3*this.buttonWidth,
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
-	this.useColors=new Button(this.x+this.buttonWidth+11.5*this.buttonWidth/2,
-		this.y+3.0*this.buttonWidth,
+	this.useColors=new Button(this.x+this.buttonWidth+8.5*this.buttonWidth/2,
+		this.y+3.1*this.buttonWidth,
 		2.2*this.buttonWidth,this.buttonWidth,"colors",false);
 
 	this.useColors.activateState();
@@ -94,12 +94,12 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+1.5*this.buttonWidth+10,
 		1*this.buttonWidth,this.buttonWidth,">",false);
 
-	this.decreaseButton=new Button(this.x+this.buttonWidth+15.5*this.buttonWidth/2,
-		this.y+3.3*this.buttonWidth,
+	this.decreaseButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
+		this.y+3.15*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"-",false);
 
 	this.increaseButton=new Button(this.x+this.buttonWidth+20.5*this.buttonWidth/2,
-		this.y+3.3*this.buttonWidth,
+		this.y+3.15*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
 	this.getLinkButton=new Button(this.x+this.buttonWidth*10.8,
@@ -199,7 +199,7 @@ Inventory.prototype.draw=function(context){
 		context.stroke();
 
 		context.beginPath();
-		context.rect(this.x+210, this.y+2*(this.buttonWidth+10), 80,this.buttonWidth);
+		context.rect(this.x+210, this.y+1.9*(this.buttonWidth+10), 80,this.buttonWidth);
 		context.fillStyle = '#FFF8F9';
 		context.fill();
 		context.lineWidth = 1;
@@ -222,8 +222,8 @@ Inventory.prototype.draw=function(context){
 
 		context.textAlign="left";
 		context.fillText("min. depth: "+this.minimumCoverage, this.x+40,this.y+50);
-		context.fillText("play", this.x+235,this.y+50);
-		context.fillText("speed", this.x+235,this.y+85);
+		context.fillText("play", this.x+230,this.y+2.1*this.buttonWidth);
+		context.fillText("speed", this.x+230,this.y+3.3*this.buttonWidth);
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
