@@ -93,16 +93,6 @@ Selector.prototype.draw=function(context){
 
 	this.pumpAddressTokens();
 
-/*
-	context.beginPath();
-	context.rect(this.x, this.y, this.width, this.height );
-	context.fillStyle = '#FFF8F9';
-	context.fill();
-	context.lineWidth = 1;
-	context.strokeStyle = 'black';
-	context.stroke();
-*/
-
 // some granularity
 	if(this.state==this.SLAVE_MODE_PULL_MAPS){
 
@@ -189,6 +179,7 @@ Selector.prototype.draw=function(context){
 
 // show extra information
 	if(this.receivedMapFileData){
+		context.textAlign="left";
 		context.fillStyle    = '#000000';
 		context.font         = 'bold '+this.fontSize+'px Arial';
 
@@ -216,7 +207,6 @@ Selector.prototype.handleMouseDown=function(x,y){
 	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.mapWidget.hasChoice()){
 
 		var index=this.mapWidget.getChoice();
-		//alert("Choice: # "+index+" "+this.mapChoices[index]);
 
 		this.selectMapIndex(index);
 
@@ -355,8 +345,6 @@ Selector.prototype.selectMapIndex=function(index){
 
 	var message=new Message(RAY_MESSAGE_TAG_GET_MAP_INFORMATION,this,this.dataStore,parameters);
 	this.dataStore.receiveAndProcessMessage(message);
-
-	//this.receivedMapFileData=true;
 
 	this.mapWidget.setChoice(index);
 }
