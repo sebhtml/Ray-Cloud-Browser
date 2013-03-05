@@ -135,5 +135,9 @@ AnimatedRing.prototype.drawStargate=function(context,x,y,angle,largeRadius,small
 
 	context.fill();
 	context.closePath();
+}
 
+AnimatedRing.prototype.move=function(x,y){
+	this.x+=x;
+	this.y+=y;
 }

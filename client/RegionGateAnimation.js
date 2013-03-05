@@ -26,9 +26,9 @@
  * \author Sébastien Boisvert
  */
 function RegionGateAnimation(x,y,radius,color){
-	this.middlePoint=new Point(x,y);
 	this.x=x;
 	this.y=y;
+	this.middlePoint=new Point(this.x,this.y);
 	this.color=color;
 	this.radius=radius;
 
@@ -149,4 +149,10 @@ RegionGateAnimation.prototype.drawRectangle=function(context,x,y,width,height,an
 	context.lineTo(p1.getX(),p1.getY());
 	context.fill();
 	context.closePath();
+}
+
+RegionGateAnimation.prototype.move=function(x,y){
+	this.x+=x;
+	this.y+=y;
+	this.middlePoint=new Point(this.x,this.y);
 }

@@ -428,6 +428,10 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.closeButton.move(deltaX,deltaY);
 		this.overlay.move(deltaX,deltaY);
 		this.animatedRing.move(deltaX,deltaY);
+
+		if(this.regionGateAnimation!=null)
+			this.regionGateAnimation.move(deltaX,deltaY);
+
 		//this.debugButton.move(deltaX,deltaY);
 		this.warpButton.move(deltaX,deltaY);
 		this.useColors.move(deltaX,deltaY);
