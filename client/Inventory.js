@@ -65,8 +65,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
 */
 
-	this.warpButton=new Button(this.x+this.width/2,
-		this.y+4.3*this.buttonWidth,
+	this.warpButton=new Button(this.x+110,
+		this.y+3.4*this.buttonWidth,
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
 	this.useColors=new Button(this.x+this.buttonWidth+19*this.buttonWidth/2,
@@ -75,7 +75,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.useColors.activateState();
 
-	this.useCoverage=new Button(this.x+this.buttonWidth+3.4*this.buttonWidth/2,
+	this.useCoverage=new Button(this.x+30,
 		this.y+3.4*this.buttonWidth,
 		1.9*this.buttonWidth,this.buttonWidth,"Depth",false);
 
@@ -112,6 +112,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.pathOperator=null;
 	this.registeredRegions=[];
+
+	this.animatedRing=new AnimatedRing(x+this.width-50,y+79);
 }
 
 Inventory.prototype.createRegionSelector=function(){
@@ -207,7 +209,9 @@ Inventory.prototype.draw=function(context){
 		context.font         = 'bold '+this.fontSize+'px Arial';
 
 		context.textAlign="left";
-		context.fillText("Min. depth: "+this.minimumCoverage, this.x+40,this.y+50);
+		context.fillText("Min. depth: "+this.minimumCoverage, this.x+40,this.y+52);
+
+		this.animatedRing.draw(context);
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
@@ -270,23 +274,25 @@ Inventory.prototype.draw=function(context){
 
 			this.getLinkButton.draw(context,null);
 
+			//var color="#6699FF";
 			context.beginPath();
 			context.rect(this.x+15, this.y+this.height+132.5, 60,this.buttonWidth);
-			//context.fillStyle = '#faa8F9';
+			//context.fillStyle = color;
 			//context.fill();
 			context.lineWidth = 1;
 			context.strokeStyle = 'black';
 			context.stroke();
 
-			context.beginPath();
+			//context.beginPath();
 			context.rect(this.x+140, this.y+this.height+132.5, 60,this.buttonWidth);
-			//context.fillStyle = '#bbF8F9';
+			//context.fillStyle = color;
 			//context.fill();
 			context.lineWidth = 1;
 			context.strokeStyle = 'black';
 			context.stroke();
+			context.closePath();
 
-
+			context.fillStyle="black";
 			context.fillText("Play", this.x+50,this.y+this.height+150);
 			context.fillText("Speed", this.x+170,this.y+this.height+150);
 
@@ -421,6 +427,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 
 		this.closeButton.move(deltaX,deltaY);
 		this.overlay.move(deltaX,deltaY);
+		this.animatedRing.move(deltaX,deltaY);
 		//this.debugButton.move(deltaX,deltaY);
 		this.warpButton.move(deltaX,deltaY);
 		this.useColors.move(deltaX,deltaY);
@@ -462,6 +469,7 @@ Inventory.prototype.getNextButton=function(){
 
 Inventory.prototype.iterate=function(){
 
+	this.animatedRing.iterate();
 /*
  * Rebuild the menu if new elements are available.
  */
