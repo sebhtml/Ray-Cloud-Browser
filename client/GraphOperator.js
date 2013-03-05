@@ -45,6 +45,8 @@ function GraphOperator(screen){
 	this.activeLinksForAnnotations=0;
 	this.maximumLinksForAnnotations=2;
 	this.annotationOffset=0;
+
+	this.activeQueries=0;
 }
 
 GraphOperator.prototype.createGraph=function(graph){
@@ -137,7 +139,15 @@ GraphOperator.prototype.receiveFirstKmer=function(firstKmer){
 	this.productionQueue.push(firstKmer);
 }
 
+GraphOperator.prototype.receiveSignal=function(){
+	this.activeQueries--;
+}
+
 GraphOperator.prototype.pullObjects=function(){
+
+	if(this.activeQueries==this.maximumParallelQueries){
+		return;
+	}
 
 	while(this.head < this.productionQueue.length){
 
@@ -153,6 +163,7 @@ GraphOperator.prototype.pullObjects=function(){
  * Only fetch one object everytime.
  /*/
 		this.dataStore.getKmerInformation(kmerObject,this);
+		this.activeQueries++;
 
 		return;
 	}

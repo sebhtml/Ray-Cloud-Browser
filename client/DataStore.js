@@ -33,7 +33,6 @@ function DataStore(){
 	this.defaultDepthFirst=32;
 	this.defaultDepth=512;
 	this.maximumParallelQueries=8;
-	this.activeQueries=0;
 	this.httpRequests=0;
 
 	this.pullData();
@@ -222,7 +221,7 @@ DataStore.prototype.processMessage=function(message){
 // do a fancy recursive call !
 
 		this.getKmerInformation(kmerSequence);
-		this.activeQueries--;
+		this.graphOperator.receiveSignal();
 
 	}else if(tag==RAY_MESSAGE_TAG_GET_MAPS){
 
@@ -292,9 +291,6 @@ DataStore.prototype.getKmerInformation=function(kmerSequence){
 /*
  * We don't answer queries when we are waiting.
  */
-		if(this.activeQueries==this.maximumParallelQueries){
-			return;
-		}
 
 		var parameters=new Object();
 		parameters["map"]=this.mapIndex;
@@ -304,7 +300,6 @@ DataStore.prototype.getKmerInformation=function(kmerSequence){
 		var tag=RAY_MESSAGE_TAG_GET_KMER_FROM_STORE;
 		var theMessage=new Message(tag,this,this,parameters);
 		this.sendMessageOnTheWeb(theMessage);
-		this.activeQueries++;
 
 		return;
 	}
