@@ -19,16 +19,17 @@ function AnimatedRing(x,y){
 	this.x=x;
 	this.y=y;
 
+	this.maximumRadius=30;
 	this.angle1=0;
-	this.largeRadius1=36;
-	this.smallRadius1=5;
+	this.largeRadius1=this.maximumRadius-3;
+	this.smallRadius1=4;
 
 	this.angle2=0;
-	this.largeRadius2=28;
+	this.largeRadius2=this.largeRadius1-7;
 	this.smallRadius2=this.smallRadius1;
 
 	this.angle3=0;
-	this.largeRadius3=20;
+	this.largeRadius3=this.largeRadius2-7;
 	this.smallRadius3=this.smallRadius1;
 
 	this.grow=true;
@@ -63,10 +64,10 @@ AnimatedRing.prototype.iterate=function(){
 	this.angle2=this.validateAngle(this.angle2);
 	this.angle3=this.validateAngle(this.angle3);
 
-	if(this.largeRadius1>=40){
+	if(this.largeRadius1>=this.maximumRadius-this.smallRadius1/2-1){
 		this.grow=false;
 		this.color=this.shrinkingColor;
-	}else if(this.largeRadius1<=30){
+	}else if(this.largeRadius1<=this.maximumRadius/2){
 		this.grow=true;
 		this.color=this.growingColor;
 	}
@@ -83,6 +84,16 @@ AnimatedRing.prototype.iterate=function(){
 }
 
 AnimatedRing.prototype.draw=function(context){
+
+	context.beginPath();
+	context.strokeStyle = this.color;
+	context.fillStyle="white";
+	context.lineWidth=2;
+	context.arc(this.x,
+		this.y,this.maximumRadius, 0, Math.PI*2, true);
+	context.stroke();
+	context.fill();
+	context.closePath();
 
 	context.beginPath();
 	context.fillStyle=this.color;
@@ -108,14 +119,6 @@ AnimatedRing.prototype.drawStargate=function(context,x,y,angle,largeRadius,small
 	var y1=y+largeRadius*sinValue;
 	var x2=x-largeRadius*cosValue;
 	var y2=y-largeRadius*sinValue;
-
-	context.beginPath();
-	context.strokeStyle = this.growingColor;
-	context.lineWidth=2;
-	context.arc(x,
-		y,largeRadius, 0, Math.PI*2, true);
-	context.stroke();
-	context.closePath();
 
 	context.beginPath();
 	context.fillStyle= color;
