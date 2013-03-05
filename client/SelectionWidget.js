@@ -119,6 +119,7 @@ SelectionWidget.prototype.draw=function(context){
 	context.lineWidth = 1;
 	context.strokeStyle = 'black';
 	context.stroke();
+	context.closePath();
 
 	context.fillStyle    = '#000000';
 	context.textAlign="left";
@@ -153,6 +154,7 @@ SelectionWidget.prototype.draw=function(context){
 				button.getY()-height/2,width,height);
 			context.fillStyle =this.colors[i];
 			context.fill();
+			context.closePath();
 		}
 
 		button.draw(context,null);

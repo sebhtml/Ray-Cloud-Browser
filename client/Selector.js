@@ -27,6 +27,7 @@
 function Selector(x,y,width,height,dataStore,useAddress){
 
 	this.useAddress=useAddress;
+	this.fontSize=12;
 
 	this.dataStore=dataStore;
 	this.consumed=false;
@@ -179,12 +180,15 @@ Selector.prototype.draw=function(context){
 
 // show extra information
 	if(this.receivedMapFileData){
+
+		context.beginPath();
 		context.textAlign="left";
 		context.fillStyle    = '#000000';
-		context.font         = 'bold '+this.fontSize+'px Arial';
+		context.font         = ''+this.fontSize+'px Arial';
 
-		context.fillText("Sequence length: "+this.mapFileData["sequenceLength"], this.x+160,this.y+30);
-		context.fillText("Sequences: "+this.mapFileData["sequences"], this.x+160,this.y+50);
+		context.fillText("Sequence length: "+this.mapFileData["sequenceLength"], this.x+10,this.y+55);
+		context.fillText("Sequences: "+this.mapFileData["sequences"], this.x+140,this.y+55);
+		context.closePath();
 	}
 }
 
