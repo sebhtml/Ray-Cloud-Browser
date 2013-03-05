@@ -106,7 +106,7 @@ Selector.prototype.draw=function(context){
 
 		}else if(this.receivedMaps){
 
-			this.mapWidget=new SelectionWidget(this.x,this.y+10,this.width*1.0,this.height,"(1/4) Select map",this.mapChoices);
+			this.mapWidget=new SelectionWidget(this.x,this.y,this.width*1.0,this.height,"(1/4) Select map",this.mapChoices);
 			this.objects.push(this.mapWidget);
 			this.state=this.SLAVE_MODE_SELECT_MAP;
 
@@ -151,7 +151,7 @@ Selector.prototype.draw=function(context){
 				choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
 			}
 
-			this.regionWidget=new SelectionWidget(this.x,this.y+110,this.width*1.0,this.height,"(3/4) Select region",choices);
+			this.regionWidget=new SelectionWidget(this.x,this.y+115,this.width*1.0,this.height,"(3/4) Select region",choices);
 			this.objects=new Array();
 			this.objects.push(this.regionWidget);
 			this.state=this.SLAVE_MODE_SELECT_REGION;
@@ -330,7 +330,7 @@ Selector.prototype.selectMapIndex=function(index){
 		sections.push(this.mapData[this.mapIndex]["sections"][i++]["name"]);
 	}
 
-	this.sectionWidget=new SelectionWidget(this.x,this.y+60,this.width*1.0,this.height,"(2/4) Select section",sections);
+	this.sectionWidget=new SelectionWidget(this.x,this.y+65,this.width*1.0,this.height,"(2/4) Select section",sections);
 	this.objects=new Array();
 	this.objects.push(this.sectionWidget);
 	this.state=this.SLAVE_MODE_SELECT_SECTION;
@@ -338,6 +338,7 @@ Selector.prototype.selectMapIndex=function(index){
 	this.deadObjects.push(this.mapWidget);
 
 	this.mapWidget.resetState();
+	this.mapWidget.setHeight(60);
 
 // this is a new communication pattern, you send, but you wait later
 // it is like a readahead messaging
@@ -382,7 +383,7 @@ Selector.prototype.selectRegionIndex=function(index){
 	var maximum=entry=this.regionData["regions"][this.regionIndex]["nucleotides"]-this.mapFileData["sequenceLength"]+1;
 	this.regionLength=maximum;
 
-	this.locationWidget=new IntegerSelectionWidget(this.x,this.y+160,this.width*1.0,this.height,"(4/4) Select location",
+	this.locationWidget=new IntegerSelectionWidget(this.x,this.y+165,this.width*1.0,this.height,"(4/4) Select location",
 		1,maximum);
 
 	this.objects=new Array();

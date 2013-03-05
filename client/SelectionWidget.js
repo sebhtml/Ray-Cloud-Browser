@@ -36,7 +36,16 @@ function SelectionWidget(x,y,width,height,title,choices){
 
 	this.fontSize=12;
 	this.width=width;
-	this.height=height;
+
+	var theLength=choices.length;
+
+	this.choicesToDisplay=10;
+
+	if(theLength>=this.choicesToDisplay)
+		theLength=this.choicesToDisplay;
+
+	this.buttonHeight=20;
+	this.height=85+(this.buttonHeight+2)*theLength;
 
 	var buttonDimension=25;
 
@@ -61,7 +70,7 @@ function SelectionWidget(x,y,width,height,title,choices){
 
 SelectionWidget.prototype.createButtons=function(offset){
 	this.offset=offset;
-	this.displayed=10;
+	this.displayed=this.choicesToDisplay;
 
 	var i=offset;
 
@@ -69,13 +78,12 @@ SelectionWidget.prototype.createButtons=function(offset){
 	this.choiceButtons=new Array();
 
 	var processed=0;
-	var buttonHeight=20;
 	while(i<this.choices.length && processed < this.displayed){
 
 		var multiplier=i-this.offset;
 
-		var fancyButton=new Button(this.x+10+this.width/2,this.y+60+multiplier*1.1*buttonHeight,
-			this.width-40,buttonHeight,this.choices[i++],false);
+		var fancyButton=new Button(this.x+10+this.width/2,this.y+50+multiplier*1.1*this.buttonHeight,
+			this.width-40,this.buttonHeight,this.choices[i++],false);
 
 		fancyButton.putOnLeft();
 		this.choiceButtons.push(fancyButton);
@@ -270,6 +278,10 @@ SelectionWidget.prototype.resetState=function(){
 	this.finished=true;
 
 	this.height=45;
+}
+
+SelectionWidget.prototype.setHeight=function(height){
+	this.height=height;
 }
 
 SelectionWidget.prototype.setChoice=function(choice){
