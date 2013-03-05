@@ -436,12 +436,7 @@ PathOperator.prototype.selectRegion=function(index){
 	if(!(index<this.regions.length))
 		return;
 
-	if(index==this.selectedRegionIndex)
-		return;
-
 	this.selectedRegionIndex=index;
-
-	//this.getSelectedRegion().print();
 
 	this.centered=false;
 }

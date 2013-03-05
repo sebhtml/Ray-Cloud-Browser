@@ -383,3 +383,11 @@ DataStore.prototype.hasPendingQueries=function(){
 DataStore.prototype.getDefaultDepth=function(){
 	return this.defaultDepth;
 }
+
+DataStore.prototype.setMapAttributes=function(value){
+	this.mapFileData=value;
+}
+
+DataStore.prototype.getNumberOfSequences=function(){
+	return this.mapFileData["sequences"];
+}

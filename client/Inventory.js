@@ -103,8 +103,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+3.15*this.buttonWidth,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
-	this.getLinkButton=new Button(this.x+this.buttonWidth*10.8,
-		this.y+this.height+110,this.buttonWidth*2,this.buttonWidth,"http://",false);
+	this.getLinkButton=new Button(this.x+this.width-this.buttonWidth-5,
+		this.y+this.height+130,this.buttonWidth*2,this.buttonWidth,"http://",false);
 
 	this.pushSelector();
 
@@ -134,7 +134,7 @@ Inventory.prototype.createRegionSelector=function(){
 		heightToAdd=10;
 	heightToAdd*=30;
 
-	this.regionSelector=new SelectionWidget(this.x,this.y+this.height+135,
+	this.regionSelector=new SelectionWidget(this.x,this.y+this.height+150,
 					this.width,this.height+heightToAdd,
 					"regions",registeredRegions);
 
@@ -234,7 +234,7 @@ Inventory.prototype.draw=function(context){
 			var startingY=this.y+this.height+30;
 			context.beginPath();
 			context.fillStyle = '#FFF8F9';
-			context.rect(this.x, startingY, this.width, this.height );
+			context.rect(this.x, startingY, this.width, this.height+15);
 			context.fill();
 			context.lineWidth = 1;
 			context.strokeStyle = 'black';
@@ -243,20 +243,28 @@ Inventory.prototype.draw=function(context){
 			context.fillStyle    = '#000000';
 			context.font         = 'bold 12px Arial';
 
+			var jump=16;
+			var index=1;
+
 			context.textAlign="left";
-			context.fillText("map: ",this.x+10,startingY+20);
-			context.fillText("section: ",this.x+10,startingY+40);
-			context.fillText("region: ",this.x+10,startingY+60);
-			context.fillText("location: ",this.x+10,startingY+80);
+			context.fillText("Map: ",this.x+10,startingY+index++*jump);
+			context.fillText("Sequence length: ", this.x+10,startingY+index++*jump);
+			context.fillText("Sequences: ", this.x+10,startingY+index++*jump);
+			context.fillText("Section: ",this.x+10,startingY+index++*jump);
+			context.fillText("Region: ",this.x+10,startingY+index++*jump);
+			context.fillText("Location: ",this.x+10,startingY+index++*jump);
 
 			context.font         = '12px Arial';
 
 			var region=this.pathOperator.getSelectedRegion();
 
-			context.fillText(region.getMapName(),this.x+60,startingY+20);
-			context.fillText(region.getSectionName(),this.x+60,startingY+40);
-			context.fillText(region.getRegionName(),this.x+60,startingY+60);
-			context.fillText(region.getLocationName(),this.x+60,startingY+80);
+			index=1;
+			context.fillText(region.getMapName(),this.x+40,startingY+index++*jump);
+			context.fillText(this.dataStore.getKmerLength(), this.x+120,startingY+index++*jump);
+			context.fillText(this.dataStore.getNumberOfSequences(), this.x+90,startingY+index++*jump);
+			context.fillText(region.getSectionName(),this.x+60,startingY+index++*jump);
+			context.fillText(region.getRegionName(),this.x+60,startingY+index++*jump);
+			context.fillText(region.getLocationName(),this.x+70,startingY+index++*jump);
 
 			this.getLinkButton.draw(context,null);
 		}

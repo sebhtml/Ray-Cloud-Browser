@@ -291,6 +291,7 @@ Selector.prototype.receiveAndProcessMessage=function(message){
 		this.mapFileData=message.getContent();
 		this.receivedMapFileData=true;
 
+		this.dataStore.setMapAttributes(this.mapFileData);
 	}
 }
 
