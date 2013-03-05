@@ -67,8 +67,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+4.3*this.buttonWidth,
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
-	this.useColors=new Button(this.x+this.buttonWidth+8.5*this.buttonWidth/2,
-		this.y+3.1*this.buttonWidth,
+	this.useColors=new Button(this.x+this.buttonWidth+19*this.buttonWidth/2,
+		this.y+10.8*this.buttonWidth,
 		2.2*this.buttonWidth,this.buttonWidth,"Colors",false);
 
 	this.useColors.activateState();
@@ -167,8 +167,11 @@ Inventory.prototype.draw=function(context){
 		context.rect(this.x, drawingY, this.width, 100 );
 
 	if(this.closeButton.getState() && !this.warpButton.getState())
-		if(this.regionSelector.getNumberOfChoices())
+		if(this.regionSelector.getNumberOfChoices()>=1){
 			this.regionSelector.draw(context);
+
+			this.useColors.draw(context,null);
+		}
 
 	context.beginPath();
 	context.rect(this.x, drawingY, this.width,height );
@@ -209,7 +212,6 @@ Inventory.prototype.draw=function(context){
 
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
-		this.useColors.draw(context,null);
 		this.useCoverage.draw(context,null);
 		this.nextButton.draw(context,null);
 		this.previousButton.draw(context,null);
