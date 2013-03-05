@@ -544,7 +544,13 @@ Screen.prototype.iterate=function(){
 		this.periodForControl=this.humanInterface.getMoviePeriod();
 	}
 
-	this.engine.applyForces(this.getActiveObjects());
+	var activeObjects=this.getActiveObjects();
+	this.engine.applyForces(activeObjects);
+
+/**
+ * Pull annotations independently.
+ */
+	this.graphOperator.pullAnnotations(activeObjects);
 
 	if(this.enableEngine){
 		this.engine.moveObjects(this.getActiveObjects());

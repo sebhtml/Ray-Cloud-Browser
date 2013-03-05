@@ -352,6 +352,8 @@ PathOperator.prototype.pull=function(region){
 
 		var parameters=this.getParametersForRegion(region);
 		parameters["location"]=region.getLeftPosition()-this.readaheadConfiguration;
+		if(parameters["location"]<0)
+			parameters["location"]=0;
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);

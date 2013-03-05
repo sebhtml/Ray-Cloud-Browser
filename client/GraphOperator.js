@@ -41,6 +41,10 @@ function GraphOperator(screen){
 	this.bufferForCommunicationOperations=512;
 
 	this.minimumCoverageAccepted=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
+
+	this.activeLinksForAnnotations=0;
+	this.maximumLinksForAnnotations=2;
+	this.annotationOffset=0;
 }
 
 GraphOperator.prototype.createGraph=function(graph){
@@ -86,7 +90,7 @@ GraphOperator.prototype.receiveMessage=function(message){
 			i++;
 		}
 
-		this.requestedAnnotations=false;
+		this.activeLinksForAnnotations--;
 	}
 }
 
@@ -124,9 +128,11 @@ GraphOperator.prototype.receiveAndProcessMessage=function(message){
 
 GraphOperator.prototype.receiveFirstKmer=function(firstKmer){
 
+// TODO remove this thing.
 	if(firstKmer==undefined){
 		return;
 	}
+//-------------------
 
 	this.productionQueue.push(firstKmer);
 }
@@ -147,11 +153,9 @@ GraphOperator.prototype.pullObjects=function(){
  * Only fetch one object everytime.
  /*/
 		this.dataStore.getKmerInformation(kmerObject,this);
+
 		return;
 	}
-
-	if(this.pullAnnotations())
-		return;
 
 	this.resetProductionQueue();
 
@@ -177,53 +181,67 @@ GraphOperator.prototype.pullObjects=function(){
 	}
 }
 
-GraphOperator.prototype.pullAnnotations=function(){
+GraphOperator.prototype.pullAnnotations=function(objects){
 
-	if(this.requestedAnnotations)
+	if(objects.length==0)
 		return;
 
-	while(this.headForAnnotations < this.productionQueue.length){
+	if(this.activeLinksForAnnotations >= this.maximumLinksForAnnotations)
+		return;
 
-		var kmerObject=this.productionQueue[this.headForAnnotations];
+	if(this.annotationOffset>= objects.length)
+		this.annotationOffset=0;
 
-		this.headForAnnotations++;
+	var kmerObject=objects[this.annotationOffset];
 
-		if(kmerObject in this.addedAnnotations){
-			continue;
-		}
+/*
+	if(kmerObject===undefined){
+		console.log("Is undefined at "+this.annotationOffset);
+	}
+*/
+
+	this.annotationOffset++;
+
+	if(!(kmerObject.isColored()))
+		return
+
+	this.pullAnnotationsForSequence(kmerObject.getSequence());
+}
+
+GraphOperator.prototype.pullAnnotationsForSequence=function(kmerObject){
+
+	if(kmerObject in this.addedAnnotations){
+		return;
+	}
 
 /*
  * Fetch annotations
  */
 
-		var parameters=new Object();
-		parameters["map"]=this.dataStore.getMapIndex();
-		parameters["sequence"]=kmerObject;
-		parameters["count"]=this.dataStore.getDefaultDepth();
+	var parameters=new Object();
+	parameters["map"]=this.dataStore.getMapIndex();
+	parameters["sequence"]=kmerObject;
+	parameters["count"]=this.dataStore.getDefaultDepth();
 
-		var message=new Message(RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS,
-			this,
-			this.dataStore,
-			parameters);
+	var message=new Message(RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS,
+		this,
+		this.dataStore,
+		parameters);
 
-		this.dataStore.forwardMessageOnTheWeb(message);
+	this.dataStore.forwardMessageOnTheWeb(message);
 
 // probe the other DNA strand too
-		parameters["sequence"]=this.getReverseComplement(kmerObject);
+	parameters["sequence"]=this.getReverseComplement(kmerObject);
 
-		var message2=new Message(RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS,
-			this,
-			this.dataStore,
-			parameters);
+	var message2=new Message(RAY_MESSAGE_TAG_GET_OBJECT_ANNOTATIONS,
+		this,
+		this.dataStore,
+		parameters);
 
-		this.dataStore.forwardMessageOnTheWeb(message2);
+	this.dataStore.forwardMessageOnTheWeb(message2);
 
-		this.requestedAnnotations=true;
-
-		return true;
-	}
-
-	return false;
+	this.activeLinksForAnnotations++;
+	this.activeLinksForAnnotations++;
 }
 
 GraphOperator.prototype.getReverseComplement=function(sequence){
@@ -324,7 +342,6 @@ GraphOperator.prototype.clear=function(){
 	this.graph.clear();
 	this.addedAnnotations=new Object();
 	this.added=new Object();
-	this.requestedAnnotations=false;
 }
 
 GraphOperator.prototype.setPathOperator=function(pathOperator){
