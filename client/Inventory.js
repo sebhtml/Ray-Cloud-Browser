@@ -36,7 +36,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.mouseY=0;
 
 	this.width=width;
-	this.height=height/4;
+	this.height=height/5;
 	this.x=x;
 	this.y=y;
 
@@ -70,7 +70,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
 	this.useColors=new Button(this.x+this.buttonWidth+19*this.buttonWidth/2,
-		this.y+this.regionsOffset+120,
+		this.y+this.regionsOffset+100,
 		2.2*this.buttonWidth,this.buttonWidth,"Colors",false);
 
 	this.useColors.activateState();
@@ -113,7 +113,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.pathOperator=null;
 	this.registeredRegions=[];
 
-	this.animatedRing=new AnimatedRing(x+this.width-50,y+79);
+	this.animatedRing=new AnimatedRing(x+this.width-50,y+70);
 
 	this.regionGateAnimation=null;
 }
@@ -223,7 +223,7 @@ Inventory.prototype.draw=function(context){
 			var startingY=this.y+this.height+30;
 			context.beginPath();
 			context.fillStyle = '#FFF8F9';
-			context.rect(this.x, startingY, this.width, this.height+32);
+			context.rect(this.x, startingY, this.width, this.height+55);
 			context.fill();
 			context.lineWidth = 1;
 			context.strokeStyle = 'black';
@@ -241,7 +241,10 @@ Inventory.prototype.draw=function(context){
 			context.fillText("Sequences: ", this.x+10,startingY+index++*jump);
 			context.fillText("Section: ",this.x+10,startingY+index++*jump);
 			context.fillText("Region: ",this.x+10,startingY+index++*jump);
-			context.fillText("Location: ",this.x+10,startingY+index++*jump);
+			context.fillText("Location: ",this.x+10,startingY+index*jump);
+
+			context.fillText("Length: ",this.x+160,startingY+index*jump);
+			//context.fillText("Annotation: direct|reverse",this.x+100,startingY+index*jump);
 
 			context.font         = '12px Arial';
 
@@ -261,7 +264,8 @@ Inventory.prototype.draw=function(context){
 			context.fillText(this.dataStore.getNumberOfSequences(), this.x+90,startingY+index++*jump);
 			context.fillText(region.getSectionName(),this.x+60,startingY+index++*jump);
 			context.fillText(region.getRegionName(),this.x+60,startingY+index++*jump);
-			context.fillText(region.getLocationName(),this.x+70,startingY+index++*jump);
+			context.fillText(region.getLocationName(),this.x+65,startingY+index*jump);
+			context.fillText(region.getRegionLength(),this.x+210,startingY+index*jump);
 
 			context.beginPath();
 			context.fillStyle = region.getColor();
