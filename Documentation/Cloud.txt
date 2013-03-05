@@ -1,0 +1,25 @@
+## Amazon Web Services, Inc. (AWS)
+
+Ray Cloud Browser can be deployed on AWS using Amazon Elastic Compute Cloud (EC2).
+
+The setup for our demo is a t1.micro spot instance with a 64 GiB EBS 
+volume attached to the instance. A typical bacterial genome will require
+around 600 MiB of space for the graph and paths (in binary format).
+
+t1.micro spot instances are really cheap: 0.0030 $ per hour on average.
+We have a 64 GiB volume because we are hosting many samples. You probably need
+something smaller.
+
+## IBM SmartCloud
+
+This platform is quite stable.
+
+## Rackspace
+
+This platform is quite stable.
+
+## Windows Azure
+
+We did some tests on a Linux Virtual Machine in Windows Azure, but it rebooted several times
+without our intervention and the virtual block device disappeared at some point (?).
+
