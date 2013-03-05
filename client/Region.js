@@ -179,9 +179,14 @@ Region.prototype.setCurrentVertex=function(sequence){
 
 	if(sequence in this.pathPositions){
 
+// TODO maybe returning the first is not actually the best best, who knows.
 		this.setLocation(this.pathPositions[sequence][0]);
 		this.hasLocation=true;
+
+		return true;
 	}
+
+	return false;
 }
 
 Region.prototype.getPathPositions=function(){

@@ -549,3 +549,33 @@ PathOperator.prototype.getColorsForPair=function(vertex,vertex2){
 
 	return colors;
 }
+
+PathOperator.prototype.setCurrentVertex=function(sequence){
+	this.setCurrentVertexWithSecondCall(sequence,true);
+}
+
+PathOperator.prototype.setCurrentVertexWithSecondCall=function(sequence,doSecondCall){
+
+	if(this.hasSelectedRegion()){
+		if(this.getSelectedRegion().setCurrentVertex(sequence))
+			return;
+	}
+
+	var i=0;
+	while(i<this.regions.length){
+		if(this.regions[i].setCurrentVertex(sequence)){
+			this.selectRegion(i);
+			return;
+		}
+		i++;
+	}
+
+/**
+ * Also try to match it against a reverse complement hit.
+ */
+	if(doSecondCall){
+		var reverse=this.graphOperator.getReverseComplement(sequence);
+
+		this.setCurrentVertexWithSecondCall(reverse,!doSecondCall);
+	}
+}
