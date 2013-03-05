@@ -235,7 +235,21 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 	dx=dx*force;
 	dy=dy*force;
 
-	return [dx,dy];
+	return [dx,dy];e
+}
+
+/**
+ * TODO: Not sure how to that since we don't have access to all the
+ * data at once.
+ */
+PhysicsEngine.prototype.getChargeFromCoverage=function(vertex){
+
+	var value=vertex.getCoverageValue();
+
+	if(value<this.charge)
+		return this.charge;
+
+	return this.charge;
 }
 
 /**
@@ -261,6 +275,12 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var charge1=this.charge;
 	var charge2=this.charge;
+
+	if(vertex1.isColored())
+		charge1=this.getChargeFromCoverage(vertex1);
+
+	if(vertex2.isColored())
+		charge2=this.getChargeFromCoverage(vertex2);
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
 	force*=this.forceStep;
