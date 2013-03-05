@@ -114,6 +114,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.registeredRegions=[];
 
 	this.animatedRing=new AnimatedRing(x+this.width-50,y+79);
+
+	this.regionGateAnimation=null;
 }
 
 Inventory.prototype.createRegionSelector=function(){
@@ -245,6 +247,14 @@ Inventory.prototype.draw=function(context){
 
 			var region=this.pathOperator.getSelectedRegion();
 
+			if(this.regionGateAnimation==null || region!=this.currentRegion){
+				var radius=24;
+				this.regionGateAnimation=new RegionGateAnimation(this.x+this.width-radius-10,this.y+this.height+radius+40,
+					radius,region.getColor());
+
+				this.currentRegion=region;
+			}
+
 			index=1;
 			context.fillText(region.getMapName(),this.x+40,startingY+index++*jump);
 			context.fillText(this.dataStore.getKmerLength(), this.x+120,startingY+index++*jump);
@@ -256,21 +266,7 @@ Inventory.prototype.draw=function(context){
 			context.beginPath();
 			context.fillStyle = region.getColor();
 
-			startingY+=8;
-			context.rect(this.x+this.width-48, startingY+4, 8, 32);
-			context.fill();
-			context.rect(this.x+this.width-48+12, startingY+4, 8, 32);
-			context.fill();
-			context.rect(this.x+this.width-48+24, startingY+4, 8, 32);
-			context.fill();
-			context.closePath();
-
-			context.beginPath();
-			context.arc(this.x+this.width-24-6-2,startingY+20,24, 0, Math.PI*2, true);
-			context.strokeStyle = region.getColor();
-			context.lineWidth=4;
-			context.stroke();
-			context.closePath();
+			this.regionGateAnimation.draw(context);
 
 			this.getLinkButton.draw(context,null);
 
@@ -470,6 +466,10 @@ Inventory.prototype.getNextButton=function(){
 Inventory.prototype.iterate=function(){
 
 	this.animatedRing.iterate();
+
+	if(this.regionGateAnimation!=null)
+		this.regionGateAnimation.iterate();
+
 /*
  * Rebuild the menu if new elements are available.
  */
