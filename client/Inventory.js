@@ -40,6 +40,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.x=x;
 	this.y=y;
 
+	this.regionsOffset=170;
+
 	this.speedInObjectsPer1000Iterations=1;
 
 	this.buttonWidth=25;
@@ -68,7 +70,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
 	this.useColors=new Button(this.x+this.buttonWidth+19*this.buttonWidth/2,
-		this.y+10.8*this.buttonWidth,
+		this.y+this.regionsOffset+120,
 		2.2*this.buttonWidth,this.buttonWidth,"Colors",false);
 
 	this.useColors.activateState();
@@ -87,24 +89,24 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 		this.y+1.5*this.buttonWidth+10,
 		1*this.buttonWidth,this.buttonWidth,"-",false);
 
-	this.previousButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
-		this.y+1.5*this.buttonWidth+10,
+	this.previousButton=new Button(this.x+20,
+		this.y+this.height+145,
 		1*this.buttonWidth,this.buttonWidth,"<",false);
 
-	this.nextButton=new Button(this.x+this.buttonWidth+20.5*this.buttonWidth/2,
-		this.y+1.5*this.buttonWidth+10,
+	this.nextButton=new Button(this.x+80,
+		this.y+this.height+145,
 		1*this.buttonWidth,this.buttonWidth,">",false);
 
-	this.decreaseButton=new Button(this.x+this.buttonWidth+14.5*this.buttonWidth/2,
-		this.y+3.15*this.buttonWidth,
+	this.decreaseButton=new Button(this.x+130,
+		this.y+this.height+145,
 		1*this.buttonWidth,this.buttonWidth,"-",false);
 
-	this.increaseButton=new Button(this.x+this.buttonWidth+20.5*this.buttonWidth/2,
-		this.y+3.15*this.buttonWidth,
+	this.increaseButton=new Button(this.x+210,
+		this.y+this.height+145,
 		1*this.buttonWidth,this.buttonWidth,"+",false);
 
 	this.getLinkButton=new Button(this.x+this.width-this.buttonWidth-5,
-		this.y+this.height+130,this.buttonWidth*2,this.buttonWidth,"http://",false);
+		this.y+this.height+145,this.buttonWidth*2,this.buttonWidth,"Link",false);
 
 	this.pushSelector();
 
@@ -134,7 +136,7 @@ Inventory.prototype.createRegionSelector=function(){
 		heightToAdd=10;
 	heightToAdd*=30;
 
-	this.regionSelector=new SelectionWidget(this.x,this.y+this.height+150,
+	this.regionSelector=new SelectionWidget(this.x,this.y+this.height+this.regionsOffset,
 					this.width,this.height+heightToAdd,
 					"Regions",registeredRegions);
 
@@ -194,29 +196,10 @@ Inventory.prototype.draw=function(context){
 		context.strokeStyle = 'black';
 		context.stroke();
 
-		context.beginPath();
-		context.rect(this.x+210, this.y+this.buttonWidth+10, 80,this.buttonWidth);
-		context.fillStyle = '#FFF8F9';
-		context.fill();
-		context.lineWidth = 1;
-		context.strokeStyle = 'black';
-		context.stroke();
-
-		context.beginPath();
-		context.rect(this.x+210, this.y+1.9*(this.buttonWidth+10), 80,this.buttonWidth);
-		context.fillStyle = '#FFF8F9';
-		context.fill();
-		context.lineWidth = 1;
-		context.strokeStyle = 'black';
-		context.stroke();
 
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
 		this.useCoverage.draw(context,null);
-		this.nextButton.draw(context,null);
-		this.previousButton.draw(context,null);
-		this.increaseButton.draw(context,null);
-		this.decreaseButton.draw(context,null);
 		this.increaseCoverageButton.draw(context,null);
 		this.decreaseCoverageButton.draw(context,null);
 
@@ -225,8 +208,6 @@ Inventory.prototype.draw=function(context){
 
 		context.textAlign="left";
 		context.fillText("Min. depth: "+this.minimumCoverage, this.x+40,this.y+50);
-		context.fillText("Play", this.x+230,this.y+2.1*this.buttonWidth);
-		context.fillText("Speed", this.x+230,this.y+3.3*this.buttonWidth);
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
@@ -236,7 +217,7 @@ Inventory.prototype.draw=function(context){
 			var startingY=this.y+this.height+30;
 			context.beginPath();
 			context.fillStyle = '#FFF8F9';
-			context.rect(this.x, startingY, this.width, this.height+15);
+			context.rect(this.x, startingY, this.width, this.height+32);
 			context.fill();
 			context.lineWidth = 1;
 			context.strokeStyle = 'black';
@@ -288,6 +269,31 @@ Inventory.prototype.draw=function(context){
 			context.closePath();
 
 			this.getLinkButton.draw(context,null);
+
+			context.beginPath();
+			context.rect(this.x+15, this.y+this.height+132.5, 60,this.buttonWidth);
+			//context.fillStyle = '#faa8F9';
+			//context.fill();
+			context.lineWidth = 1;
+			context.strokeStyle = 'black';
+			context.stroke();
+
+			context.beginPath();
+			context.rect(this.x+140, this.y+this.height+132.5, 60,this.buttonWidth);
+			//context.fillStyle = '#bbF8F9';
+			//context.fill();
+			context.lineWidth = 1;
+			context.strokeStyle = 'black';
+			context.stroke();
+
+
+			context.fillText("Play", this.x+50,this.y+this.height+150);
+			context.fillText("Speed", this.x+170,this.y+this.height+150);
+
+			this.nextButton.draw(context,null);
+			this.previousButton.draw(context,null);
+			this.increaseButton.draw(context,null);
+			this.decreaseButton.draw(context,null);
 		}
 	}
 }
