@@ -69,13 +69,13 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.useColors=new Button(this.x+this.buttonWidth+8.5*this.buttonWidth/2,
 		this.y+3.1*this.buttonWidth,
-		2.2*this.buttonWidth,this.buttonWidth,"colors",false);
+		2.2*this.buttonWidth,this.buttonWidth,"Colors",false);
 
 	this.useColors.activateState();
 
 	this.useCoverage=new Button(this.x+this.buttonWidth+3.4*this.buttonWidth/2,
 		this.y+3.4*this.buttonWidth,
-		1.9*this.buttonWidth,this.buttonWidth,"depth",false);
+		1.9*this.buttonWidth,this.buttonWidth,"Depth",false);
 
 	this.useCoverage.activateState();
 
@@ -136,7 +136,7 @@ Inventory.prototype.createRegionSelector=function(){
 
 	this.regionSelector=new SelectionWidget(this.x,this.y+this.height+150,
 					this.width,this.height+heightToAdd,
-					"regions",registeredRegions);
+					"Regions",registeredRegions);
 
 	this.regionSelector.setColors(colors);
 }
@@ -222,9 +222,9 @@ Inventory.prototype.draw=function(context){
 		context.font         = 'bold '+this.fontSize+'px Arial';
 
 		context.textAlign="left";
-		context.fillText("min. depth: "+this.minimumCoverage, this.x+40,this.y+50);
-		context.fillText("play", this.x+230,this.y+2.1*this.buttonWidth);
-		context.fillText("speed", this.x+230,this.y+3.3*this.buttonWidth);
+		context.fillText("Min. depth: "+this.minimumCoverage, this.x+40,this.y+50);
+		context.fillText("Play", this.x+230,this.y+2.1*this.buttonWidth);
+		context.fillText("Speed", this.x+230,this.y+3.3*this.buttonWidth);
 
 		if(this.warpButton.getState())
 			this.selector.draw(context);
