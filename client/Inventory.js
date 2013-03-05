@@ -266,6 +266,25 @@ Inventory.prototype.draw=function(context){
 			context.fillText(region.getRegionName(),this.x+60,startingY+index++*jump);
 			context.fillText(region.getLocationName(),this.x+70,startingY+index++*jump);
 
+			context.beginPath();
+			context.fillStyle = region.getColor();
+
+			startingY+=8;
+			context.rect(this.x+this.width-48, startingY+4, 8, 32);
+			context.fill();
+			context.rect(this.x+this.width-48+12, startingY+4, 8, 32);
+			context.fill();
+			context.rect(this.x+this.width-48+24, startingY+4, 8, 32);
+			context.fill();
+			context.closePath();
+
+			context.beginPath();
+			context.arc(this.x+this.width-24-6-2,startingY+20,24, 0, Math.PI*2, true);
+			context.strokeStyle = region.getColor();
+			context.lineWidth=4;
+			context.stroke();
+			context.closePath();
+
 			this.getLinkButton.draw(context,null);
 		}
 	}
