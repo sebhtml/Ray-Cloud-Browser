@@ -31,8 +31,6 @@ function PathOperator(dataStore,graphOperator){
 	this.defineColors();
 
 	this.readaheadConfiguration=4096;
-
-	this.selector=0;
 }
 
 PathOperator.prototype.getSelectedRegion=function(){
@@ -222,6 +220,12 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 
 	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
 
+/*
+	if(!(key in this.index)){
+		console.log("Error: key "+key+" was not found.");
+	}
+*/
+
 	var regionEntry=this.index[key];
 
 	var vertices=content["vertices"];
@@ -317,11 +321,17 @@ PathOperator.prototype.doReadahead=function(){
 	if(this.regions.length==0)
 		return;
 
-	var region=this.regions[this.selector++];
+	var region=this.regions[this.selector];
 
-	this.selector%=this.regions.length;
+/*
+	if(region === undefined)
+		console.log("Is undefined at @ "+this.selector+", has "+this.regions.length+" entries");
+*/
 
 	this.pull(region);
+
+	this.selector++;
+	this.selector%=this.regions.length;
 }
 
 PathOperator.prototype.pull=function(region){
@@ -380,6 +390,8 @@ PathOperator.prototype.reset=function(){
 	this.hasLocation=false;
 	this.index=new Object();
 	this.regions=[];
+
+	this.selector=0;
 }
 
 PathOperator.prototype.getVertexPosition=function(sequence){
