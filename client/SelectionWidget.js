@@ -144,7 +144,9 @@ SelectionWidget.prototype.draw=function(context){
 
 		var button=this.choiceButtons[i];
 
-		if(i<this.colors.length && this.colors[i]!="#FFFFFF"){
+		var colorIndex=this.offset+i;
+
+		if(colorIndex<this.colors.length && this.colors[colorIndex]!="#FFFFFF"){
 			var plusValue=20;
 			var width=button.getWidth()+plusValue
 			var height=button.getHeight()+plusValue/5;
@@ -152,7 +154,7 @@ SelectionWidget.prototype.draw=function(context){
 			context.beginPath();
 			context.rect(button.getX()-width/2-(plusValue/2-plusValue/5),
 				button.getY()-height/2,width,height);
-			context.fillStyle =this.colors[i];
+			context.fillStyle =this.colors[colorIndex];
 			context.fill();
 			context.closePath();
 		}
