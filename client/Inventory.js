@@ -25,6 +25,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
 	this.dataStore=dataStore;
+	this.fontSize=12;
 
 	this.useAddress=true;
 	this.usedAddressForSpeed=false;
