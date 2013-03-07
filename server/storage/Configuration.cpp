@@ -34,9 +34,8 @@ void Configuration::open(const char*file){
 	test2.close();
 
 	if(!exists){
-		ofstream initialConfiguration(file);
-		initialConfiguration<<"{ \"maps\": [ ] } ";
-		initialConfiguration.close();
+		m_root=NULL;
+		return;
 	}
 
 	m_parser.parse(file);
@@ -45,8 +44,13 @@ void Configuration::open(const char*file){
 }
 
 void Configuration::close(){
+	if(m_root == NULL)
+		return;
+
 	m_parser.destroy();
 	m_root->destroy();
+
+	m_root=NULL;
 }
 
 const char*Configuration::getMapFile(int map)const{
