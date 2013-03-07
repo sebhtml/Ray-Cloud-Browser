@@ -120,6 +120,9 @@ Renderer.prototype.drawPaths=function(vertices){
 		if(!vertex.isEnabled())
 			continue;
 
+		if(this.screen.isOutside(vertex,this.renderingBuffer))
+			continue;
+
 		this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
 			zoomValue,vertex);
 
