@@ -70,10 +70,7 @@ int SectionPusher::call(int argc,char**argv){
 	configuration.addSection(mapIndex,sectionName,sectionFile);
 
 	cout<<"Added section to "<<file<<endl;
-	cout<<"New configuration: "<<endl;
-	cout<<endl;
 
-	configuration.printXML();
 	configuration.close();
 
 	return 0;

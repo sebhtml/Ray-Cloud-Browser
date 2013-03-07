@@ -61,9 +61,6 @@ int MapPusher::call(int argc,char**argv){
 	configuration.addMap(mapName,mapFile);
 
 	cout<<"Added map to "<<file<<endl;
-	cout<<"New configuration: "<<endl;
-
-	configuration.printXML();
 
 	configuration.close();
 
