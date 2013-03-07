@@ -27,7 +27,6 @@
  */
 function Screen(gameFrequency,renderingFrequency){
 
-	this.rectangles=0;
 	this.canControlScreen=false;
 	this.periodForControl=1000;
 
@@ -150,6 +149,7 @@ function Screen(gameFrequency,renderingFrequency){
 
 	//this.createButtons();
 
+	this.loadingAnimation=new LoadingAnimation(this);
 	this.start();
 }
 
@@ -442,11 +442,7 @@ Screen.prototype.handleMouseUp=function(eventObject){
 	}
 
 	this.moveOrigin=false;
-
-	//eventObject.target.style.cursor="default";
 }
-
-
 
 Screen.prototype.printGraph=function(){
 	for(i in this.graph.getVertices()){
@@ -467,6 +463,12 @@ Screen.prototype.roundNumber=function(number,precision){
 
 Screen.prototype.iterate=function(){
 
+// show a loading icon
+	if(this.graphOperator.getDataStore().hasPendingQueries()){
+		this.loadingAnimation.setLoadingState();
+	}
+
+	this.loadingAnimation.iterate();
 	this.graphOperator.iterate();
 	this.humanInterface.iterate();
 	this.pathOperator.iterate();
@@ -702,33 +704,6 @@ Screen.prototype.drawControlPanel=function(){
 
 	var context=this.getContext();
 
-// show a loading icon
-	if(this.graphOperator.getDataStore().hasPendingQueries()){
-		var width=16;
-		var maximum=16;
-
-		var count=maximum/4;
-		var start=this.rectangles;
-
-		while(count--){
-			context.beginPath();
-			context.rect(this.getWidth()/2-maximum*width+start*width*2, width*0.5, width, width);
-			context.fillStyle = '#7788FF';
-			context.fill();
-			context.closePath();
-
-			start++;
-			start%=maximum;
-		}
-
-		this.rectangles++;
-		this.rectangles%=maximum;
-	}
-
-	for(i in this.buttons){
-		this.buttons[i].draw(context,this.blitter);
-	}
-
 	if(this.selectedVertex!=null){
 		var sequence=this.selectedVertex.getSequence();
 		var toPrint=sequence.substr(0,sequence.length-1)+"["+sequence[sequence.length-1]+"]";
@@ -808,59 +783,18 @@ Screen.prototype.drawControlPanel=function(){
  * TODO: move this in HumanInterface or in Renderer
  */
 Screen.prototype.draw=function(){
+
+
 /*
  * Setting dimensions clear the content.
  * 2012-11-13: IE9 does not support that.
  */
-/*
-	this.canvas.width=this.width;
-	this.canvas.height=this.height;
-	this.renderingCanvas.width=this.width;
-	this.renderingCanvas.height=this.height;
-*/
+
 	if(!this.checkScreenSize()){
 		this.performScreenSizeChange();
 	}
 
 	var start=this.getMilliseconds();
-
-/*
- *
- * This draws a brand name
- *
-	var context=this.getContext();
-	context.clearRect(0,0,this.width,this.height);
-
-	//context.strokeStyle = "rgb(0,0,0)";
-
-	context.lineWidth=0;
-	context.beginPath();
-	context.fillStyle = '#ffeeaa';
-	context.strokeStyle = "rgb(0,0,0)";
-	context.rect(this.width-130, 0, 130, 20);
-	//context.stroke();
-	context.fill();
-
-	context.fillStyle    = '#000000';
-	context.font         = '13px Arial';
-	context.fillText("Ray Cloud Browser", this.width-120,15);
-*/
-
-/*
- * Draw a line around the canvas.
- */
-/*
-	context.lineWidth=1;
-	context.beginPath();
-	context.moveTo(0,0);
-	context.lineTo(this.canvas.width,0);
-	context.lineTo(this.canvas.width,this.canvas.height);
-	context.lineTo(1,this.canvas.height);
-	context.lineTo(0,0);
-	context.stroke();
-	context.closePath();
-*/
-
 	this.renderer.draw(this.getActiveObjects());
 
 
@@ -878,6 +812,8 @@ Screen.prototype.draw=function(){
  * of double-buffering
  */
 
+	var context=this.getContext();
+	this.loadingAnimation.draw(context);
 
 	this.context.clearRect(0,0,this.width,this.height);
 
@@ -889,6 +825,7 @@ Screen.prototype.draw=function(){
 	var end=this.getMilliseconds();
 	this.drawingMilliseconds+=(end-start);
 	this.drawingFrames++;
+
 }
 
 Screen.prototype.getRandomX=function(){
