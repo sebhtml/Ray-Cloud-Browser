@@ -325,44 +325,82 @@ Inventory.prototype.handleMouseDown=function(x,y){
 			this.pushSelector();
 
 		return true;
-	}else if(this.useColors.handleMouseDown(x,y)){
-
-		return true;
 	}else if(this.useCoverage.handleMouseDown(x,y)){
 
 		return true;
 
-	}else if(this.selector.handleMouseDown(x,y)){
+	}else if(this.warpButton.getState()){
+		if(this.selector.handleMouseDown(x,y)){
 
-		return true;
-	}else if(this.nextButton.handleMouseDown(x,y)){
+			return true;
+		}
 
-		if(this.nextButton.getState())
-			this.previousButton.resetState();
+	}else if(this.closeButton.getState() && !this.warpButton.getState()){
+		if(this.useColors.handleMouseDown(x,y)){
 
-		return true;
-	}else if(this.previousButton.handleMouseDown(x,y)){
+			return true;
 
-		if(this.previousButton.getState())
-			this.nextButton.resetState();
+		}else if(this.nextButton.handleMouseDown(x,y)){
 
-		return true;
-	}else if(this.increaseButton.handleMouseDown(x,y)){
+			if(this.nextButton.getState())
+				this.previousButton.resetState();
 
-		this.speedInObjectsPer1000Iterations*=2;
-		this.checkSpeedBounds();
+			return true;
+		}else if(this.previousButton.handleMouseDown(x,y)){
 
-		this.increaseButton.resetState();
+			if(this.previousButton.getState())
+				this.nextButton.resetState();
 
-		return true;
+			return true;
+		}else if(this.increaseButton.handleMouseDown(x,y)){
 
-	}else if(this.decreaseButton.handleMouseDown(x,y)){
+			this.speedInObjectsPer1000Iterations*=2;
+			this.checkSpeedBounds();
 
-		this.speedInObjectsPer1000Iterations/=2;
-		this.checkSpeedBounds();
+			this.increaseButton.resetState();
 
-		this.decreaseButton.resetState();
-		return true;
+			return true;
+
+		}else if(this.decreaseButton.handleMouseDown(x,y)){
+
+			this.speedInObjectsPer1000Iterations/=2;
+			this.checkSpeedBounds();
+
+			this.decreaseButton.resetState();
+			return true;
+
+		}else if(this.regionSelector.handleMouseDown(x,y)){
+
+			if(this.regionSelector.hasChoice()){
+				var index=this.regionSelector.getChoice();
+
+				this.pathOperator.selectRegion(index);
+
+				this.createRegionSelector();
+			}
+
+			return true;
+		}else if(this.pathOperator.hasSelectedRegion()
+			&& this.getLinkButton.handleMouseDown(x,y)){
+
+			var address=this.getAddress();
+
+			if(this.screen.getZoomValue()!=1)
+				address+="&zoom="+this.screen.getZoomValue();
+
+			if(this.getPreviousButton().getState()){
+				address+="&play=backward";
+				address+="&speed="+this.getSpeed();
+			}else if(this.getNextButton().getState()){
+				address+="&play=forward";
+				address+="&speed="+this.getSpeed();
+			}
+
+			alert(address);
+
+			this.getLinkButton.resetState();
+		}
+
 	}else if(this.decreaseCoverageButton.handleMouseDown(x,y)){
 
 		this.minimumCoverage--;
@@ -381,40 +419,6 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 		return true;
 
-	}else if(this.regionSelector.handleMouseDown(x,y)){
-
-		if(this.regionSelector.hasChoice()){
-			var index=this.regionSelector.getChoice();
-
-			this.pathOperator.selectRegion(index);
-
-			this.createRegionSelector();
-		}
-
-		return true;
-
-	}else if(this.closeButton.getState() &&
-		!this.warpButton.getState() && this.pathOperator.hasSelectedRegion()
-		&& this.getLinkButton.handleMouseDown(x,y)){
-
-		var address=this.getAddress();
-
-		//console.log("Bang");
-
-		if(this.screen.getZoomValue()!=1)
-			address+="&zoom="+this.screen.getZoomValue();
-
-		if(this.getPreviousButton().getState()){
-			address+="&play=backward";
-			address+="&speed="+this.getSpeed();
-		}else if(this.getNextButton().getState()){
-			address+="&play=forward";
-			address+="&speed="+this.getSpeed();
-		}
-
-		alert(address);
-
-		this.getLinkButton.resetState();
 	}
 
 	return false;
