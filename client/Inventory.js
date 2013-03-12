@@ -328,6 +328,25 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	}else if(this.useCoverage.handleMouseDown(x,y)){
 
 		return true;
+	}else if(this.decreaseCoverageButton.handleMouseDown(x,y)){
+
+		this.minimumCoverage--;
+
+		this.decreaseCoverageButton.resetState();
+
+		if(this.minimumCoverage<0)
+			this.minimumCoverage=0;
+
+		return true;
+	}else if(this.increaseCoverageButton.handleMouseDown(x,y)){
+
+		this.minimumCoverage++;
+
+		this.increaseCoverageButton.resetState();
+
+		return true;
+
+
 
 	}else if(this.warpButton.getState()){
 		if(this.selector.handleMouseDown(x,y)){
@@ -400,24 +419,6 @@ Inventory.prototype.handleMouseDown=function(x,y){
 
 			this.getLinkButton.resetState();
 		}
-
-	}else if(this.decreaseCoverageButton.handleMouseDown(x,y)){
-
-		this.minimumCoverage--;
-
-		this.decreaseCoverageButton.resetState();
-
-		if(this.minimumCoverage<0)
-			this.minimumCoverage=0;
-
-		return true;
-	}else if(this.increaseCoverageButton.handleMouseDown(x,y)){
-
-		this.minimumCoverage++;
-
-		this.increaseCoverageButton.resetState();
-
-		return true;
 
 	}
 
