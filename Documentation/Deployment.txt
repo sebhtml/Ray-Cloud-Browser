@@ -30,28 +30,26 @@ RayCloudBrowser.cgi (the web service) and RayCloudBrowser-client (the tool to ad
 
 4. Copy config.json-EXAMPLE to config.json (also in server/) ;
 
-5. Deploy Ray Cloud Browser with your web server by copying
-Documentation/Apache-with-public_html.conf into /etc/httpd/conf.d (also called /etc/apache2/conf.d) ;
+5. Deploy Ray Cloud Browser with your web server.
+   => See server/web-server-configuration/README
 
-6. Restart your web server (usually service httpd restart);
-
-7. Point your web browser to http://localhost/client ;
+6. Point your web browser to http://localhost/client ;
 
 	If that does not work, it's probably permission-related. The web server must be able to
 	read and execute in $HOME/public_html/Ray-Cloud-Browser/{client,server}
 
-8. Run Ray with -write-kmers on your DNA reads to generate kmers.txt and Contigs.fasta ;
+7. Run Ray with -write-kmers on your DNA reads to generate kmers.txt and Contigs.fasta ;
 
-9. Convert kmers.txt to kmers.dat with RayCloudBrowser-client create-map ;
+8. Convert kmers.txt to kmers.dat with RayCloudBrowser-client create-map ;
 
-10. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser-client create-section ;
+9. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser-client create-section ;
 
-11. Add the map file (kmers.dat) with RayCloudBrowser-client add-map
+10. Add the map file (kmers.dat) with RayCloudBrowser-client add-map
 
-12. Add the section file (Contigs.dat) with RayCloudBrowser-client add-section
+11. Add the section file (Contigs.dat) with RayCloudBrowser-client add-section
 
-13. Annotate the map with the section using RayCloudBrowser-client create-map-annotations-with-section
+12. Annotate the map with the section using RayCloudBrowser-client create-map-annotations-with-section
 
-14. Point your web browser to http://localhost/client ;
+13. Point your web browser to http://localhost/client ;
 
 	You should be able to select your location.

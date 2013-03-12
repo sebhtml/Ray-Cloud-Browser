@@ -1,0 +1,13 @@
+There are 3 documented methods to deploy Ray Cloud Browser. Other methods exist too.
+
+## Deploy with lighttpd (easiest method)
+
+* edit lighttpd.conf
+* lighttpd -f lighttpd.conf
+
+## Deploy with Apache httpd using /etc configuration
+
+* Add Apache-with-public_html.conf to /etc/httpd/conf.d
+* service httpd restart
+
+## Deply with Apache (TODO)
