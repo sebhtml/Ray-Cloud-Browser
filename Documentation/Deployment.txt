@@ -21,35 +21,35 @@ Steps required to use your own Ray Cloud Browser are below.
 First, we need to install the software.
 
 
-1. Install a web server (like Apache httpd) ;
+1. Install a web server (like lighttpd)
 
-2. Clone the Ray-Cloud-Browser git repository on your computer, in $HOME/public_html/ ;
+2. Create $HOME/Ray-Cloud-Browser-instance/
 
-3. Go in $HOME/public_html/Ray-Cloud-Browser/server/ and type "make", this will build 
-RayCloudBrowser.cgi (the web service) and RayCloudBrowser-client (the tool to add samples) ;
+3. Clone the Ray-Cloud-Browser git repository on your computer, in $HOME/Ray-Cloud-Browser-instance/
 
-4. Copy config.json-EXAMPLE to config.json (also in server/) ;
+4. Go in $HOME/Ray-Cloud-Browser-instance/Ray-Cloud-Browser/server/ and type "make", this will build 
+RayCloudBrowser.cgi (the web service) and RayCloudBrowser-client (the tool to manage the instance)
 
-5. Deploy Ray Cloud Browser with your web server.
+5. Copy config.json-EXAMPLE to config.json (also in server/)
+
+6. Deploy Ray Cloud Browser with your web server.
    => See server/web-server-configuration/README
 
-6. Point your web browser to http://localhost/client ;
+7. Point your web browser to http://localhost/client
 
-	If that does not work, it's probably permission-related. The web server must be able to
-	read and execute in $HOME/public_html/Ray-Cloud-Browser/{client,server}
+8. Run Ray with -write-kmers on your DNA reads to generate kmers.txt and Contigs.fasta
+put these in $HOME/Ray-Cloud-Browser-instance/Ray-Cloud-Browser/server/data/Sample-Name
 
-7. Run Ray with -write-kmers on your DNA reads to generate kmers.txt and Contigs.fasta ;
+9. Convert kmers.txt to kmers.dat with RayCloudBrowser-client create-map
 
-8. Convert kmers.txt to kmers.dat with RayCloudBrowser-client create-map ;
+10. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser-client create-section
 
-9. Convert Contigs.fasta to Contigs.dat with RayCloudBrowser-client create-section ;
+11. Add the map file (kmers.dat) with RayCloudBrowser-client add-map
 
-10. Add the map file (kmers.dat) with RayCloudBrowser-client add-map
+12. Add the section file (Contigs.dat) with RayCloudBrowser-client add-section
 
-11. Add the section file (Contigs.dat) with RayCloudBrowser-client add-section
+13. Annotate the map with the section using RayCloudBrowser-client create-map-annotations-with-section
 
-12. Annotate the map with the section using RayCloudBrowser-client create-map-annotations-with-section
-
-13. Point your web browser to http://localhost/client ;
+14. Point your web browser to http://localhost/client ;
 
 	You should be able to select your location.
