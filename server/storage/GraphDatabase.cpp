@@ -116,7 +116,7 @@ void GraphDatabase::pullSequence(uint64_t middle,char*sequence)const{
 
 // convert the 2-bit format to the 1-byte-per-nucleotide format
 
-	for(int nucleotidePosition=0;nucleotidePosition<m_kmerLength;nucleotidePosition++){
+	for(int nucleotidePosition=0;nucleotidePosition<(int)m_kmerLength;nucleotidePosition++){
 		int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
 		int code=-1;
 		readTwoBits(sequenceData,bitPosition,&code);
@@ -389,7 +389,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 		memset(sequenceData,0,CONFIG_MAXKMERLENGTH*sizeof(uint8_t));
 
-		for(int nucleotidePosition=0;nucleotidePosition<m_kmerLength;nucleotidePosition++){
+		for(int nucleotidePosition=0;nucleotidePosition<(int)m_kmerLength;nucleotidePosition++){
 			char symbol=buffer[nucleotidePosition];
 			int code=getSymbolCode(symbol);
 			int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;

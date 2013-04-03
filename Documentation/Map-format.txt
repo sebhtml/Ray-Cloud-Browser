@@ -10,19 +10,31 @@ GCGGTTATGCTTGCGTCCACCGTAAGTTCGGATTCAGACTTAATCAAAGGTTTTAACAAAGCGCTGGCAACCCCACGGCG
 
 map.dat (binary)
 
-<magic>
-<format>
-<kmerLength>
-<entries>
-<kmerSequence><coverage><parents><children>
-<kmerSequence><coverage><parents><children>
-<kmerSequence><coverage><parents><children>
-<kmerSequence><coverage><parents><children>
-<kmerSequence><coverage><parents><children>
+<uint32_t magic>
+<uint32_t format>
+<uint32_t kmerLength>
+<uint64_t entries>
+<uint8_t kmerSequence[]><uint32_t coverage><uint8_t parents_and_children>
+<uint8_t kmerSequence[]><uint32_t coverage><uint8_t parents_and_children>
+<uint8_t kmerSequence[]><uint32_t coverage><uint8_t parents_and_children>
+<uint8_t kmerSequence[]><uint32_t coverage><uint8_t parents_and_children>
+<uint8_t kmerSequence[]><uint32_t coverage><uint8_t parents_and_children>
 ...
 
+* kmers are sorted in ascending order.
 
-Reference implementation: GraphDatabase.{h,cpp}
+* kmerSequence uses 2 bits per nucleotide and is aligned on 1 byte.
+
+* The encoding is:
+
+INDEX_A 0
+INDEX_C 1
+INDEX_G 2
+INDEX_T 3
+
+* Only the lexicographically-lower kmer is stored.
+
+Reference implementation: storage/GraphDatabase.{h,cpp}
 
 To generate map.dat on a sorted kmers.txt:
 

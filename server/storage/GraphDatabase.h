@@ -46,7 +46,7 @@ class GraphDatabase{
 	string m_fileName;
 
 	uint64_t m_entries;
-	int m_kmerLength;
+	uint32_t m_kmerLength;
 	uint32_t m_magicNumber;
 	uint32_t m_formatVersion;
 	uint32_t m_expectedMagicNumber;
