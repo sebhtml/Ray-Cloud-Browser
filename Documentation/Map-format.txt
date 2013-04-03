@@ -41,3 +41,15 @@ To generate map.dat on a sorted kmers.txt:
 Tool:
 
 RayCloudBrowser-client create-map kmers.txt.sorted map.dat
+
+---
+History
+
+1
+
+* entries is the number of k-mers, but the file contains entries / 2 elements only --
+only the lexicographically lower
+
+0
+
+* initial version

@@ -36,6 +36,8 @@ class VertexObject{
 	char m_parents[4];
 	char m_children[4];
 	
+	int getComplementNucleotideIndex(int i);
+	char getComplementNucleotide(char a);
 public:
 
 	void setSequence(char*value);
@@ -52,6 +54,9 @@ public:
 	void addChild(char symbol);
 	int getSymbolCode(char symbol)const;
 	char getCodeSymbol(int code)const;
+
+	void getReverseComplement(const char * key, char * result);
+	void morphToTwin();
 };
 
 #endif

@@ -18,6 +18,7 @@
 // TODO: maybe adding padding could enhance performance
 
 #include "GraphDatabase.h"
+#include "../constants.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -49,19 +50,39 @@ using namespace std;
 
 // TODO add error management for file operations
 
+const char * GraphDatabase::selectObject(const char*object1, const char*object2) const{
+	if(m_formatVersion == 0)
+		return object1;
+
+	if(strcmp(object1, object2) < 0)
+		return object1;
+	return object2;
+}
+
 bool GraphDatabase::getObject(const char*key,VertexObject*object)const{
 
 	uint64_t index=0;
-	bool found=getObjectIndex(key,&index);
+
+	char reverseComplementSequence[CONFIG_MAXKMERLENGTH];
+	object->getReverseComplement(key, reverseComplementSequence);
+	const char * selectedKey = selectObject(key, reverseComplementSequence);
+
+	bool found=getObjectIndex(selectedKey, &index);
 
 	if(!found)
 		return found;
 
 	getObjectWithIndex(index,object);
 
+	if(selectedKey != key)
+		object->morphToTwin();
+
 	return found;
 }
 
+/*
+ * \param key is the lexicographically lower key
+ */
 bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 	bool found=false;
 
@@ -73,6 +94,13 @@ bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 
 	uint64_t first=0;
 	uint64_t last=m_entries-1;
+
+/*
+ * Version 1 stores only the lexicographically lower k-mers
+ */
+	if(m_formatVersion >= 1)
+		last = m_entries / 2 - 1;
+
 	int match=0;
 
 	while(first<=last){
@@ -259,7 +287,7 @@ void GraphDatabase::openFile(const char*file){
 		return;
 	}
 
-	if(m_formatVersion!=m_expectedFormatVersion){
+	if(m_formatVersion!=0 && m_formatVersion != 1){
 		cout<<"Error: the format version of "<<file<<" is not supported."<<endl;
 		m_error=true;
 		return;
@@ -291,13 +319,9 @@ char GraphDatabase::getSymbol(int code)const{
 }
 
 GraphDatabase::GraphDatabase(){
-	uint32_t GRAPH_MAGIC_NUMBER=2345678987;
-	uint32_t GRAPH_FORMAT_VERSION=0;
-
 	m_active=false;
 	m_error=false;
-	m_expectedMagicNumber=GRAPH_MAGIC_NUMBER;
-	m_expectedFormatVersion=GRAPH_FORMAT_VERSION;
+	m_expectedMagicNumber=2345678987;
 
 	m_codeSymbols[INDEX_A]=SYMBOL_A;
 	m_codeSymbols[INDEX_C]=SYMBOL_C;
@@ -362,7 +386,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	FILE*output=fopen(binaryFile,"w");
 
 	m_magicNumber=m_expectedMagicNumber;
-	m_formatVersion=m_expectedFormatVersion;
+	m_formatVersion = 1;
 	m_kmerLength=kmerLength;
 	m_entries=entries;
 

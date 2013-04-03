@@ -15,6 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "VertexObject.h"
 #include "AnnotationEngine.h"
 #include "Mapper.h"
 
@@ -126,7 +127,14 @@ void AnnotationEngine::addLocation(const char*key,LocationAnnotation*annotation)
 #endif
 
 	uint64_t index=0;
-	bool found=m_map->getObjectIndex(key,&index);
+
+	VertexObject object;
+
+	char reverseComplementSequence[CONFIG_MAXKMERLENGTH];
+	object.getReverseComplement(key, reverseComplementSequence);
+	const char * selectedKey = m_map->selectObject(key, reverseComplementSequence);
+
+	bool found=m_map->getObjectIndex(selectedKey, &index);
 
 	if(!found)
 		return;

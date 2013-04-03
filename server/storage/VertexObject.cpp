@@ -60,7 +60,7 @@ void VertexObject::writeContentInJSON(ostream*stream)const{
 			(*stream)<<"\""<<getCodeSymbol(i)<<"\"";
 		}
 	}
-	
+
 	(*stream)<<"],"<<endl;
 
 	(*stream)<<"	\"children\": [";
@@ -172,4 +172,89 @@ void VertexObject::writeContentInText(ostream*stream)const{
 		}
 	}
 	(*stream)<<endl;
+}
+
+void VertexObject::morphToTwin(){
+	getReverseComplement(m_sequence, m_sequence);
+
+	char oldParents[ALPHABET_SIZE];
+	memcpy(oldParents, m_parents, ALPHABET_SIZE);
+
+	// old children become new parents
+	for(int i=0;i < ALPHABET_SIZE; i++)
+		m_parents[i] = MARKER_NO;
+
+	for(int i = 0;i < ALPHABET_SIZE; i++){
+		if(m_children[i] == MARKER_YES)
+			m_parents[getComplementNucleotideIndex(i)] = MARKER_YES;
+	}
+
+	// old parents become new children
+	for(int i=0;i < ALPHABET_SIZE; i++)
+		m_children[i] = MARKER_NO;
+
+	for(int i = 0;i < ALPHABET_SIZE; i++){
+		if(oldParents[i] == MARKER_YES)
+			m_children[getComplementNucleotideIndex(i)] = MARKER_YES;
+	}
+}
+
+int VertexObject::getComplementNucleotideIndex(int i){
+	switch(i){
+		case INDEX_A:
+			return INDEX_T;
+		case INDEX_T:
+			return INDEX_A;
+		case INDEX_C:
+			return INDEX_G;
+		case INDEX_G:
+			return INDEX_C;
+	}
+
+	return INDEX_A;
+}
+
+void VertexObject::getReverseComplement(const char * key, char * result){
+	int i = 0;
+	int kmerLength = strlen(key);
+
+	// copy the data
+	while(i < kmerLength){
+		result[i] = key[i];
+		i++;
+	}
+
+	i = 0;
+	// inverse
+	while(i < kmerLength / 2){
+		int lastIndex = kmerLength - 1 - i;
+		char last = result[lastIndex];
+
+		result[lastIndex] = key[i];
+		result[i] = last;
+		i++;
+	}
+
+	// complement
+	i = 0;
+
+	while(i < kmerLength){
+		result[i] = getComplementNucleotide(result[i]);
+		i++;
+	}
+}
+
+char VertexObject::getComplementNucleotide(char a){
+	switch(a){
+		case SYMBOL_A:
+			return SYMBOL_T;
+		case SYMBOL_T:
+			return SYMBOL_T;
+		case SYMBOL_G:
+			return SYMBOL_A;
+		case SYMBOL_C:
+			return SYMBOL_G;
+	}
+
+	return SYMBOL_A;
 }

@@ -50,7 +50,6 @@ class GraphDatabase{
 	uint32_t m_magicNumber;
 	uint32_t m_formatVersion;
 	uint32_t m_expectedMagicNumber;
-	uint32_t m_expectedFormatVersion;
 
 	int m_requiredBytesPerSequence;
 
@@ -71,6 +70,7 @@ class GraphDatabase{
 	char getSymbol(int code)const;
 
 	void pullSequence(uint64_t index,char*sequence)const;
+
 public:
 	GraphDatabase();
 	void openFile(const char*file);
@@ -85,6 +85,7 @@ public:
 
 	const char*getFileName()const;
 	bool hasError()const;
+	const char * selectObject(const char*object1, const char*object2)const;
 };
 
 #endif
