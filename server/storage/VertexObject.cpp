@@ -242,6 +242,8 @@ void VertexObject::getReverseComplement(const char * key, char * result){
 		result[i] = getComplementNucleotide(result[i]);
 		i++;
 	}
+
+	result[kmerLength] = '\0';
 }
 
 char VertexObject::getComplementNucleotide(char a){
@@ -249,9 +251,9 @@ char VertexObject::getComplementNucleotide(char a){
 		case SYMBOL_A:
 			return SYMBOL_T;
 		case SYMBOL_T:
-			return SYMBOL_T;
-		case SYMBOL_G:
 			return SYMBOL_A;
+		case SYMBOL_G:
+			return SYMBOL_C;
 		case SYMBOL_C:
 			return SYMBOL_G;
 	}

@@ -86,6 +86,7 @@ public:
 	const char*getFileName()const;
 	bool hasError()const;
 	const char * selectObject(const char*object1, const char*object2)const;
+	int getFormatVersion()const;
 };
 
 #endif

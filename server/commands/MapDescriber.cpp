@@ -48,10 +48,12 @@ int MapDescriber::call(int argc,char**argv){
 
 	int kmerLength=graphReader.getKmerLength();
 	uint64_t entries=graphReader.getEntries();
+	int mapVersion = graphReader.getFormatVersion();
 
 	cout<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
 	cout<<"<mapDescriber>"<<endl;
 	cout<<"<class>GraphDatabase</class>"<<endl;
+	cout<<"<formatVersion>" << mapVersion << "</formatVersion>" <<endl;
 	cout<<"<mapFile>"<<mapFile<<"</mapFile>"<<endl;
 	cout<<"<objects>"<<entries<<"</objects>"<<endl;
 	cout<<"<kmerLength>"<<kmerLength<<"</kmerLength>"<<endl;

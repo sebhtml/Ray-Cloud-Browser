@@ -37,15 +37,28 @@ int GraphExporter::call(int argc,char**argv){
 
 	GraphDatabase database;
 	database.openFile(dataFile);
+	int formatVersion = database.getFormatVersion();
 
 	uint64_t entries=database.getEntries();
+
 	uint64_t index=0;
 
 	cout<<"# "<<entries<<" objects"<<endl;
+
+	if(formatVersion >= 1)
+		entries /= 2;
+
 	while(index<entries){
 		VertexObject object;
 		database.getObjectWithIndex(index,&object);
 		object.writeContentInText(&cout);
+
+		if(formatVersion >= 1){
+
+			object.morphToTwin();
+			object.writeContentInText(&cout);
+		}
+
 		index++;
 	}
 

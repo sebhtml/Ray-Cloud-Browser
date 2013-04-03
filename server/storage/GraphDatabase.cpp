@@ -56,6 +56,7 @@ const char * GraphDatabase::selectObject(const char*object1, const char*object2)
 
 	if(strcmp(object1, object2) < 0)
 		return object1;
+
 	return object2;
 }
 
@@ -331,23 +332,18 @@ GraphDatabase::GraphDatabase(){
 
 void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
+	m_magicNumber=m_expectedMagicNumber;
+	m_formatVersion = 1;
+
 	const char*file=inputFile;
 	const char*binaryFile=outputFile;
 
-	int indexA=INDEX_A;
-	int indexC=INDEX_C;
-	int indexG=INDEX_G;
-	int indexT=INDEX_T;
-	
-	char symbolA=SYMBOL_A;
-	char symbolC=SYMBOL_C;
-	char symbolG=SYMBOL_G;
-	char symbolT=SYMBOL_T;
-
-	int kmerLength=0;
-	uint64_t entries=0;
+	m_kmerLength=0;
+	m_entries=0;
 
 	char buffer[1024];
+	char reverseComplementSequence[CONFIG_MAXKMERLENGTH];
+	VertexObject dummy;
 
 	FILE*stream=fopen(file,"r");
 	int null=0;
@@ -367,28 +363,33 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			continue;
 
 		if(strlen(buffer)>0){
-			entries++;
 
-			if(kmerLength==0){
-				while(buffer[kmerLength]!=';'){
-					kmerLength++;
+			if(m_kmerLength==0){
+				while(buffer[m_kmerLength]!=';'){
+					m_kmerLength++;
 				}
 			}
+
+			buffer[m_kmerLength] = '\0';
+
+			dummy.getReverseComplement(buffer, reverseComplementSequence);
+			const char*selectedKey = selectObject(buffer, reverseComplementSequence);
+
+			if(selectedKey == buffer)
+				m_entries++;
 		}
 	}
+
+	// also consider reverse complement
+	m_entries*=2;
 
 	fclose(stream);
 
 	stream=fopen(file,"r");
 
-	cout<<"Entries: "<<entries<<" KmerLength: "<<kmerLength<<endl;
+	cout<<"Entries: "<< m_entries <<" KmerLength: "<< m_kmerLength<<endl;
 
 	FILE*output=fopen(binaryFile,"w");
-
-	m_magicNumber=m_expectedMagicNumber;
-	m_formatVersion = 1;
-	m_kmerLength=kmerLength;
-	m_entries=entries;
 
 	setRequiredBytesPerObject();
 
@@ -399,7 +400,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	fwrite(&m_kmerLength,sizeof(uint32_t),1,output);
 	fwrite(&m_entries,sizeof(uint64_t),1,output);
 
-	for(uint64_t i=0;i<entries;i++){
+	for(uint64_t i=0;i<m_entries;i++){
 		char*value=fgets(buffer,1024,stream);
 		if(value==NULL)
 			null++;
@@ -410,6 +411,14 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		//cout<<"Line: "<<buffer<<endl;
 
 		int available=strlen(buffer);
+
+		buffer[m_kmerLength] = '\0';
+		dummy.getReverseComplement(buffer, reverseComplementSequence);
+		const char*selectedKey= selectObject(buffer, reverseComplementSequence);
+		if(selectedKey != buffer)
+			continue;
+
+		buffer[m_kmerLength] = ';';
 
 		memset(sequenceData,0,CONFIG_MAXKMERLENGTH*sizeof(uint8_t));
 
@@ -434,36 +443,33 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		fwrite(sequenceData,m_requiredBytesPerSequence,1,output);
 		//fwrite(buffer,m_kmerLength,1,output);
 
-		int secondSeparator=kmerLength+1;
+		int secondSeparator=m_kmerLength+1;
 
 		while(buffer[secondSeparator]!=';')
 			secondSeparator++;
 
 		buffer[secondSeparator]='\0';
 
-		//cout<<"Coverage: "<<buffer+kmerLength+1<<endl;
-		istringstream inputObject(buffer+kmerLength+1);
+		istringstream inputObject(buffer+m_kmerLength+1);
 
 		uint32_t coverage=0;
 		inputObject>>coverage;
-
-		//cout<<"Coverage: "<<coverage<<endl;
 
 		fwrite(&coverage,sizeof(uint32_t),1,output);
 
 		char parents[ALPHABET_SIZE];
 		
-		parents[indexA]=MARKER_NO;
-		parents[indexC]=MARKER_NO;
-		parents[indexG]=MARKER_NO;
-		parents[indexT]=MARKER_NO;
+		parents[INDEX_A]=MARKER_NO;
+		parents[INDEX_C]=MARKER_NO;
+		parents[INDEX_G]=MARKER_NO;
+		parents[INDEX_T]=MARKER_NO;
 
 		char children[ALPHABET_SIZE];
 
-		children[indexA]=MARKER_NO;
-		children[indexC]=MARKER_NO;
-		children[indexG]=MARKER_NO;
-		children[indexT]=MARKER_NO;
+		children[INDEX_A]=MARKER_NO;
+		children[INDEX_C]=MARKER_NO;
+		children[INDEX_G]=MARKER_NO;
+		children[INDEX_T]=MARKER_NO;
 
 		char*selection=parents;
 
@@ -472,14 +478,14 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			
 			if(operationCode==';')
 				selection=children;
-			else if(operationCode==symbolA)
-				selection[indexA]=MARKER_YES;
-			else if(operationCode==symbolC)
-				selection[indexC]=MARKER_YES;
-			else if(operationCode==symbolG)
-				selection[indexG]=MARKER_YES;
-			else if(operationCode==symbolT)
-				selection[indexT]=MARKER_YES;
+			else if(operationCode== SYMBOL_A)
+				selection[INDEX_A]=MARKER_YES;
+			else if(operationCode== SYMBOL_C)
+				selection[INDEX_C]=MARKER_YES;
+			else if(operationCode== SYMBOL_G)
+				selection[INDEX_G]=MARKER_YES;
+			else if(operationCode== SYMBOL_T)
+				selection[INDEX_T]=MARKER_YES;
 		}
 
 		uint64_t friends=0;
@@ -581,4 +587,8 @@ const char*GraphDatabase::getFileName()const{
 
 bool GraphDatabase::hasError()const{
 	return m_error;
+}
+
+int GraphDatabase::getFormatVersion()const{
+	return m_formatVersion;
 }
