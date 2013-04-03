@@ -6,19 +6,29 @@ A section contains regions and locations can be viewed for regions.
 
 binary version:
 
-<magicNumber>
-<format>
-<numberOfRegions>
-<nameStart><nameLength><sequenceStart><sequenceLength>
-<nameStart><nameLength><sequenceStart><sequenceLength>
-<nameStart><nameLength><sequenceStart><sequenceLength>
-<nameData><sequenceData>
-<nameData><sequenceData>
-<nameData><sequenceData>
+<uint32_t magicNumber>
+<uint32_t format>
+<uint64_t numberOfRegions>
+<uint64_t nameStart><uint64_t nameLength><uint64_t sequenceStart><uint64_t sequenceLength>
+<uint64_t nameStart><uint64_t nameLength><uint64_t sequenceStart><uint64_t sequenceLength>
+<uint64_t nameStart><uint64_t nameLength><uint64_t sequenceStart><uint64_t sequenceLength>
+...
+<uint8_t nameData[]><uint8_t sequenceData[]>
+<uint8_t nameData[]><uint8_t sequenceData[]>
+<uint8_t nameData[]><uint8_t sequenceData[]>
+...
 
+
+Regions are sorted by length in descending order.
 
 With this format, we are able to obtain a k-mer at any location of the
 form (region,location) in constant time.
 
 
-Reference implementation: PathDatabase.{h,cpp}
+Reference implementation: storage/PathDatabase.{h,cpp}
+
+
+Tool:
+
+RayCloudBrowser-client create-section
+

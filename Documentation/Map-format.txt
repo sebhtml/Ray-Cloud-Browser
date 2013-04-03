@@ -38,5 +38,6 @@ Reference implementation: storage/GraphDatabase.{h,cpp}
 
 To generate map.dat on a sorted kmers.txt:
 
+Tool:
 
 RayCloudBrowser-client create-map kmers.txt.sorted map.dat
