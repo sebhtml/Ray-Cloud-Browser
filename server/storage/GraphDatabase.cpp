@@ -340,6 +340,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	m_kmerLength=0;
 	m_entries=0;
+	uint64_t entriesInFile = 0;
 
 	char buffer[1024];
 	char reverseComplementSequence[CONFIG_MAXKMERLENGTH];
@@ -363,6 +364,8 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			continue;
 
 		if(strlen(buffer)>0){
+
+			entriesInFile ++;
 
 			if(m_kmerLength==0){
 				while(buffer[m_kmerLength]!=';'){
@@ -388,6 +391,8 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	stream=fopen(file,"r");
 
 	cout<<"Entries: "<< m_entries <<" KmerLength: "<< m_kmerLength<<endl;
+	cout << m_entries / 2 << " are lexicographically-lower"<<endl;
+	cout << "will read " << entriesInFile << " entries from input file" << endl;
 
 	FILE*output=fopen(binaryFile,"w");
 
@@ -400,7 +405,10 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	fwrite(&m_kmerLength,sizeof(uint32_t),1,output);
 	fwrite(&m_entries,sizeof(uint64_t),1,output);
 
-	for(uint64_t i=0;i<m_entries;i++){
+	uint64_t i = 0;
+
+	while(i < entriesInFile) {
+
 		char*value=fgets(buffer,1024,stream);
 		if(value==NULL)
 			null++;
@@ -408,15 +416,17 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		if(strlen(buffer)>0 && buffer[0]=='#')
 			continue;
 
-		//cout<<"Line: "<<buffer<<endl;
+		i ++;
 
 		int available=strlen(buffer);
 
 		buffer[m_kmerLength] = '\0';
 		dummy.getReverseComplement(buffer, reverseComplementSequence);
 		const char*selectedKey= selectObject(buffer, reverseComplementSequence);
-		if(selectedKey != buffer)
+
+		if(selectedKey != buffer){
 			continue;
+		}
 
 		buffer[m_kmerLength] = ';';
 

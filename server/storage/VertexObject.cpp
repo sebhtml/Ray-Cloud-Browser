@@ -148,27 +148,17 @@ void VertexObject::writeContentInText(ostream*stream)const{
 	(*stream)<<m_sequence<<";";
 	(*stream)<<m_coverage<<";";
 
-	bool gotFirst=false;
 	for(int i=0;i<4;i++){
 		if(m_parents[i]==MARKER_YES){
-			if(gotFirst)
-				(*stream)<<" ";
-			gotFirst=true;
-
-			(*stream)<<getCodeSymbol(i);
+			(*stream) << getCodeSymbol(i);
 		}
 	}
 
 	(*stream)<<";";
 
-	gotFirst=false;
 	for(int i=0;i<4;i++){
 		if(m_children[i]==MARKER_YES){
-			if(gotFirst)
-				(*stream)<<" ";
-			gotFirst=true;
-
-			(*stream)<<""<<getCodeSymbol(i)<<"";
+			(*stream) << getCodeSymbol(i);
 		}
 	}
 	(*stream)<<endl;
