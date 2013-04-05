@@ -71,13 +71,19 @@ class GraphDatabase{
 
 	void pullSequence(uint64_t index,char*sequence)const;
 
+	void sortEntriesInFile();
+	void sortEntries(const char*file);
+	bool checkOrder();
+
 public:
+
 	GraphDatabase();
 	void openFile(const char*file);
 	void closeFile();
 	bool getObject(const char*key,VertexObject*object)const;
 	bool getObjectIndex(const char*key,uint64_t*index)const;
-	void getObjectWithIndex(uint64_t index,VertexObject*object)const;
+	void getObjectAtIndex(uint64_t index,VertexObject*object)const;
+	void setObjectAtIndex(uint64_t index,VertexObject*object);
 	int getKmerLength()const;
 	uint64_t getEntries()const;
 

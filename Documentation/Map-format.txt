@@ -32,7 +32,8 @@ INDEX_C 1
 INDEX_G 2
 INDEX_T 3
 
-* Only the lexicographically-lower kmer is stored.
+* Only the lexicographically-lower kmers are stored.
+
 
 Reference implementation: storage/GraphDatabase.{h,cpp}
 
@@ -47,8 +48,7 @@ History
 
 1
 
-* entries is the number of k-mers, but the file contains entries / 2 elements only --
-only the lexicographically lower
+* the file contains only the lexicographically lower k-mers.
 
 0
 

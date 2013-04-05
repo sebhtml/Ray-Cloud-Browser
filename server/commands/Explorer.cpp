@@ -105,8 +105,7 @@ int Explorer::call(int argc,char**argv){
 
 		if(found){
 
-			string sequence;
-			vertex.getSequence(&sequence);
+			string sequence = vertex.getSequence();
 
 			addKey(&objectsToProcess,&sequence,actualDistance,maximumDistance,&visited);
 

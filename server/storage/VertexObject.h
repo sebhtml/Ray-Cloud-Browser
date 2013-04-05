@@ -43,7 +43,7 @@ public:
 	void setSequence(char*value);
 	void setCoverage(uint32_t value);
 	uint32_t getCoverage()const ;
-	void getSequence(string*sequence)const;
+	const char* getSequence()const;
 	void getParents(vector<string>*parents)const;
 	void getChildren(vector<string>*children)const;
 

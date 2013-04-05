@@ -114,8 +114,8 @@ char VertexObject::getCodeSymbol(int code)const{
 	return SYMBOL_A;
 }
 
-void VertexObject::getSequence(string*sequence)const{
-	*sequence=m_sequence;
+const char* VertexObject::getSequence()const{
+	return m_sequence;
 }
 
 void VertexObject::getParents(vector<string>*parents)const{

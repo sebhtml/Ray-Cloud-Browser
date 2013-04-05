@@ -51,7 +51,7 @@ int GraphExporter::call(int argc,char**argv){
 
 	while(index<entries){
 		VertexObject object;
-		database.getObjectWithIndex(index,&object);
+		database.getObjectAtIndex(index,&object);
 		object.writeContentInText(&cout);
 
 		if(formatVersion >= 1){

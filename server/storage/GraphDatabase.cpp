@@ -73,7 +73,7 @@ bool GraphDatabase::getObject(const char*key,VertexObject*object)const{
 	if(!found)
 		return found;
 
-	getObjectWithIndex(index,object);
+	getObjectAtIndex(index, object);
 
 	if(selectedKey != key)
 		object->morphToTwin();
@@ -100,7 +100,7 @@ bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
  * Version 1 stores only the lexicographically lower k-mers
  */
 	if(m_formatVersion >= 1)
-		last = m_entries / 2 - 1;
+		last = m_entries - 1;
 
 	int match=0;
 
@@ -162,18 +162,18 @@ void GraphDatabase::pullSequence(uint64_t middle,char*sequence)const{
 	sequence[m_kmerLength]='\0';
 }
 
-void GraphDatabase::getObjectWithIndex(uint64_t middle,VertexObject*object)const{
+void GraphDatabase::setObjectAtIndex(uint64_t index, VertexObject*object){
 
-	if(!(middle<m_entries))
+	if(!(index < m_entries))
 		return;
 
 	char sequence[CONFIG_MAXKMERLENGTH];
-	pullSequence(middle,sequence);
+	pullSequence(index, sequence);
 
 	uint32_t coverage=0;
 	uint8_t friendInformation=0;
 
-	uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
+	uint64_t middlePosition=m_startingPosition+index*m_entrySize;
 	const char*myBuffer=((char*)m_content)+middlePosition;
 	int positionFromStart=0;
 
@@ -233,7 +233,79 @@ void GraphDatabase::getObjectWithIndex(uint64_t middle,VertexObject*object)const
 			object->addChild(getSymbol(i));
 		}
 	}
+}
 
+void GraphDatabase::getObjectAtIndex(uint64_t index, VertexObject*object)const{
+
+	if(!(index <m_entries))
+		return;
+
+	char sequence[CONFIG_MAXKMERLENGTH];
+	pullSequence(index, sequence);
+
+	uint32_t coverage=0;
+	uint8_t friendInformation=0;
+
+	uint64_t middlePosition=m_startingPosition + index*m_entrySize;
+	const char*myBuffer=((char*)m_content)+ middlePosition;
+	int positionFromStart=0;
+
+	positionFromStart+=m_requiredBytesPerSequence;
+
+// group disk I/O operations here
+	char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
+	memcpy(objectBufferForDisk,myBuffer+positionFromStart,OBJECT_INFORMATION_LENGTH);
+
+// then copy stuff from our memory buffer
+
+	int position=0;
+	memcpy(&coverage,objectBufferForDisk+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+
+	memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
+
+// finally, we build a VertexObject object with the information we extracted in the
+// file
+
+	char parents[ALPHABET_SIZE];
+	char children[ALPHABET_SIZE];
+	int offset=0;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		uint64_t value=friendInformation;
+
+		int bit=offset+i;
+
+		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
+
+		parents[i]=value;
+	}
+
+	offset+=ALPHABET_SIZE;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		uint64_t value=friendInformation;
+
+		int bit=offset+i;
+
+		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
+
+		children[i]=value;
+	}
+
+	object->setSequence(sequence);
+	object->setCoverage(coverage);
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		if(parents[i]==MARKER_YES){
+			object->addParent(getSymbol(i));
+		}
+		if(children[i]==MARKER_YES){
+			object->addChild(getSymbol(i));
+		}
+	}
 }
 
 /**
@@ -383,15 +455,12 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		}
 	}
 
-	// also consider reverse complement
-	m_entries*=2;
-
 	fclose(stream);
 
 	stream=fopen(file,"r");
 
-	cout<<"Entries: "<< m_entries <<" KmerLength: "<< m_kmerLength<<endl;
-	cout << m_entries / 2 << " are lexicographically-lower"<<endl;
+	cout<<"Entries: "<< m_entries * 2 <<" KmerLength: "<< m_kmerLength<<endl;
+	cout << m_entries << " are lexicographically-lower"<<endl;
 	cout << "will read " << entriesInFile << " entries from input file" << endl;
 
 	FILE*output=fopen(binaryFile,"w");
@@ -527,9 +596,19 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	fclose(stream);
 
 	cout<<"Created "<<binaryFile<<endl;
+
+	sortEntries(binaryFile);
 }
 
 uint64_t GraphDatabase::getEntries()const{
+
+/**
+ * Format version 1 stores only the lexicographically lower
+ * objects.
+ */
+	if(m_formatVersion >= 1)
+		return m_entries * 2;
+
 	return m_entries;
 }
 
@@ -601,4 +680,56 @@ bool GraphDatabase::hasError()const{
 
 int GraphDatabase::getFormatVersion()const{
 	return m_formatVersion;
+}
+
+bool GraphDatabase::checkOrder(){
+
+	uint64_t entriesInFile = m_entries ;
+
+	uint64_t i = 0;
+
+	VertexObject object1;
+	getObjectAtIndex(i, &object1);
+	i++;
+
+	while(i < entriesInFile){
+
+		VertexObject object2;
+		getObjectAtIndex(i, &object2);
+
+		const char*sequence1 = object1.getSequence();
+		const char*sequence2 = object2.getSequence();
+
+		if(!(strcmp(sequence1, sequence2) < 0)){
+			cout << sequence1 << " and " << sequence2 << " break strict ordering" << endl;
+			return false;
+		}
+
+		object1 = object2;
+		i ++;
+	}
+
+	return true;
+}
+
+void GraphDatabase::sortEntriesInFile(){
+	cout << "Sorting " << m_entries << " entries in file" << endl;
+}
+
+void GraphDatabase::sortEntries(const char*file){
+
+	openFile(file);
+
+	cout << "Verifying order" << endl;
+
+	bool sorted = checkOrder();
+
+	if(sorted){
+		cout << "File is already sorted." << endl;
+	}else {
+
+		sortEntriesInFile();
+	}
+
+	closeFile();
 }
