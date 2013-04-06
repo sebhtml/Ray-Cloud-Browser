@@ -523,7 +523,7 @@ void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 
 	int count = right - left + 1;
 
-	int maximumForInsertionSort = 0;
+	int maximumForInsertionSort = 64;
 
 	if(count <= maximumForInsertionSort) {
 		insertionSort(left, right);
