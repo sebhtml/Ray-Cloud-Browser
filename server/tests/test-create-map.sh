@@ -6,11 +6,13 @@
 ./RayCloudBrowser-client create-map 11.txt.dat.txt 11.txt.dat.txt.dat
 ) &> /dev/null
 
-echo -n "Test: sort "
+echo -n "<test name=\"sort\" result=\""
 
 if test $(sha1sum 11.txt.dat|awk '{print $1}') = $(sha1sum 11.txt.dat.txt.dat|awk '{print $1}')
 then
-	echo "PASS"
+	echo -n "PASS"
 else
-	echo "FAIL"
+	echo -n "FAIL"
 fi
+
+echo "\" />"

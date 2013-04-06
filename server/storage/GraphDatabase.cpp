@@ -514,6 +514,32 @@ void GraphDatabase::insertionSort(uint64_t left, uint64_t right){
 }
 
 /**
+ * use the median algorithm
+ *
+ * \see http://en.wikipedia.org/wiki/Quicksort
+ */
+uint64_t GraphDatabase::selectPivot(uint64_t left, uint64_t right) {
+
+	uint64_t middle = (left + right) / 2;
+
+	VertexObject leftValue;
+	VertexObject rightValue;
+	VertexObject middleValue;
+
+	getObjectAtIndex(left, &leftValue);
+	getObjectAtIndex(right, &rightValue);
+	getObjectAtIndex(middle, &middleValue);
+
+	if(leftValue < middleValue && middleValue < rightValue)
+		return middle;
+
+	if(middleValue < leftValue && leftValue < rightValue)
+		return left;
+
+	return right;
+}
+
+/**
  * \see http://en.wikipedia.org/wiki/Quicksort
  */
 void GraphDatabase::quicksort(uint64_t left, uint64_t right){
@@ -530,7 +556,7 @@ void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 		return;
 	}
 
-	uint64_t pivotIndex = left + (right - left) / 2;
+	uint64_t pivotIndex = selectPivot(left, right);
 
 #if 0
 	cout << "quicksort left= " << left << " right= " << right << " pivot= " << pivotIndex << endl;
