@@ -79,6 +79,7 @@ public:
 
 	int getEntrySize()const;
 	void setKmerLength(int kmerLength);
+	void loadFromLine(const char* buffer);
 };
 
 #endif

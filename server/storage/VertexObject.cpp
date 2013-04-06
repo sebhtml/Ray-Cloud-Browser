@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <string>
+#include <sstream>
 using namespace std;
 
 #ifdef CONFIG_ASSERT
@@ -566,4 +567,64 @@ int VertexObject::getEntrySize()const{
 void VertexObject::setKmerLength(int kmerLength) {
 	m_kmerLength = kmerLength;
 	setRequiredBytesPerObject();
+}
+
+void VertexObject::loadFromLine(const char* buffer1) {
+	char buffer[2*CONFIG_MAXKMERLENGTH];
+	strcpy(buffer, buffer1);
+
+	int available=strlen(buffer);
+	buffer[m_kmerLength] = '\0';
+
+	setSequence(buffer);
+
+	buffer[m_kmerLength] = ';';
+
+	int secondSeparator=m_kmerLength+1;
+
+	while(buffer[secondSeparator]!=';')
+		secondSeparator++;
+
+	buffer[secondSeparator]='\0';
+
+	istringstream inputObject(buffer+m_kmerLength+1);
+
+	inputObject >> m_coverage;
+
+	int useParents = 0;
+	int useChildren = 1;
+	int selection = useParents;
+
+	for(int position=secondSeparator+1;position<available;position++){
+		char operationCode= buffer[position];
+
+		if(operationCode==';') {
+			selection = useChildren;
+		} else if(operationCode== SYMBOL_A) {
+			if(selection == useParents)
+				addParent(operationCode);
+			else
+				addChild(operationCode);
+		} else if(operationCode== SYMBOL_C) {
+			if(selection == useParents)
+				addParent(operationCode);
+			else
+				addChild(operationCode);
+		} else if(operationCode== SYMBOL_G) {
+			if(selection == useParents)
+				addParent(operationCode);
+			else
+				addChild(operationCode);
+		} else if(operationCode== SYMBOL_T) {
+			if(selection == useParents)
+				addParent(operationCode);
+			else
+				addChild(operationCode);
+		}
+	}
+
+	// TODO: group fwrite operations using a larger buffer
+#if 0
+	cout << " Saving entry to file now. " << m_entrySize << " bytes" << endl;
+#endif
 }

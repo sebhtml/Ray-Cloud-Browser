@@ -324,9 +324,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	uint64_t i = 0;
 
-	VertexObject entryForThisLine;
-	entryForThisLine.setKmerLength(m_kmerLength);
-
 	uint8_t bufferForEntry[2 * CONFIG_MAXKMERLENGTH];
 
 	while(i < entriesInFile) {
@@ -340,70 +337,18 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 		i ++;
 
-		int available=strlen(buffer);
+		VertexObject entryForThisLine;
+		entryForThisLine.setKmerLength(m_kmerLength);
+		entryForThisLine.loadFromLine(buffer);
 
-		buffer[m_kmerLength] = '\0';
-		dummy.getReverseComplement(buffer, reverseComplementSequence);
-		const char*selectedKey= selectObject(buffer, reverseComplementSequence);
+		const char* sequence = entryForThisLine.getSequence();
+		entryForThisLine.getReverseComplement(sequence, reverseComplementSequence);
+		const char*selectedKey= selectObject(sequence, reverseComplementSequence);
 
-		if(selectedKey != buffer){
+		if(selectedKey != sequence){
 			continue;
 		}
 
-		entryForThisLine.setSequence(buffer);
-
-		buffer[m_kmerLength] = ';';
-
-		int secondSeparator=m_kmerLength+1;
-
-		while(buffer[secondSeparator]!=';')
-			secondSeparator++;
-
-		buffer[secondSeparator]='\0';
-
-		istringstream inputObject(buffer+m_kmerLength+1);
-
-		uint32_t coverage=0;
-		inputObject>>coverage;
-
-		entryForThisLine.setCoverage(coverage);
-
-		int useParents = 0;
-		int useChildren = 1;
-		int selection = useParents;
-
-		for(int position=secondSeparator+1;position<available;position++){
-			char operationCode= buffer[position];
-			
-			if(operationCode==';') {
-				selection = useChildren;
-			} else if(operationCode== SYMBOL_A) {
-				if(selection == useParents)
-					entryForThisLine.addParent(operationCode);
-				else
-					entryForThisLine.addChild(operationCode);
-			} else if(operationCode== SYMBOL_C) {
-				if(selection == useParents)
-					entryForThisLine.addParent(operationCode);
-				else
-					entryForThisLine.addChild(operationCode);
-			} else if(operationCode== SYMBOL_G) {
-				if(selection == useParents)
-					entryForThisLine.addParent(operationCode);
-				else
-					entryForThisLine.addChild(operationCode);
-			} else if(operationCode== SYMBOL_T) {
-				if(selection == useParents)
-					entryForThisLine.addParent(operationCode);
-				else
-					entryForThisLine.addChild(operationCode);
-			}
-		}
-
-		// TODO: group fwrite operations using a larger buffer
-#if 0
-		cout << " Saving entry to file now. " << m_entrySize << " bytes" << endl;
-#endif
 		entryForThisLine.save(bufferForEntry);
 
 #if 0
