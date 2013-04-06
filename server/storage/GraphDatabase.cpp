@@ -126,9 +126,23 @@ void GraphDatabase::setObjectAtIndex(uint64_t index, VertexObject*object){
 	if(!(index < m_entries))
 		return;
 
+#if 0
+	cout << "setObjectAtIndex index " << index << " m_entrySize " << m_entrySize << endl;
+#endif
+
 	uint64_t middlePosition=m_startingPosition+index*m_entrySize;
+
+#if 0
+	cout << "Position in file " << middlePosition << endl;
+#endif
+
 	uint8_t*myBuffer=m_content + middlePosition;
 
+#if 0
+	cout << "saving object at " << (void*) myBuffer << " object is " << (void*)object << endl;
+
+	object->debug();
+#endif
 	object->save(myBuffer);
 }
 
@@ -401,7 +415,9 @@ bool GraphDatabase::checkOrder(){
 		const char*sequence2 = object2.getSequence();
 
 		if(!(strcmp(sequence1, sequence2) < 0)){
+#if 0
 			cout << sequence1 << " and " << sequence2 << " break strict ordering" << endl;
+#endif
 			return false;
 		}
 
@@ -417,10 +433,25 @@ bool GraphDatabase::checkOrder(){
  */
 void GraphDatabase::swap(uint64_t index1, uint64_t index2){
 
+#if 0
+	cout << "swap " << index1 << " " << index2 << endl;
+
+	cout << "getObjectAtIndex " << index1 << endl;
+#endif
+
 	VertexObject value1;
 	getObjectAtIndex(index1, &value1);
+
+#if 0
+	cout << "getObjectAtIndex " << index2 << endl;
+#endif
+
 	VertexObject value2;
 	getObjectAtIndex(index2, &value2);
+
+#if 0
+	cout << "setObjectAtIndex " << index1 << endl;
+#endif
 
 	setObjectAtIndex(index1, &value2);
 	setObjectAtIndex(index2, &value1);
@@ -432,6 +463,10 @@ void GraphDatabase::swap(uint64_t index1, uint64_t index2){
 uint64_t GraphDatabase::partition(uint64_t left, uint64_t right, uint64_t pivotIndex) {
 	VertexObject pivotValue;
 	getObjectAtIndex(pivotIndex, &pivotValue);
+
+#if 0
+	cout << "swapping pivot on the right" << endl;
+#endif
 
 	swap(pivotIndex, right);
 
@@ -463,21 +498,33 @@ void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 	if(!(left < right))
 		return;
 
-	uint64_t pivotIndex = left + (left + right) / 2;
+	uint64_t pivotIndex = left + (right - left) / 2;
+
+#if 0
+	cout << "quicksort left= " << left << " right= " << right << " pivot= " << pivotIndex << endl;
+#endif
+
 	uint64_t pivotNewIndex = partition(left, right, pivotIndex);
-	quicksort(left, pivotNewIndex - 1);
+
+#if 0
+	cout << "pivotNewIndex = " << pivotNewIndex << endl;
+#endif
+
+	if(pivotNewIndex != 0)
+		quicksort(left, pivotNewIndex - 1);
+
 	quicksort(pivotNewIndex + 1, right);
 }
 
 void GraphDatabase::sortEntriesInFile(){
 	cout << "Sorting " << m_entries << " entries in file" << endl;
 
-	return;
-
 	quicksort(0, m_entries - 1);
 }
 
 void GraphDatabase::sortEntries(const char*file){
+
+	m_mapper.enableWriteOperations();
 
 	openFile(file);
 
@@ -485,10 +532,12 @@ void GraphDatabase::sortEntries(const char*file){
 
 	bool sorted = checkOrder();
 
-	if(sorted){
+	if(sorted) {
 		cout << "File is already sorted." << endl;
-	}else {
-
+	} else {
+#if 0
+		cout << "Need to sort entries" << endl;
+#endif
 		sortEntriesInFile();
 	}
 

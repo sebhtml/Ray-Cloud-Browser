@@ -38,6 +38,7 @@ class VertexObject{
 	int m_kmerLength;
 	int m_entrySize;
 	int m_requiredBytesPerSequence;
+	bool m_debug;
 	
 	int getComplementNucleotideIndex(int i);
 	char getComplementNucleotide(char a);
@@ -51,6 +52,8 @@ class VertexObject{
 	void setRequiredBytesPerObject();
 
 public:
+
+	VertexObject();
 
 	void setSequence(char*value);
 	void setCoverage(uint32_t value);
@@ -80,6 +83,7 @@ public:
 	int getEntrySize()const;
 	void setKmerLength(int kmerLength);
 	void loadFromLine(const char* buffer);
+	void debug();
 };
 
 #endif

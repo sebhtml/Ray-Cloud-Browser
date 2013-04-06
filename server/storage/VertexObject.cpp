@@ -27,6 +27,10 @@ using namespace std;
 #include <assert.h>
 #endif
 
+VertexObject::VertexObject() {
+	m_debug = false;
+}
+
 void VertexObject::setSequence(char*value){
 	strcpy(m_sequence,value);
 	setKmerLength(strlen(m_sequence));
@@ -352,15 +356,22 @@ void VertexObject::save(uint8_t * myBuffer) const {
 	cout<<"Saving " << getSequence() << " " << getCoverage() << endl;
 #endif
 
-#if 0
-	cout << "Saving this at " << (void*)myBuffer << " " << m_requiredBytesPerSequence << " bytes for sequence " << endl;
-	cout << m_entrySize << " bytes total " << endl;
+#ifdef CONFIG_ASSERT
+	if(m_debug) {
+		cout << "Saving this at " << (void*)myBuffer << " " << m_requiredBytesPerSequence << " bytes for sequence " << endl;
+		cout << m_entrySize << " bytes total " << endl;
+	}
 #endif
 
-	memset(myBuffer, 0x0, m_entrySize);
+	memset(myBuffer, 0, m_entrySize);
 
 #if 0
 	writeContentInText(&cout);
+#endif
+
+#ifdef CONFIG_ASSERT
+	if(m_debug)
+		cout << "Pushing sequence " << endl;
 #endif
 
 	pushSequence(myBuffer + positionFromStart, m_sequence);
@@ -627,4 +638,8 @@ void VertexObject::loadFromLine(const char* buffer1) {
 #if 0
 	cout << " Saving entry to file now. " << m_entrySize << " bytes" << endl;
 #endif
+}
+
+void VertexObject::debug(){
+	m_debug = true;
 }
