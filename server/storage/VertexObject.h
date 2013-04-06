@@ -33,11 +33,23 @@ using namespace std;
 class VertexObject{
 	uint32_t m_coverage;
 	char m_sequence[CONFIG_MAXKMERLENGTH];
-	char m_parents[4];
-	char m_children[4];
+	char m_parents[ALPHABET_SIZE];
+	char m_children[ALPHABET_SIZE];
+	int m_kmerLength;
+	int m_entrySize;
+	int m_requiredBytesPerSequence;
 	
 	int getComplementNucleotideIndex(int i);
 	char getComplementNucleotide(char a);
+
+	void pullSequence(char * sequence, const uint8_t * myBuffer);
+	void pushSequence(uint8_t*sequenceData, const char * buffer)const;
+
+	void readTwoBits(const uint8_t*sequenceData,int bitPosition,int*code)const;
+	void writeTwoBits(uint8_t*sequenceData,int bitPosition,int code) const ;
+
+	void setRequiredBytesPerObject();
+
 public:
 
 	void setSequence(char*value);
@@ -57,6 +69,16 @@ public:
 
 	void getReverseComplement(const char * key, char * result);
 	void morphToTwin();
+	bool hasParent(char symbol) const;
+	bool hasChild(char symbol) const;
+	bool hasParentCode(int code) const;
+	bool hasChildCode(int code) const;
+
+	void load(const uint8_t * myBuffer);
+	void save(uint8_t * myBuffer) const;
+
+	int getEntrySize()const;
+	void setKmerLength(int kmerLength);
 };
 
 #endif

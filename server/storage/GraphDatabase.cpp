@@ -36,18 +36,6 @@ using namespace std;
  * Some implementation-specific sizes.
  */
 
-// the size of the binary header
-#define GRAPH_HEADER_LENGTH (sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t))
-
-// the size of extra information of a object (coverage, parents, children)
-#define OBJECT_INFORMATION_LENGTH (sizeof(uint32_t)+sizeof(uint8_t))
-
-// number of bits in one byte
-#define BITS_PER_BYTE 8
-
-// number of bits per nucleotide
-#define BITS_PER_NUCLEOTIDE 2
-
 // TODO add error management for file operations
 
 const char * GraphDatabase::selectObject(const char*object1, const char*object2) const{
@@ -108,8 +96,10 @@ bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 	
 		uint64_t middle=first+(last-first)/2;
 
-		char sequence[CONFIG_MAXKMERLENGTH];
-		pullSequence(middle,sequence);
+		VertexObject entry;
+		getObjectAtIndex(middle, &entry);
+
+		const char * sequence = entry.getSequence();
 
 		int comparisonResult=strcmp(key,sequence);
 
@@ -131,108 +121,15 @@ bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 	return found;
 }
 
-void GraphDatabase::pullSequence(uint64_t middle,char*sequence)const{
-
-	uint64_t middlePosition=m_startingPosition+middle*m_entrySize;
-	const char*myBuffer=((char*)m_content)+middlePosition;
-	int position=0;
-
-// first, we only copy the sequence to compare it with what we are looking for
-// we don't load the object meta-information if it's not a match
-
-	uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
-	memcpy(sequenceData,myBuffer+position,m_requiredBytesPerSequence);
-
-// convert the 2-bit format to the 1-byte-per-nucleotide format
-
-	for(int nucleotidePosition=0;nucleotidePosition<(int)m_kmerLength;nucleotidePosition++){
-		int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
-		int code=-1;
-		readTwoBits(sequenceData,bitPosition,&code);
-
-#ifdef CONFIG_ASSERT
-		assert(code!=-1);
-		assert(code>=0);
-		assert(code<ALPHABET_SIZE);
-#endif
-
-		sequence[nucleotidePosition]=m_codeSymbols[code];
-	}
-
-	sequence[m_kmerLength]='\0';
-}
-
 void GraphDatabase::setObjectAtIndex(uint64_t index, VertexObject*object){
 
 	if(!(index < m_entries))
 		return;
 
-	char sequence[CONFIG_MAXKMERLENGTH];
-	pullSequence(index, sequence);
-
-	uint32_t coverage=0;
-	uint8_t friendInformation=0;
-
 	uint64_t middlePosition=m_startingPosition+index*m_entrySize;
-	const char*myBuffer=((char*)m_content)+middlePosition;
-	int positionFromStart=0;
+	uint8_t*myBuffer=m_content + middlePosition;
 
-	positionFromStart+=m_requiredBytesPerSequence;
-
-// group disk I/O operations here
-	char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
-	memcpy(objectBufferForDisk,myBuffer+positionFromStart,OBJECT_INFORMATION_LENGTH);
-
-// then copy stuff from our memory buffer
-
-	int position=0;
-	memcpy(&coverage,objectBufferForDisk+position,sizeof(uint32_t));
-	position+=sizeof(uint32_t);
-
-	memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
-
-// finally, we build a VertexObject object with the information we extracted in the
-// file
-
-	char parents[ALPHABET_SIZE];
-	char children[ALPHABET_SIZE];
-	int offset=0;
-
-	for(int i=0;i<ALPHABET_SIZE;i++){
-		uint64_t value=friendInformation;
-
-		int bit=offset+i;
-
-		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
-		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
-
-		parents[i]=value;
-	}
-
-	offset+=ALPHABET_SIZE;
-
-	for(int i=0;i<ALPHABET_SIZE;i++){
-		uint64_t value=friendInformation;
-
-		int bit=offset+i;
-
-		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
-		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
-
-		children[i]=value;
-	}
-
-	object->setSequence(sequence);
-	object->setCoverage(coverage);
-
-	for(int i=0;i<ALPHABET_SIZE;i++){
-		if(parents[i]==MARKER_YES){
-			object->addParent(getSymbol(i));
-		}
-		if(children[i]==MARKER_YES){
-			object->addChild(getSymbol(i));
-		}
-	}
+	object->save(myBuffer);
 }
 
 void GraphDatabase::getObjectAtIndex(uint64_t index, VertexObject*object)const{
@@ -240,72 +137,20 @@ void GraphDatabase::getObjectAtIndex(uint64_t index, VertexObject*object)const{
 	if(!(index <m_entries))
 		return;
 
-	char sequence[CONFIG_MAXKMERLENGTH];
-	pullSequence(index, sequence);
-
-	uint32_t coverage=0;
-	uint8_t friendInformation=0;
-
 	uint64_t middlePosition=m_startingPosition + index*m_entrySize;
-	const char*myBuffer=((char*)m_content)+ middlePosition;
-	int positionFromStart=0;
+	uint8_t*myBuffer=m_content + middlePosition;
 
-	positionFromStart+=m_requiredBytesPerSequence;
+#if 0
+	cout << " getObjectAtIndex m_content " << (void*) m_content << " index " << index << " m_startingPosition " << m_startingPosition <<endl;
+#endif
 
-// group disk I/O operations here
-	char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
-	memcpy(objectBufferForDisk,myBuffer+positionFromStart,OBJECT_INFORMATION_LENGTH);
+#if 0
+	cout << " m_content = " << (void*) m_content << endl;
+	cout << " getObjectAtIndex myBuffer = " << (void*) myBuffer << endl;
+#endif
 
-// then copy stuff from our memory buffer
-
-	int position=0;
-	memcpy(&coverage,objectBufferForDisk+position,sizeof(uint32_t));
-	position+=sizeof(uint32_t);
-
-	memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
-
-// finally, we build a VertexObject object with the information we extracted in the
-// file
-
-	char parents[ALPHABET_SIZE];
-	char children[ALPHABET_SIZE];
-	int offset=0;
-
-	for(int i=0;i<ALPHABET_SIZE;i++){
-		uint64_t value=friendInformation;
-
-		int bit=offset+i;
-
-		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
-		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
-
-		parents[i]=value;
-	}
-
-	offset+=ALPHABET_SIZE;
-
-	for(int i=0;i<ALPHABET_SIZE;i++){
-		uint64_t value=friendInformation;
-
-		int bit=offset+i;
-
-		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
-		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
-
-		children[i]=value;
-	}
-
-	object->setSequence(sequence);
-	object->setCoverage(coverage);
-
-	for(int i=0;i<ALPHABET_SIZE;i++){
-		if(parents[i]==MARKER_YES){
-			object->addParent(getSymbol(i));
-		}
-		if(children[i]==MARKER_YES){
-			object->addChild(getSymbol(i));
-		}
-	}
+	object->setKmerLength(m_kmerLength);
+	object->load(myBuffer);
 }
 
 /**
@@ -322,6 +167,10 @@ void GraphDatabase::openFile(const char*file){
 	m_mapper.enableReadOperations();
 
 	m_content=(uint8_t*)m_mapper.mapFile(file);
+
+#if 0
+	cout << " m_content = " << (void*)m_content << endl;
+#endif
 
 	if(m_content==NULL){
 		cout<<"Error: can not map file "<<file<<endl;
@@ -366,9 +215,9 @@ void GraphDatabase::openFile(const char*file){
 		return;
 	}
 
-	setRequiredBytesPerObject();
-
-	m_entrySize=m_requiredBytesPerSequence+sizeof(uint32_t)+sizeof(uint8_t);
+	VertexObject mock;
+	mock.setKmerLength(m_kmerLength);
+	m_entrySize = mock.getEntrySize();
 
 	m_startingPosition=position;
 }
@@ -387,10 +236,6 @@ int GraphDatabase::getKmerLength()const{
 	return m_kmerLength;
 }
 
-char GraphDatabase::getSymbol(int code)const{
-	return m_codeSymbols[code];
-}
-
 GraphDatabase::GraphDatabase(){
 	m_active=false;
 	m_error=false;
@@ -400,6 +245,8 @@ GraphDatabase::GraphDatabase(){
 	m_codeSymbols[INDEX_C]=SYMBOL_C;
 	m_codeSymbols[INDEX_G]=SYMBOL_G;
 	m_codeSymbols[INDEX_T]=SYMBOL_T;
+
+	m_content = NULL;
 }
 
 void GraphDatabase::index(const char*inputFile,const char*outputFile){
@@ -465,9 +312,10 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	FILE*output=fopen(binaryFile,"w");
 
-	setRequiredBytesPerObject();
+	VertexObject mock;
+	mock.setKmerLength(m_kmerLength);
 
-	uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
+	m_entrySize = mock.getEntrySize();
 
 	fwrite(&m_magicNumber,sizeof(uint32_t),1,output);
 	fwrite(&m_formatVersion,sizeof(uint32_t),1,output);
@@ -475,6 +323,11 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	fwrite(&m_entries,sizeof(uint64_t),1,output);
 
 	uint64_t i = 0;
+
+	VertexObject entryForThisLine;
+	entryForThisLine.setKmerLength(m_kmerLength);
+
+	uint8_t bufferForEntry[2 * CONFIG_MAXKMERLENGTH];
 
 	while(i < entriesInFile) {
 
@@ -497,30 +350,9 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			continue;
 		}
 
+		entryForThisLine.setSequence(buffer);
+
 		buffer[m_kmerLength] = ';';
-
-		memset(sequenceData,0,CONFIG_MAXKMERLENGTH*sizeof(uint8_t));
-
-		for(int nucleotidePosition=0;nucleotidePosition<(int)m_kmerLength;nucleotidePosition++){
-			char symbol=buffer[nucleotidePosition];
-			int code=getSymbolCode(symbol);
-			int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
-
-			writeTwoBits(sequenceData,bitPosition,code);
-
-#ifdef CONFIG_ASSERT
-			int testCode=-1;
-			readTwoBits(sequenceData,bitPosition,&testCode);
-
-			if(testCode!=code){
-				cout<<"Expected: "<<code<<" Actual: "<<testCode<<" Symbol: "<<symbol<<endl;
-			}
-			assert(testCode==code);
-#endif
-		}
-
-		fwrite(sequenceData,m_requiredBytesPerSequence,1,output);
-		//fwrite(buffer,m_kmerLength,1,output);
 
 		int secondSeparator=m_kmerLength+1;
 
@@ -534,62 +366,50 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		uint32_t coverage=0;
 		inputObject>>coverage;
 
-		fwrite(&coverage,sizeof(uint32_t),1,output);
+		entryForThisLine.setCoverage(coverage);
 
-		char parents[ALPHABET_SIZE];
-		
-		parents[INDEX_A]=MARKER_NO;
-		parents[INDEX_C]=MARKER_NO;
-		parents[INDEX_G]=MARKER_NO;
-		parents[INDEX_T]=MARKER_NO;
-
-		char children[ALPHABET_SIZE];
-
-		children[INDEX_A]=MARKER_NO;
-		children[INDEX_C]=MARKER_NO;
-		children[INDEX_G]=MARKER_NO;
-		children[INDEX_T]=MARKER_NO;
-
-		char*selection=parents;
+		int useParents = 0;
+		int useChildren = 1;
+		int selection = useParents;
 
 		for(int position=secondSeparator+1;position<available;position++){
 			char operationCode= buffer[position];
 			
-			if(operationCode==';')
-				selection=children;
-			else if(operationCode== SYMBOL_A)
-				selection[INDEX_A]=MARKER_YES;
-			else if(operationCode== SYMBOL_C)
-				selection[INDEX_C]=MARKER_YES;
-			else if(operationCode== SYMBOL_G)
-				selection[INDEX_G]=MARKER_YES;
-			else if(operationCode== SYMBOL_T)
-				selection[INDEX_T]=MARKER_YES;
-		}
-
-		uint64_t friends=0;
-		int offset=0;
-		for(int i=0;i<ALPHABET_SIZE;i++){
-			if(parents[i]==MARKER_YES){
-				uint64_t mask=MARKER_YES;
-				mask<<=(offset+i);
-				friends|=mask;
+			if(operationCode==';') {
+				selection = useChildren;
+			} else if(operationCode== SYMBOL_A) {
+				if(selection == useParents)
+					entryForThisLine.addParent(operationCode);
+				else
+					entryForThisLine.addChild(operationCode);
+			} else if(operationCode== SYMBOL_C) {
+				if(selection == useParents)
+					entryForThisLine.addParent(operationCode);
+				else
+					entryForThisLine.addChild(operationCode);
+			} else if(operationCode== SYMBOL_G) {
+				if(selection == useParents)
+					entryForThisLine.addParent(operationCode);
+				else
+					entryForThisLine.addChild(operationCode);
+			} else if(operationCode== SYMBOL_T) {
+				if(selection == useParents)
+					entryForThisLine.addParent(operationCode);
+				else
+					entryForThisLine.addChild(operationCode);
 			}
 		}
 
-		offset+=ALPHABET_SIZE;
+		// TODO: group fwrite operations using a larger buffer
+#if 0
+		cout << " Saving entry to file now. " << m_entrySize << " bytes" << endl;
+#endif
+		entryForThisLine.save(bufferForEntry);
 
-		for(int i=0;i<ALPHABET_SIZE;i++){
-			if(children[i]==MARKER_YES){
-				uint64_t mask=MARKER_YES;
-				mask<<=(offset+i);
-				friends|=mask;
-			}
-		}
-
-		uint8_t informationToWrite=friends;
-
-		fwrite(&informationToWrite,1*sizeof(uint8_t),1,output);
+#if 0
+		cout << " m_entrySize= " << m_entrySize << endl;
+#endif
+		fwrite(bufferForEntry, m_entrySize, 1, output);
 	}
 
 	fclose(output);
@@ -602,72 +422,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 uint64_t GraphDatabase::getEntries()const{
 
-/**
- * Format version 1 stores only the lexicographically lower
- * objects.
- */
-	if(m_formatVersion >= 1)
-		return m_entries * 2;
-
 	return m_entries;
-}
-
-void GraphDatabase::setRequiredBytesPerObject(){
-	int requiredBits=m_kmerLength*BITS_PER_NUCLEOTIDE;
-	int requiredBytes=requiredBits/BITS_PER_BYTE;
-
-	if(requiredBits%BITS_PER_BYTE!=0)
-		requiredBytes++;
-
-	m_requiredBytesPerSequence=requiredBytes;
-}
-
-void GraphDatabase::writeTwoBits(uint8_t*sequenceData,int bitPosition,int code){
-
-	int byteNumber=bitPosition/BITS_PER_BYTE;
-	int positionInByte=bitPosition%BITS_PER_BYTE;
-
-	uint64_t currentValue=sequenceData[byteNumber];
-
-	uint64_t mask=code;
-	mask<<=positionInByte;
-	currentValue|=mask;
-
-	sequenceData[byteNumber]=currentValue;
-
-}
-
-void GraphDatabase::readTwoBits(uint8_t*sequenceData,int bitPosition,int*code)const{
-
-	int byteNumber=bitPosition/BITS_PER_BYTE;
-	int positionInByte=bitPosition%BITS_PER_BYTE;
-
-	uint64_t currentValue=sequenceData[byteNumber];
-
-	currentValue<<=(BITS_PER_BYTE*sizeof(uint64_t)-BITS_PER_NUCLEOTIDE-positionInByte);
-	currentValue>>=(BITS_PER_BYTE*sizeof(uint64_t)-BITS_PER_NUCLEOTIDE);
-
-#ifdef CONFIG_ASSERT
-	assert(currentValue>=0);
-	assert(currentValue<ALPHABET_SIZE);
-#endif
-
-	(*code)=currentValue;
-}
-
-int GraphDatabase::getSymbolCode(char symbol)const{
-	switch (symbol){
-		case SYMBOL_A:
-			return INDEX_A;
-		case SYMBOL_T:
-			return INDEX_T;
-		case SYMBOL_G:
-			return INDEX_G;
-		case SYMBOL_C:
-			return INDEX_C;
-	}
-
-	return SYMBOL_A;
 }
 
 const char*GraphDatabase::getFileName()const{
@@ -712,8 +467,69 @@ bool GraphDatabase::checkOrder(){
 	return true;
 }
 
+/**
+ * \see http://en.wikipedia.org/wiki/Quicksort
+ */
+void GraphDatabase::swap(uint64_t index1, uint64_t index2){
+
+	VertexObject value1;
+	getObjectAtIndex(index1, &value1);
+	VertexObject value2;
+	getObjectAtIndex(index2, &value2);
+
+	setObjectAtIndex(index1, &value2);
+	setObjectAtIndex(index2, &value1);
+}
+
+/**
+ * \see http://en.wikipedia.org/wiki/Quicksort
+ */
+uint64_t GraphDatabase::partition(uint64_t left, uint64_t right, uint64_t pivotIndex) {
+	VertexObject pivotValue;
+	getObjectAtIndex(pivotIndex, &pivotValue);
+
+	swap(pivotIndex, right);
+
+	uint64_t storeIndex = left;
+
+	uint64_t i = left;
+	while(i <= right - 1) {
+		VertexObject valueAtI;
+		getObjectAtIndex(i, &valueAtI);
+
+		if(strcmp(valueAtI.getSequence(), pivotValue.getSequence()) <= 0) {
+			swap(i, storeIndex);
+			storeIndex ++;
+		}
+
+		i ++;
+	}
+
+	swap(storeIndex, right);
+
+	return storeIndex;
+}
+
+/**
+ * \see http://en.wikipedia.org/wiki/Quicksort
+ */
+void GraphDatabase::quicksort(uint64_t left, uint64_t right){
+
+	if(!(left < right))
+		return;
+
+	uint64_t pivotIndex = left + (left + right) / 2;
+	uint64_t pivotNewIndex = partition(left, right, pivotIndex);
+	quicksort(left, pivotNewIndex - 1);
+	quicksort(pivotNewIndex + 1, right);
+}
+
 void GraphDatabase::sortEntriesInFile(){
 	cout << "Sorting " << m_entries << " entries in file" << endl;
+
+	return;
+
+	quicksort(0, m_entries - 1);
 }
 
 void GraphDatabase::sortEntries(const char*file){

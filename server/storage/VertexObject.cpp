@@ -22,8 +22,13 @@
 #include <string>
 using namespace std;
 
+#ifdef CONFIG_ASSERT
+#include <assert.h>
+#endif
+
 void VertexObject::setSequence(char*value){
 	strcpy(m_sequence,value);
+	setKmerLength(strlen(m_sequence));
 
 	m_parents[INDEX_A]=MARKER_NO;
 	m_parents[INDEX_C]=MARKER_NO;
@@ -84,21 +89,27 @@ void VertexObject::addParent(char symbol){
 	m_parents[getSymbolCode(symbol)]=MARKER_YES;
 }
 
-void VertexObject::addChild(char symbol){
-	m_children[getSymbolCode(symbol)]=MARKER_YES;
+bool VertexObject::hasParentCode(int code) const{
+
+	return m_parents[code] == MARKER_YES;
 }
 
-int VertexObject::getSymbolCode(char symbol)const{
-	if(symbol==SYMBOL_A)
-		return INDEX_A;
-	if(symbol==SYMBOL_C)
-		return INDEX_C;
-	if(symbol==SYMBOL_G)
-		return INDEX_G;
-	if(symbol==SYMBOL_T)
-		return INDEX_T;
+bool VertexObject::hasChildCode(int code) const{
 
-	return INDEX_A;
+	return m_children[code] == MARKER_YES;
+}
+bool VertexObject::hasParent(char symbol) const{
+
+	return hasParentCode(getSymbolCode(symbol));
+}
+
+bool VertexObject::hasChild(char symbol) const{
+
+	return hasChildCode(getSymbolCode(symbol));
+}
+
+void VertexObject::addChild(char symbol){
+	m_children[getSymbolCode(symbol)]=MARKER_YES;
 }
 
 char VertexObject::getCodeSymbol(int code)const{
@@ -249,4 +260,310 @@ char VertexObject::getComplementNucleotide(char a){
 	}
 
 	return SYMBOL_A;
+}
+
+void VertexObject::load(const uint8_t * myBuffer) {
+	int positionFromStart=0;
+
+	pullSequence(m_sequence, myBuffer + positionFromStart);
+
+#if 0
+	cout << " load -> sequence is " << m_sequence << " from " << (void*) myBuffer;
+	cout << " " << m_requiredBytesPerSequence << " bytes" << endl;
+#endif
+
+	setSequence(m_sequence);
+
+	uint8_t friendInformation=0;
+
+	positionFromStart += m_requiredBytesPerSequence;
+
+// group disk I/O operations here
+	char objectBufferForDisk[OBJECT_INFORMATION_LENGTH];
+	memcpy(objectBufferForDisk,myBuffer+positionFromStart,OBJECT_INFORMATION_LENGTH);
+
+// then copy stuff from our memory buffer
+
+	int position=0;
+	memcpy(&m_coverage,objectBufferForDisk+position,sizeof(uint32_t));
+	position+=sizeof(uint32_t);
+
+	memcpy(&friendInformation,objectBufferForDisk+position,1*sizeof(uint8_t));
+
+// finally, we build a VertexObject object with the information we extracted in the
+// file
+
+	char parents[ALPHABET_SIZE];
+	char children[ALPHABET_SIZE];
+	int offset=0;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		uint64_t value=friendInformation;
+
+		int bit=offset+i;
+
+		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
+
+		parents[i]=value;
+	}
+
+	offset+=ALPHABET_SIZE;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		uint64_t value=friendInformation;
+
+		int bit=offset+i;
+
+		value<<=(BITS_PER_BYTE*sizeof(uint64_t)-1-bit);
+		value>>=(BITS_PER_BYTE*sizeof(uint64_t)-1);
+
+		children[i]=value;
+	}
+
+#if 0
+	cout << "Coverage = " << getCoverage() << endl;
+#endif
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		if(parents[i]==MARKER_YES){
+			addParent(getCodeSymbol(i));
+
+#if 0
+			cout << "Added parent " << getCodeSymbol(i) << endl;
+#endif
+		}
+		if(children[i]==MARKER_YES){
+			addChild(getCodeSymbol(i));
+
+#if 0
+			cout << "Added child " << getCodeSymbol(i) << endl;
+#endif
+		}
+	}
+}
+
+void VertexObject::save(uint8_t * myBuffer) const {
+
+	int positionFromStart = 0;
+
+#if 0
+	cout<<"Saving " << getSequence() << " " << getCoverage() << endl;
+#endif
+
+#if 0
+	cout << "Saving this at " << (void*)myBuffer << " " << m_requiredBytesPerSequence << " bytes for sequence " << endl;
+	cout << m_entrySize << " bytes total " << endl;
+#endif
+
+	memset(myBuffer, 0x0, m_entrySize);
+
+#if 0
+	writeContentInText(&cout);
+#endif
+
+	pushSequence(myBuffer + positionFromStart, m_sequence);
+
+	positionFromStart += m_requiredBytesPerSequence;
+
+	// write coverage
+
+	uint32_t coverage = getCoverage();
+
+	memcpy(myBuffer + positionFromStart, &coverage, 1*sizeof(uint32_t));
+	positionFromStart += sizeof(uint32_t);
+
+#if 0
+	cout << getSequence() << " " << getCoverage() << endl;
+#endif
+
+	// write edges
+	uint64_t friends=0;
+	int offset=0;
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		if(hasParentCode(i)){
+#if 0
+			cout << " has parent " << getCodeSymbol(i) << endl;
+#endif
+
+			uint64_t mask=MARKER_YES;
+			mask<<=(offset+i);
+			friends|=mask;
+		}
+	}
+
+	offset+=ALPHABET_SIZE;
+
+	for(int i=0;i<ALPHABET_SIZE;i++){
+		if(hasChildCode(i)){
+			uint64_t mask=MARKER_YES;
+			mask<<=(offset+i);
+			friends|=mask;
+		}
+	}
+
+	uint8_t informationToWrite=friends;
+
+	memcpy(myBuffer + positionFromStart, &informationToWrite, 1*sizeof(uint8_t));
+
+#ifdef CONFIG_ASSERT
+	positionFromStart += sizeof(uint8_t);
+
+	if(m_entrySize != positionFromStart)
+		cout<< "Expected: " << m_entrySize << " Actual: " << positionFromStart << endl;
+	assert(m_entrySize == positionFromStart);
+
+	VertexObject dummy;
+	dummy.setKmerLength(m_kmerLength);
+	dummy.load(myBuffer);
+
+	assert(getCoverage() == dummy.getCoverage());
+
+	bool result = ( strcmp(getSequence(), dummy.getSequence()) == 0);
+
+	if(!result) {
+		cout << " Expected:" << getSequence() << endl;
+		cout << " Actual:  " << dummy.getSequence() << endl;
+	}
+	assert(result);
+#endif
+}
+
+void VertexObject::pullSequence(char * sequence, const uint8_t * myBuffer){
+
+#if 0
+	cout << " pullSequence myBuffer = " <<(void*) myBuffer << endl;
+#endif
+
+	int position=0;
+
+// first, we only copy the sequence to compare it with what we are looking for
+// we don't load the object meta-information if it's not a match
+
+	uint8_t sequenceData[CONFIG_MAXKMERLENGTH];
+	memcpy(sequenceData, myBuffer+position, m_requiredBytesPerSequence);
+
+// convert the 2-bit format to the 1-byte-per-nucleotide format
+
+	for(int nucleotidePosition=0;nucleotidePosition<(int)m_kmerLength;nucleotidePosition++){
+		int bitPosition=nucleotidePosition*BITS_PER_NUCLEOTIDE;
+		int code=-1;
+		readTwoBits(sequenceData,bitPosition,&code);
+
+#ifdef CONFIG_ASSERT
+		assert(code!=-1);
+		assert(code>=0);
+		assert(code<ALPHABET_SIZE);
+#endif
+
+		sequence[nucleotidePosition] = getCodeSymbol(code);
+	}
+
+	sequence[m_kmerLength]='\0';
+
+#if 0
+	cout << " pullSequence result = " << sequence << endl;
+#endif
+}
+
+void VertexObject::pushSequence(uint8_t*sequenceData, const char * buffer) const {
+
+#if 0
+	cout << " pushSequence -> " << buffer << " " << m_kmerLength << "sequenceData= " << (void*) sequenceData << endl;
+#endif
+
+	for(int nucleotidePosition=0; nucleotidePosition<(int)m_kmerLength; nucleotidePosition++) {
+
+		char symbol=buffer[nucleotidePosition];
+		int code=getSymbolCode(symbol);
+#if 0
+		cout << "Saving " << nucleotidePosition << " " << symbol << " " << code << endl;
+#endif
+		int bitPosition = nucleotidePosition * BITS_PER_NUCLEOTIDE;
+
+		writeTwoBits(sequenceData, bitPosition, code);
+
+#ifdef CONFIG_ASSERT
+		int newCode = -1;
+		readTwoBits(sequenceData, bitPosition, &newCode);
+
+		assert(newCode == code);
+#endif
+	}
+}
+
+void VertexObject::writeTwoBits(uint8_t*sequenceData,int bitPosition,int code) const{
+
+	int byteNumber=bitPosition/BITS_PER_BYTE;
+	int positionInByte=bitPosition%BITS_PER_BYTE;
+
+	uint64_t currentValue=sequenceData[byteNumber];
+
+	uint64_t mask=code;
+	mask<<=positionInByte;
+	currentValue|=mask;
+
+	sequenceData[byteNumber]=currentValue;
+
+#ifdef CONFIG_ASSERT
+	int newCode = -1;
+	readTwoBits(sequenceData, bitPosition, &newCode);
+
+	if(newCode != code)
+		cout << " Expected " << code << " Actual " << newCode << endl;
+	assert(newCode == code);
+#endif
+}
+
+void VertexObject::readTwoBits(const uint8_t*sequenceData,int bitPosition,int*code)const{
+
+	int byteNumber=bitPosition/BITS_PER_BYTE;
+	int positionInByte=bitPosition%BITS_PER_BYTE;
+
+	uint64_t currentValue=sequenceData[byteNumber];
+
+	currentValue<<=(BITS_PER_BYTE*sizeof(uint64_t)-BITS_PER_NUCLEOTIDE-positionInByte);
+	currentValue>>=(BITS_PER_BYTE*sizeof(uint64_t)-BITS_PER_NUCLEOTIDE);
+
+#ifdef CONFIG_ASSERT
+	assert(currentValue>=0);
+	assert(currentValue<ALPHABET_SIZE);
+#endif
+
+	(*code)=currentValue;
+}
+
+int VertexObject::getSymbolCode(char symbol)const{
+	switch (symbol){
+		case SYMBOL_A:
+			return INDEX_A;
+		case SYMBOL_T:
+			return INDEX_T;
+		case SYMBOL_G:
+			return INDEX_G;
+		case SYMBOL_C:
+			return INDEX_C;
+	}
+
+	return SYMBOL_A;
+}
+
+void VertexObject::setRequiredBytesPerObject(){
+	int requiredBits=m_kmerLength*BITS_PER_NUCLEOTIDE;
+	int requiredBytes=requiredBits/BITS_PER_BYTE;
+
+	if(requiredBits%BITS_PER_BYTE!=0)
+		requiredBytes++;
+
+	m_requiredBytesPerSequence=requiredBytes;
+	m_entrySize=m_requiredBytesPerSequence+sizeof(uint32_t)+sizeof(uint8_t);
+}
+
+int VertexObject::getEntrySize()const{
+	return m_entrySize;
+}
+
+void VertexObject::setKmerLength(int kmerLength) {
+	m_kmerLength = kmerLength;
+	setRequiredBytesPerObject();
 }

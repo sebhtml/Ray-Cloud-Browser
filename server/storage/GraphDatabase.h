@@ -63,18 +63,15 @@ class GraphDatabase{
 	int m_entrySize;
 	int m_startingPosition;
 
-	void setRequiredBytesPerObject();
-	void writeTwoBits(uint8_t*sequenceData,int bitPosition,int code);
-	void readTwoBits(uint8_t*sequenceData,int bitPosition,int*code)const;
-	int getSymbolCode(char symbol)const;
-	char getSymbol(int code)const;
-
-	void pullSequence(uint64_t index,char*sequence)const;
-
 	void sortEntriesInFile();
 	void sortEntries(const char*file);
 	bool checkOrder();
 
+	void swap(uint64_t index1, uint64_t index2);
+	uint64_t partition(uint64_t left, uint64_t right, uint64_t pivotIndex);
+	void quicksort(uint64_t left, uint64_t right);
+
+	void setObjectAtIndex(uint64_t index,VertexObject*object);
 public:
 
 	GraphDatabase();
@@ -83,7 +80,6 @@ public:
 	bool getObject(const char*key,VertexObject*object)const;
 	bool getObjectIndex(const char*key,uint64_t*index)const;
 	void getObjectAtIndex(uint64_t index,VertexObject*object)const;
-	void setObjectAtIndex(uint64_t index,VertexObject*object);
 	int getKmerLength()const;
 	uint64_t getEntries()const;
 

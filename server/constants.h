@@ -61,5 +61,19 @@
 
 #define CONFIG_FILE "config.json"
 
+// the size of the binary header
+#define GRAPH_HEADER_LENGTH (sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint64_t))
+
+// the size of extra information of a object (coverage, parents, children)
+#define OBJECT_INFORMATION_LENGTH (sizeof(uint32_t)+sizeof(uint8_t))
+
+// number of bits in one byte
+#define BITS_PER_BYTE 8
+
+// number of bits per nucleotide
+#define BITS_PER_NUCLEOTIDE 2
+
+
+
 #endif
 
