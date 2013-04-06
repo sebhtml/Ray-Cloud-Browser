@@ -643,3 +643,7 @@ void VertexObject::loadFromLine(const char* buffer1) {
 void VertexObject::debug(){
 	m_debug = true;
 }
+
+bool VertexObject::operator<(VertexObject & object) const{
+	return strcmp(getSequence(), object.getSequence()) < 0;
+}

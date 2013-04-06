@@ -84,6 +84,8 @@ public:
 	void setKmerLength(int kmerLength);
 	void loadFromLine(const char* buffer);
 	void debug();
+
+	bool operator<(VertexObject & object) const;
 };
 
 #endif

@@ -3,6 +3,7 @@
 # Copyright (C) 2012, 2013 Sébastien Boisvert
 
 CXX=g++
+#CXX=clang++
 CXXFLAGS= -O3 -Wall -march=native -pipe -std=c++98 -I.
 #CXXFLAGS= -g -O0 -Wall -std=c++98 -I. -D CONFIG_ASSERT
 RM=rm

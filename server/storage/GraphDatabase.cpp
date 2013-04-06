@@ -126,24 +126,15 @@ void GraphDatabase::setObjectAtIndex(uint64_t index, VertexObject*object){
 	if(!(index < m_entries))
 		return;
 
-#if 0
-	cout << "setObjectAtIndex index " << index << " m_entrySize " << m_entrySize << endl;
-#endif
+	uint8_t*myBuffer = getMemoryBuffer(index);
 
-	uint64_t middlePosition=m_startingPosition+index*m_entrySize;
-
-#if 0
-	cout << "Position in file " << middlePosition << endl;
-#endif
-
-	uint8_t*myBuffer=m_content + middlePosition;
-
-#if 0
-	cout << "saving object at " << (void*) myBuffer << " object is " << (void*)object << endl;
-
-	object->debug();
-#endif
 	object->save(myBuffer);
+}
+
+uint8_t* GraphDatabase::getMemoryBuffer(uint64_t index)const{
+
+	uint64_t middlePosition=m_startingPosition + index*m_entrySize;
+	return m_content + middlePosition;
 }
 
 void GraphDatabase::getObjectAtIndex(uint64_t index, VertexObject*object)const{
@@ -151,17 +142,8 @@ void GraphDatabase::getObjectAtIndex(uint64_t index, VertexObject*object)const{
 	if(!(index <m_entries))
 		return;
 
-	uint64_t middlePosition=m_startingPosition + index*m_entrySize;
-	uint8_t*myBuffer=m_content + middlePosition;
 
-#if 0
-	cout << " getObjectAtIndex m_content " << (void*) m_content << " index " << index << " m_startingPosition " << m_startingPosition <<endl;
-#endif
-
-#if 0
-	cout << " m_content = " << (void*) m_content << endl;
-	cout << " getObjectAtIndex myBuffer = " << (void*) myBuffer << endl;
-#endif
+	uint8_t*myBuffer=getMemoryBuffer(index);
 
 	object->setKmerLength(m_kmerLength);
 	object->load(myBuffer);
@@ -491,12 +473,62 @@ uint64_t GraphDatabase::partition(uint64_t left, uint64_t right, uint64_t pivotI
 }
 
 /**
+ * 0  1  2  3  4  5  6  7  8
+ * 11 12 12 11 1  13 18 19 21
+ *
+ * <--------->
+ * 4 elements
+ * 4 - 0
+ *
+ * i = 4
+ * j = 0
+ */
+void GraphDatabase::insertionSort(uint64_t left, uint64_t right){
+
+#if 0
+	cout << "insertionSort" << endl;
+#endif
+
+	for(uint64_t i = left; i<= right; i++) {
+		VertexObject objectI;
+		getObjectAtIndex(i, &objectI);
+
+		// find the first element that is greater than our element
+		for(uint64_t j = left; j < i; j++){
+
+			VertexObject objectJ;
+			getObjectAtIndex(j, &objectJ);
+
+			if(objectI < objectJ){
+
+				uint8_t * source = getMemoryBuffer(j);
+				uint8_t * destination = getMemoryBuffer(j + 1);
+				uint64_t count = i - j;
+				memmove(destination, source, count * m_entrySize);
+
+				objectI.save(source);
+				break;
+			}
+		}
+	}
+}
+
+/**
  * \see http://en.wikipedia.org/wiki/Quicksort
  */
 void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 
 	if(!(left < right))
 		return;
+
+	int count = right - left + 1;
+
+	int maximumForInsertionSort = 0;
+
+	if(count <= maximumForInsertionSort) {
+		insertionSort(left, right);
+		return;
+	}
 
 	uint64_t pivotIndex = left + (right - left) / 2;
 

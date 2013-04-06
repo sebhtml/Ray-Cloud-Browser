@@ -51,8 +51,6 @@ class GraphDatabase{
 	uint32_t m_formatVersion;
 	uint32_t m_expectedMagicNumber;
 
-	int m_requiredBytesPerSequence;
-
 	Mapper m_mapper;
 
 	bool m_active;
@@ -72,6 +70,8 @@ class GraphDatabase{
 	void quicksort(uint64_t left, uint64_t right);
 
 	void setObjectAtIndex(uint64_t index,VertexObject*object);
+	void insertionSort(uint64_t left, uint64_t right);
+	uint8_t* getMemoryBuffer(uint64_t index)const;
 public:
 
 	GraphDatabase();

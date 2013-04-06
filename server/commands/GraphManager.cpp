@@ -33,11 +33,9 @@ int GraphManager::call(int argc,char**argv){
 
 		cout<<endl;
 
-		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" kmers.txt.sorted kmers.txt.dat"<<endl;
+		cout<<"Usage: "<<PROGRAM_NAME<<" "<<argv[0]<<" kmers.txt kmers.txt.dat"<<endl;
 		cout<<endl;
 		cout<<"You must run Ray with -write-kmers, which will generate a kmers.txt file"<<endl;
-		cout<<"Then, you must create the kmers.txt.sorted file with:"<<endl;
-		cout<<" cat kmers.txt|sort -T . > kmers.txt.sorted"<<endl;
 
 		return 0;
 	}
