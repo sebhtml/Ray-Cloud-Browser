@@ -23,7 +23,7 @@ using namespace std;
 #include <stdlib.h>
 #include <errno.h>
 
-#ifdef OS_POSIX
+#ifdef CONFIG_POSIX
 #include <unistd.h>
 #endif
 
@@ -57,7 +57,7 @@ void*Mapper::mapFile(const char*file){
 	if(m_mapped)
 		return m_content;
 
-	#ifdef OS_POSIX
+	#ifdef CONFIG_POSIX
 
 	int openFlags=O_RDONLY;
 

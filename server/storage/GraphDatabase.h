@@ -70,6 +70,8 @@ class GraphDatabase{
 	void quicksort(uint64_t left, uint64_t right);
 	uint64_t selectPivot(uint64_t left, uint64_t right);
 
+	uint64_t getRandomNumber(uint64_t left, uint64_t right);
+
 	void setObjectAtIndex(uint64_t index,VertexObject*object);
 	void insertionSort(uint64_t left, uint64_t right);
 	uint8_t* getMemoryBuffer(uint64_t index)const;

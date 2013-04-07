@@ -34,26 +34,29 @@
 #define OFFSET_NULL 0
 #define ALPHABET_SIZE 4
 
-#if defined(__linux__)
-#define OS_POSIX
+#if defined(POSIX)
+#define CONFIG_POSIX
+
+#elif defined(__linux__)
+#define CONFIG_POSIX
 
 #elif defined(__GNUC__)
-#define OS_POSIX
+#define CONFIG_POSIX
 
 #elif defined(__APPLE__) || defined(MACOSX)
-#define OS_POSIX
+#define CONFIG_POSIX
 
 #elif defined(__sparc__) || defined(__sun__)
-#define OS_POSIX
+#define CONFIG_POSIX
 
 #elif defined(__unix__)
-#define OS_POSIX
+#define CONFIG_POSIX
 
 #elif defined(__CYGWIN__)
-#define OS_POSIX
+#define CONFIG_POSIX
 
 #elif defined(__sgi)
-#define OS_POSIX
+#define CONFIG_POSIX
 #endif
 
 // the maximum length of a object, measured in nucleotide

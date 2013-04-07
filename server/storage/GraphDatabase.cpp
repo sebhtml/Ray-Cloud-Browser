@@ -514,13 +514,45 @@ void GraphDatabase::insertionSort(uint64_t left, uint64_t right){
 }
 
 /**
+ * TODO this method outputs 64-bit random numbers only on POSIX systems.
+ */
+uint64_t GraphDatabase::getRandomNumber(uint64_t left, uint64_t right){
+
+	uint64_t max = right - left;
+
+	// we need a POSIX system to change that.
+	uint64_t randomNumber = 42; 
+
+#ifdef CONFIG_POSIX
+	FILE*fp = fopen("/dev/random", "r");
+	fread(&randomNumber, sizeof(uint64_t), 1, fp);
+	fclose(fp);
+#endif
+
+	uint64_t value = left + ( randomNumber % max );
+
+#ifdef CONFIG_ASSERT
+	assert(value>=left);
+	assert(value<=right);
+#endif
+
+	return value;
+}
+
+/**
  * use the median algorithm
  *
  * \see http://en.wikipedia.org/wiki/Quicksort
  */
 uint64_t GraphDatabase::selectPivot(uint64_t left, uint64_t right) {
 
+#ifdef CONFIG_POSIX1
+	left = getRandomNumber(left, right);
+	right = getRandomNumber(left, right);
+	uint64_t middle = getRandomNumber(left, right);
+#else
 	uint64_t middle = (left + right) / 2;
+#endif
 
 	VertexObject leftValue;
 	VertexObject rightValue;

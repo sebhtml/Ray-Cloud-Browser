@@ -30,7 +30,7 @@
  */
 class Mapper{
 
-#ifdef OS_POSIX
+#ifdef CONFIG_POSIX
 	int m_protection;
 	bool m_read;
 	bool m_write;
@@ -51,6 +51,5 @@ public:
 	void unmapFile();
 	uint64_t getFileSize()const;
 };
-
 
 #endif
