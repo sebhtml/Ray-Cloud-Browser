@@ -85,7 +85,11 @@ public:
 	void loadFromLine(const char* buffer);
 	void debug();
 
-	bool operator<(VertexObject & object) const;
+	bool operator<(const VertexObject & object) const;
+	bool operator<=(const VertexObject & object) const;
+	bool operator>(const VertexObject & object) const;
+	bool operator>=(const VertexObject & object) const;
+	bool operator==(const VertexObject & object) const;
 };
 
 #endif

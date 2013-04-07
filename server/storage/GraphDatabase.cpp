@@ -393,10 +393,7 @@ bool GraphDatabase::checkOrder(){
 		VertexObject object2;
 		getObjectAtIndex(i, &object2);
 
-		const char*sequence1 = object1.getSequence();
-		const char*sequence2 = object2.getSequence();
-
-		if(!(strcmp(sequence1, sequence2) < 0)){
+		if(!(object1 <= object2)){
 #if 0
 			cout << sequence1 << " and " << sequence2 << " break strict ordering" << endl;
 #endif
@@ -459,7 +456,7 @@ uint64_t GraphDatabase::partition(uint64_t left, uint64_t right, uint64_t pivotI
 		VertexObject valueAtI;
 		getObjectAtIndex(i, &valueAtI);
 
-		if(strcmp(valueAtI.getSequence(), pivotValue.getSequence()) <= 0) {
+		if(valueAtI <= pivotValue) {
 			swap(i, storeIndex);
 			storeIndex ++;
 		}

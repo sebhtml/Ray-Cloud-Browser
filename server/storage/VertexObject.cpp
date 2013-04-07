@@ -644,6 +644,22 @@ void VertexObject::debug(){
 	m_debug = true;
 }
 
-bool VertexObject::operator<(VertexObject & object) const{
+bool VertexObject::operator<(const VertexObject & object) const{
 	return strcmp(getSequence(), object.getSequence()) < 0;
+}
+
+bool VertexObject::operator>(const VertexObject & object) const{
+	return strcmp(getSequence(), object.getSequence()) > 0;
+}
+
+bool VertexObject::operator==(const VertexObject & object) const{
+	return strcmp(getSequence(), object.getSequence()) == 0;
+}
+
+bool VertexObject::operator<=(const VertexObject & object) const{
+	return strcmp(getSequence(), object.getSequence()) <= 0;
+}
+
+bool VertexObject::operator>=(const VertexObject & object) const{
+	return strcmp(getSequence(), object.getSequence()) >= 0;
 }
