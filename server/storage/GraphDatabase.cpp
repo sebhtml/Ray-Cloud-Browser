@@ -462,25 +462,11 @@ bool GraphDatabase::checkOrder(){
  */
 void GraphDatabase::swap(uint64_t index1, uint64_t index2){
 
-#if 0
-	cout << "swap " << index1 << " " << index2 << endl;
-
-	cout << "getObjectAtIndex " << index1 << endl;
-#endif
-
 	VertexObject value1;
 	getObjectAtIndex(index1, &value1);
 
-#if 0
-	cout << "getObjectAtIndex " << index2 << endl;
-#endif
-
 	VertexObject value2;
 	getObjectAtIndex(index2, &value2);
-
-#if 0
-	cout << "setObjectAtIndex " << index1 << endl;
-#endif
 
 	setObjectAtIndex(index1, &value2);
 	setObjectAtIndex(index2, &value1);
