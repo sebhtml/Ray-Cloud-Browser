@@ -314,7 +314,7 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		}
 	}
 
-	printProgress("Counting entries", 1);
+	printProgress("Counting entries", 0);
 	cout << endl;
 	m_period = m_entries / 256;
 
