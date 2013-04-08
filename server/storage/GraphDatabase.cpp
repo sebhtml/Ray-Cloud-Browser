@@ -636,10 +636,11 @@ void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 
 	printProgress("Sorting entries", 1);
 
-	if(pivotNewIndex != 0)
+	if(pivotNewIndex != left)
 		quicksort(left, pivotNewIndex - 1);
 
-	quicksort(pivotNewIndex + 1, right);
+	if(pivotNewIndex != right)
+		quicksort(pivotNewIndex + 1, right);
 }
 
 void GraphDatabase::printProgress(const char * step, uint64_t count) {
