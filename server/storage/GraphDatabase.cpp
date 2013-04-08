@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 using namespace std;
 
 #ifdef CONFIG_ASSERT
@@ -93,7 +94,7 @@ bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 	int match=0;
 
 	while(first<=last){
-	
+
 		uint64_t middle=first+(last-first)/2;
 
 		VertexObject entry;
@@ -153,7 +154,7 @@ void GraphDatabase::getObjectAtIndex(uint64_t index, VertexObject*object)const{
  * \see http://www.c.happycodings.com/Gnu-Linux/code6.html
  */
 void GraphDatabase::openFile(const char*file){
-	
+
 	if(m_active)
 		return;
 
@@ -233,6 +234,8 @@ int GraphDatabase::getKmerLength()const{
 }
 
 GraphDatabase::GraphDatabase(){
+	m_maximumLineLength = 0;
+
 	m_active=false;
 	m_error=false;
 	m_expectedMagicNumber=2345678987;
@@ -243,6 +246,14 @@ GraphDatabase::GraphDatabase(){
 	m_codeSymbols[INDEX_T]=SYMBOL_T;
 
 	m_content = NULL;
+
+	m_verbosity = true;
+}
+
+void GraphDatabase::startProgress() {
+	m_sorted = 0;
+	m_lastProgress = 0;
+	m_startingTime = time(NULL);
 }
 
 void GraphDatabase::index(const char*inputFile,const char*outputFile){
@@ -263,6 +274,9 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	FILE*stream=fopen(file,"r");
 	int null=0;
+
+	startProgress();
+	m_period = 2048;
 
 // get the number of entries and the k-mer length
 	while(!feof(stream)){
@@ -293,18 +307,27 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			dummy.getReverseComplement(buffer, reverseComplementSequence);
 			const char*selectedKey = selectObject(buffer, reverseComplementSequence);
 
-			if(selectedKey == buffer)
+			if(selectedKey == buffer) {
 				m_entries++;
+
+				printProgress("Counting entries", 1);
+			}
 		}
 	}
+
+	printProgress("Counting entries", 1);
+	cout << endl;
+	m_period = m_entries / 256;
 
 	fclose(stream);
 
 	stream=fopen(file,"r");
 
-	cout<<"Entries: "<< m_entries * 2 <<" KmerLength: "<< m_kmerLength<<endl;
-	cout << m_entries << " are lexicographically-lower"<<endl;
-	cout << "will read " << entriesInFile << " entries from input file" << endl;
+	if(m_verbosity){
+		cout<<"Entries: "<< m_entries * 2 << endl;
+		cout << "KmerLength: "<< m_kmerLength<<endl;
+		cout << "Lexicographically-lower entries: " << m_entries <<endl;
+	}
 
 	FILE*output=fopen(binaryFile,"w");
 
@@ -321,6 +344,8 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	uint64_t i = 0;
 
 	uint8_t bufferForEntry[2 * CONFIG_MAXKMERLENGTH];
+
+	startProgress();
 
 	while(i < entriesInFile) {
 
@@ -351,12 +376,18 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		cout << " m_entrySize= " << m_entrySize << endl;
 #endif
 		fwrite(bufferForEntry, m_entrySize, 1, output);
+
+		printProgress("Writing entries", 1);
 	}
+
+	printProgress("Writing entries", 0);
+	cout << endl;
 
 	fclose(output);
 	fclose(stream);
 
-	cout<<"Created "<<binaryFile<<endl;
+	if(m_verbosity)
+		cout<<"Created "<<binaryFile<<endl;
 
 	sortEntries(binaryFile);
 }
@@ -380,29 +411,38 @@ int GraphDatabase::getFormatVersion()const{
 
 bool GraphDatabase::checkOrder(){
 
-	uint64_t entriesInFile = m_entries ;
-
 	uint64_t i = 0;
 
 	VertexObject object1;
 	getObjectAtIndex(i, &object1);
 	i++;
 
-	while(i < entriesInFile){
+	startProgress();
+
+	while(i < m_entries){
 
 		VertexObject object2;
 		getObjectAtIndex(i, &object2);
 
 		if(!(object1 <= object2)){
-#if 0
-			cout << sequence1 << " and " << sequence2 << " break strict ordering" << endl;
-#endif
+
+			m_sorted = m_entries;
+			m_lastProgress = 0;
+			printProgress("Checking entries", 0);
+			cout << endl;
+
 			return false;
 		}
 
 		object1 = object2;
+
+		printProgress("Checking entries", 1);
+
 		i ++;
 	}
+
+	printProgress("Checking entries", 0);
+	cout << endl;
 
 	return true;
 }
@@ -573,29 +613,32 @@ uint64_t GraphDatabase::selectPivot(uint64_t left, uint64_t right) {
  */
 void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 
-	if(!(left < right))
-		return;
-
 	int count = right - left + 1;
 
-	int maximumForInsertionSort = 64;
+	if(count == 0)
+		return;
+
+	if(count == 1){
+		printProgress("Sorting entries", count);
+
+		return;
+	}
+
+	int maximumForInsertionSort = 8;
 
 	if(count <= maximumForInsertionSort) {
 		insertionSort(left, right);
+
+		printProgress("Sorting entries", count);
+
 		return;
 	}
 
 	uint64_t pivotIndex = selectPivot(left, right);
 
-#if 0
-	cout << "quicksort left= " << left << " right= " << right << " pivot= " << pivotIndex << endl;
-#endif
-
 	uint64_t pivotNewIndex = partition(left, right, pivotIndex);
 
-#if 0
-	cout << "pivotNewIndex = " << pivotNewIndex << endl;
-#endif
+	printProgress("Sorting entries", 1);
 
 	if(pivotNewIndex != 0)
 		quicksort(left, pivotNewIndex - 1);
@@ -603,10 +646,119 @@ void GraphDatabase::quicksort(uint64_t left, uint64_t right){
 	quicksort(pivotNewIndex + 1, right);
 }
 
+void GraphDatabase::printProgress(const char * step, uint64_t count) {
+
+	if(count == 0){
+		m_sorted = m_entries;
+		m_lastProgress = 0;
+	}
+
+	m_sorted += count;
+
+	if(m_lastProgress == m_sorted) {
+		return;
+	}
+
+	if(m_sorted < m_lastProgress + m_period) {
+		return;
+	}
+
+	ostringstream buffer;
+
+	uint64_t elapsed = time(NULL) - m_startingTime;
+
+	double progress = 100.0 * m_sorted / m_entries;
+
+	uint64_t perSecond = 0;
+
+	if(elapsed != 0)
+		perSecond = m_sorted / elapsed;
+
+	uint64_t remaining = m_entries - m_sorted;
+
+	uint64_t remainingTime = 0;
+
+	if(perSecond != 0)
+		remainingTime = remaining / perSecond;
+
+	buffer <<  step << " " << m_sorted << "/" << m_entries << " => ";
+	buffer .setf(ios::fixed, ios::floatfield);
+	buffer .precision(2);
+	buffer << progress << "%";
+
+	buffer << " Elapsed: ";
+	printTime(&buffer, elapsed);
+	buffer << " Remaining: ";
+	printTime(&buffer, remainingTime);
+
+	string content = buffer.str();
+
+	cout << "\r" << content;
+
+	if((int)content.length() > m_maximumLineLength)
+		m_maximumLineLength = content.length();
+
+	int spaces = m_maximumLineLength - content.length();
+
+	while(spaces--)
+		cout << " ";
+
+	cout.flush();
+
+	m_lastProgress = m_sorted;
+}
+
+void GraphDatabase::printTime(ostream*stream, uint64_t seconds) {
+	uint64_t theSeconds = seconds % 60;
+
+	uint64_t minutes = seconds / 60;
+	uint64_t theMinutes = minutes % 60;
+
+	uint64_t hours = minutes / 60;
+	uint64_t theHours = hours % 24;
+
+	uint64_t days = hours / 24;
+	uint64_t theDays = days % 7;
+
+	uint64_t weeks = days / 7;
+	uint64_t theWeeks = weeks;
+
+	bool hasPrevious = false;
+
+	hasPrevious = printTimeUnits(stream, "week", theWeeks, hasPrevious, false);
+	hasPrevious = printTimeUnits(stream, "day", theDays, hasPrevious, false);
+	hasPrevious = printTimeUnits(stream, "hour", theHours, hasPrevious, false);
+	hasPrevious = printTimeUnits(stream, "minute", theMinutes, hasPrevious, false);
+	hasPrevious = printTimeUnits(stream, "second", theSeconds, hasPrevious, seconds == 0);
+}
+
+bool GraphDatabase::printTimeUnits(ostream * stream, const char * units, uint64_t value, bool hasPrevious, bool force){
+
+	if(value > 0 || force) {
+		if(hasPrevious)
+			(*stream) << ", ";
+
+		(*stream) << value << " " << units;
+		if(value> 1)
+			(*stream) << "s";
+
+		return true;
+	}
+
+	return false;
+}
+
 void GraphDatabase::sortEntriesInFile(){
-	cout << "Sorting " << m_entries << " entries in file" << endl;
+
+	startProgress();
+
+	cout << "Starting quicksort" << endl;
 
 	quicksort(0, m_entries - 1);
+
+	printProgress("(4/4) Sorting entries", 0);
+
+	cout << endl;
 }
 
 void GraphDatabase::sortEntries(const char*file){
@@ -615,18 +767,18 @@ void GraphDatabase::sortEntries(const char*file){
 
 	openFile(file);
 
-	cout << "Verifying order" << endl;
-
 	bool sorted = checkOrder();
 
 	if(sorted) {
-		cout << "File is already sorted." << endl;
+		if(m_verbosity)
+			cout << "File is already sorted." << endl;
 	} else {
-#if 0
-		cout << "Need to sort entries" << endl;
-#endif
 		sortEntriesInFile();
 	}
 
 	closeFile();
+}
+
+void GraphDatabase::setVerbosity(){
+	m_verbosity = true;
 }

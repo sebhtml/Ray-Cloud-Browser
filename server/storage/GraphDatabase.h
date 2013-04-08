@@ -21,6 +21,7 @@
 #include "Mapper.h"
 #include "VertexObject.h"
 #include "constants.h"
+#include <time.h>
 
 #include <string>
 using namespace std;
@@ -45,11 +46,17 @@ class GraphDatabase{
 
 	string m_fileName;
 
+	time_t m_startingTime;
 	uint64_t m_entries;
 	uint32_t m_kmerLength;
 	uint32_t m_magicNumber;
 	uint32_t m_formatVersion;
 	uint32_t m_expectedMagicNumber;
+	bool m_verbosity;
+	uint64_t m_sorted;
+	uint64_t m_lastProgress;
+	uint64_t m_period;
+	int m_maximumLineLength;
 
 	Mapper m_mapper;
 
@@ -75,6 +82,11 @@ class GraphDatabase{
 	void setObjectAtIndex(uint64_t index,VertexObject*object);
 	void insertionSort(uint64_t left, uint64_t right);
 	uint8_t* getMemoryBuffer(uint64_t index)const;
+	void printProgress(const char * step, uint64_t count);
+	void startProgress();
+	void printTime(ostream * stream, uint64_t seconds);
+	bool printTimeUnits(ostream * stream, const char * units, uint64_t value, bool hasPrevious, bool force);
+
 public:
 
 	GraphDatabase();
@@ -92,6 +104,7 @@ public:
 	bool hasError()const;
 	const char * selectObject(const char*object1, const char*object2)const;
 	int getFormatVersion()const;
+	void setVerbosity();
 };
 
 #endif

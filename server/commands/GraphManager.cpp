@@ -44,6 +44,7 @@ int GraphManager::call(int argc,char**argv){
 	const char*binaryFile=argv[2];
 
 	GraphDatabase mock;
+	mock.setVerbosity();
 	mock.index(file,binaryFile);
 
 	return 0;
