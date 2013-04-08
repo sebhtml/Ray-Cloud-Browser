@@ -15,12 +15,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: maybe adding padding could enhance performance
-
 #include "GraphDatabase.h"
 #include "../constants.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -343,7 +342,9 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	uint64_t i = 0;
 
-	uint8_t bufferForEntry[2 * CONFIG_MAXKMERLENGTH];
+	int bufferSize = 4194304;
+	uint8_t*bigBuffer = (uint8_t*) malloc(bufferSize* sizeof(uint8_t));
+	int positionInBuffer = 0;
 
 	startProgress();
 
@@ -370,14 +371,20 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 			continue;
 		}
 
-		entryForThisLine.save(bufferForEntry);
+		entryForThisLine.save(bigBuffer + positionInBuffer);
+		positionInBuffer += entryForThisLine.getEntrySize();
 
-#if 0
-		cout << " m_entrySize= " << m_entrySize << endl;
-#endif
-		fwrite(bufferForEntry, m_entrySize, 1, output);
+		if((bufferSize - positionInBuffer) < m_entrySize) {
+			fwrite(bigBuffer, positionInBuffer, 1, output);
+			positionInBuffer = 0;
+		}
 
 		printProgress("Writing entries", 1);
+	}
+
+	if(positionInBuffer != 0) {
+		fwrite(bigBuffer, positionInBuffer, 1, output);
+		positionInBuffer = 0;
 	}
 
 	printProgress("Writing entries", 0);
@@ -390,6 +397,9 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 		cout<<"Created "<<binaryFile<<endl;
 
 	sortEntries(binaryFile);
+
+	free(bigBuffer);
+	bigBuffer = NULL;
 }
 
 uint64_t GraphDatabase::getEntries()const{
@@ -759,6 +769,8 @@ void GraphDatabase::sortEntriesInFile(){
 	printProgress("(4/4) Sorting entries", 0);
 
 	cout << endl;
+
+	cout << "Sorted entries" << endl;
 }
 
 void GraphDatabase::sortEntries(const char*file){
