@@ -741,7 +741,7 @@ bool GraphDatabase::printTimeUnits(ostream * stream, const char * units, uint64_
 		return true;
 	}
 
-	return false;
+	return hasPrevious;
 }
 
 void GraphDatabase::sortEntriesInFile(){
