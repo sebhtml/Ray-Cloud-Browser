@@ -253,6 +253,7 @@ void GraphDatabase::startProgress() {
 	m_sorted = 0;
 	m_lastProgress = 0;
 	m_startingTime = time(NULL);
+	m_period = 2048;
 }
 
 void GraphDatabase::index(const char*inputFile,const char*outputFile){
@@ -275,7 +276,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 	int null=0;
 
 	startProgress();
-	m_period = 2048;
 
 // get the number of entries and the k-mer length
 	while(!feof(stream)){
@@ -316,7 +316,6 @@ void GraphDatabase::index(const char*inputFile,const char*outputFile){
 
 	printProgress("Counting entries", 0);
 	cout << endl;
-	m_period = m_entries / 256;
 
 	fclose(stream);
 
