@@ -246,7 +246,7 @@ GraphDatabase::GraphDatabase(){
 
 	m_content = NULL;
 
-	m_verbosity = true;
+	m_verbosity = false;
 }
 
 void GraphDatabase::startProgress() {
