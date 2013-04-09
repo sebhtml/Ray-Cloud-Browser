@@ -49,6 +49,9 @@ void JSONNode::parseContent(){
 		parseDouble();
 }
 
+/**
+ * This parses a javascript objet from the content
+ */
 void JSONNode::parseObject(){
 
 	if(m_debug)
