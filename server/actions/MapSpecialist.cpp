@@ -51,10 +51,15 @@ bool MapSpecialist::call(const char*queryString){
 	if(database.hasError())
 		return false;
 
+	uint64_t entries =  database.getEntries();
+
+	if(database.getFormatVersion() >= 1)
+		entries *= 2;
+
 	cout<<"{"<<endl;
 	cout<<"\"map\": "<<mapIndex<<","<<endl;
 	cout<<"\"sequenceLength\": "<<database.getKmerLength()<<","<<endl;
-	cout<<"\"sequences\": "<<database.getEntries()<<endl;
+	cout<<"\"sequences\": "<< entries << endl;
 	cout<<"}"<<endl;
 
 	database.closeFile();
