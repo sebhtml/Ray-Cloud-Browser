@@ -27,3 +27,23 @@ tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object))
 quadTree.insert(centerObject, object);
 tests.assertTrue("	FAIL : Remove", quadTree.remove(centerObject, object));
 tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object));
+
+function testBigTree(tests) {
+
+	var width = 20000;
+	var height = 20000;
+	var stepping = 100;
+
+	var center2 = new Point(width / 2, height / 2);
+	var bigQuadTree = new QuadTree(16, center2, 20000, 20000);
+
+	for(var i = 0; i < width; i += stepping) {
+		for(var j = 0; j < height; j += stepping) {
+			bigQuadTree.insert(new Point(i, j), i+j);
+		}
+	}
+}
+
+testBigTree(tests);
+
+tests.showResults();

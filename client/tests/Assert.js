@@ -27,7 +27,7 @@
 function Assert() {
 	this.nbTests = 0;
 	this.nbFailedTests = 0;
-	this.nbSuccessfullTests = 0;
+	this.nbSuccessfulTests = 0;
 }
 
 
@@ -45,7 +45,7 @@ Assert.prototype.assertEquals = function(message, objectOne, objectTwo) {
 	if(objectOne != objectTwo) {
 		return this.fail(message); 
 	}
-	this.nbSuccessfullTests++;
+	this.nbSuccessfulTests++;
 	return true;
 }
 
@@ -77,7 +77,7 @@ Assert.prototype.assertTrue = function(message, condition) {
 	if(!condition) {
 		return this.fail(message);
 	}
-	this.nbSuccessfullTests++;
+	this.nbSuccessfulTests++;
 	return true;
 }
 
@@ -107,6 +107,16 @@ Assert.prototype.getNbFailedTests = function() {
  *
  * @return Integer : number of test passed
  */
-Assert.prototype.getNbSuccessfullTests = function() {
-	return this.nbSuccessfullTests;
+Assert.prototype.getNbSuccessfulTests = function() {
+	return this.nbSuccessfulTests;
+}
+
+Assert.prototype.showResults = function() {
+	var total = this.getNbTests();
+	var failed = this.getNbFailedTests();
+	var successful = this.getNbSuccessfulTests();
+
+	console.log("Successful tests: " + successful + "/" + total);
+	console.log("Failed tests: " + failed+ "/" + total);
+
 }
