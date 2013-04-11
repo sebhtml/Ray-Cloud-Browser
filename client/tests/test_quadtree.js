@@ -27,3 +27,5 @@ tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object))
 quadTree.insert(centerObject, object);
 tests.assertTrue("	FAIL : Remove", quadTree.remove(centerObject, object));
 tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object));
+
+console.log("Number of tests passed : " + tests.getNbTests() + " failed : " + tests.getNbFailedTests() + " success : " + tests.getNbSuccessfullTests());

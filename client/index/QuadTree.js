@@ -21,7 +21,7 @@
 
 /**
  * Construct a QuadTree
- R
+ *
  * @constructor
  *
  * @param nbMaxElementsPerNode Number of elements max in this cell
@@ -35,6 +35,8 @@ function QuadTree(nbMaxElementsPerNode, center, w, h) {
 	this.w = w;
 	this.h = h;
 
+	this.nbElements = 0;
+	this.depth = 0;
 	this.southWest = null;
 	this.northEast = null;
 	this.southWest = null;
@@ -64,11 +66,13 @@ QuadTree.prototype.createArrays = function() {
  * @param object Element to insert
  */
 QuadTree.prototype.insert = function(centerObject, object) {
+	this.nbElements++;
 	this.points.push(centerObject);
 	this.objects.push(object);
 
 	if(this.points.length > this.NB_MAX_ELEMENTS_PER_NODE) {
 		this.split();
+		this.depth++;
 	}
 }
 
@@ -164,6 +168,9 @@ QuadTree.prototype.remove = function(centreObject, object) {
 		}
 		this.points = points;
 		this.objects = objects;
+		if(position != -1) {
+			this.nbElements--;
+		}
 		return position != -1;
 	} else {
 		var tree = this.classify(centerObject, false);
@@ -182,4 +189,46 @@ QuadTree.prototype.remove = function(centreObject, object) {
  */
 QuadTree.prototype.isLeaf = function() {
 	return this.northEast == null && this.northWest == null && this.southEast == null && this.southEast == null;
+}
+
+
+/**
+ * Return a list of objects for a range
+ *
+ * @param origin Contains the origin of the range
+ * @param w The width of this range
+ * @param h The height of this range
+ *
+ * @return Array<Object> : list of objects for a range
+ */
+QuadTree.prototype.query = function(origin, w, h) {
+}
+
+
+/**
+ * Return a list of all objects
+ *
+ * @return Array<Object> : list of objects
+ */
+QuadTree.prototype.queryAll = function() {
+}
+
+
+/**
+ * Return a number of elements
+ *
+ * @return Integer : number of elements
+ */
+QuadTree.prototype.size = function() {
+	return this.nbElements;
+}
+
+
+/**
+ * Return the depth
+ *
+ * @return Integer : the depth
+ */
+QuadTree.prototype.depth = function() {
+	return this.depth;
 }
