@@ -40,7 +40,7 @@ function QuadTree(nbMaxElementsPerNode, center, w, h) {
 	this.southWest = null;
 	this.northWest = null;
 
-	this.createArray();
+	this.createArrays();
 }
 
 
@@ -88,7 +88,7 @@ QuadTree.prototype.split = function() {
 		var tree = this.classify(this.points[i], true);
 		tree.insert(this.points[i], this.objects[i]);
 	}
-	this.createArray();
+	this.createArrays();
 }
 
 

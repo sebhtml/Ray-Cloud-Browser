@@ -15,10 +15,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var point = new Point(10, 10);
-var client = new QuadTree(4, point, 40, 40);
-var centerObject = new Point(2, 2);
-var object = new QuadTree(4, point, 20, 20);
+var tests = new Assert();
 
-client.insert(centerObject, object);
-console.log("Hello");
+var center = new Point(10, 10);
+var quadTree = new QuadTree(4, center, 40, 40);
+
+var centerObject = new Point(2, 2);
+var object = new QuadTree(4, center, 20, 20);
+
+tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object));
+quadTree.insert(centerObject, object);
+tests.assertTrue("	FAIL : Remove", quadTree.remove(centerObject, object));
+tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object));
