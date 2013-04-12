@@ -124,21 +124,24 @@ QuadTree.prototype.printStatus = function() {
  * @return QuadTree : area corresponding of object position
  */
 QuadTree.prototype.classify = function(centreObject, createIfNull) {
+	var deltaX = this.width / 4;
+	var deltaY = this.height / 4;
 
 	if(centreObject.getX() < this.center.getX()) {
 		//South West
 		if(centreObject.getY() < this.center.getY()) {
 			if(this.southWest == null && createIfNull) {
-				var newOrigin = new Point(this.center.getX() - (this.width / 2), this.center.getY() - (this.height / 2));
-				this.southWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, (this.width / 2), (this.height / 2));
+				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() - deltaY);
+				this.southWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
 			}
+			//this.southWest.printStatus();
 			return this.southWest;
 
 		//North West
 		} else {
 			if(this.northWest == null && createIfNull) {
-				var newOrigin = new Point(this.center.getX() - (this.width / 2), this.center.getY() + (this.height / 2));
-				this.northWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, (this.width / 2), (this.height / 2));
+				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() + deltaY);
+				this.northWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
 			}
 			return this.northWest;
 		}
@@ -146,16 +149,16 @@ QuadTree.prototype.classify = function(centreObject, createIfNull) {
 		//South East
 		if(centreObject.getY() < this.center.getY()) {
 			if(this.southEast == null && createIfNull) {
-				var newOrigin = new Point(this.center.getX() + (this.width / 2), this.center.getY() - (this.height / 2));
-				this.southEast = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, (this.width / 2), (this.height / 2));
+				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() - deltaY);
+				this.southEast = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
 			}
 			return this.southEast;
 
 		//North East
 		} else {
 			if(this.northEast == null && createIfNull) {
-				var newOrigin = new Point(this.center.getX() + (this.width / 2), this.center.getY() + (this.height / 2));
-				this.northEast = new QuadTree(this.NB_MAX_NODE, newOrigin, (this.width / 2), (this.height / 2));
+				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() + deltaY);
+				this.northEast = new QuadTree(this.NB_MAX_NODE, newOrigin, this.width / 2, this.height / 2);
 			}
 			return this.northEast;
 		}
@@ -208,7 +211,7 @@ QuadTree.prototype.remove = function(centreObject, object) {
  * @return Boolean : true if current area is a leaf
  */
 QuadTree.prototype.isLeaf = function() {
-	return this.northEast == null && this.northWest == null && this.southEast == null && this.southEast == null;
+	return this.northEast == null && this.northWest == null && this.southEast == null && this.southWest == null;
 }
 
 
@@ -222,11 +225,6 @@ QuadTree.prototype.isLeaf = function() {
  * @return Array<Object> : list of objects for a range
  */
 QuadTree.prototype.query = function(center, width, height) {
-	/*
-	console.log("[DEBUG] query (" + center.getX()+ " " + center.getY() + ") " + width + " " + height);
-	console.log("[DEBUG] self -> (" + this.center.getX()+ " " + this.center.getY() + ") " + this.width + " " + this.height);
-	console.log("[DEBUG] isLeaf -> " + this.isLeaf());
-	*/
 	var elements = new Array();
 	this.queryRecursive(center, width, height, elements);
 	return elements;
@@ -255,7 +253,11 @@ QuadTree.prototype.queryRecursive = function(center, width, height, elements) {
 		}
 		return elements;
 	}
-
+	/*
+	console.log("[DEBUG] query (" + center.getX()+ " " + center.getY() + ") " + width + " " + height);
+	console.log("[DEBUG] self -> (" + this.center.getX()+ " " + this.center.getY() + ") " + this.width + " " + this.height);
+	console.log("[DEBUG] isLeaf -> " + this.isLeaf());
+	*/
 	//console.log("Not a leaf, elements in current cell: " + this.nbElements);
 	if(this.southEast != null && this.southEast.overlap(center, width, height)) {
 		//console.log("southEast is not null -> " + this.southEast.size());
