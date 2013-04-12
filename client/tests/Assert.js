@@ -117,6 +117,6 @@ Assert.prototype.showResults = function() {
 	var successful = this.getNbSuccessfulTests();
 
 	console.log("Successful tests: " + successful + "/" + total);
-	console.log("Failed tests: " + failed+ "/" + total);
+	console.log("Failed tests: " + failed + "/" + total);
 
 }

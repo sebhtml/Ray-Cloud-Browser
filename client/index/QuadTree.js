@@ -37,7 +37,7 @@ function QuadTree(nbMaxElementsPerNode, center, w, h) {
 
 	this.nbElements = 0;
 	this.depth = 0;
-	this.southWest = null;
+	this.southEast = null;
 	this.northEast = null;
 	this.southWest = null;
 	this.northWest = null;
@@ -105,28 +105,28 @@ QuadTree.prototype.split = function() {
  * @return QuadTree : area corresponding of object position
  */
 QuadTree.prototype.classify = function(centreObject, createIfNull) {
-	if(this.points[i].getX() < this.origin.getX()) {
+	if(centreObject.getX() < this.center.getX()) {
 		//South West
-		if(this.points[i].getY() < this.origin.getY()) {
+		if(centreObject.getY() < this.center.getY()) {
 			if(this.southWest == null && createIfNull) {
-				var newOrigin = new Point(this.origin.getX() - (this.w / 2), this.origin.getY() - (this.h / 2));
+				var newOrigin = new Point(this.center.getX() - (this.w / 2), this.center.getY() - (this.h / 2));
 				this.southWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, (this.w / 2), (this.h / 2));
 			}
-			return this.soutWest;
+			return this.southWest;
 
 		//North West
 		} else {
 			if(this.northWest == null && createIfNull) {
-				var newOrigin = new Point(this.origin.getX() - (this.w / 2), this.origin.getY() + (this.h / 2));
+				var newOrigin = new Point(this.center.getX() - (this.w / 2), this.center.getY() + (this.h / 2));
 				this.northWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, (this.w / 2), (this.h / 2));
 			}
-			return this.nothWest;
+			return this.northWest;
 		}
 	} else {
 		//South East
-		if(this.points[i].getY() < this.origin.getY()) {
+		if(centreObject.getY() < this.center.getY()) {
 			if(this.southEast == null && createIfNull) {
-				var newOrigin = new Point(this.origin.getX() + (this.w / 2), this.origin.getY() - (this.h / 2));
+				var newOrigin = new Point(this.center.getX() + (this.w / 2), this.center.getY() - (this.h / 2));
 				this.southEast = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, (this.w / 2), (this.h / 2));
 			}
 			return this.southEast;
@@ -134,7 +134,7 @@ QuadTree.prototype.classify = function(centreObject, createIfNull) {
 		//North East
 		} else {
 			if(this.northEast == null && createIfNull) {
-				var newOrigin = new Point(this.origin.getX() + (this.w / 2), this.origin.getY() + (this.h / 2));
+				var newOrigin = new Point(this.center.getX() + (this.w / 2), this.center.getY() + (this.h / 2));
 				this.northEast = new QuadTree(this.NB_MAX_NODE, newOrigin, (this.w / 2), (this.h / 2));
 			}
 			return this.northEast;
@@ -195,13 +195,13 @@ QuadTree.prototype.isLeaf = function() {
 /**
  * Return a list of objects for a range
  *
- * @param origin Contains the origin of the range
+ * @param center Contains the center of the range
  * @param w The width of this range
  * @param h The height of this range
  *
  * @return Array<Object> : list of objects for a range
  */
-QuadTree.prototype.query = function(origin, w, h) {
+QuadTree.prototype.query = function(center, w, h) {
 }
 
 

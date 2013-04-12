@@ -28,9 +28,6 @@ quadTree.insert(centerObject, object);
 tests.assertTrue("	FAIL : Remove", quadTree.remove(centerObject, object));
 tests.assertTrue("	FAIL : Remove empty", !quadTree.remove(centerObject, object));
 
-<<<<<<< HEAD
-console.log("Number of tests passed : " + tests.getNbTests() + " failed : " + tests.getNbFailedTests() + " success : " + tests.getNbSuccessfullTests());
-=======
 function testBigTree(tests) {
 
 	var width = 20000;
@@ -40,9 +37,9 @@ function testBigTree(tests) {
 	var center2 = new Point(width / 2, height / 2);
 	var bigQuadTree = new QuadTree(16, center2, 20000, 20000);
 
-	for(var i = 0; i < width; i += stepping) {
-		for(var j = 0; j < height; j += stepping) {
-			bigQuadTree.insert(new Point(i, j), i+j);
+	for(var i = 0; i < width; i += stepping) {
+		for(var j = 0; j < height; j += stepping) {
+			bigQuadTree.insert(new Point(i, j), i + j);
 		}
 	}
 }
@@ -50,4 +47,3 @@ function testBigTree(tests) {
 testBigTree(tests);
 
 tests.showResults();
->>>>>>> f931261fc552df8653a6d87a858d682b1ee3d107
