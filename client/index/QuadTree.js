@@ -66,14 +66,21 @@ QuadTree.prototype.createArrays = function() {
  * @param object Element to insert
  */
 QuadTree.prototype.insert = function(centerObject, object) {
-	this.nbElements++;
-	this.points.push(centerObject);
-	this.objects.push(object);
+	if(this.isLeaf()) {
+		this.points.push(centerObject);
+		this.objects.push(object);
 
-	if(this.points.length > this.NB_MAX_ELEMENTS_PER_NODE) {
-		this.split();
-		this.depth++;
+		if(this.points.length > this.NB_MAX_ELEMENTS_PER_NODE) {
+			this.split();
+			this.depth++;
+		}
+	} else {
+
+		var tree = this.classify(centerObject, true);
+		tree.insert(centerObject, object);
 	}
+
+	this.nbElements++;
 }
 
 
@@ -93,8 +100,20 @@ QuadTree.prototype.split = function() {
 		tree.insert(this.points[i], this.objects[i]);
 	}
 	this.createArrays();
+
 }
 
+QuadTree.prototype.printStatus = function() {
+	console.log("QuadTree object");
+	console.log(" center: (" + this.center.getX() + ", " +
+		this.center.getY() + ") width: " + this.width + " " + this.height);
+	console.log(" objects: " + this.objects.length);
+
+	console.log(" southWest: " + ((this.southWest == null) ? "null" : this.southWest.objects.length));
+	console.log(" southEast: " + ((this.southEast == null) ? "null" : this.southEast.objects.length));
+	console.log(" northWest: " + ((this.northWest == null) ? "null" : this.northWest.objects.length));
+	console.log(" northEast: " + ((this.northEast == null) ? "null" : this.northEast.objects.length));
+}
 
 /**
  * Search the element in the tree and return the good area
@@ -105,6 +124,7 @@ QuadTree.prototype.split = function() {
  * @return QuadTree : area corresponding of object position
  */
 QuadTree.prototype.classify = function(centreObject, createIfNull) {
+
 	if(centreObject.getX() < this.center.getX()) {
 		//South West
 		if(centreObject.getY() < this.center.getY()) {
@@ -202,6 +222,24 @@ QuadTree.prototype.isLeaf = function() {
  * @return Array<Object> : list of objects for a range
  */
 QuadTree.prototype.query = function(center, width, height) {
+	/*
+	console.log("[DEBUG] query (" + center.getX()+ " " + center.getY() + ") " + width + " " + height);
+	console.log("[DEBUG] self -> (" + this.center.getX()+ " " + this.center.getY() + ") " + this.width + " " + this.height);
+	console.log("[DEBUG] isLeaf -> " + this.isLeaf());
+	*/
+	var elements = new Array();
+	this.queryRecursive(center, width, height, elements);
+	return elements;
+}
+
+
+/**
+ *
+ */
+QuadTree.prototype.queryAll = function() {
+	var elements = new Array();
+	this.queryRecursive(this.center, this.width, this.height, elements);
+	return elements;
 }
 
 
@@ -210,7 +248,31 @@ QuadTree.prototype.query = function(center, width, height) {
  *
  * @return Array<Object> : list of objects
  */
-QuadTree.prototype.queryAll = function() {
+QuadTree.prototype.queryRecursive = function(center, width, height, elements) {
+	if(this.isLeaf()) {
+		for(var i = 0; i < this.objects.length; i++) {
+			elements.push(this.objects[i]);
+		}
+		return elements;
+	}
+
+	//console.log("Not a leaf, elements in current cell: " + this.nbElements);
+	if(this.southEast != null && this.southEast.overlap(center, width, height)) {
+		//console.log("southEast is not null -> " + this.southEast.size());
+		this.southEast.queryRecursive(center, width, height, elements);
+	}
+	if(this.northEast != null && this.northEast.overlap(center, width, height)) {
+		//console.log("northEast is not null -> " + this.northEast.size());
+		this.northEast.queryRecursive(center, width, height, elements);
+	}
+	if(this.southWest != null && this.southWest.overlap(center, width, height)) {
+		//console.log("southWest is not null -> " + this.southWest.size());
+		this.southWest.queryRecursive(center, width, height, elements);
+	}
+	if(this.northWest != null && this.northWest.overlap(center, width, height)) {
+		//console.log("northWest is not null -> " + this.northWest.size());
+		this.northWest.queryRecursive(center, width, height, elements);
+	}
 }
 
 
@@ -231,4 +293,18 @@ QuadTree.prototype.size = function() {
  */
 QuadTree.prototype.depth = function() {
 	return this.depth;
+}
+
+
+/**
+ *
+ */
+QuadTree.prototype.overlap = function(center, width, height) {
+	if(center.getX() + (width / 2) < this.center.getX() - (this.width / 2) ||
+	   center.getX() - (width / 2) > this.center.getX() + (this.width / 2) ||
+	   center.getY() + (height / 2) < this.center.getY() - (this.height / 2) ||
+	   center.getY() - (height / 2) > this.center.getY() + (this.height / 2)) {
+		return false;
+	}
+	return true;
 }

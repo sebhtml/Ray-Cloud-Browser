@@ -13,7 +13,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  *  @author Jean-François Erdelyi
  *  @version 1.0
  */
@@ -21,7 +21,7 @@
 
 /**
  * Construct a Assert object
- * 
+ *
  * @constructor
  */
 function Assert() {
@@ -32,8 +32,8 @@ function Assert() {
 
 
 /**
- * Used to compare two object 
- * 
+ * Used to compare two object
+ *
  * @param message Message print if the test is failed
  * @param objectOne The first object to compare
  * @param objectTwo The second object to compare
@@ -43,7 +43,7 @@ function Assert() {
 Assert.prototype.assertEquals = function(message, objectOne, objectTwo) {
 	this.nbTests++;
 	if(objectOne != objectTwo) {
-		return this.fail(message); 
+		return this.fail(message + " Expected: " + objectOne + " Actual: " + objectTwo);
 	}
 	this.nbSuccessfulTests++;
 	return true;
@@ -52,21 +52,21 @@ Assert.prototype.assertEquals = function(message, objectOne, objectTwo) {
 
 /**
  * Used to incremented by one the number of failed tests
- * 
+ *
  * @param message Message print
- * 
- * @return Boolean : false 
+ *
+ * @return Boolean : false
  */
 Assert.prototype.fail = function(message) {
 	this.nbFailedTests++;
-	console.log(message);
+	console.log("FAIL: " + message);
 	return false;
 }
 
 
 /**
  * Used to test if condition is true
- * 
+ *
  * @param message Message print if the test is failed
  * @param condition Condition to test
  *
@@ -85,7 +85,7 @@ Assert.prototype.assertTrue = function(message, condition) {
 /**
  * Return the number of passed tests
  *
- * @return Integer : number of passed test 
+ * @return Integer : number of passed test
  */
 Assert.prototype.getNbTests = function() {
 	return this.nbTests;
