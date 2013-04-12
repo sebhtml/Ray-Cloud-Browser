@@ -75,8 +75,7 @@ function testBigTree(tests) {
 
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
 	tabResult = bigQuadTree.query(new Point(500, 500), 500, 500);
-	tests.assertEquals("Not equals, 40000 with size of big tree", 40000, bigQuadTree.size());
-	tests.assertTrue("Not true, tab of result is empty", tabResult.length != 0);
+	tests.assertTrue("Not true, tab of result empty", tabResult.length != 0);
 
 	tabResult = new Array();
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
@@ -88,17 +87,19 @@ function testBigTree(tests) {
 	tabResult = bigQuadTree.queryAll();
 	tests.assertEquals("Not equals, 40000 with size of tab of result", 40000, tabResult.length);
 
-	for(var i = 0; i < width; i += stepping) {
-		for(var j = 0; j < height; j += stepping) {
-			tests.assertTrue("Remove empty", !bigQuadTree.remove(new Point(i, j), i + j));
-		}
-	}
-	return;
+	tabResult = new Array();
+	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
+	tabResult = bigQuadTree.query(new Point(1, 1), 0, 0);
+	tests.assertEquals("Not equals, 0 with size of big tree", 0, tabResult.length);
+
+	tabResult = new Array();
+	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
+	tabResult = bigQuadTree.query(new Point(0, 0), 0, 0);
+	tests.assertEquals("Not equals, 1 with size of big tree", 1, tabResult.length);
 
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
-			tests.assertTrue("Fail query all", tabResult[k] == i + j);
-			k++
+			tests.assertTrue("Remove empty", !bigQuadTree.remove(new Point(i, j), i + j));
 		}
 	}
 }
