@@ -100,7 +100,6 @@ QuadTree.prototype.split = function() {
 		tree.insert(this.points[i], this.objects[i]);
 	}
 	this.createArrays();
-
 }
 
 QuadTree.prototype.printStatus = function() {
@@ -304,8 +303,6 @@ QuadTree.prototype.overlapBetweenTwoRectangles = function(center, width, height,
 	return true;
 }
 
-
-
 /**
  *
  */
@@ -334,7 +331,7 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
 		return elements;
 	}
 	if(this.southEast != null && this.southEast.overlap(center, radius, radius)) {
-		this.southEast.queryCicleRecursive(center, radius, elements);
+		this.southEast.queryCircleRecursive(center, radius, elements);
 	}
 	if(this.northEast != null && this.northEast.overlap(center, radius, radius)) {
 		this.northEast.queryCircleRecursive(center, radius, elements);
@@ -352,4 +349,21 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
  */
 QuadTree.prototype.overlapBetweenCirclePoint = function(center, radius, point) {
 	return(Math.pow(radius, 2) <= Math.pow(point.getX() - center.getX(), 2) + Math.pow(point.getY() - center.getY(), 2));
+}
+
+
+/**
+ *
+ */
+QuadTree.prototype.update = function(oldCenter, newCenter, object) {
+	if(this.isLeaf()){
+		for(var i = 0; i < this.points.length; i++) {
+			if(this.objects[i] = object) {
+				this.points[i] = newCenter;
+				return;
+			}
+		}
+	}
+	this.remove(oldCenter, object);
+	this.insert(newCenter, object);
 }

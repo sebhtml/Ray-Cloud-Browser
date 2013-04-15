@@ -34,6 +34,38 @@ function testOverlap(tests) {
 	tests.assertTrue("Overlap out", !quadTree.overlap(new Point(10000, 10000), 100, 100));
 }
 
+function testUpdate(tests) {
+	var tabResult = new Array();
+	var quadTree = new QuadTree(4, new Point(1000, 1000), 2000, 2000);
+
+	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
+	tests.assertTrue("Not true, quad tree is not empty", quadTree.size() == 0);
+
+	quadTree.insert(new Point(0, 0), 0);
+	quadTree.insert(new Point(5, 5), 5);
+
+	quadTree.update(new Point(10, 10), new Point(25, 25),10);
+	var resultOldPoint = quadTree.query(new Point(10, 10), 0, 0);
+	var resultNewPoint = quadTree.query(new Point(25, 25), 0, 0);
+	tests.assertEquals("Not equals, old point is not undefined", undefined, resultOldPoint[0]);
+	tests.assertEquals("Not equals, new point is not defined", 10, resultNewPoint[0]);
+
+	quadTree.insert(new Point(10, 10), 10);
+	quadTree.insert(new Point(15, 15), 15);
+	quadTree.insert(new Point(20, 20), 20);
+	quadTree.insert(new Point(25, 25), 25);
+
+	tabResult = quadTree.queryAll();
+	tests.assertEquals("Not equals, tab of result size is not 6", 6, tabResult.length);
+	tests.assertEquals("Not equals, quad tree size is not 6", 6, quadTree.size());
+
+	quadTree.update(new Point(0, 0), new Point(1500, 1500), 0);
+	var resultOldPoint = quadTree.query(new Point(0, 0), 0, 0);
+	var resultNewPoint = quadTree.query(new Point(1500, 1500), 0, 0);
+	tests.assertEquals("Not equals, old point is not undefined", undefined, resultOldPoint[0]);
+	tests.assertEquals("Not equals, new point is not defined", 0, resultNewPoint[0]);
+}
+
 function testSmallTree(tests) {
 	var width = 200;
 	var height = 200;
@@ -99,19 +131,18 @@ function testBigTree(tests) {
 
 	tabResult = new Array();
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
-	tabResult = bigQuadTree.queryCircle(new Point(0, 0), 0);
-	tests.assertEquals("Not equals, 0 with size of big tree", 0, tabResult.length);
+	tabResult = bigQuadTree.queryCircle(new Point(1, 1), 0);
+	tests.assertEquals("Not equals, 0 with size of big tree queryCircle", 0, tabResult.length);
 
 	tabResult = new Array();
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
-	tabResult = bigQuadTree.queryCircle(new Point(width / 2, height / 2), height + width );
-	tests.assertEquals("Not equals, 40000 with size of big tree", 40000, tabResult.length);
-
+	tabResult = bigQuadTree.queryCircle(new Point(0, 0), 500000);
+	tests.assertEquals("Not equals, 40000 with size of big tree queryCircle", 40000, tabResult.length);
 
 	tabResult = new Array();
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
 	tabResult = bigQuadTree.queryCircle(new Point(0, 0), 100);
-	tests.assertEquals("Not equals, 1 with size of big tree", true, tabResult.length > 0);
+	tests.assertEquals("Not equals, 1 with size of big tree queryCircle", true, tabResult.length > 0);
 
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
@@ -120,9 +151,8 @@ function testBigTree(tests) {
 	}
 
 }
-
-
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
+testUpdate(tests);
 tests.showResults();
