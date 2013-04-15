@@ -97,12 +97,31 @@ function testBigTree(tests) {
 	tabResult = bigQuadTree.query(new Point(0, 0), 0, 0);
 	tests.assertEquals("Not equals, 1 with size of big tree", 1, tabResult.length);
 
+	tabResult = new Array();
+	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
+	tabResult = bigQuadTree.queryCircle(new Point(0, 0), 0);
+	tests.assertEquals("Not equals, 0 with size of big tree", 0, tabResult.length);
+
+	tabResult = new Array();
+	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
+	tabResult = bigQuadTree.queryCircle(new Point(width / 2, height / 2), height + width );
+	tests.assertEquals("Not equals, 40000 with size of big tree", 40000, tabResult.length);
+
+
+	tabResult = new Array();
+	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
+	tabResult = bigQuadTree.queryCircle(new Point(0, 0), 100);
+	tests.assertEquals("Not equals, 1 with size of big tree", true, tabResult.length > 0);
+
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
 			tests.assertTrue("Remove empty", !bigQuadTree.remove(new Point(i, j), i + j));
 		}
 	}
+
 }
+
+
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
