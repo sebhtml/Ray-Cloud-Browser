@@ -25,8 +25,6 @@
  * \author Sébastien Boisvert
  */
 function Grid(boxSize){
-	this.resetUpdatedCount();
-	this.maximumUpdatesInOneIteration=500;
 
 	this.cells=new Object();
 	this.keyCells=new Object();
@@ -169,18 +167,9 @@ Grid.prototype.updateEntry=function(vertex){
 	if(!vertex.moved(this.boxSize))
 		return;
 
-	if(this.updates>=this.maximumUpdatesInOneIteration)
-		return;
-
 	var objectKey=vertex.getSequence();
 	this.removeEntry(objectKey);
 	this.addEntry(objectKey,vertex.getX(),vertex.getY());
 
-	this.maximumUpdatesInOneIteration++;
-
 	vertex.moveInGrid();
-}
-
-Grid.prototype.resetUpdatedCount=function(){
-	this.updates=0;
 }
