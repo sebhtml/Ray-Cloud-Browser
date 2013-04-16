@@ -44,20 +44,21 @@ function testUpdate(tests) {
 	quadTree.insert(new Point(0, 0), 0);
 	quadTree.insert(new Point(5, 5), 5);
 
-	quadTree.update(new Point(10, 10), new Point(25, 25),10);
-	var resultOldPoint = quadTree.query(new Point(10, 10), 0, 0);
+	quadTree.update(new Point(5, 5), new Point(25, 25), 5);
+	var resultOldPoint = quadTree.query(new Point(5, 5), 0, 0);
 	var resultNewPoint = quadTree.query(new Point(25, 25), 0, 0);
 	tests.assertEquals("Not equals, old point is not undefined", undefined, resultOldPoint[0]);
-	tests.assertEquals("Not equals, new point is not defined", 10, resultNewPoint[0]);
+	tests.assertEquals("Not equals, new point is not defined", 5, resultNewPoint[0]);
 
 	quadTree.insert(new Point(10, 10), 10);
 	quadTree.insert(new Point(15, 15), 15);
 	quadTree.insert(new Point(20, 20), 20);
 	quadTree.insert(new Point(25, 25), 25);
 
+	tabResult = new Array();
 	tabResult = quadTree.queryAll();
-	tests.assertEquals("Not equals, tab of result size is not 6", 6, tabResult.length);
-	tests.assertEquals("Not equals, quad tree size is not 6", 6, quadTree.size());
+	tests.assertEquals("Not equals, tab of result size is not 6: " + tabResult, 6, tabResult.length);
+	tests.assertEquals("Not equals, quad tree size is not 6: " + tabResult, 6, quadTree.size());
 
 	quadTree.update(new Point(0, 0), new Point(1500, 1500), 0);
 	var resultOldPoint = quadTree.query(new Point(0, 0), 0, 0);
