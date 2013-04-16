@@ -71,8 +71,8 @@ function PhysicsEngine(screen){
 	this.timeStep=1;
 	this.damping=0.5;
 
-	this.numberOfRadius = 4;
-	this.numberOfElementsPerNode = 8;
+	/* QuadTree initialisation */
+	this.numberOfElementsPerNode = 16;
 	this.width = 200000000;
 	this.height = 200000000;
 	this.centerOfQuadTree = new Point((this.width / 2), (this.height / 2));
@@ -145,7 +145,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var vertexRadius=vertex1.getRadius();
 
 		if(this.useQuadTree) {
-			var keys = this.quadTree.queryCircle(vertex1.getCenter(), vertex1.getRadius() * this.numberOfRadius);
+			var keys = this.quadTree.queryCircle(vertex1.getCenter(), 100);
 
 			var keyNumber=0;
 			while(keyNumber<keys.length){

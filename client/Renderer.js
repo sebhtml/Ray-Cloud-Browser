@@ -38,7 +38,7 @@ function Renderer(screen){
 
 	this.screen=screen;
 	this.blitter=new Blitter();
-	this.renderingBuffer=10;
+	this.renderingBuffer=100;
 	this.extraMultiplier=5;
 	this.pathMultiplierMacro=8;
 
@@ -102,7 +102,6 @@ Renderer.prototype.drawVertexPowers=function(vertices){
 }
 
 Renderer.prototype.drawPaths=function(vertices){
-
 	var context=this.screen.getContext();
 	context.lineWidth=this.lineWidth;
 
