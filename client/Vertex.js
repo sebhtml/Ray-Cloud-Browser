@@ -158,11 +158,24 @@ Vertex.prototype.setPosition=function(){
 
 Vertex.prototype.update=function(timeStep,timeState){
 	if(!this.followMouse && timeState){
-		this.x=this.x+this.velocityX*timeStep;
-		this.y=this.y+this.velocityY*timeStep;
+
+		this.oldCenter = new Point(this.x, this.y);
+
+		this.x = this.x+this.velocityX*timeStep;
+		this.y = this.y+this.velocityY*timeStep;
+
+		this.center= new Point(this.x, this.y);
 	}
 
 	this.updatePower();
+}
+
+Vertex.prototype.getOldCenter = function() {
+	return this.oldCenter;
+}
+
+Vertex.prototype.getCenter = function() {
+	return this.center;
 }
 
 Vertex.prototype.updatePower=function(){

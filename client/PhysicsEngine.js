@@ -27,6 +27,7 @@
  */
 function PhysicsEngine(screen){
 
+	this.lastIndex = 0;
 	this.resetActiveIndex();
 	this.maximumActiveObjectsToProcess=256;
 	this.physicsEntryLevel=500;
@@ -322,19 +323,32 @@ PhysicsEngine.prototype.addForces=function(force,force2){
 PhysicsEngine.prototype.moveObjects=function(vertices){
 	// move objects
 
-	this.grid.resetUpdatedCount();
 
-	var i=0;
-	while(i<vertices.length){
-		var vertex=vertices[i];
+	var maximumToProcess = 16384;
+	var processed = 0;
+
+	if(!(this.lastIndex < vertices.length))
+		this.lastIndex = 0;
+
+	var i = 0;
+
+	// remove me
+	// TODO: it would be better to only process a part of the objects
+
+	this.lastIndex = 0;
+	while(this.lastIndex < vertices.length
+			&& processed < maximumToProcess){
+
+		var vertex=vertices[this.lastIndex];
 		
-		vertex.update(this.timeStep,true);
+		vertex.update(this.timeStep, true);
 
 		if(this.useGrid){
 			this.grid.updateEntry(vertex);
-
 		}
 
+		this.lastIndex++;
+		processed++;
 		i++;
 	}
 }
