@@ -146,6 +146,10 @@ function testBigTree(tests) {
 	tabResult = bigQuadTree.queryCircle(new Point(0, 0), 200);
 	tests.assertTrue("Not true tab length = " + tabResult.length, tabResult.length > 0);
 
+	var result = bigQuadTree.insert(new Point(-10, -10), 999999);
+	tests.assertEquals("testBigTree 401", false, result);
+	tests.assertEquals("testBigTree 404", 40000, bigQuadTree.size());
+
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
 			tests.assertTrue("Remove empty i: " + i + " j: " + j, bigQuadTree.remove(new Point(i, j), i + j));
@@ -153,14 +157,14 @@ function testBigTree(tests) {
 	}
 }
 
-function testsOnVeryLargeStructure(tests) {
+function testOnVeryLargeStructure(tests) {
 
 	var treeCenter = new Point(0, 0);
 	var halfWidth = 1000000000;
 	var maximumNumberOfObjectsPerCell = 32;
 	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
-	
-	tests.assertEquals("testsOnVeryLargeStructure 001", 0, tree.size());
+
+	tests.assertEquals("testOnVeryLargeStructure 001", 0, tree.size());
 
 	var n = 10000;
 
@@ -171,19 +175,19 @@ function testsOnVeryLargeStructure(tests) {
 		x -= halfWidth;
 		var y = Math.random() * 2 * halfWidth;
 		y -= halfWidth;
-		
+
 		var point = new Point(x, y);
 		tree.insert(point, i);
 
 		var elements = tree.queryCircle(point, 0);
-		tests.assertEquals("testsOnVeryLargeStructure 002", 1, elements.length);
-		tests.assertEquals("testsOnVeryLargeStructure 003", i, elements[0]);
-		tests.assertEquals("testsOnVeryLargeStructure 088", i + 1, tree.size());
+		tests.assertEquals("testOnVeryLargeStructure 002", 1, elements.length);
+		tests.assertEquals("testOnVeryLargeStructure 003", i, elements[0]);
+		tests.assertEquals("testOnVeryLargeStructure 088", i + 1, tree.size());
 
 		points.push(point);
 	}
 
-	tests.assertEquals("testsOnVeryLargeStructure 128", n, tree.size());
+	tests.assertEquals("testOnVeryLargeStructure 128", n, tree.size());
 
 	for(var i = 0; i < n; i++) {
 		var oldPoint = points[i];
@@ -191,19 +195,42 @@ function testsOnVeryLargeStructure(tests) {
 		tree.update(oldPoint, newPoint, i);
 
 		var elements = tree.queryCircle(oldPoint, 0);
-		tests.assertEquals("testsOnVeryLargeStructure 302", 0, elements.length);
+		tests.assertEquals("testOnVeryLargeStructure 302", 0, elements.length);
 		elements = tree.queryCircle(newPoint, 0);
-		tests.assertEquals("testsOnVeryLargeStructure 342", 1, elements.length);
-		tests.assertEquals("testsOnVeryLargeStructure 388", n, tree.size());
+		tests.assertEquals("testOnVeryLargeStructure 342", 1, elements.length);
+		tests.assertEquals("testOnVeryLargeStructure 388", n, tree.size());
 	}
 
-	tests.assertEquals("testsOnVeryLargeStructure 488", n, tree.size());
+	tests.assertEquals("testOnVeryLargeStructure 488", n, tree.size());
+}
+
+function testObjectsThatAreOutside(tests) {
+	var treeCenter = new Point(0, 0);
+	var halfWidth = 1000000000;
+	var maximumNumberOfObjectsPerCell = 32;
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
+
+	tests.assertEquals("testObjectsThatAreOutside 001", 0, tree.size());
+
+	var i = 91;
+	var x = -2000000000;
+	var y = -2000000000;
+	var point = new Point(x, y);
+	var result = tree.insert(point, i);
+
+	tests.assertEquals("testObjectsThatAreOutside 050", false, result);
+	tests.assertEquals("testObjectsThatAreOutside 101", 0, tree.size());
+
+	var elements = tree.queryAll();
+
+	tests.assertEquals("testObjectsThatAreOutside 201", 0, elements.length);
 }
 
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
 testUpdate(tests);
-testsOnVeryLargeStructure(tests);
+testOnVeryLargeStructure(tests);
+testObjectsThatAreOutside(tests);
 tests.showResults();
 

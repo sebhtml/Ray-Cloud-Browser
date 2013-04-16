@@ -65,9 +65,14 @@ QuadTree.prototype.createArrays = function() {
  *
  * @param center centerObject of the element
  * @param object Element to insert
+ * @return Boolean true if the object was inserted, false otherwise
  */
 QuadTree.prototype.insert = function(centerObject, object) {
+
 	if(this.isLeaf()) {
+		if(!this.overlapBetweenPointAndRectangle(centerObject, this.center, this.width, this.height))
+			return false;
+
 		this.points.push(centerObject);
 		this.objects.push(object);
 
@@ -75,13 +80,22 @@ QuadTree.prototype.insert = function(centerObject, object) {
 			this.split();
 			this.depth++;
 		}
+
+		this.nbElements ++;
+		return true;
 	} else {
 
 		var tree = this.classify(centerObject, true);
-		tree.insert(centerObject, object);
-	}
+		if(tree == null)
+			return false;
 
-	this.nbElements++;
+		var result = tree.insert(centerObject, object);
+
+		if(result)
+			this.nbElements ++;
+
+		return result;
+	}
 }
 
 
@@ -255,7 +269,7 @@ QuadTree.prototype.queryAll = function() {
 QuadTree.prototype.queryRecursive = function(center, width, height, elements) {
 	if(this.isLeaf()) {
 		for(var i = 0; i < this.objects.length; i++) {
-			if(this.overlapBetweenTwoRectangles(this.points[i], 0, 0, center, width, height)) {
+			if(this.overlapBetweenPointAndRectangle(this.points[i], center, width, height)) {
 				elements.push(this.objects[i]);
 			}
 		}
@@ -295,6 +309,12 @@ QuadTree.prototype.depth = function() {
 	return this.depth;
 }
 
+/**
+ *
+ */
+QuadTree.prototype.overlapBetweenPointAndRectangle = function(point, center, width, height) {
+	return this.overlapBetweenTwoRectangles(point, 0, 0, center, width, height)
+}
 
 /**
  *
