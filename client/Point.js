@@ -51,3 +51,7 @@ Point.prototype.getX=function(){
 Point.prototype.getY=function(){
 	return this.y;
 }
+
+Point.prototype.equals = function(point) {
+	return this.x == point.getX() && this.y == point.getY();
+}

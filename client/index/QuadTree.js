@@ -105,7 +105,7 @@ QuadTree.prototype.split = function() {
 QuadTree.prototype.printStatus = function() {
 	console.log("QuadTree object");
 	console.log(" center: (" + this.center.getX() + ", " +
-		this.center.getY() + ") width: " + this.width + " " + this.height);
+		this.center.getY() + ") width: " + this.width + " height: " + this.height);
 	console.log(" objects: " + this.objects.length);
 
 	console.log(" southWest: " + ((this.southWest == null) ? "null" : this.southWest.objects.length));
@@ -180,9 +180,8 @@ QuadTree.prototype.remove = function(centreObject, object) {
 		var position = -1;
 		var points = new Array();
 		var objects = new Array();
-
 		for(var i = 0; i < this.points.length; i++) {
-			if(this.objects[i] == object) {
+			if(this.objects[i] == object && this.points[i].equals(centerObject)) {
 				position = i;
 			} else {
 				points.push(this.points[i]);
@@ -200,7 +199,11 @@ QuadTree.prototype.remove = function(centreObject, object) {
 		if(tree == null) {
 			return false;
 		}
-		return tree.remove();
+		var remove = tree.remove(centerObject, object);
+		if(remove) {
+			this.nbElements--;
+		}
+		return remove;
 	}
 }
 
@@ -348,7 +351,7 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
  *
  */
 QuadTree.prototype.overlapBetweenCirclePoint = function(center, radius, point) {
-	return(Math.pow(radius, 2) <= Math.pow(point.getX() - center.getX(), 2) + Math.pow(point.getY() - center.getY(), 2));
+	return(Math.pow(radius, 2) >= Math.pow(point.getX() - center.getX(), 2) + Math.pow(point.getY() - center.getY(), 2));
 }
 
 
@@ -358,7 +361,7 @@ QuadTree.prototype.overlapBetweenCirclePoint = function(center, radius, point) {
 QuadTree.prototype.update = function(oldCenter, newCenter, object) {
 	if(this.isLeaf()){
 		for(var i = 0; i < this.points.length; i++) {
-			if(this.objects[i] = object) {
+			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
 				this.points[i] = newCenter;
 				return;
 			}
