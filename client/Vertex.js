@@ -35,6 +35,8 @@ function Vertex(name,colored){
 	this.hasPositionValue=false;
 	this.x=0;
 	this.y=0;
+	this.oldCenter = new Point(this.x, this.y);
+	this.center = new Point(this.x, this.y);
 	this.positionIsSet=false;
 	this.lastGridUpdateX=-9999;
 	this.lastGridUpdateY=-9999;

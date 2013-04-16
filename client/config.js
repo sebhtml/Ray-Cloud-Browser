@@ -35,8 +35,8 @@ var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=10;
 /**
  * The server to use for all web services.
  */
-var CONFIG_WEB_SERVER="../server/";
-//var CONFIG_WEB_SERVER="http://ec2-107-20-98-120.compute-1.amazonaws.com/server/";
+//var CONFIG_WEB_SERVER="../server/";
+var CONFIG_WEB_SERVER="http://genome.ulaval.ca:10090/server/";
 
 
 // messaging service configuration
