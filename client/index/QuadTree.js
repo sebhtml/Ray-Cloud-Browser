@@ -29,8 +29,8 @@
  * @param width The width of this cell
  * @param height The height of this cell
  */
-function QuadTree(nbMaxElementsPerNode, center, width, height) {
-	this.NB_MAX_ELEMENTS_PER_NODE = nbMaxElementsPerNode;
+function QuadTree(numberMaxElementsPerNode, center, width, height) {
+	this.numberMaxElementsPerNode = numberMaxElementsPerNode;
 	this.center = center;
 	this.width = width;
 	this.height = height;
@@ -71,7 +71,7 @@ QuadTree.prototype.insert = function(centerObject, object) {
 		this.points.push(centerObject);
 		this.objects.push(object);
 
-		if(this.points.length > this.NB_MAX_ELEMENTS_PER_NODE) {
+		if(this.points.length > this.numberMaxElementsPerNode) {
 			this.split();
 			this.depth++;
 		}
@@ -133,7 +133,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		if(centerObject.getY() < this.center.getY()) {
 			if(this.southWest == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() - deltaY);
-				this.southWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
+				this.southWest = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2);
 			}
 			//this.southWest.printStatus();
 			return this.southWest;
@@ -142,7 +142,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		} else {
 			if(this.northWest == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() + deltaY);
-				this.northWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
+				this.northWest = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2);
 			}
 			return this.northWest;
 		}
@@ -151,7 +151,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		if(centerObject.getY() < this.center.getY()) {
 			if(this.southEast == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() - deltaY);
-				this.southEast = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
+				this.southEast = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2);
 			}
 			return this.southEast;
 
@@ -255,22 +255,22 @@ QuadTree.prototype.queryAll = function() {
 QuadTree.prototype.queryRecursive = function(center, width, height, elements) {
 	if(this.isLeaf()) {
 		for(var i = 0; i < this.objects.length; i++) {
-			if(this.overlapBetweenTwoRectangles(this.points[i], 0, 0, center, width, height)) {
+			if(this.checkOverlapBetweenTwoRectangles(this.points[i], 0, 0, center, width, height)) {
 				elements.push(this.objects[i]);
 			}
 		}
 		return elements;
 	}
-	if(this.southEast != null && this.southEast.overlap(center, width, height)) {
+	if(this.southEast != null && this.southEast.checkOverlap(center, width, height)) {
 		this.southEast.queryRecursive(center, width, height, elements);
 	}
-	if(this.northEast != null && this.northEast.overlap(center, width, height)) {
+	if(this.northEast != null && this.northEast.checkOverlap(center, width, height)) {
 		this.northEast.queryRecursive(center, width, height, elements);
 	}
-	if(this.southWest != null && this.southWest.overlap(center, width, height)) {
+	if(this.southWest != null && this.southWest.checkOverlap(center, width, height)) {
 		this.southWest.queryRecursive(center, width, height, elements);
 	}
-	if(this.northWest != null && this.northWest.overlap(center, width, height)) {
+	if(this.northWest != null && this.northWest.checkOverlap(center, width, height)) {
 		this.northWest.queryRecursive(center, width, height, elements);
 	}
 }
@@ -299,7 +299,7 @@ QuadTree.prototype.depth = function() {
 /**
  *
  */
-QuadTree.prototype.overlapBetweenTwoRectangles = function(center, width, height, center2, width2, height2) {
+QuadTree.prototype.checkOverlapBetweenTwoRectangles = function(center, width, height, center2, width2, height2) {
 	if(center.getX() + (width / 2) < center2.getX() - (width2 / 2) ||
 	   center.getX() - (width / 2) > center2.getX() + (width2 / 2) ||
 	   center.getY() + (height / 2) < center2.getY() - (height2 / 2) ||
@@ -312,8 +312,8 @@ QuadTree.prototype.overlapBetweenTwoRectangles = function(center, width, height,
 /**
  *
  */
-QuadTree.prototype.overlap = function(center, width, height) {
-	return this.overlapBetweenTwoRectangles(center, width, height, this.center, this.width, this.height);
+QuadTree.prototype.checkOverlap = function(center, width, height) {
+	return this.checkOverlapBetweenTwoRectangles(center, width, height, this.center, this.width, this.height);
 }
 
 QuadTree.prototype.queryCircle = function(center, radius) {
@@ -330,22 +330,22 @@ QuadTree.prototype.queryCircle = function(center, radius) {
 QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
 	if(this.isLeaf()) {
 		for(var i = 0; i < this.objects.length; i++) {
-			if(this.overlapBetweenCirclePoint(center, radius, this.points[i])) {
+			if(this.checkOverlapBetweenCircleAndPoint(center, radius, this.points[i])) {
 				elements.push(this.objects[i]);
 			}
 		}
 		return elements;
 	}
-	if(this.southEast != null && this.southEast.overlap(center, radius, radius)) {
+	if(this.southEast != null && this.southEast.checkOverlap(center, radius, radius)) {
 		this.southEast.queryCircleRecursive(center, radius, elements);
 	}
-	if(this.northEast != null && this.northEast.overlap(center, radius, radius)) {
+	if(this.northEast != null && this.northEast.checkOverlap(center, radius, radius)) {
 		this.northEast.queryCircleRecursive(center, radius, elements);
 	}
-	if(this.southWest != null && this.southWest.overlap(center, radius, radius)) {
+	if(this.southWest != null && this.southWest.checkOverlap(center, radius, radius)) {
 		this.southWest.queryCircleRecursive(center, radius, elements);
 	}
-	if(this.northWest != null && this.northWest.overlap(center, radius, radius)) {
+	if(this.northWest != null && this.northWest.checkOverlap(center, radius, radius)) {
 		this.northWest.queryCircleRecursive(center, radius, elements);
 	}
 }
@@ -353,7 +353,7 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
 /**
  *
  */
-QuadTree.prototype.overlapBetweenCirclePoint = function(center, radius, point) {
+QuadTree.prototype.checkOverlapBetweenCircleAndPoint = function(center, radius, point) {
 	return(Math.pow(radius, 2) >= Math.pow(point.getX() - center.getX(), 2) + Math.pow(point.getY() - center.getY(), 2));
 }
 
@@ -368,7 +368,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object) {
 			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
 				this.points[i] = newCenter;
 				return;
-			}
+		}
 		}
 	}
 
