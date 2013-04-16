@@ -40,10 +40,10 @@ function PhysicsEngine(screen){
 	this.screen=screen;
 
 /*
- * We can use the grid along with
+ * We can use the quadTree along with
  * active objects.
  */
-	this.useGrid=true;
+	this.useQuadTree=true;
 
 	this.useProximity=false;
 	this.useFullMap=true;
@@ -71,7 +71,15 @@ function PhysicsEngine(screen){
 	this.timeStep=1;
 	this.damping=0.5;
 
-	this.grid=new Grid(32);
+	this.numberOfRadius = 4;
+	this.numberOfElementsPerNode = 8;
+	this.width = 200000000;
+	this.height = 200000000;
+	this.centerOfQuadTree = new Point((this.width / 2), (this.height / 2));
+	this.quadTree = new QuadTree(	this.numberOfElementsPerNode, 
+					this.centerOfQuadTree,
+					this.width,
+					this.height);
 
 	if(this.simulatedAnnealing)
 		this.charge=300;
@@ -130,20 +138,20 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var force=[0,0];
 
 /*
- * Actually, hits should be obtained with the grid.
+ * Actually, hits should be obtained with the quadTree.
  */
 		var hits=new Array();
 
 		var vertexRadius=vertex1.getRadius();
 
-		if(this.useGrid){
-			var keys=this.grid.getEntries(vertex1.getX(),vertex1.getY());
-			
+		if(this.useQuadTree) {
+			var keys = this.quadTree.queryCircle(vertex1.getCenter(), vertex1.getRadius() * this.numberOfRadius);
+
 			var keyNumber=0;
 			while(keyNumber<keys.length){
 				var keyValue=keys[keyNumber];
 				keyNumber++;
-				
+
 /*
  * We can only pick up the object if it's in the active spot.
  */
@@ -260,7 +268,7 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var dx=(vertex1.getX() - vertex2.getX());
 	var dy=(vertex1.getY() - vertex2.getY());
-	
+
 	if(dx==0 && dy==0){
 		var value=30;
 		return [Math.random()*value,Math.random()*value];
@@ -340,11 +348,11 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 			&& processed < maximumToProcess){
 
 		var vertex=vertices[this.lastIndex];
-		
+
 		vertex.update(this.timeStep, true);
 
-		if(this.useGrid){
-			this.grid.updateEntry(vertex);
+		if(this.useQuadTree){
+			this.quadTree.update(vertex.getOldCenter(), vertex.getCenter(), vertex.getSequence());
 		}
 
 		this.lastIndex++;
