@@ -153,8 +153,57 @@ function testBigTree(tests) {
 	}
 }
 
+function testsOnVeryLargeStructure(tests) {
+
+	var treeCenter = new Point(0, 0);
+	var halfWidth = 1000000000;
+	var maximumNumberOfObjectsPerCell = 32;
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
+	
+	tests.assertEquals("testsOnVeryLargeStructure 001", 0, tree.size());
+
+	var n = 10000;
+
+	var points = new Array();
+
+	for(var i = 0; i < n; i++) {
+		var x = Math.random() * 2 * halfWidth;
+		x -= halfWidth;
+		var y = Math.random() * 2 * halfWidth;
+		y -= halfWidth;
+		
+		var point = new Point(x, y);
+		tree.insert(point, i);
+
+		var elements = tree.queryCircle(point, 0);
+		tests.assertEquals("testsOnVeryLargeStructure 002", 1, elements.length);
+		tests.assertEquals("testsOnVeryLargeStructure 003", i, elements[0]);
+		tests.assertEquals("testsOnVeryLargeStructure 088", i + 1, tree.size());
+
+		points.push(point);
+	}
+
+	tests.assertEquals("testsOnVeryLargeStructure 128", n, tree.size());
+
+	for(var i = 0; i < n; i++) {
+		var oldPoint = points[i];
+		var newPoint = new Point(oldPoint.getX() / 2, oldPoint.getY() / 2);
+		tree.update(oldPoint, newPoint, i);
+
+		var elements = tree.queryCircle(oldPoint, 0);
+		tests.assertEquals("testsOnVeryLargeStructure 302", 0, elements.length);
+		elements = tree.queryCircle(newPoint, 0);
+		tests.assertEquals("testsOnVeryLargeStructure 342", 1, elements.length);
+		tests.assertEquals("testsOnVeryLargeStructure 388", n, tree.size());
+	}
+
+	tests.assertEquals("testsOnVeryLargeStructure 488", n, tree.size());
+}
+
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
 testUpdate(tests);
+testsOnVeryLargeStructure(tests);
 tests.showResults();
+
