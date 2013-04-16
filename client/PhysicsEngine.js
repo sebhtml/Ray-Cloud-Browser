@@ -71,7 +71,8 @@ function PhysicsEngine(screen){
 	this.timeStep=1;
 	this.damping=0.5;
 
-	this.numberOfElementsPerNode = 20;
+	this.numberOfRadius = 4;
+	this.numberOfElementsPerNode = 8;
 	this.width = 200000000;
 	this.height = 200000000;
 	this.centerOfQuadTree = new Point((this.width / 2), (this.height / 2));
@@ -144,13 +145,13 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var vertexRadius=vertex1.getRadius();
 
 		if(this.useQuadTree) {
-			var keys = this.quadTree.queryCircle(vertex1.getCenter(), vertex1.getRadius() * 2);
-			
+			var keys = this.quadTree.queryCircle(vertex1.getCenter(), vertex1.getRadius() * this.numberOfRadius);
+
 			var keyNumber=0;
 			while(keyNumber<keys.length){
 				var keyValue=keys[keyNumber];
 				keyNumber++;
-				
+
 /*
  * We can only pick up the object if it's in the active spot.
  */
@@ -267,7 +268,7 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var dx=(vertex1.getX() - vertex2.getX());
 	var dy=(vertex1.getY() - vertex2.getY());
-	
+
 	if(dx==0 && dy==0){
 		var value=30;
 		return [Math.random()*value,Math.random()*value];
@@ -347,7 +348,7 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 			&& processed < maximumToProcess){
 
 		var vertex=vertices[this.lastIndex];
-		
+
 		vertex.update(this.timeStep, true);
 
 		if(this.useQuadTree){
