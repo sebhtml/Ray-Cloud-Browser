@@ -42,6 +42,7 @@ function QuadTree(nbMaxElementsPerNode, center, width, height) {
 	this.southWest = null;
 	this.northWest = null;
 
+	this.debug = false;
 	this.createArrays();
 }
 
@@ -118,18 +119,18 @@ QuadTree.prototype.printStatus = function() {
 /**
  * Search the element in the tree and return the good area
  *
- * @param centreObject Contains center of the element
+ * @param centerObject Contains center of the element
  * @param createIfNull If true create new cells
  *
  * @return QuadTree : area corresponding of object position
  */
-QuadTree.prototype.classify = function(centreObject, createIfNull) {
+QuadTree.prototype.classify = function(centerObject, createIfNull) {
 	var deltaX = this.width / 4;
 	var deltaY = this.height / 4;
 
-	if(centreObject.getX() < this.center.getX()) {
+	if(centerObject.getX() < this.center.getX()) {
 		//South West
-		if(centreObject.getY() < this.center.getY()) {
+		if(centerObject.getY() < this.center.getY()) {
 			if(this.southWest == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() - deltaY);
 				this.southWest = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
@@ -147,7 +148,7 @@ QuadTree.prototype.classify = function(centreObject, createIfNull) {
 		}
 	} else {
 		//South East
-		if(centreObject.getY() < this.center.getY()) {
+		if(centerObject.getY() < this.center.getY()) {
 			if(this.southEast == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() - deltaY);
 				this.southEast = new QuadTree(this.NB_MAX_ELEMENTS_PER_NODE, newOrigin, this.width / 2, this.height / 2);
@@ -170,17 +171,19 @@ QuadTree.prototype.classify = function(centreObject, createIfNull) {
 /**
  * Remove the element "object" in the tree
  *
- * @param centreObject Contains the center of the element
+ * @param centerObject Contains the center of the element
  * @param object The object to delete
  *
  * @return Boolean : true if the element is found
  */
-QuadTree.prototype.remove = function(centreObject, object) {
+QuadTree.prototype.remove = function(centerObject, object) {
+
 	if(this.isLeaf()) {
 		var position = -1;
 		var points = new Array();
 		var objects = new Array();
 		for(var i = 0; i < this.points.length; i++) {
+
 			if(this.objects[i] == object && this.points[i].equals(centerObject)) {
 				position = i;
 			} else {
@@ -195,6 +198,7 @@ QuadTree.prototype.remove = function(centreObject, object) {
 		}
 		return position != -1;
 	} else {
+
 		var tree = this.classify(centerObject, false);
 		if(tree == null) {
 			return false;
@@ -206,7 +210,6 @@ QuadTree.prototype.remove = function(centreObject, object) {
 		return remove;
 	}
 }
-
 
 /**
  * Return if the current area is a leaf
@@ -359,6 +362,7 @@ QuadTree.prototype.overlapBetweenCirclePoint = function(center, radius, point) {
  *
  */
 QuadTree.prototype.update = function(oldCenter, newCenter, object) {
+
 	if(this.isLeaf()){
 		for(var i = 0; i < this.points.length; i++) {
 			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
@@ -367,6 +371,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object) {
 			}
 		}
 	}
+
 	this.remove(oldCenter, object);
 	this.insert(newCenter, object);
 }

@@ -41,13 +41,13 @@ function testUpdate(tests) {
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
 	tests.assertTrue("Not true, quad tree is not empty", quadTree.size() == 0);
 
-	quadTree.insert(new Point(0, 0), 0);
+	quadTree.insert(new Point(0, 0), 391);
 	quadTree.insert(new Point(5, 5), 5);
 
 	quadTree.update(new Point(5, 5), new Point(25, 25), 5);
-	var resultOldPoint = quadTree.query(new Point(5, 5), 0, 0);
-	var resultNewPoint = quadTree.query(new Point(25, 25), 0, 0);
-	tests.assertEquals("Not equals, old point is not undefined", undefined, resultOldPoint[0]);
+	var resultOldPoint = quadTree.query(new Point(5, 5), 0, 391);
+	var resultNewPoint = quadTree.query(new Point(25, 25), 0, 391);
+	tests.assertEquals("Not equals, old point is not undefined - case 1", undefined, resultOldPoint[0]);
 	tests.assertEquals("Not equals, new point is not defined", 5, resultNewPoint[0]);
 
 	quadTree.insert(new Point(10, 10), 10);
@@ -60,11 +60,12 @@ function testUpdate(tests) {
 	tests.assertEquals("Not equals, tab of result size is not 6: " + tabResult, 6, tabResult.length);
 	tests.assertEquals("Not equals, quad tree size is not 6: " + tabResult, 6, quadTree.size());
 
-	quadTree.update(new Point(0, 0), new Point(1500, 1500), 0);
-	var resultOldPoint = quadTree.query(new Point(0, 0), 0, 0);
-	var resultNewPoint = quadTree.query(new Point(1500, 1500), 0, 0);
-	tests.assertEquals("Not equals, old point is not undefined", undefined, resultOldPoint[0]);
-	tests.assertEquals("Not equals, new point is not defined", 0, resultNewPoint[0]);
+	var oldPoint = new Point(0, 0);
+	quadTree.update(oldPoint, new Point(1500, 1500), 391);
+	var resultNewPoint = quadTree.query(new Point(1500, 1500), 0, 391);
+	tests.assertEquals("Not equals, new point is not defined", 391, resultNewPoint[0]);
+	var resultOldPoint = quadTree.query(oldPoint, 0, 391);
+	tests.assertEquals("Not equals, object for old point " + oldPoint.toString() + " is not undefined - case 2", 0, resultOldPoint.length);
 }
 
 function testSmallTree(tests) {
@@ -147,11 +148,11 @@ function testBigTree(tests) {
 
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
-			tests.assertTrue("Remove empty i: " + i + " j: " + j, !bigQuadTree.remove(new Point(i, j), i + j));
+			tests.assertTrue("Remove empty i: " + i + " j: " + j, bigQuadTree.remove(new Point(i, j), i + j));
 		}
 	}
-
 }
+
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
