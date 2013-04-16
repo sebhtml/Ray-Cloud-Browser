@@ -48,7 +48,6 @@ function Renderer(screen){
 	this.useBlitter=false;
 
 	this.bufferedOperations=new Object();
-	this.layers=0;
 }
 
 Renderer.prototype.setPathOperator=function(value){
@@ -148,41 +147,36 @@ Renderer.prototype.drawPaths=function(vertices){
 			var k=0;
 
 			while(k<colors1.length && fullDetails){
+				var layer = -(colors1.length-k-1);
 				this.drawPathArc(context,vertex.getX()-originX,vertex.getY()-originY,
 					vertex2.getX()-originX,vertex2.getY()-originY,
 					this.screen.getZoomValue(),
-					vertex2.getRadius(),fullDetails,colors1[k],extra,colors1.length-k-1);
+					vertex2.getRadius(),fullDetails,colors1[k],extra,layer);
 
 				extra-=this.extraMultiplier;
 
 				k++;
 			}
-
-/*
- * Update layers
- */
-			if(this.layers<colors1.length)
-				this.layers=colors1.length;
 		}
 	}
-
-	this.drawBufferedOperations(context);
 }
 
 Renderer.prototype.drawBufferedOperations=function(context){
-
-	while(this.layers>0){
-		this.layers--;
-		var layer=this.layers;
-
+	var keys = new Array();
+	for(var k in this.bufferedOperations) {
+		keys.push(parseInt(k, 10));
+	}
+	keys.sort(function(a, b){return a - b;});
+	console.log(keys);
+	for(var i = 0; i < keys.length; i++) {
+	var layer = keys[i];
 		if(!(layer in this.bufferedOperations))
 			continue;
-
 		var operations=this.bufferedOperations[layer];
 
-		var i=0;
-		while(i<operations.length){
-			var operation=operations[i++];
+		var j = 0;
+		while(j < operations.length){
+			var operation=operations[j++];
 
 			if(operation[0]==RENDERER_LINE){
 
@@ -196,8 +190,6 @@ Renderer.prototype.drawBufferedOperations=function(context){
 			}
 		}
 	}
-
-	this.layers=0;
 	this.bufferedOperations=new Object();
 }
 
@@ -283,11 +275,10 @@ Renderer.prototype.drawBufferedLine=function(context,ax,ay,bx,by,lineWidth,color
 Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails){
 
 	var lineWidth=this.lineWidth;
-	var color='black';
-
+	var color = 'black';
+	var layer = 10;
 // only draw the small line if it won't be done later on
-	this.drawLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue*lineWidth,color);
-
+	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue*lineWidth,color, layer);
 	if(!fullDetails)
 		return;
 
@@ -321,8 +312,8 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue*lineWidth,color);
-	this.drawLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue*lineWidth,color);
+	this.drawBufferedLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue*lineWidth,color, layer);
+	this.drawBufferedLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue*lineWidth,color, layer);
 }
 
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
@@ -428,8 +419,9 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 		if(!withDetails)
 			radius2*=this.pathMultiplierMacro;
 
+		var layer = -(colors.length - i - 1);
 		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2,
-			pathColor,colors.length-i-1);
+			pathColor, layer);
 
 		i++;
 		extra-=this.extraMultiplier;
@@ -454,6 +446,7 @@ Renderer.prototype.drawBufferedCircle=function(context,x,y,radius,color,layer){
 }
 
 Renderer.prototype.draw=function(objects){
+	var context = this.screen.getContext();
 	this.drawVertexPowers(objects);
 
 	if(this.screen.getHumanInterface().getInventory().useColorsForRendering())
@@ -461,7 +454,7 @@ Renderer.prototype.draw=function(objects){
 
 	this.drawArcs(objects);
 
-	this.m_showCoverage=this.screen.getHumanInterface().getInventory().showCoverageForRendering();
+	this.drawBufferedOperations(context);     this.m_showCoverage=this.screen.getHumanInterface().getInventory().showCoverageForRendering();
 	this.drawVertices(objects);
 
 /*
@@ -470,7 +463,5 @@ Renderer.prototype.draw=function(objects){
  * "In case of line drawing, combine as many lineTo commands before calling stroke."
  * --Petteri Hietavirta
  */
-	var context=this.screen.getContext();
-	context.stroke();
-
+	//context.stroke();
 }
