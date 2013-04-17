@@ -179,21 +179,23 @@ Renderer.prototype.drawBufferedOperations=function(context){
 			while(j < operations.length) {
 
 				var operation = operations[j++];
+				var material = operation.getMaterial();
 				if(operation.getType() == RENDERER_LINE) {
+					material.startRendering(context);
 					this.drawLine(context,
 						      operation.getPointA().getX(),
 						      operation.getPointA().getY(),
 						      operation.getPointB().getX(),
 						      operation.getPointB().getY(),
-						      operation.getMaterial().getLineWidth(),
-						      operation.getMaterial().getStrokeStyle());
-
+						      material.getLineWidth(),
+						      material.getStrokeStyle());
+					material.stopRendering(context);
 				} else if(operation.getType() == RENDERER_CIRCLE) {
 					this.drawCircle(context,
 							operation.getCenter().getX(),
 							operation.getCenter().getY(),
 							operation.getRadius(),
-							operation.getMaterial().getFillStyle());
+							material.getFillStyle());
 				}
 			}
 		}
@@ -249,15 +251,9 @@ Renderer.prototype.drawArcs=function(vertices){
 	}
 }
 
-Renderer.prototype.drawLine=function(context,ax,ay,bx,by,lineWidth,color){
-
-	context.beginPath();
-	context.lineWidth=lineWidth;
-	context.strokeStyle=color;
+Renderer.prototype.drawLine = function(context,ax,ay,bx,by,lineWidth,color) {
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
-	context.closePath();
-	context.stroke();
 }
 
 Renderer.prototype.drawBufferedLine = function(context, ax, ay, bx, by, lineWidth, color, layer) {
