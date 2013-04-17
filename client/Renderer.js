@@ -162,31 +162,30 @@ Renderer.prototype.drawPaths=function(vertices){
 }
 
 Renderer.prototype.drawBufferedOperations=function(context){
-	var keys = new Array();
-	for(var k in this.bufferedOperations) {
-		keys.push(parseInt(k, 10));
+	var keysLayer = new Array();
+
+	for(var key in this.bufferedOperations) {
+		keysLayer.push(parseInt(key, 10));
 	}
-	keys.sort(function(a, b){return a - b;});
-	console.log(keys);
-	for(var i = 0; i < keys.length; i++) {
-	var layer = keys[i];
-		if(!(layer in this.bufferedOperations))
-			continue;
-		var operations=this.bufferedOperations[layer];
 
-		var j = 0;
-		while(j < operations.length){
-			var operation=operations[j++];
+	keysLayer.sort(function(a, b){return a - b;});
 
-			if(operation[0]==RENDERER_LINE){
+	for(var i = 0; i < keysLayer.length; i++) {
+		var layer = keysLayer[i];
+		for(var materialType in this.bufferedOperations[layer]) {
+			var operations = this.bufferedOperations[layer][materialType];
+			var j = 0;
 
-				this.drawLine(context,operation[1],operation[2],operation[3],
-					operation[4],operation[5],operation[6]);
+			while(j < operations.length) {
+				var operation = operations[j++];
+				if(operation[0] == RENDERER_LINE) {
+					this.drawLine(context,operation[1],operation[2],operation[3],
+						operation[4],operation[5],operation[6]);
 
-			}else if(operation[0]==RENDERER_CIRCLE){
-
-				this.drawCircle(context,operation[1],operation[2],operation[3],
-					operation[4]);
+				} else if(operation[0] == RENDERER_CIRCLE) {
+					this.drawCircle(context,operation[1],operation[2],operation[3],
+						operation[4]);
+				}
 			}
 		}
 	}
@@ -252,14 +251,20 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by,lineWidth,color){
 	context.stroke();
 }
 
-Renderer.prototype.drawBufferedLine=function(context,ax,ay,bx,by,lineWidth,color,layer){
+Renderer.prototype.drawBufferedLine = function(context, ax, ay, bx, by, lineWidth, color, layer) {
 
 	var operation=[RENDERER_LINE,ax,ay,bx,by,lineWidth,color];
 
-	if(!(layer in this.bufferedOperations))
-		this.bufferedOperations[layer]=[];
+	if(!(layer in this.bufferedOperations)) {
+		this.bufferedOperations[layer] = new Object();
+	}
 
-	this.bufferedOperations[layer].push(operation);
+	var material = new Material(color, lineWidth, "", "");
+	if(!(material in this.bufferedOperations[layer])) {
+		this.bufferedOperations[layer][material] = new Array();
+	}
+
+	this.bufferedOperations[layer][material.toString()].push(operation);
 }
 
 /*
@@ -436,13 +441,19 @@ Renderer.prototype.drawCircle=function(context,x,y,radius,color){
 	context.closePath();
 }
 
-Renderer.prototype.drawBufferedCircle=function(context,x,y,radius,color,layer){
+Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, color, layer){
 	var operation=[RENDERER_CIRCLE,x,y,radius,color];
 
-	if(!(layer in this.bufferedOperations))
-		this.bufferedOperations[layer]=[];
+	if(!(layer in this.bufferedOperations)) {
+		this.bufferedOperations[layer] = new Object();
+	}
 
-	this.bufferedOperations[layer].push(operation);
+	var material = new Material("", 0, color, "");
+	if(!(material in this.bufferedOperations[layer])) {
+		this.bufferedOperations[layer][material] = new Array();
+	}
+
+	this.bufferedOperations[layer][material.toString()].push(operation);
 }
 
 Renderer.prototype.draw=function(objects){
