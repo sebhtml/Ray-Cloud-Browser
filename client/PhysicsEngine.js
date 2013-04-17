@@ -145,7 +145,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		var vertexRadius=vertex1.getRadius();
 
 		if(this.useQuadTree) {
-			var keys = this.quadTree.queryCircle(vertex1.getCenter(), 100);
+			var keys = this.quadTree.queryCircle(vertex1.getCenter(), 50);
 
 			var keyNumber=0;
 			while(keyNumber<keys.length){
