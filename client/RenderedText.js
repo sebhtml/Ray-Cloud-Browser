@@ -22,55 +22,57 @@
 /**
  * @constructor
  *
- * @param Point pointA
- * @param Point pointB
+ * @param Point center
+ * @param String text
  * @param Material material
  */
-function RenderedLine(pointA, pointB, material) {
-	this.pointA = pointA;
-	this.pointB = pointB;
+function RenderedText(center, text, material) {
+	this.center = center;
+	this.text = text;
 	this.material = material;
 }
 
 /**
  * @return int
  */
-RenderedLine.prototype.getType = function() {
-	return RENDERER_LINE;
+RenderedText.prototype.getType = function() {
+	return RENDERER_TEXT;
 }
 
 /**
  * @return Point
  */
-RenderedLine.prototype.getPointA = function() {
-	return this.pointA;
+RenderedText.prototype.getCenter = function() {
+	return this.center;
 }
 
 /**
- * @return Point
+ * @return String
  */
-RenderedLine.prototype.getPointB = function() {
-	return this.pointB;
+RenderedText.prototype.getText = function() {
+	return this.text;
 }
 
 /**
  * @return Material
  */
-RenderedLine.prototype.getMaterial = function() {
+RenderedText.prototype.getMaterial = function() {
 	return this.material;
 }
 
 /**
  * @param Object context
  */
-RenderedLine.prototype.drawLine = function(context) {
-	context.moveTo(this.pointA.getX(), this.pointA.getY());
-	context.lineTo(this.pointB.getX(), this.pointB.getY());
+RenderedText.prototype.drawText = function(context) {
+	context.fillStyle = this.material.getFillStyle();
+	context.font = this.material.getFont();
+	context.textAlign = this.material.getAlign();
+	context.fillText(this.text, this.center.getX(), this.center.getY());
 }
 
 /**
  * @return String
  */
-RenderedLine.prototype.toString = function() {
-	return this.pointA.toString() + "-" + this.pointB.toString() + "-" + this.material.toString();
+RenderedText.prototype.toString = function() {
+	return this.center.toString() + "-" + this.text + "-" + this.material.toString();
 }

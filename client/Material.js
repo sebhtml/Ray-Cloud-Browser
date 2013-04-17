@@ -26,12 +26,14 @@
  * @param int lineWidth
  * @param String fillStyle
  * @param String font
+ * @param String align
  */
-function Material(strokeStyle, lineWidth, fillStyle, font) {
+function Material(strokeStyle, lineWidth, fillStyle, font, align) {
 	this.strokeStyle = strokeStyle;
 	this.lineWidth = lineWidth;
 	this.fillStyle = fillStyle;
 	this.font = font;
+	this.align = align;
 }
 
 
@@ -64,25 +66,31 @@ Material.prototype.getFont = function() {
 }
 
 /**
+ * @return String
+ */
+Material.prototype.getAlign = function() {
+	return this.align;
+}
+
+/**
  * @param Object context
  */
 Material.prototype.startRendering = function(context) {
 	context.beginPath();
-	context.lineWidth = this.lineWidth;
-	context.strokeStyle = this.strokeStyle;
-	context.fillStyle = this.fillStyle;
 }
 
 /**
  * @param Object context
  */
 Material.prototype.stopRendering = function(context) {
-	context.closePath();
-	if(this.fillStyle != "") {
-		context.fill();
-	}
+	context.lineWidth = this.lineWidth;
+	context.strokeStyle = this.strokeStyle;
+	context.fillStyle = this.fillStyle;
 	if(this.strokeStyle != "") {
 		context.stroke();
+	}
+	if(this.fillStyle != "") {
+		context.fill();
 	}
 }
 

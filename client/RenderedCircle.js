@@ -61,6 +61,14 @@ RenderedCircle.prototype.getMaterial = function() {
 }
 
 /**
+ * @param Object context
+ */
+RenderedCircle.prototype.drawCircle = function(context) {
+	context.moveTo(this.center.getX(), this.center.getY());
+	context.arc(this.center.getX(), this.center.getY(), this.radius, 0, (Math.PI * 2), true);
+}
+
+/**
  * @return String
  */
 RenderedCircle.prototype.toString = function() {

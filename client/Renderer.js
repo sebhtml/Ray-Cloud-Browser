@@ -19,8 +19,9 @@
 /* the code is GPL */
 /* author: Sébastien Boisvert */
 
-var RENDERER_LINE=0;
-var RENDERER_CIRCLE=1;
+var RENDERER_LINE = 0;
+var RENDERER_CIRCLE = 1;
+var RENDERER_TEXT = 2
 
 /**
  * The renderer draws objects in a canvas.
@@ -54,7 +55,7 @@ Renderer.prototype.setPathOperator=function(value){
 	this.pathOperator=value;
 }
 
-Renderer.prototype.drawVertices=function(vertices){
+Renderer.prototype.drawVertices = function(vertices){
 
 	var zoomValue=this.screen.getZoomValue();
 
@@ -176,20 +177,16 @@ Renderer.prototype.drawBufferedOperations=function(context){
 			var operations = this.bufferedOperations[layer][materialType];
 			var j = 0;
 			var material = operations[0].getMaterial();
+
 			material.startRendering(context);
 			while(j < operations.length) {
 				var operation = operations[j++];
 				if(operation.getType() == RENDERER_LINE) {
-					this.drawLine(context,
-						      operation.getPointA().getX(),
-						      operation.getPointA().getY(),
-						      operation.getPointB().getX(),
-						      operation.getPointB().getY());
+					operation.drawLine(context);
 				} else if(operation.getType() == RENDERER_CIRCLE) {
-					this.drawCircle(context,
-							operation.getCenter().getX(),
-							operation.getCenter().getY(),
-							operation.getRadius());
+					operation.drawCircle(context);
+				} else if(operation.getType() == RENDERER_TEXT) {
+					operation.drawText(context);
 				}
 			}
 			material.stopRendering(context);
@@ -246,17 +243,12 @@ Renderer.prototype.drawArcs=function(vertices){
 	}
 }
 
-Renderer.prototype.drawLine = function(context,ax,ay,bx,by) {
-	context.moveTo(ax,ay);
-	context.lineTo(bx,by);
-}
-
 Renderer.prototype.drawBufferedLine = function(context, ax, ay, bx, by, lineWidth, color, layer) {
 	if(!(layer in this.bufferedOperations)) {
 		this.bufferedOperations[layer] = new Object();
 	}
 
-	var material = new Material(color, lineWidth, "", "");
+	var material = new Material(color, lineWidth, "", "", "");
 	var materialKey = material.toString();
 
 	if(!(materialKey in this.bufferedOperations[layer])) {
@@ -353,45 +345,52 @@ Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,ve
 	}
 }
 
-Renderer.prototype.drawVertex=function(context,originX,originY,zoomValue,vertex){
+Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, vertex){
 
-	if(zoomValue<=this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
+	if(zoomValue <= this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
 		return;
 
-	var radius=vertex.getRadius();
-	var theColor= vertex.getColor();
+	var lineWidth = this.lineWidth * zoomValue
+	var radius = vertex.getRadius() * zoomValue;
+	var x = (vertex.getX() - originX) * zoomValue;
+	var y = (vertex.getY() - originY) * zoomValue;
+	var theColor = vertex.getColor();
 
-	var x=vertex.getX()-originX;
-	var y=vertex.getY()-originY;
-
-	if(vertex.isColored()){
-		context.beginPath();
-		context.fillStyle = theColor;
-		context.strokeStyle = "rgb(0,0,0)";
-		context.lineWidth=this.lineWidth*zoomValue;
-		context.arc((x)*zoomValue,
-				(y)*zoomValue,zoomValue*radius, 0, Math.PI*2, true);
-
-		context.fill();
-		context.closePath();
-		context.stroke();
+	if(vertex.isColored()) {
+		this.drawBufferedCircle(context, x, y, radius, "black", lineWidth, theColor, 20);
 	}
 
-	context.fillStyle    = '#000000';
-	context.font         = 'bold '+Math.floor(12*zoomValue)+'px Arial';
+	var fillStyle = 'black';
+	var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+	var align = "center";
+	var text = vertex.getLabel();
 
-	if(vertex.isColored()){
-		context.fillStyle="black";
-		context.textAlign="center";
-		context.fillText(vertex.getLabel(),(x)*zoomValue,(y+radius/2)*zoomValue);
+	if(vertex.isColored()) {
+		this.drawBufferedText(context, x, (y + radius / 2), text, align, fillStyle, font, 30);
 
-	}else if(this.m_showCoverage){
-		context.fillStyle="black";
-		context.fillText(vertex.getLabel(),(x-radius)*zoomValue,(y+radius/2)*zoomValue);
+	} else if(this.m_showCoverage) {
+		this.drawBufferedText(context, (x - radius), (y + radius / 2), text, "", fillStyle, font, 30);
 	}
 }
 
-Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,vertex){
+Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillStyle, font, layer
+
+) {
+	if(!(layer in this.bufferedOperations)) {
+		this.bufferedOperations[layer] = new Object();
+	}
+
+	var material = new Material("", 0, fillStyle, font, align);
+	var materialKey = material.toString();
+
+	if(!(materialKey in this.bufferedOperations[layer])) {
+		this.bufferedOperations[layer][materialKey] = new Array();
+	}
+
+	this.bufferedOperations[layer][materialKey].push(new RenderedText(new Point(x, y), text, material));
+}
+
+Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,vertex){
 
 	if(!vertex.isColored())
 		return;
@@ -401,7 +400,6 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 	var radius=vertex.getRadius();
 	var theColor= vertex.getColor();
 	var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
-
 	var x=vertex.getX()-originX;
 	var y=vertex.getY()-originY;
 
@@ -424,24 +422,19 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 			radius2*=this.pathMultiplierMacro;
 
 		var layer = -(colors.length - i - 1);
-		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2,
-			pathColor, layer);
+		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2, "", 0, pathColor, layer);
 
 		i++;
 		extra-=this.extraMultiplier;
 	}
 }
 
-Renderer.prototype.drawCircle=function(context, x, y, radius) {
-	context.arc(x,y,radius, 0, Math.PI*2, true);
-}
-
-Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, color, layer) {
+Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, strokeStyle, lineWidth, fillStyle, layer) {
 	if(!(layer in this.bufferedOperations)) {
 		this.bufferedOperations[layer] = new Object();
 	}
 
-	var material = new Material("", 0, color, "");
+	var material = new Material(strokeStyle, 0, fillStyle, "", "");
 	var materialKey = material.toString();
 
 	if(!(materialKey in this.bufferedOperations[layer])) {
@@ -451,7 +444,7 @@ Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, color, l
 	this.bufferedOperations[layer][materialKey].push(new RenderedCircle(new Point(x, y), radius, material));
 }
 
-Renderer.prototype.draw=function(objects) {
+Renderer.prototype.draw = function(objects) {
 	var context = this.screen.getContext();
 	this.drawVertexPowers(objects);
 
@@ -459,9 +452,9 @@ Renderer.prototype.draw=function(objects) {
 		this.drawPaths(objects);
 
 	this.drawArcs(objects);
-
-	this.drawBufferedOperations(context);     this.m_showCoverage=this.screen.getHumanInterface().getInventory().showCoverageForRendering();
+	this.m_showCoverage = this.screen.getHumanInterface().getInventory().showCoverageForRendering();
 	this.drawVertices(objects);
+	this.drawBufferedOperations(context);
 
 /*
  * Only stroke once.
@@ -469,5 +462,4 @@ Renderer.prototype.draw=function(objects) {
  * "In case of line drawing, combine as many lineTo commands before calling stroke."
  * --Petteri Hietavirta
  */
-	//context.stroke();
 }
