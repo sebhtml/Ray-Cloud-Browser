@@ -70,6 +70,7 @@ Material.prototype.startRendering = function(context) {
 	context.beginPath();
 	context.lineWidth = this.lineWidth;
 	context.strokeStyle = this.strokeStyle;
+	context.fillStyle = this.fillStyle;
 }
 
 /**
@@ -77,7 +78,12 @@ Material.prototype.startRendering = function(context) {
  */
 Material.prototype.stopRendering = function(context) {
 	context.closePath();
-	context.stroke();
+	if(this.fillStyle != "") {
+		context.fill();
+	}
+	if(this.strokeStyle != "") {
+		context.stroke();
+	}
 }
 
 /**

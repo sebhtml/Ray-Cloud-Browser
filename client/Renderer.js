@@ -175,29 +175,24 @@ Renderer.prototype.drawBufferedOperations=function(context){
 		for(var materialType in this.bufferedOperations[layer]) {
 			var operations = this.bufferedOperations[layer][materialType];
 			var j = 0;
-
+			var material = operations[0].getMaterial();
+			material.startRendering(context);
 			while(j < operations.length) {
-
 				var operation = operations[j++];
-				var material = operation.getMaterial();
 				if(operation.getType() == RENDERER_LINE) {
-					material.startRendering(context);
 					this.drawLine(context,
 						      operation.getPointA().getX(),
 						      operation.getPointA().getY(),
 						      operation.getPointB().getX(),
-						      operation.getPointB().getY(),
-						      material.getLineWidth(),
-						      material.getStrokeStyle());
-					material.stopRendering(context);
+						      operation.getPointB().getY());
 				} else if(operation.getType() == RENDERER_CIRCLE) {
 					this.drawCircle(context,
 							operation.getCenter().getX(),
 							operation.getCenter().getY(),
-							operation.getRadius(),
-							material.getFillStyle());
+							operation.getRadius());
 				}
 			}
+			material.stopRendering(context);
 		}
 	}
 	this.bufferedOperations=new Object();
@@ -251,7 +246,7 @@ Renderer.prototype.drawArcs=function(vertices){
 	}
 }
 
-Renderer.prototype.drawLine = function(context,ax,ay,bx,by,lineWidth,color) {
+Renderer.prototype.drawLine = function(context,ax,ay,bx,by) {
 	context.moveTo(ax,ay);
 	context.lineTo(bx,by);
 }
@@ -437,12 +432,8 @@ Renderer.prototype.drawPathVertex=function(context,originX,originY,zoomValue,ver
 	}
 }
 
-Renderer.prototype.drawCircle=function(context,x,y,radius,color){
-	context.beginPath();
-	context.fillStyle =color;
+Renderer.prototype.drawCircle=function(context, x, y, radius) {
 	context.arc(x,y,radius, 0, Math.PI*2, true);
-	context.fill();
-	context.closePath();
 }
 
 Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, color, layer) {
