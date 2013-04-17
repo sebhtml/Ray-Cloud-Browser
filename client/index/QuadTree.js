@@ -117,19 +117,6 @@ QuadTree.prototype.split = function() {
 	this.createArrays();
 }
 
-QuadTree.prototype.printStatus = function() {
-	console.log("QuadTree object");
-	console.log(" center: (" + this.center.getX() + ", " +
-		this.center.getY() + ") width: " + this.width + " height: " + this.height);
-	console.log(" objects: " + this.objects.length);
-
-	console.log(" southWest: " + ((this.southWest == null) ? "null" : this.southWest.objects.length));
-	console.log(" southEast: " + ((this.southEast == null) ? "null" : this.southEast.objects.length));
-	console.log(" northWest: " + ((this.northWest == null) ? "null" : this.northWest.objects.length));
-	console.log(" northEast: " + ((this.northEast == null) ? "null" : this.northEast.objects.length));
-}
-
-
 /**
  * Search the element in the tree and return the good area
  *
@@ -382,16 +369,34 @@ QuadTree.prototype.checkOverlapBetweenCircleAndPoint = function(center, radius, 
  *
  */
 QuadTree.prototype.update = function(oldCenter, newCenter, object) {
-
-	if(this.isLeaf()){
+	if(this.isLeaf()) {
 		for(var i = 0; i < this.points.length; i++) {
 			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
 				this.points[i] = newCenter;
 				return;
+			}
 		}
-		}
+		return;
 	}
+	var oldTree = this.classify(oldCenter, false);
+	var newTree = this.classify(newCenter, true);
+	if(oldTree.toString() == newTree.toString()) {
+		newTree.update(oldCenter, newCenter, object);
+	} else {
+		oldTree.remove(oldCenter, object);
+		newTree.insert(newCenter, object);
+	}
+	return;
+}
 
-	this.remove(oldCenter, object);
-	this.insert(newCenter, object);
+/**
+ *
+ */
+QuadTree.prototype.toString = function() {
+	return 	this.numberMaxElementsPerNode + "-" +
+		this.center.toString() + "-" +
+		this.width + "-" +
+		this.height + "-" +
+		this.nbElements + "-" +
+		this.depth;
 }
