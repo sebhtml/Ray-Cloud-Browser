@@ -177,14 +177,23 @@ Renderer.prototype.drawBufferedOperations=function(context){
 			var j = 0;
 
 			while(j < operations.length) {
-				var operation = operations[j++];
-				if(operation[0] == RENDERER_LINE) {
-					this.drawLine(context,operation[1],operation[2],operation[3],
-						operation[4],operation[5],operation[6]);
 
-				} else if(operation[0] == RENDERER_CIRCLE) {
-					this.drawCircle(context,operation[1],operation[2],operation[3],
-						operation[4]);
+				var operation = operations[j++];
+				if(operation.getType() == RENDERER_LINE) {
+					this.drawLine(context,
+						      operation.getPointA().getX(),
+						      operation.getPointA().getY(),
+						      operation.getPointB().getX(),
+						      operation.getPointB().getY(),
+						      operation.getMaterial().getLineWidth(),
+						      operation.getMaterial().getStrokeStyle());
+
+				} else if(operation.getType() == RENDERER_CIRCLE) {
+					this.drawCircle(context,
+							operation.getCenter().getX(),
+							operation.getCenter().getY(),
+							operation.getRadius(),
+							operation.getMaterial().getFillStyle());
 				}
 			}
 		}
@@ -252,19 +261,18 @@ Renderer.prototype.drawLine=function(context,ax,ay,bx,by,lineWidth,color){
 }
 
 Renderer.prototype.drawBufferedLine = function(context, ax, ay, bx, by, lineWidth, color, layer) {
-
-	var operation=[RENDERER_LINE,ax,ay,bx,by,lineWidth,color];
-
 	if(!(layer in this.bufferedOperations)) {
 		this.bufferedOperations[layer] = new Object();
 	}
 
 	var material = new Material(color, lineWidth, "", "");
-	if(!(material in this.bufferedOperations[layer])) {
-		this.bufferedOperations[layer][material] = new Array();
+	var materialKey = material.toString();
+
+	if(!(materialKey in this.bufferedOperations[layer])) {
+		this.bufferedOperations[layer][materialKey] = new Array();
 	}
 
-	this.bufferedOperations[layer][material.toString()].push(operation);
+	this.bufferedOperations[layer][materialKey].push(new RenderedLine(new Point(ax, ay), new Point(bx, by), material));
 }
 
 /*
@@ -441,22 +449,22 @@ Renderer.prototype.drawCircle=function(context,x,y,radius,color){
 	context.closePath();
 }
 
-Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, color, layer){
-	var operation=[RENDERER_CIRCLE,x,y,radius,color];
-
+Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, color, layer) {
 	if(!(layer in this.bufferedOperations)) {
 		this.bufferedOperations[layer] = new Object();
 	}
 
 	var material = new Material("", 0, color, "");
-	if(!(material in this.bufferedOperations[layer])) {
-		this.bufferedOperations[layer][material] = new Array();
+	var materialKey = material.toString();
+
+	if(!(materialKey in this.bufferedOperations[layer])) {
+		this.bufferedOperations[layer][materialKey] = new Array();
 	}
 
-	this.bufferedOperations[layer][material.toString()].push(operation);
+	this.bufferedOperations[layer][materialKey].push(new RenderedCircle(new Point(x, y), radius, material));
 }
 
-Renderer.prototype.draw=function(objects){
+Renderer.prototype.draw=function(objects) {
 	var context = this.screen.getContext();
 	this.drawVertexPowers(objects);
 
