@@ -168,6 +168,8 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			hits=vertices;
 		}
 
+		//console.log("Hits: " + hits.length + " TreeSize: " + this.quadTree.getSize());
+
 		var hitNumber=0;
 		while(hitNumber<hits.length){
 
@@ -352,7 +354,7 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 		vertex.update(this.timeStep, true);
 
 		if(this.useQuadTree){
-			this.quadTree.update(vertex.getOldCenter(), vertex.getCenter(), vertex.getSequence());
+			this.quadTree.update(vertex.getOldCenter(), vertex.getCenter(), vertex.getSequence(), true);
 		}
 
 		this.lastIndex++;

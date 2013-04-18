@@ -134,31 +134,53 @@ QuadTree.prototype.remove = function(centerObject, object) {
  * @param oldCenter (Point) Previous position
  * @param newCenter (Point) New position
  * @param object (Object) Object to move
+ * @param forceInsertion true if the object is not already there.
  *
- * @return (undefined) Nothing...
+ * @return true if the update was successful.
  */
-QuadTree.prototype.update = function(oldCenter, newCenter, object) {
+QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertion) {
 	//If is a leaf
 	if(this.isLeaf()) {
 		for(var i = 0; i < this.points.length; i++) {
 			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
 				this.points[i] = newCenter;
-				return;
+				return true;
 			}
 		}
-		return;
+
+		// Insert the object because it was not found.
+		if(forceInsertion) {
+			this.points.push(newCenter);
+			this.objects.push(object);
+		}
+		return forceInsertion;
 	}
-	//Else if test if the old and new tree are the same
+
+	// at this point, we are not in a leaf.
+	// check if the oldCenter actually exists
 	var oldTree = this.classify(oldCenter, false);
+
+	// return false if the object does not exist and 
+	// forceInsertion is false
+	if(oldTree == null && !forceInsertion)
+		return false;
+
+	// at this point, there are two cases:
+	// 1. the object was in the old tree, in the case, we update that anyway
+	// 2. the object was not in the old tree, but forceInsertion is true
 	var newTree = this.classify(newCenter, true);
-	if(oldTree.toString() == newTree.toString()) {
-		newTree.update(oldCenter, newCenter, object);
-	//Else is not the same tree
-	} else {
-		oldTree.remove(oldCenter, object);
-		newTree.insert(newCenter, object);
+
+	//Else if test if the old and new tree are the same
+	// here we just perform a deleguation of the update call
+	if(oldTree.equals(newTree)) {
+		return newTree.update(oldCenter, newCenter, object, forceInsertion);
 	}
-	return;
+
+	//Else is not the same tree
+	oldTree.remove(oldCenter, object);
+	newTree.insert(newCenter, object);
+
+	return true;
 }
 
 /**
@@ -442,4 +464,12 @@ QuadTree.prototype.toString = function() {
 		this.northEast + "-" +
 		this.southWest + "-" +
 		this.northWest;
+}
+
+QuadTree.prototype.getCenter = function() {
+	return this.center;
+}
+
+QuadTree.prototype.equals = function(tree) {
+	return this.getCenter().equals(tree.getCenter());
 }

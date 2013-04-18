@@ -44,7 +44,7 @@ function testUpdate(tests) {
 	quadTree.insert(new Point(0, 0), 0);
 	quadTree.insert(new Point(5, 5), 5);
 
-	quadTree.update(new Point(5, 5), new Point(25, 25), 5);
+	quadTree.update(new Point(5, 5), new Point(25, 25), 5, false);
 	var resultOldPoint = quadTree.query(new Point(5, 5), 0, 0);
 	var resultNewPoint = quadTree.query(new Point(25, 25), 0, 0);
 	tests.assertEquals("Not equals, old point is not undefined case 1", undefined, resultOldPoint[0]);
@@ -60,7 +60,7 @@ function testUpdate(tests) {
 	tests.assertEquals("Not equals, tab of result size is not 6: " + tabResult, 6, tabResult.length);
 	tests.assertEquals("Not equals, quad tree size is not 6: " + tabResult, 6, quadTree.getSize());
 
-	quadTree.update(new Point(0, 0), new Point(1500, 1500), 0);
+	quadTree.update(new Point(0, 0), new Point(1500, 1500), 0, false);
 	var resultOldPoint = quadTree.query(new Point(0, 0), 0, 0);
 	var resultNewPoint = quadTree.query(new Point(1500, 1500), 0, 0);
 	tests.assertEquals("Not equals, old point is not undefined", undefined, resultOldPoint[0]);
@@ -191,7 +191,7 @@ function testOnVeryLargeStructure(tests) {
 	for(var i = 0; i < n; i++) {
 		var oldPoint = points[i];
 		var newPoint = new Point(oldPoint.getX() / 2, oldPoint.getY() / 2);
-		tree.update(oldPoint, newPoint, i);
+		tree.update(oldPoint, newPoint, i, false);
 
 		var elements = tree.queryCircle(oldPoint, 0);
 		tests.assertEquals("testOnVeryLargeStructure 302", 0, elements.length);
