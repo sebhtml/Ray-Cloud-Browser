@@ -39,7 +39,7 @@ function testUpdate(tests) {
 	var quadTree = new QuadTree(4, new Point(1000, 1000), 2000, 2000);
 
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
-	tests.assertTrue("Not true, quad tree is not empty", quadTree.size() == 0);
+	tests.assertTrue("Not true, quad tree is not empty", quadTree.getSize() == 0);
 
 	quadTree.insert(new Point(0, 0), 0);
 	quadTree.insert(new Point(5, 5), 5);
@@ -58,7 +58,7 @@ function testUpdate(tests) {
 	tabResult = new Array();
 	tabResult = quadTree.queryAll();
 	tests.assertEquals("Not equals, tab of result size is not 6: " + tabResult, 6, tabResult.length);
-	tests.assertEquals("Not equals, quad tree size is not 6: " + tabResult, 6, quadTree.size());
+	tests.assertEquals("Not equals, quad tree size is not 6: " + tabResult, 6, quadTree.getSize());
 
 	quadTree.update(new Point(0, 0), new Point(1500, 1500), 0);
 	var resultOldPoint = quadTree.query(new Point(0, 0), 0, 0);
@@ -87,7 +87,7 @@ function testSmallTree(tests) {
 
 	var result2 = smallQuadTree.query(new Point(width / 2, height / 2), width, height);
 	tests.assertTrue("Tree with elements", result2.length > 0);
-	tests.assertEquals("Size of tree", 4, smallQuadTree.size());
+	tests.assertEquals("Size of tree", 4, smallQuadTree.getSize());
 	tests.assertEquals("Size of tree", 4, result2.length);
 }
 
@@ -147,7 +147,7 @@ function testBigTree(tests) {
 
 	var result = bigQuadTree.insert(new Point(-10, -10), 999999);
 	tests.assertEquals("testBigTree 401", false, result);
-	tests.assertEquals("testBigTree 404", 40000, bigQuadTree.size());
+	tests.assertEquals("testBigTree 404", 40000, bigQuadTree.getSize());
 
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
@@ -163,7 +163,7 @@ function testOnVeryLargeStructure(tests) {
 	var maximumNumberOfObjectsPerCell = 32;
 	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
 
-	tests.assertEquals("testOnVeryLargeStructure 001", 0, tree.size());
+	tests.assertEquals("testOnVeryLargeStructure 001", 0, tree.getSize());
 
 	var n = 10000;
 
@@ -181,12 +181,12 @@ function testOnVeryLargeStructure(tests) {
 		var elements = tree.queryCircle(point, 0);
 		tests.assertEquals("testOnVeryLargeStructure 002", 1, elements.length);
 		tests.assertEquals("testOnVeryLargeStructure 003", i, elements[0]);
-		tests.assertEquals("testOnVeryLargeStructure 088", i + 1, tree.size());
+		tests.assertEquals("testOnVeryLargeStructure 088", i + 1, tree.getSize());
 
 		points.push(point);
 	}
 
-	tests.assertEquals("testOnVeryLargeStructure 128", n, tree.size());
+	tests.assertEquals("testOnVeryLargeStructure 128", n, tree.getSize());
 
 	for(var i = 0; i < n; i++) {
 		var oldPoint = points[i];
@@ -197,10 +197,10 @@ function testOnVeryLargeStructure(tests) {
 		tests.assertEquals("testOnVeryLargeStructure 302", 0, elements.length);
 		elements = tree.queryCircle(newPoint, 0);
 		tests.assertEquals("testOnVeryLargeStructure 342", 1, elements.length);
-		tests.assertEquals("testOnVeryLargeStructure 388", n, tree.size());
+		tests.assertEquals("testOnVeryLargeStructure 388", n, tree.getSize());
 	}
 
-	tests.assertEquals("testOnVeryLargeStructure 488", n, tree.size());
+	tests.assertEquals("testOnVeryLargeStructure 488", n, tree.getSize());
 }
 
 function testObjectsThatAreOutside(tests) {
@@ -209,7 +209,7 @@ function testObjectsThatAreOutside(tests) {
 	var maximumNumberOfObjectsPerCell = 32;
 	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
 
-	tests.assertEquals("testObjectsThatAreOutside 001", 0, tree.size());
+	tests.assertEquals("testObjectsThatAreOutside 001", 0, tree.getSize());
 
 	var i = 91;
 	var x = -2000000000;
@@ -218,7 +218,7 @@ function testObjectsThatAreOutside(tests) {
 	var result = tree.insert(point, i);
 
 	tests.assertEquals("testObjectsThatAreOutside 050", false, result);
-	tests.assertEquals("testObjectsThatAreOutside 101", 0, tree.size());
+	tests.assertEquals("testObjectsThatAreOutside 101", 0, tree.getSize());
 
 	var elements = tree.queryAll();
 
