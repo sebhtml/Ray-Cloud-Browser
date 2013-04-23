@@ -117,7 +117,7 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		this.objects = objects;
 		if(position != -1) {
 			this.nbElements--;
-			this.checkIfChildrenIsVoid();
+			this.checkIfChildrenAreEmpty();
 		}
 		return position != -1;
 	} else {
@@ -128,29 +128,29 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		var remove = tree.remove(centerObject, object);
 		if(remove) {
 			this.nbElements--;
-			this.checkIfChildrenIsVoid();
+			this.checkIfChildrenAreEmpty();
 		}
 		return remove;
 	}
 }
 
-QuadTree.prototype.checkIfChildrenIsVoid = function() {
-	if(this.southEast != null && this.isEmptyLeaf(this.southEast)) {
+QuadTree.prototype.checkIfChildrenAreEmpty = function() {
+	if(this.southEast != null && this.southEast.isEmptyLeaf()) {
 		this.southEast = null;
 	}
-	if(this.northEast != null && this.isEmptyLeaf(this.northEast)) {
+	if(this.northEast != null && this.northEast.isEmptyLeaf()) {
 		this.northEast = null;
 	}
-	if(this.southWest != null && this.isEmptyLeaf(this.southWest)) {
+	if(this.southWest != null && this.southWest.isEmptyLeaf()) {
 		this.southWest = null;
 	}
-	if(this.northWest != null && this.isEmptyLeaf(this.northWest)) {
+	if(this.northWest != null && this.northWest.isEmptyLeaf()) {
 		this.northWest = null;
 	}
 }
 
-QuadTree.prototype.isEmptyLeaf = function(quadTree) {
-	return quadTree.getSize() <= 0 && quadTree.isLeaf();
+QuadTree.prototype.isEmptyLeaf = function() {
+	return this.isLeaf() && this.objects.length == 0;
 }
 
 /**
@@ -177,7 +177,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		if(forceInsertion) {
 			this.insert(newCenter, object);
 		}
-		this.checkIfChildrenIsVoid();
+		this.checkIfChildrenAreEmpty();
 		return forceInsertion;
 	}
 
