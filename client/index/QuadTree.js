@@ -206,7 +206,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	}
 
 	//Else is not the same tree
-	
+
 	oldTree.remove(oldCenter, object);
 	newTree.insert(newCenter, object);
 
@@ -573,4 +573,8 @@ QuadTree.prototype.printRecursive = function() {
 	if(this.northWest != null) {
 		this.northWest.printRecursive();
 	}
+}
+
+QuadTree.prototype.getNumberOfElementsInLeaf = function() {
+	return this.objects.length;
 }

@@ -372,9 +372,7 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	}
 }
 
-Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillStyle, font, layer
-
-) {
+Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillStyle, font, layer) {
 	if(!(layer in this.bufferedOperations)) {
 		this.bufferedOperations[layer] = new Object();
 	}
@@ -493,7 +491,10 @@ Renderer.prototype.drawQuadTree = function(context) {
 		this.drawBufferedTwoPoint(context, pointB, pointC, lineWidth, theColor, 100);
 		this.drawBufferedTwoPoint(context, pointB, pointD, lineWidth, theColor, 100);
 		this.drawBufferedTwoPoint(context, pointC, pointD, lineWidth, theColor, 100);
-		this.drawBufferedText(context, (centerX - originX) * zoomValue, ((centerY -(height - 30) / 2) - originY) * zoomValue, currentQuadTree.getSize(), "center", "red", "arial", 30);	
+
+		var textX = (centerX - originX) * zoomValue;
+		var textY = ((centerY -(height - 30) / 2) - originY) * zoomValue;
+		this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf(), "center", "red", "arial", 30);
 	}
 }
 
