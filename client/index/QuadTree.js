@@ -135,18 +135,22 @@ QuadTree.prototype.remove = function(centerObject, object) {
 }
 
 QuadTree.prototype.checkIfChildrenIsVoid = function() {
-	if(this.southEast != null && this.southEast.getSize() <= 0) {
+	if(this.southEast != null && this.isEmptyLeaf(this.southEast)) {
 		this.southEast = null;
 	}
-	if(this.northEast != null && this.northEast.getSize() <= 0) {
+	if(this.northEast != null && this.isEmptyLeaf(this.northEast)) {
 		this.northEast = null;
 	}
-	if(this.southWest != null && this.southWest.getSize() <= 0) {
+	if(this.southWest != null && this.isEmptyLeaf(this.southWest)) {
 		this.southWest = null;
 	}
-	if(this.northWest != null && this.northWest.getSize() <= 0) {
+	if(this.northWest != null && this.isEmptyLeaf(this.northWest)) {
 		this.northWest = null;
 	}
+}
+
+QuadTree.prototype.isEmptyLeaf = function(quadTree) {
+	return quadTree.getSize() <= 0 && quadTree.isLeaf();
 }
 
 /**
