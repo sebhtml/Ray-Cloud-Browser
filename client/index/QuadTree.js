@@ -251,7 +251,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		if(centerObject.getY() < this.center.getY()) {
 			if(this.southWest == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() - deltaY);
-				this.southWest = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth++);
+				this.southWest = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth+1);
 			}
 			//this.southWest.printStatus();
 			return this.southWest;
@@ -260,7 +260,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		} else {
 			if(this.northWest == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() - deltaX, this.center.getY() + deltaY);
-				this.northWest = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth++);
+				this.northWest = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth+1);
 			}
 			return this.northWest;
 		}
@@ -269,7 +269,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		if(centerObject.getY() < this.center.getY()) {
 			if(this.southEast == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() - deltaY);
-				this.southEast = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth++);
+				this.southEast = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth+1);
 			}
 			return this.southEast;
 
@@ -277,7 +277,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		} else {
 			if(this.northEast == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() + deltaY);
-				this.northEast = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth++);
+				this.northEast = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2, this.depth+1);
 			}
 			return this.northEast;
 		}
