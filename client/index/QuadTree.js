@@ -324,7 +324,7 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
 				elements.push(this.objects[i]);
 			}
 		}
-		return elements;
+		return;
 	}
 	if(this.southEast != null && this.southEast.checkOverlap(center, radius, radius)) {
 		this.southEast.queryCircleRecursive(center, radius, elements);
@@ -348,6 +348,43 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
 QuadTree.prototype.queryAll = function() {
 	var elements = new Array();
 	this.queryRecursive(this.center, this.width, this.height, elements);
+	return elements;
+}
+
+
+/**
+ * Return a list of leafs
+ *
+ * @return (Array<QuadTree>) List of leafs
+ */
+QuadTree.prototype.queryLeavesRecursive = function(elements) {
+	if(this.isLeaf()) {
+		console.log(this.getElements().length);
+		elements.push(this);
+		return;
+	}
+	if(this.southEast != null) {
+		this.southEast.queryLeafsRecursive(elements);
+	}
+	if(this.northEast != null) {
+		this.northEast.queryLeafsRecursive(elements);
+	}
+	if(this.southWest != null) {
+		this.southWest.queryLeafsRecursive(elements);
+	}
+	if(this.northWest != null) {
+		this.northWest.queryLeafsRecursive(elements);
+	}
+}
+
+/**
+ * Return a list of leafs
+ *
+ * @return (Array<QuadTree>) List of leafs
+ */
+QuadTree.prototype.queryAllLeaves = function() {
+	var elements = new Array();
+	this.queryLeavesRecursive(elements);
 	return elements;
 }
 
@@ -472,4 +509,39 @@ QuadTree.prototype.getCenter = function() {
 
 QuadTree.prototype.equals = function(tree) {
 	return this.getCenter().equals(tree.getCenter());
+}
+
+QuadTree.prototype.getHeight = function() {
+	return this.height;
+}
+
+QuadTree.prototype.getWidth = function() {
+	return this.width;
+}
+
+QuadTree.prototype.getElements = function() {
+	var elements = new Array();
+	for(var i = 0; i < this.objects.length; i++) {
+		elements.push(this.objects[i]);
+	}
+	return elements;
+}
+
+QuadTree.prototype.printRecursive = function() {
+	if(this.isLeaf()) {
+		console.log("New Cell");
+		return;
+	}
+	if(this.southEast != null) {
+		this.southEast.printRecursive();
+	}
+	if(this.northEast != null) {
+		this.northEast.printRecursive();
+	}
+	if(this.southWest != null) {
+		this.southWest.printRecursive();
+	}
+	if(this.northWest != null) {
+		this.northWest.printRecursive();
+	}
 }

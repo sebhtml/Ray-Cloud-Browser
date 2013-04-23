@@ -29,7 +29,6 @@ var RENDERER_TEXT = 2
  * \author Sébastien Boisvert
  */
 function Renderer(screen){
-
 	this.pathMultiplierForVertex=1.5;
 	this.pathMultiplierForArc=2;
 	this.zoomForLevelOfDetails=0.12;
@@ -454,6 +453,9 @@ Renderer.prototype.draw = function(objects) {
 	this.drawArcs(objects);
 	this.m_showCoverage = this.screen.getHumanInterface().getInventory().showCoverageForRendering();
 	this.drawVertices(objects);
+	if(this.screen.getDebugMode()) {
+		this.drawQuadTree();
+	}
 	this.drawBufferedOperations(context);
 
 /*
@@ -462,4 +464,34 @@ Renderer.prototype.draw = function(objects) {
  * "In case of line drawing, combine as many lineTo commands before calling stroke."
  * --Petteri Hietavirta
  */
+}
+
+Renderer.prototype.drawQuadTree = function(context) {
+	var zoomValue = this.screen.getZoomValue();
+	var listOfQuadTrees = this.quadTree.queryAllLeaves();
+	var lineWidth = 1 * zoomValue;
+	var theColor = "black";
+
+	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
+		var currentQuadTree = listOfQuadTrees[k];
+		var pointA = new Point((currentQuadTree.getCenter() - (currentQuadTree.getWidth / 2)) * zoomValue, (currentQuadTree.getCenter() - (currentQuadTree.getHeight / 2)) * zoomValue);
+		var pointB = new Point(currentQuadTree.getWidth * zoomValue, (currentQuadTree.getCenter() - (currentQuadTree.getHeight / 2)) * zoomValue);
+		var pointC = new Point((currentQuadTree.getCenter() - (currentQuadTree.getWidth / 2)) * zoomValue, currentQuadTree.getHeight * zoomValue);
+		var pointD = new Point(currentQuadTree.getWidth * zoomValue, currentQuadTree.getHeight * zoomValue);
+
+		this.drawBufferedTwoPoint(context, pointA, pointB, lineWidth, theColor, 100);
+		this.drawBufferedTwoPoint(context, pointA, pointC, lineWidth, theColor, 100);
+		this.drawBufferedTwoPoint(context, pointA, pointD, lineWidth, theColor, 100);
+		this.drawBufferedTwoPoint(context, pointB, pointC, lineWidth, theColor, 100);
+		this.drawBufferedTwoPoint(context, pointB, pointD, lineWidth, theColor, 100);
+		this.drawBufferedTwoPoint(context, pointC, pointD, lineWidth, theColor, 100);
+	}
+}
+
+Renderer.prototype.setQuadTree = function(quadTree) {
+	this.quadTree = quadTree;
+}
+
+Renderer.prototype.drawBufferedTwoPoint = function(context, pointA, pointB, lineWidth, theColor, layer) {
+	this.drawBufferedLine(context, pointA.getX(), pointA.getY(), pointB.getX(), pointB.getY(), lineWidth, theColor, layer);
 }

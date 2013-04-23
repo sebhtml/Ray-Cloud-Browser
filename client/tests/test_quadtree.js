@@ -207,7 +207,7 @@ function testObjectsThatAreOutside(tests) {
 	var treeCenter = new Point(0, 0);
 	var halfWidth = 1000000000;
 	var maximumNumberOfObjectsPerCell = 32;
-	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth);
 
 	tests.assertEquals("testObjectsThatAreOutside 001", 0, tree.getSize());
 
@@ -225,11 +225,29 @@ function testObjectsThatAreOutside(tests) {
 	tests.assertEquals("testObjectsThatAreOutside 201", 0, elements.length);
 }
 
+function testNumberOfElements(tests) {
+	var width = 2000;
+	var treeCenter = new Point(width / 2, width / 2);
+	var maximumNumberOfObjectsPerCell = 4;
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, width);
+
+	for(var i = 0; i < 5; i++) {
+		var x = i;
+		var y = i;
+		var point = new Point(x, y);
+		tree.insert(point, i);
+	}
+	tree.update(new Point(1, 1), new Point(50, 50), 1, true);
+	tests.assertEquals("Test number of elements into the QuadTree 001", 0, tree.getElements().length);
+	//tree.printRecursive();
+}
+
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
 testUpdate(tests);
 testOnVeryLargeStructure(tests);
 testObjectsThatAreOutside(tests);
+testNumberOfElements(tests);
 tests.showResults();
 

@@ -366,3 +366,7 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 PhysicsEngine.prototype.resetActiveIndex=function(){
 	this.activeIndex=0;
 }
+
+PhysicsEngine.prototype.getQuadTree = function() {
+	return this.quadTree;
+}

@@ -111,6 +111,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.humanInterface.getInventory().setPathOperator(this.pathOperator);
 
 	this.engine=new PhysicsEngine(this);
+	this.renderer.setQuadTree(this.engine.getQuadTree());
 
 	this.graph=new Graph(this.getWidth(),this.getHeight());
 
@@ -1011,4 +1012,8 @@ Screen.prototype.centerOnObject=function(object){
 
 Screen.prototype.getHumanInterface=function(){
 	return this.humanInterface;
+}
+
+Screen.prototype.getDebugMode = function(){
+	return this.debugMode;
 }
