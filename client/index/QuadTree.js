@@ -157,7 +157,6 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		if(forceInsertion) {
 			this.insert(newCenter, object);
 		}
-
 		return forceInsertion;
 	}
 
@@ -369,21 +368,20 @@ QuadTree.prototype.queryAll = function() {
  */
 QuadTree.prototype.queryLeavesRecursive = function(elements) {
 	if(this.isLeaf()) {
-		console.log(this.getElements().length);
 		elements.push(this);
 		return;
 	}
 	if(this.southEast != null) {
-		this.southEast.queryLeafsRecursive(elements);
+		this.southEast.queryLeavesRecursive(elements);
 	}
 	if(this.northEast != null) {
-		this.northEast.queryLeafsRecursive(elements);
+		this.northEast.queryLeavesRecursive(elements);
 	}
 	if(this.southWest != null) {
-		this.southWest.queryLeafsRecursive(elements);
+		this.southWest.queryLeavesRecursive(elements);
 	}
 	if(this.northWest != null) {
-		this.northWest.queryLeafsRecursive(elements);
+		this.northWest.queryLeavesRecursive(elements);
 	}
 }
 

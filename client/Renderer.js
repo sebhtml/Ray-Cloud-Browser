@@ -1,4 +1,4 @@
-/*
+/**
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
  *  Copyright (C) 2012, 2013 Sébastien Boisvert
  *
@@ -471,13 +471,21 @@ Renderer.prototype.drawQuadTree = function(context) {
 	var listOfQuadTrees = this.quadTree.queryAllLeaves();
 	var lineWidth = 1 * zoomValue;
 	var theColor = "black";
+	var originX = this.screen.getOriginX();
+	var originY = this.screen.getOriginY();
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
 		var currentQuadTree = listOfQuadTrees[k];
-		var pointA = new Point((currentQuadTree.getCenter() - (currentQuadTree.getWidth / 2)) * zoomValue, (currentQuadTree.getCenter() - (currentQuadTree.getHeight / 2)) * zoomValue);
-		var pointB = new Point(currentQuadTree.getWidth * zoomValue, (currentQuadTree.getCenter() - (currentQuadTree.getHeight / 2)) * zoomValue);
-		var pointC = new Point((currentQuadTree.getCenter() - (currentQuadTree.getWidth / 2)) * zoomValue, currentQuadTree.getHeight * zoomValue);
-		var pointD = new Point(currentQuadTree.getWidth * zoomValue, currentQuadTree.getHeight * zoomValue);
+
+		var width = currentQuadTree.getWidth();
+		var height = currentQuadTree.getHeight();
+		var centerX = currentQuadTree.getCenter().getX();
+		var centerY = currentQuadTree.getCenter().getY();
+
+		var pointA = new Point(((centerX + width / 2) - originX) * zoomValue, ((centerY + height / 2) - originY) * zoomValue);
+		var pointB = new Point(((centerX + width / 2) - originX) * zoomValue, ((centerY - height / 2) - originY) * zoomValue);
+		var pointC = new Point(((centerX - width / 2) - originX) * zoomValue, ((centerY + height / 2) - originY) * zoomValue);
+		var pointD = new Point(((centerX - width / 2) - originX) * zoomValue, ((centerY - height / 2) - originY) * zoomValue);
 
 		this.drawBufferedTwoPoint(context, pointA, pointB, lineWidth, theColor, 100);
 		this.drawBufferedTwoPoint(context, pointA, pointC, lineWidth, theColor, 100);
