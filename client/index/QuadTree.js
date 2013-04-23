@@ -73,8 +73,6 @@ QuadTree.prototype.insert = function(centerObject, object) {
 		this.checkIfItIsTooBig();
 
 		this.nbElements ++;
-
-		this.calculateTheCenterOfGravity();
 		return true;
 	} else {
 		var tree = this.classify(centerObject, true);
@@ -94,8 +92,6 @@ QuadTree.prototype.insert = function(centerObject, object) {
 
 QuadTree.prototype.calculateTheCenterOfGravity = function() {
 	if(this.isLeaf()) {
-		console.log("Is a leaf !!");
-
 		this.gravityCenter = new Point(0, 0);
 		for(var i = 0; i < this.points.length; i++) {
 			this.gravityCenter.add(this.points[i]);
@@ -103,7 +99,6 @@ QuadTree.prototype.calculateTheCenterOfGravity = function() {
 		this.sumOfMasses = i;
 		this.gravityCenter.divideBy(this.sumOfMasses);
 	} else {
-		console.log("Is not a leaf !!");
 		this.gravityCenter = new Point(0, 0);
 		this.sumMasses = 0;
 		if(this.southEast != null) {
@@ -125,8 +120,8 @@ QuadTree.prototype.calculateTheCenterOfGravity = function() {
 		this.gravityCenter.divideBy(this.sumMasses);
 	}
 
-	console.log("Sum of masses : " + this.sumOfMasses);
-	console.log("Gravity Center : " + this.gravityCenter.toString());
+	//console.log("Sum of masses : " + this.sumOfMasses);
+	//console.log("Gravity Center : " + this.gravityCenter.toString());
 }
 QuadTree.prototype.checkIfItIsTooBig = function() {
 	if(this.nbElements >= this.numberMaxElementsPerNode) {
@@ -249,9 +244,12 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	//Else if test if the old and new tree are the same
 	// here we just perform a deleguation of the update call
 	if(oldTree.equals(newTree)) {
-		return newTree.update(oldCenter, newCenter, object, forceInsertion);
-		this.checkIfChildrenAreEmpty();
-		this.calculateTheCenterOfGravity();
+		var result = newTree.update(oldCenter, newCenter, object, forceInsertion);
+		if(result) {
+			this.checkIfChildrenAreEmpty();
+			this.calculateTheCenterOfGravity();
+		}
+		return result;
 	}
 
 	//Else is not the same tree

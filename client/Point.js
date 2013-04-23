@@ -58,6 +58,9 @@ Point.prototype.add = function(point) {
 }
 
 Point.prototype.divideBy = function(value) {
+	if(value == 0) {
+		return;
+	}
 	this.x /= value;
 	this.y /= value;
 }
