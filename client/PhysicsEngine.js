@@ -79,7 +79,8 @@ function PhysicsEngine(screen){
 	this.quadTree = new QuadTree(	this.numberOfElementsPerNode, 
 					this.centerOfQuadTree,
 					this.width,
-					this.height);
+					this.height,
+					0);
 
 	if(this.simulatedAnnealing)
 		this.charge=300;
