@@ -388,22 +388,24 @@ QuadTree.prototype.queryAll = function() {
  *
  * @return (Array<QuadTree>) List of leafs
  */
-QuadTree.prototype.queryLeavesRecursive = function(elements) {
+QuadTree.prototype.queryLeavesRecursive = function(elements, center, width, height) {
 	if(this.isLeaf()) {
-		elements.push(this);
+		if(this.checkOverlap(center, width, height)) {
+			elements.push(this);
+		}
 		return;
 	}
 	if(this.southEast != null) {
-		this.southEast.queryLeavesRecursive(elements);
+		this.southEast.queryLeavesRecursive(elements, center, width, height);
 	}
 	if(this.northEast != null) {
-		this.northEast.queryLeavesRecursive(elements);
+		this.northEast.queryLeavesRecursive(elements, center, width, height);
 	}
 	if(this.southWest != null) {
-		this.southWest.queryLeavesRecursive(elements);
+		this.southWest.queryLeavesRecursive(elements, center, width, height);
 	}
 	if(this.northWest != null) {
-		this.northWest.queryLeavesRecursive(elements);
+		this.northWest.queryLeavesRecursive(elements, center, width, height);
 	}
 }
 
@@ -412,9 +414,9 @@ QuadTree.prototype.queryLeavesRecursive = function(elements) {
  *
  * @return (Array<QuadTree>) List of leafs
  */
-QuadTree.prototype.queryAllLeaves = function() {
+QuadTree.prototype.queryAllLeaves = function(center, width, height) {
 	var elements = new Array();
-	this.queryLeavesRecursive(elements);
+	this.queryLeavesRecursive(elements, center, width, height);
 	return elements;
 }
 
