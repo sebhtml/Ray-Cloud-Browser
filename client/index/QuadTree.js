@@ -67,10 +67,7 @@ QuadTree.prototype.insert = function(centerObject, object) {
 		this.points.push(centerObject);
 		this.objects.push(object);
 
-		if(this.points.length > this.numberMaxElementsPerNode) {
-			this.split();
-			this.depth++;
-		}
+		this.checkIfItIsTooBig();
 
 		this.nbElements ++;
 		return true;
@@ -85,6 +82,14 @@ QuadTree.prototype.insert = function(centerObject, object) {
 			this.nbElements ++;
 
 		return result;
+	}
+}
+
+QuadTree.prototype.checkIfItIsTooBig = function() {
+
+	if(this.points.length > this.numberMaxElementsPerNode) {
+		this.split();
+		this.depth++;
 	}
 }
 
@@ -150,9 +155,9 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 
 		// Insert the object because it was not found.
 		if(forceInsertion) {
-			this.points.push(newCenter);
-			this.objects.push(object);
+			this.insert(newCenter, object);
 		}
+
 		return forceInsertion;
 	}
 
@@ -164,6 +169,10 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	// forceInsertion is false
 	if(oldTree == null && !forceInsertion)
 		return false;
+
+	if(oldTree == null) {
+		return this.insert(newCenter, object);
+	}
 
 	// at this point, there are two cases:
 	// 1. the object was in the old tree, in the case, we update that anyway
@@ -177,6 +186,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	}
 
 	//Else is not the same tree
+	
 	oldTree.remove(oldCenter, object);
 	newTree.insert(newCenter, object);
 
