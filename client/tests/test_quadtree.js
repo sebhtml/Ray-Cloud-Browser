@@ -18,10 +18,10 @@
 var tests = new Assert();
 
 var center = new Point(10, 10);
-var quadTree = new QuadTree(4, center, 40, 40);
+var quadTree = new QuadTree(4, center, 40, 40, 0);
 
 var centerObject = new Point(2, 2);
-var object = new QuadTree(4, center, 20, 20);
+var object = new QuadTree(4, center, 20, 20, 0);
 
 tests.assertTrue("Remove empty", !quadTree.remove(centerObject, object));
 quadTree.insert(centerObject, object);
@@ -29,14 +29,14 @@ tests.assertTrue("Remove", quadTree.remove(centerObject, object));
 tests.assertTrue("Remove empty", !quadTree.remove(centerObject, object));
 
 function testOverlap(tests) {
-	quadTree = new QuadTree(5, new Point(1000, 1000), 2000, 2000);
+	quadTree = new QuadTree(5, new Point(1000, 1000), 2000, 2000, 0);
 	tests.assertTrue("Overlap in", quadTree.checkOverlap(new Point(500, 500), 100, 100));
 	tests.assertTrue("Overlap out", !quadTree.checkOverlap(new Point(10000, 10000), 100, 100));
 }
 
 function testUpdate(tests) {
 	var tabResult = new Array();
-	var quadTree = new QuadTree(4, new Point(1000, 1000), 2000, 2000);
+	var quadTree = new QuadTree(4, new Point(1000, 1000), 2000, 2000, 0);
 
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
 	tests.assertTrue("Not true, quad tree is not empty", quadTree.getSize() == 0);
@@ -74,7 +74,7 @@ function testSmallTree(tests) {
 	var elementsPerCell = 2;
 
 	var center2 = new Point(width / 2, height / 2);
-	var smallQuadTree = new QuadTree(elementsPerCell, center2, width, height);
+	var smallQuadTree = new QuadTree(elementsPerCell, center2, width, height, 0);
 
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
@@ -98,7 +98,7 @@ function testBigTree(tests) {
 	var tabResult = new Array();
 	var k = 0;
 	var center2 = new Point(width / 2, height / 2);
-	var bigQuadTree = new QuadTree(16, center2, 20000, 20000);
+	var bigQuadTree = new QuadTree(5, center2, 20000, 20000, 0);
 
 	for(var i = 0; i < width; i += stepping) {
 		for(var j = 0; j < height; j += stepping) {
@@ -106,9 +106,9 @@ function testBigTree(tests) {
 		}
 	}
 
-	var listOfQuadTrees = bigQuadTree.queryAllLeaves();
+	var listOfQuadTrees = bigQuadTree.queryAllLeaves(new Point(0, 0), 800, 600);
 	for(var i = 0; i < listOfQuadTrees.length; i ++) {
-		tests.assertTrue("301 : Test if the number of elements is not too big, actual number is = " + listOfQuadTrees[i].getSize(), listOfQuadTrees[i].getSize() < 17);
+		tests.assertTrue("301 : Test if the number of elements is not too big, actual number is = " + listOfQuadTrees[i].getNumberOfElementsInLeaf(), listOfQuadTrees[i].getNumberOfElementsInLeaf() < 17);
 	}
 
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
@@ -166,7 +166,7 @@ function testOnVeryLargeStructure(tests) {
 	var treeCenter = new Point(0, 0);
 	var halfWidth = 1000000000;
 	var maximumNumberOfObjectsPerCell = 32;
-	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth)
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth, 0)
 
 	tests.assertEquals("testOnVeryLargeStructure 001", 0, tree.getSize());
 
@@ -212,7 +212,7 @@ function testObjectsThatAreOutside(tests) {
 	var treeCenter = new Point(0, 0);
 	var halfWidth = 1000000000;
 	var maximumNumberOfObjectsPerCell = 32;
-	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth);
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, 2*halfWidth, 2*halfWidth, 0);
 
 	tests.assertEquals("testObjectsThatAreOutside 001", 0, tree.getSize());
 
@@ -234,7 +234,7 @@ function testNumberOfElements(tests) {
 	var width = 2000;
 	var treeCenter = new Point(width / 2, width / 2);
 	var maximumNumberOfObjectsPerCell = 4;
-	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, width);
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, width, 0);
 
 	for(var i = 0; i < 5; i++) {
 		var x = i;
@@ -243,8 +243,23 @@ function testNumberOfElements(tests) {
 		tree.insert(point, i);
 	}
 	tree.update(new Point(1, 1), new Point(50, 50), 1, true);
-	tests.assertEquals("Test number of elements into the QuadTree 001", 0, tree.getElements().length);
-	//tree.printRecursive();
+	tests.assertEquals("Test number of elements into the QuadTree 001", 0, tree.getNumberOfElementsInLeaf());
+}
+
+
+
+function testAddAndDividePoints(tests) {
+	var pointA = new Point(50, 60);
+	var pointB = new Point(100, 100);
+	var divider = 10;
+
+	pointA.add(pointB);
+	tests.assertEquals("801 : Test if pointB is added in pointA (x)", 150, pointA.getX());
+	tests.assertEquals("802 : Test if pointB is added in pointA (y)", 160, pointA.getY());
+
+	pointB.divideBy(divider);
+	tests.assertEquals("801 : Test if pointB is substracted by the divider (x)", 10, pointB.getX());
+	tests.assertEquals("802 : Test if pointB is substracted by the divider (y)", 10, pointB.getY());
 }
 
 testOverlap(tests);
@@ -254,5 +269,6 @@ testUpdate(tests);
 testOnVeryLargeStructure(tests);
 testObjectsThatAreOutside(tests);
 testNumberOfElements(tests);
+testAddAndDividePoints(tests);
 tests.showResults();
 
