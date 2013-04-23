@@ -117,6 +117,7 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		this.objects = objects;
 		if(position != -1) {
 			this.nbElements--;
+			this.checkIfChildrenIsVoid();
 		}
 		return position != -1;
 	} else {
@@ -127,8 +128,24 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		var remove = tree.remove(centerObject, object);
 		if(remove) {
 			this.nbElements--;
+			this.checkIfChildrenIsVoid();
 		}
 		return remove;
+	}
+}
+
+QuadTree.prototype.checkIfChildrenIsVoid = function() {
+	if(this.southEast != null && this.southEast.getSize() <= 0) {
+		this.southEast = null;
+	}
+	if(this.northEast != null && this.northEast.getSize() <= 0) {
+		this.northEast = null;
+	}
+	if(this.southWest != null && this.southWest.getSize() <= 0) {
+		this.southWest = null;
+	}
+	if(this.northWest != null && this.northWest.getSize() <= 0) {
+		this.northWest = null;
 	}
 }
 
@@ -156,6 +173,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		if(forceInsertion) {
 			this.insert(newCenter, object);
 		}
+		this.checkIfChildrenIsVoid();
 		return forceInsertion;
 	}
 
