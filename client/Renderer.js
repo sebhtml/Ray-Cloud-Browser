@@ -466,11 +466,13 @@ Renderer.prototype.draw = function(objects) {
 
 Renderer.prototype.drawQuadTree = function(context) {
 	var zoomValue = this.screen.getZoomValue();
-	var listOfQuadTrees = this.quadTree.queryAllLeaves();
 	var lineWidth = 1 * zoomValue;
 	var theColor = "black";
 	var originX = this.screen.getOriginX();
 	var originY = this.screen.getOriginY();
+	var screenWidth = this.screen.getWidth() / zoomValue;
+	var screenHeight = this.screen.getHeight() / zoomValue;
+	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(originX + screenWidth / 2, originY + screenHeight / 2),  screenWidth, screenHeight);
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
 		var currentQuadTree = listOfQuadTrees[k];
@@ -493,7 +495,7 @@ Renderer.prototype.drawQuadTree = function(context) {
 		this.drawBufferedTwoPoint(context, pointC, pointD, lineWidth, theColor, 100);
 
 		var textX = (centerX - originX) * zoomValue;
-		var textY = ((centerY -(height - 30) / 2) - originY) * zoomValue;
+		var textY = ((centerY - (height - 30) / 2) - originY) * zoomValue;
 		this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf(), "center", "red", "arial", 30);
 	}
 }
