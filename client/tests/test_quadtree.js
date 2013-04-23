@@ -106,6 +106,11 @@ function testBigTree(tests) {
 		}
 	}
 
+	var listOfQuadTrees = bigQuadTree.queryAllLeaves();
+	for(var i = 0; i < listOfQuadTrees.length; i ++) {
+		tests.assertTrue("301 : Test if the number of elements is not too big, actual number is = " + listOfQuadTrees[i].getSize(), listOfQuadTrees[i].getSize() < 17);
+	}
+
 	tests.assertTrue("Not true, tab of result is not empty", tabResult.length == 0);
 	tabResult = bigQuadTree.query(new Point(500, 500), 500, 500);
 	tests.assertTrue("Not true, tab of result empty", tabResult.length != 0);

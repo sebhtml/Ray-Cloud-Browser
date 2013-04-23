@@ -86,8 +86,7 @@ QuadTree.prototype.insert = function(centerObject, object) {
 }
 
 QuadTree.prototype.checkIfItIsTooBig = function() {
-
-	if(this.points.length > this.numberMaxElementsPerNode) {
+	if(this.nbElements >= this.numberMaxElementsPerNode) {
 		this.split();
 		this.depth++;
 	}
@@ -255,7 +254,7 @@ QuadTree.prototype.classify = function(centerObject, createIfNull) {
 		} else {
 			if(this.northEast == null && createIfNull) {
 				var newOrigin = new Point(this.center.getX() + deltaX, this.center.getY() + deltaY);
-				this.northEast = new QuadTree(this.NB_MAX_NODE, newOrigin, this.width / 2, this.height / 2);
+				this.northEast = new QuadTree(this.numberMaxElementsPerNode, newOrigin, this.width / 2, this.height / 2);
 			}
 			return this.northEast;
 		}

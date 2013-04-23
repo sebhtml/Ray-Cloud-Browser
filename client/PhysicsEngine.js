@@ -75,7 +75,7 @@ function PhysicsEngine(screen){
 	this.numberOfElementsPerNode = 8;
 	this.width = 200000000;
 	this.height = 200000000;
-	this.centerOfQuadTree = new Point(0, 0);
+	this.centerOfQuadTree = new Point(1000, 1000);
 	this.quadTree = new QuadTree(	this.numberOfElementsPerNode, 
 					this.centerOfQuadTree,
 					this.width,

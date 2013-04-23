@@ -493,6 +493,8 @@ Renderer.prototype.drawQuadTree = function(context) {
 		this.drawBufferedTwoPoint(context, pointB, pointC, lineWidth, theColor, 100);
 		this.drawBufferedTwoPoint(context, pointB, pointD, lineWidth, theColor, 100);
 		this.drawBufferedTwoPoint(context, pointC, pointD, lineWidth, theColor, 100);
+
+		this.drawBufferedText(context, (centerX - originX) * zoomValue, ((centerY -(height - 30) / 2) - originY) * zoomValue, currentQuadTree.getSize(), "center", "red", "arial", 30);	
 	}
 }
 
