@@ -90,6 +90,7 @@ QuadTree.prototype.insert = function(centerObject, object) {
 	}
 }
 
+
 QuadTree.prototype.calculateTheCenterOfGravity = function() {
 	if(this.isLeaf()) {
 		this.gravityCenter = new Point(0, 0);
@@ -102,19 +103,27 @@ QuadTree.prototype.calculateTheCenterOfGravity = function() {
 		this.gravityCenter = new Point(0, 0);
 		this.sumMasses = 0;
 		if(this.southEast != null) {
-			this.gravityCenter.add(this.southEast.getGravityCenter());
+			var currentPoint = this.southEast.getGravityCenter();
+			currentPoint.multiplyBy(this.southEast.getSumOfMasses());
+			this.gravityCenter.add(currentPoint);
 			this.sumOfMasses += this.southEast.getSumOfMasses();
 		}
 		if(this.northEast != null) {
-			this.gravityCenter.add(this.northEast.getGravityCenter());
+			var currentPoint = this.northEast.getGravityCenter();
+			currentPoint.multiplyBy(this.northEast.getSumOfMasses());
+			this.gravityCenter.add(currentPoint);
 			this.sumOfMasses += this.northEast.getSumOfMasses();
 		}
 		if(this.southWest != null) {
-			this.gravityCenter.add(this.southWest.getGravityCenter());
+			var currentPoint = this.southWest.getGravityCenter();
+			currentPoint.multiplyBy(this.southWest.getSumOfMasses());
+			this.gravityCenter.add(currentPoint);
 			this.sumOfMasses += this.southWest.getSumOfMasses();
 		}
 		if(this.northWest != null) {
-			this.gravityCenter.add(this.northWest.getGravityCenter());
+			var currentPoint = this.northWest.getGravityCenter();
+			currentPoint.multiplyBy(this.northWest.getSumOfMasses());
+			this.gravityCenter.add(currentPoint);
 			this.sumOfMasses += this.northWest.getSumOfMasses();
 		}
 		this.gravityCenter.divideBy(this.sumMasses);
@@ -579,7 +588,7 @@ QuadTree.prototype.getWidth = function() {
 	return this.width;
 }
 
-QuadTree.prototype.getElements = function() {
+QuadTree.prototype.getObjects = function() {
 	var elements = new Array();
 	for(var i = 0; i < this.objects.length; i++) {
 		elements.push(this.objects[i]);
@@ -616,6 +625,30 @@ QuadTree.prototype.getSumOfMasses = function() {
 
 QuadTree.prototype.getGravityCenter = function() {
 	return this.gravityCenter;
+}
+
+QuadTree.prototype.getSouthEast = function() {
+	return this.southEast;
+}
+
+QuadTree.prototype.getSouthWest = function() {
+	return this.southWest;
+}
+
+QuadTree.prototype.getNorthEast = function() {
+	return this.northEast;
+}
+
+QuadTree.prototype.getNorthWest = function() {
+	return this.northWest;
+}
+
+QuadTree.prototype.getPoints = function() {
+	var points = new Array();
+	for(var i = 0; i < this.points.length; i++) {
+		points.push(this.points[i]);
+	}
+	return points;
 }
 
 /**

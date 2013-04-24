@@ -262,6 +262,39 @@ function testAddAndDividePoints(tests) {
 	tests.assertEquals("802 : Test if pointB is substracted by the divider (y)", 10, pointB.getY());
 }
 
+
+function testBarnesHutAlgorithm(tests) {
+	var width = 2000;
+	var height = 2000;
+	var treeCenter = new Point(width / 2, height / 2);
+	var maximumNumberOfObjectsPerCell = 4;
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, height, 0);
+	var barnesHut = new BarnesHutAlgorithm(0.5);
+
+	var point = new Point(1500, 1500);
+	tree.insert(point, 1);
+
+	point = new Point(1550, 1550);
+	tree.insert(point, 2);
+
+	point = new Point(1600, 1600);
+	tree.insert(point, 3);
+
+	point = new Point(1650, 1650);
+	tree.insert(point, 4);
+
+	point = new Point(1700, 1700);
+	tree.insert(point, 5);
+
+	point = new Point(1600, 1600);
+	tree.insert(point, 60);
+
+	force = new Point(0, 0);
+	barnesHut.approximateForce(60, point, 128, tree, force);
+
+	console.log("The vector force is : " + force.toString());
+}
+
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
@@ -270,5 +303,6 @@ testOnVeryLargeStructure(tests);
 testObjectsThatAreOutside(tests);
 testNumberOfElements(tests);
 testAddAndDividePoints(tests);
+testBarnesHutAlgorithm(tests);
 tests.showResults();
 

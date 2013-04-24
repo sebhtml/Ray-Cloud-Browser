@@ -55,6 +55,13 @@ Point.prototype.getY=function(){
 Point.prototype.add = function(point) {
 	this.x += point.getX();
 	this.y += point.getY();
+	return this;
+}
+
+Point.prototype.sub = function(point) {
+	this.x += point.getX();
+	this.y += point.getY();
+	return this;
 }
 
 Point.prototype.divideBy = function(value) {
@@ -63,6 +70,25 @@ Point.prototype.divideBy = function(value) {
 	}
 	this.x /= value;
 	this.y /= value;
+	return this;
+}
+
+Point.prototype.multiplyBy = function(value) {
+	if(value == 0) {
+		return;
+	}
+	this.x *= value;
+	this.y *= value;
+	return this;
+}
+
+Point.prototype.substractBy = function(value) {
+	if(value == 0) {
+		return;
+	}
+	this.x -= value;
+	this.y -= value;
+	return this;
 }
 
 Point.prototype.equals = function(point) {
