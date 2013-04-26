@@ -271,7 +271,7 @@ function testBarnesHutAlgorithm(tests) {
 	var treeCenter = new Point(width / 2, height / 2);
 	var maximumNumberOfObjectsPerCell = 2;
 	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, height, 0);
-	var barnesHut = new BarnesHutAlgorithm(0.5);
+	var barnesHut = new BarnesHutAlgorithm(0);
 
 	var point = new Point(1950, 1950);
 	tree.insert(point, 0);
@@ -288,6 +288,8 @@ function testBarnesHutAlgorithm(tests) {
 	force = new Point(0, 0);
 	barnesHut.approximateForce(10, point, 150, tree, force);
 
+	console.log(force.toString());
+
 	tests.assertEquals("901 : Test if the gravity center is correct", new Point(1000, 1000).toString(), tree.getGravityCenter().toString());
 	tests.assertEquals("902 : Test if the sum of masses is correct", 4, tree.getSumOfMasses());
 
@@ -296,6 +298,8 @@ function testBarnesHutAlgorithm(tests) {
 
 	force = new Point(0, 0);
 	barnesHut.approximateForce(100, point, 150, tree, force);
+
+	console.log(force.toString());
 
 	tests.assertEquals("903 : Test if the gravity center is correct", new Point(1000, 820).toString(), tree.getGravityCenter().toString());
 	tests.assertEquals("904 : Test if the sum of masses is correct", 5, tree.getSumOfMasses());

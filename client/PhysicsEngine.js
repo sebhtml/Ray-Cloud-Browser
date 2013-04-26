@@ -36,7 +36,6 @@ function PhysicsEngine(screen){
  * The annealing code is buggy.
  */
 	this.simulatedAnnealing=false;
-
 	this.screen=screen;
 
 /*
@@ -48,7 +47,7 @@ function PhysicsEngine(screen){
 	this.useProximity=false;
 	this.useFullMap=true;
 
-/* 
+/*
  * Coulomb's law
  * This is for the repulsion.
  */
@@ -57,8 +56,8 @@ function PhysicsEngine(screen){
 	this.forceConstant=0.1;
 	this.maximumRepulsion=64;
 
-/* 
- * Hooke's law 
+/*
+ * Hooke's law
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
@@ -72,15 +71,17 @@ function PhysicsEngine(screen){
 	this.damping=0.5;
 
 	/* QuadTree initialisation */
-	this.numberOfElementsPerNode = 8;
+	this.numberOfElementsPerNode = 16;
 	this.width = 200000000;
 	this.height = 200000000;
 	this.centerOfQuadTree = new Point(1000, 1000);
-	this.quadTree = new QuadTree(	this.numberOfElementsPerNode, 
+	this.quadTree = new QuadTree(	this.numberOfElementsPerNode,
 					this.centerOfQuadTree,
 					this.width,
 					this.height,
 					0);
+
+	this.barnesHut = new BarnesHutAlgorithm(0.5);
 
 	if(this.simulatedAnnealing)
 		this.charge=300;
@@ -130,78 +131,36 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		if(this.forceConstant==0)
 			break;
 
-		var vertex1=vertices[this.activeIndex];
+		var vertex1 = vertices[this.activeIndex];
 		this.activeIndex++;
 
-		if(this.screen.isOutside(vertex1,this.physicsEntryLevel))
+		if(this.screen.isOutside(vertex1,this.physicsEntryLevel)) {
 			continue;
-
-		var force=[0,0];
-
-/*
- * Actually, hits should be obtained with the quadTree.
- */
-		var hits=new Array();
-
-		var vertexRadius=vertex1.getRadius();
-
-		if(this.useQuadTree) {
-			var keys = this.quadTree.queryCircle(vertex1.getCenter(), 50);
-
-			var keyNumber=0;
-			while(keyNumber<keys.length){
-				var keyValue=keys[keyNumber];
-				keyNumber++;
-
-/*
- * We can only pick up the object if it's in the active spot.
- */
-				if(keyValue in index){
-					var vertex2=index[keyValue];
-					hits.push(vertex2);
-				}
-			}
-		}else if(this.useProximity){
-
-			hits=vertex1.getLinkedObjects();
-
-		}else if(this.useFullMap){
-			hits=vertices;
 		}
 
-		var hitNumber=0;
-		while(hitNumber<hits.length){
+		//Actually, hits should be obtained with the quadTree.
 
-			var vertex2=hits[hitNumber];
 
-			hitNumber++;
-/*
- * We don't want to compute forces against the same
- * object.
- */
-			if(vertex1.getSequence()==
-				vertex2.getSequence())
-				continue;
+		//var force = new Point(0, 0); this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, 150, this.quadTree, force);
 
-			var force2=this.getRepulsionForce(vertex1,vertex2);
+		var force = this.computeRepulsionForceFirstVersion(vertex1, vertex2, vertices, index);
 
-			force=this.addForces(force,force2);
-		}
+		/*console.log("BARNES HUT = " + force.toString());
+		console.log("QUERY CIRCLE = " + force3.toString());
+		console.log("");*/
+		//console.log(this.quadTree.getGravityCenter().toString());
 
 		var arcs=vertex1.getLinkedObjects();
 
 		for(var j in arcs){
-
-			var vertex2=arcs[j];
-
-			if(!vertex2.isEnabled())
+			var vertex2 = arcs[j];
+			if(vertex1.getSequence() == vertex2.getSequence()) {
 				continue;
-			var force2=this.getAttractionForce(vertex1,vertex2);
-
-			force=this.addForces(force,force2);
+			}
+			force2 = this.getAttractionForce(vertex1, vertex2);
+			force.add(force2);
 		}
-
-		vertex1.updateVelocity(this.timeStep*force[0],this.timeStep*force[1]);
+		vertex1.updateVelocity(this.timeStep, force);
 	}
 
 	if(this.activeIndex>=vertices.length){
@@ -223,7 +182,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 /**
  * \see http://en.wikipedia.org/wiki/Hooke%27s_law
  */
-PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
+PhysicsEngine.prototype.getAttractionForce = function(vertex1, vertex2){
 
 
 	var dx=vertex2.getX()-vertex1.getX();
@@ -238,14 +197,14 @@ PhysicsEngine.prototype.getAttractionForce=function(vertex1,vertex2){
 
 	force=this.checkBounds(force,this.maximumAttraction);
 
-	// get a unit vector 
+	// get a unit vector
 	dx=dx/distance;
 	dy=dy/distance;
 
 	dx=dx*force;
 	dy=dy*force;
 
-	return [dx,dy];e
+	return new Point(dx, dy);
 }
 
 /**
@@ -320,13 +279,13 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 	dx=dx*force;
 	dy=dy*force;
 
-	return [dx,dy];
+	return new Point(dx, dy);
 }
 
 
 
-PhysicsEngine.prototype.addForces=function(force,force2){
-	return [force[0]+force2[0], force[1]+force2[1]]
+PhysicsEngine.prototype.addForces = function(force, force2){
+	return new Point(force.getX() + force2.getX(), force.getY() + force2.getY())
 }
 
 PhysicsEngine.prototype.moveObjects=function(vertices){
@@ -369,3 +328,46 @@ PhysicsEngine.prototype.resetActiveIndex=function(){
 PhysicsEngine.prototype.getQuadTree = function() {
 	return this.quadTree;
 }
+
+PhysicsEngine.prototype.computeRepulsionForceFirstVersion = function(vertex1, vertex2, vertices, index) {
+	var force = new Point(0, 0);
+	var force2 = new Point(0, 0);
+	var hits = new Array();
+	var vertexRadius = vertex1.getRadius();
+
+	if(this.useQuadTree) {
+		var keys = this.quadTree.queryCircle(vertex1.getCenter(), 50);
+		var keyNumber = 0;
+		while(keyNumber < keys.length){
+			var keyValue=keys[keyNumber];
+			keyNumber++;
+
+			// We can only pick up the object if it's in the active spot.
+
+			if(keyValue in index){
+				var vertex2=index[keyValue];
+				hits.push(vertex2);
+			}
+		}
+	} else if(this.useProximity) {
+		hits = vertex1.getLinkedObjects();
+	} else if(this.useFullMap) {
+		hits = vertices;
+	}
+	var hitNumber=0;
+	while(hitNumber < hits.length) {
+		var vertex2 = hits[hitNumber];
+		hitNumber++;
+		//We don't want to compute forces against the same object.
+		if(vertex1.getSequence() == vertex2.getSequence()) {
+			continue;
+		}
+		force2 = this.getRepulsionForce(vertex1, vertex2);
+		force = this.addForces(force,force2);
+	}
+	return force;
+}
+/*
+PhysiqueEngine.prototype.computeRepulsedForceSecondVersion = function() {
+
+}*/

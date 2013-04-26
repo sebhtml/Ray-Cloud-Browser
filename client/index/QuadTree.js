@@ -243,13 +243,11 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		var result = newTree.update(oldCenter, newCenter, object, forceInsertion);
 		if(result) {
 			this.checkIfChildrenAreEmpty();
-			this.calculateTheCenterOfGravity();
 		}
 		return result;
 	}
 
 	//Else is not the same tree
-
 	oldTree.remove(oldCenter, object);
 	newTree.insert(newCenter, object);
 

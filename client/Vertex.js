@@ -202,10 +202,9 @@ Vertex.prototype.updatePower=function(){
 	}
 }
 
-Vertex.prototype.updateVelocity=function(forceX,forceY){
-
-	this.velocityX+=forceX;
-	this.velocityY+=forceY;
+Vertex.prototype.updateVelocity=function(timeStep, force){
+	this.velocityX += force.getX() * timeStep;
+	this.velocityY += force.getY() * timeStep;
 }
 
 Vertex.prototype.applyDamping=function(damping){
@@ -475,4 +474,8 @@ Vertex.prototype.resetPower=function(){
 
 Vertex.prototype.getPathColor=function(){
 	return this.pathColor;
+}
+
+Vertex.prototype.equals = function(vertex) {
+	return this.getX() == vertex.getX() && this.getY() == vertex.getY();
 }
