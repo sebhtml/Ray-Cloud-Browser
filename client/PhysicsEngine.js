@@ -169,8 +169,6 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			hits=vertices;
 		}
 
-		//console.log("Hits: " + hits.length + " TreeSize: " + this.quadTree.getSize());
-
 		var hitNumber=0;
 		while(hitNumber<hits.length){
 

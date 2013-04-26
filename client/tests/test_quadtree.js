@@ -15,19 +15,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 var tests = new Assert();
 
-var center = new Point(10, 10);
-var quadTree = new QuadTree(4, center, 40, 40, 0);
+function testsInsert(tests) {
+	var center = new Point(10, 10);
+	var quadTree = new QuadTree(4, center, 40, 40, 0);
 
-var centerObject = new Point(2, 2);
-var object = new QuadTree(4, center, 20, 20, 0);
+	var centerObject = new Point(2, 2);
+	var object = new QuadTree(4, center, 20, 20, 0);
 
-tests.assertTrue("Remove empty", !quadTree.remove(centerObject, object));
-quadTree.insert(centerObject, object);
-tests.assertTrue("Remove", quadTree.remove(centerObject, object));
-tests.assertTrue("Remove empty", !quadTree.remove(centerObject, object));
-
+	tests.assertTrue("Remove empty", !quadTree.remove(centerObject, object));
+	quadTree.insert(centerObject, object);
+	tests.assertTrue("Remove", quadTree.remove(centerObject, object));
+	tests.assertTrue("Remove empty", !quadTree.remove(centerObject, object));
+}
 function testOverlap(tests) {
 	quadTree = new QuadTree(5, new Point(1000, 1000), 2000, 2000, 0);
 	tests.assertTrue("Overlap in", quadTree.checkOverlap(new Point(500, 500), 100, 100));
@@ -267,34 +269,39 @@ function testBarnesHutAlgorithm(tests) {
 	var width = 2000;
 	var height = 2000;
 	var treeCenter = new Point(width / 2, height / 2);
-	var maximumNumberOfObjectsPerCell = 4;
+	var maximumNumberOfObjectsPerCell = 2;
 	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, height, 0);
 	var barnesHut = new BarnesHutAlgorithm(0.5);
 
-	var point = new Point(1500, 1500);
+	var point = new Point(1950, 1950);
+	tree.insert(point, 0);
+
+	point = new Point(1900, 1900);
 	tree.insert(point, 1);
 
-	point = new Point(1550, 1550);
-	tree.insert(point, 2);
+	point = new Point(50, 50);
+	tree.insert(point, 11);
 
-	point = new Point(1600, 1600);
-	tree.insert(point, 3);
-
-	point = new Point(1650, 1650);
-	tree.insert(point, 4);
-
-	point = new Point(1700, 1700);
-	tree.insert(point, 5);
-
-	point = new Point(1600, 1600);
-	tree.insert(point, 60);
+	point = new Point(100, 100);
+	tree.insert(point, 10);
 
 	force = new Point(0, 0);
-	barnesHut.approximateForce(60, point, 128, tree, force);
+	barnesHut.approximateForce(10, point, 150, tree, force);
 
-	console.log("The vector force is : " + force.toString());
+	tests.assertEquals("901 : Test if the gravity center is correct", new Point(1000, 1000).toString(), tree.getGravityCenter().toString());
+	tests.assertEquals("902 : Test if the sum of masses is correct", 4, tree.getSumOfMasses());
+
+	point = new Point(1000, 100);
+	tree.insert(point, 100);
+
+	force = new Point(0, 0);
+	barnesHut.approximateForce(100, point, 150, tree, force);
+
+	tests.assertEquals("903 : Test if the gravity center is correct", new Point(1000, 820).toString(), tree.getGravityCenter().toString());
+	tests.assertEquals("904 : Test if the sum of masses is correct", 5, tree.getSumOfMasses());
 }
 
+testsInsert(tests);
 testOverlap(tests);
 testSmallTree(tests);
 testBigTree(tests);
