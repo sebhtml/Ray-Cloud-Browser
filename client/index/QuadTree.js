@@ -70,6 +70,7 @@ QuadTree.prototype.insert = function(centerObject, object) {
 		this.objects.push(object);
 		this.checkIfItIsTooBig();
 		this.nbElements ++;
+		this.calculateTheCenterOfGravity();
 		return true;
 	} else {
 		var tree = this.classify(centerObject, true);
@@ -208,6 +209,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		for(var i = 0; i < this.points.length; i++) {
 			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
 				this.points[i] = newCenter;
+				this.calculateTheCenterOfGravity();
 				return true;
 			}
 		}
@@ -243,6 +245,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		var result = newTree.update(oldCenter, newCenter, object, forceInsertion);
 		if(result) {
 			this.checkIfChildrenAreEmpty();
+			this.calculateTheCenterOfGravity();
 		}
 		return result;
 	}

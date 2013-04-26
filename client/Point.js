@@ -58,7 +58,7 @@ Point.prototype.add = function(point) {
 	return this;
 }
 
-Point.prototype.sub = function(point) {
+Point.prototype.substract = function(point) {
 	this.x += point.getX();
 	this.y += point.getY();
 	return this;

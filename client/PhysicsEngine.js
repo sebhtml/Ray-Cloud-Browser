@@ -141,9 +141,10 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		//Actually, hits should be obtained with the quadTree.
 
 
-		//var force = new Point(0, 0); this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, 150, this.quadTree, force);
+		var force = new Point(0, 0);
+		this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, 1, this.quadTree, force);
 
-		var force = this.computeRepulsionForceFirstVersion(vertex1, vertex2, vertices, index);
+		//var force = this.computeRepulsionForceFirstVersion(vertex1, vertex2, vertices, index);
 
 		/*console.log("BARNES HUT = " + force.toString());
 		console.log("QUERY CIRCLE = " + force3.toString());

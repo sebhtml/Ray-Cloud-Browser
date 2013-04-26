@@ -473,6 +473,8 @@ Renderer.prototype.drawQuadTree = function(context) {
 	var screenWidth = this.screen.getWidth() / zoomValue;
 	var screenHeight = this.screen.getHeight() / zoomValue;
 	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(originX + screenWidth / 2, originY + screenHeight / 2),  screenWidth, screenHeight);
+	var gravityCenter = this.quadTree.getGravityCenter();
+	var numberOfElements = this.quadTree.getSumOfMasses();
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
 		var currentQuadTree = listOfQuadTrees[k];
@@ -496,7 +498,14 @@ Renderer.prototype.drawQuadTree = function(context) {
 
 		var textX = (centerX - originX) * zoomValue;
 		var textY = ((centerY - (height - 30) / 2) - originY) * zoomValue;
-		this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf(), "center", "red", "arial", 30);
+		this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf(), "center", "red", "arial", 100);
+
+		/*
+		var radius = 1 * zoomValue;
+		var x = (gravityCenter.getX() - originX) * zoomValue;
+		var y = (gravityCenter.getY() - originY) * zoomValue;
+		var theColor = "black";
+		this.drawBufferedCircle(context, x, y, radius, theColor, lineWidth, theColor, 20);*/
 	}
 }
 

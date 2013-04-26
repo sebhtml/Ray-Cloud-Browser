@@ -32,7 +32,7 @@
  * @param teta (float)
  */
 function BarnesHutAlgorithm(teta) {
-	this.GRAVITATIONAL_CONSTANT = -10;
+	this.gravitationalForce = -10;
 	this.teta = teta;
 }
 
@@ -52,11 +52,11 @@ BarnesHutAlgorithm.prototype.computeNewtonForce = function(pointA, massA, pointB
 		return new Point(0, 0);
 	}
 	var vector = new Point(pointB.getX(), pointB.getY());
-	var vectorNorm = Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2);
-	var force = -this.GRAVITATIONAL_CONSTANT * massA * massB / vectorNorm;
+	var vectorNorm = Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2));
+	var force = -this.gravitationalForce * massA * massB / Math.pow(vectorNorm, 2);
 
-	vector.sub(pointA);
-	vector.divideBy(Math.sqrt(vectorNorm));
+	vector.substract(pointA);
+	vector.divideBy(vectorNorm);
 	vector.multiplyBy(force);
 
 	return vector;
@@ -74,13 +74,11 @@ BarnesHutAlgorithm.prototype.computeNewtonForce = function(pointA, massA, pointB
  */
 BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, quadTree, force) {
 	var widthOfQuadTree = quadTree.getWidth();
-	var distance = Math.pow(quadTree.getGravityCenter().getX() - point.getX(), 2) +
-		Math.pow(quadTree.getGravityCenter().getY() - point.getY(), 2);
-	var widthTimesWidth = Math.pow(widthOfQuadTree, 2);
-	var teta = Math.pow(this.teta, 2)
+	var distance = Math.sqrt(Math.pow(quadTree.getGravityCenter().getX() - point.getX(), 2) + Math.pow(quadTree.getGravityCenter().getY() - point.getY(), 2));
+	var widthTimesWidth = widthOfQuadTree;
 
-	//We can approximate
-	if(widthTimesWidth / distance < teta) {
+	//We can approximate because the node sufficiently far from the center
+	if(widthTimesWidth / distance < this.teta) {
 		var newForce = this.computeNewtonForce(point, mass, quadTree.getGravityCenter(), quadTree.getSumOfMasses() * mass);
 		force.add(newForce);
 
@@ -89,7 +87,7 @@ BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, qu
 		var points = quadTree.getPoints();
 		var objects = quadTree.getObjects();
 		for(var i = 0; i < points.length; i++) {
-			if(object == objects[i]) {
+			if(object == objects[i] && point.equals(points[i])) {
 				continue;
 			}
 			var newForce = this.computeNewtonForce(point, mass, points[i], mass);
