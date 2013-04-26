@@ -474,7 +474,7 @@ Renderer.prototype.drawQuadTree = function(context) {
 	var screenHeight = this.screen.getHeight() / zoomValue;
 	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(originX + screenWidth / 2, originY + screenHeight / 2),  screenWidth, screenHeight);
 	var gravityCenter = this.quadTree.getGravityCenter();
-	var numberOfElements = this.quadTree.getSumOfMasses();
+	var numberOfElements = this.quadTree.getSize();
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
 		var currentQuadTree = listOfQuadTrees[k];

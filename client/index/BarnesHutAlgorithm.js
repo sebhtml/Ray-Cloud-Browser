@@ -79,7 +79,7 @@ BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, qu
 
 	//We can approximate because the node sufficiently far from the center
 	if(widthTimesWidth / distance < this.teta) {
-		var newForce = this.computeNewtonForce(point, mass, quadTree.getGravityCenter(), quadTree.getSumOfMasses() * mass);
+		var newForce = this.computeNewtonForce(point, mass, quadTree.getGravityCenter(), quadTree.getSize() * mass);
 		force.add(newForce);
 
 	//We can't approximate and the QuadTree is a leaf

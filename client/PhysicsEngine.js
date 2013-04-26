@@ -57,13 +57,19 @@ function PhysicsEngine(screen){
 	this.maximumRepulsion=64;
 
 /*
+ * Barnes-Hut algorithm
+ */
+
+	this.massForBarnesHut = 24;
+
+/*
  * Hooke's law
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
 	this.sprintStep=0.6;
 	this.springConstant=0.3;
-	this.springLength=20;
+	this.springLength=25;
 	this.maximumAttraction=64;
 
 	/* velocity update */
@@ -82,6 +88,7 @@ function PhysicsEngine(screen){
 					0);
 
 	this.barnesHut = new BarnesHutAlgorithm(0.5);
+	this.useBarnesHut = false;
 
 	if(this.simulatedAnnealing)
 		this.charge=300;
@@ -142,9 +149,11 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 
 
 		var force = new Point(0, 0);
-		this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, 1, this.quadTree, force);
 
-		//var force = this.computeRepulsionForceFirstVersion(vertex1, vertex2, vertices, index);
+		if(this.useBarnesHut)
+			this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, this.massForBarnesHut, this.quadTree, force);
+		else
+			force = this.computeRepulsionForceFirstVersion(vertex1, vertex2, vertices, index);
 
 		/*console.log("BARNES HUT = " + force.toString());
 		console.log("QUERY CIRCLE = " + force3.toString());

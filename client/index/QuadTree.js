@@ -38,15 +38,14 @@ function QuadTree(numberMaxElementsPerNode, center, width, height, depth) {
 	this.center = center;
 	this.width = width;
 	this.height = height;
-	this.nbElements = 0;
+	this.numberOfElements = 0;
 	this.depth = depth;
 	this.southEast = null;
 	this.northEast = null;
 	this.southWest = null;
 	this.northWest = null;
 	this.createArrays();
-	this.sumOfMasses = 0;
-	this.gravityCenter = null;
+	this.gravityCenter = center;
 }
 
 /**
@@ -62,30 +61,34 @@ function QuadTree(numberMaxElementsPerNode, center, width, height, depth) {
  * @return (Boolean) TRUE if the object was inserted, FALSE otherwise
  */
 QuadTree.prototype.insert = function(centerObject, object) {
+
 	if(this.isLeaf()) {
 		if(!this.checkOverlapBetweenPointAndRectangle(centerObject, this.center, this.width, this.height)) {
 			return false;
 		}
 		this.points.push(centerObject);
 		this.objects.push(object);
+		this.numberOfElements ++;
 		this.checkIfItIsTooBig();
-		this.nbElements ++;
 		this.calculateTheCenterOfGravity();
+
 		return true;
 	} else {
 		var tree = this.classify(centerObject, true);
 		var result = tree.insert(centerObject, object);
 		if(result) {
-			this.nbElements ++;
+
+			this.numberOfElements ++;
 			this.calculateTheCenterOfGravity();
 		}
+
 		return result;
 	}
 }
 
 QuadTree.prototype.calculateTheCenterOfGravity = function() {
+
 	this.gravityCenter = new Point(0, 0);
-	this.sumOfMasses = 0;
 	if(this.isLeaf()) {
 		if(this.points.length == 0) {
 			return;
@@ -93,38 +96,34 @@ QuadTree.prototype.calculateTheCenterOfGravity = function() {
 		for(var i = 0; i < this.points.length; i++) {
 			this.gravityCenter.add(this.points[i]);
 		}
-		this.sumOfMasses = this.points.length;
-		this.gravityCenter.divideBy(this.sumOfMasses);
+		this.gravityCenter.divideBy(this.numberOfElements);
+
 	} else {
 		if(this.southEast != null) {
-			var currentPoint = this.southEast.getGravityCenter();
-			currentPoint.multiplyBy(this.southEast.getSumOfMasses());
+			var currentPoint = this.southEast.getGravityCenter().copy();
+			currentPoint.multiplyBy(this.southEast.getSize());
 			this.gravityCenter.add(currentPoint);
-			this.sumOfMasses += this.southEast.getSumOfMasses();
 		}
 		if(this.northEast != null) {
-			var currentPoint = this.northEast.getGravityCenter();
-			currentPoint.multiplyBy(this.northEast.getSumOfMasses());
+			var currentPoint = this.northEast.getGravityCenter().copy();
+			currentPoint.multiplyBy(this.northEast.getSize());
 			this.gravityCenter.add(currentPoint);
-			this.sumOfMasses += this.northEast.getSumOfMasses();
 		}
 		if(this.southWest != null) {
-			var currentPoint = this.southWest.getGravityCenter();
-			currentPoint.multiplyBy(this.southWest.getSumOfMasses());
+			var currentPoint = this.southWest.getGravityCenter().copy();
+			currentPoint.multiplyBy(this.southWest.getSize());
 			this.gravityCenter.add(currentPoint);
-			this.sumOfMasses += this.southWest.getSumOfMasses();
 		}
 		if(this.northWest != null) {
-			var currentPoint = this.northWest.getGravityCenter();
-			currentPoint.multiplyBy(this.northWest.getSumOfMasses());
+			var currentPoint = this.northWest.getGravityCenter().copy();
+			currentPoint.multiplyBy(this.northWest.getSize());
 			this.gravityCenter.add(currentPoint);
-			this.sumOfMasses += this.northWest.getSumOfMasses();
 		}
-		this.gravityCenter.divideBy(this.sumOfMasses);
+		this.gravityCenter.divideBy(this.numberOfElements);
 	}
 }
 QuadTree.prototype.checkIfItIsTooBig = function() {
-	if(this.nbElements >= this.numberMaxElementsPerNode) {
+	if(this.numberOfElements > this.numberMaxElementsPerNode) {
 		if(this.depth < 50){
 			this.split();
 		}
@@ -144,6 +143,9 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		var position = -1;
 		var points = new Array();
 		var objects = new Array();
+
+		// TODO: the code should not create a new array if the object is not
+		// present
 		for(var i = 0; i < this.points.length; i++) {
 			if(this.objects[i] == object && this.points[i].equals(centerObject)) {
 				position = i;
@@ -154,11 +156,14 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		}
 		this.points = points;
 		this.objects = objects;
-		if(position != -1) {
-			this.nbElements--;
+
+		var removed = position != -1;
+		if(removed) {
+			this.numberOfElements--;
 			this.checkIfChildrenAreEmpty();
+			this.calculateTheCenterOfGravity();
 		}
-		return position != -1;
+		return removed;
 	} else {
 		var tree = this.classify(centerObject, false);
 		if(tree == null) {
@@ -166,7 +171,7 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		}
 		var remove = tree.remove(centerObject, object);
 		if(remove) {
-			this.nbElements--;
+			this.numberOfElements--;
 			this.checkIfChildrenAreEmpty();
 			this.calculateTheCenterOfGravity();
 		}
@@ -217,7 +222,6 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 		if(forceInsertion) {
 			this.insert(newCenter, object);
 		}
-		this.checkIfChildrenAreEmpty();
 		return forceInsertion;
 	}
 
@@ -269,12 +273,18 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
  * </pre>
  */
 QuadTree.prototype.split = function() {
+
 	for(var i = 0; i < this.points.length; i++) {
 		var tree = this.classify(this.points[i], true);
 		tree.insert(this.points[i], this.objects[i]);
 	}
 	//To delete a current arrays
 	this.createArrays();
+
+	//  the gravity center does not need to be updated
+	//  because it's the same set of points.
+
+	//this.calculateTheCenterOfGravity();
 }
 
 /**
@@ -548,7 +558,7 @@ QuadTree.prototype.isLeaf = function() {
  * @return (int) Number of elements
  */
 QuadTree.prototype.getSize = function() {
-	return this.nbElements;
+	return this.numberOfElements;
 }
 
 /**
@@ -577,25 +587,14 @@ QuadTree.prototype.getWidth = function() {
 }
 
 QuadTree.prototype.getObjects = function() {
-	var elements = new Array();
-	for(var i = 0; i < this.objects.length; i++) {
-		elements.push(this.objects[i]);
-	}
-	return elements;
+	return this.objects;
 }
 
 QuadTree.prototype.getNumberOfElementsInLeaf = function() {
 	return this.objects.length;
 }
 
-QuadTree.prototype.getSumOfMasses = function() {
-	return this.sumOfMasses;
-}
-
 QuadTree.prototype.getGravityCenter = function() {
-	if(this.isLeaf() || this.gravityCenter == null) {
-		this.calculateTheCenterOfGravity();
-	}
 	return this.gravityCenter;
 }
 
@@ -616,11 +615,7 @@ QuadTree.prototype.getNorthWest = function() {
 }
 
 QuadTree.prototype.getPoints = function() {
-	var points = new Array();
-	for(var i = 0; i < this.points.length; i++) {
-		points.push(this.points[i]);
-	}
-	return points;
+	return this.points;
 }
 
 /**
@@ -633,12 +628,11 @@ QuadTree.prototype.toString = function() {
 		this.center.toString() + "-" +
 		this.width + "-" +
 		this.height + "-" +
-		this.nbElements + "-" +
+		this.numberOfElements + "-" +
 		this.depth + "-" +
 		this.southEast + "-" +
 		this.northEast + "-" +
 		this.southWest + "-" +
 		this.northWest + " sum : " +
-		this.sumOfMasses + " gravCenter : " +
 		this.gravityCenter.toString();
 }

@@ -98,3 +98,7 @@ Point.prototype.equals = function(point) {
 Point.prototype.toString = function() {
 	return "(" + this.getX() + ", " + this.getY() + ")";
 }
+
+Point.prototype.copy = function() {
+	return new Point(this.getX(), this.getY());
+}
