@@ -88,7 +88,7 @@ function PhysicsEngine(screen){
 					0);
 
 	this.barnesHut = new BarnesHutAlgorithm(0.5);
-	this.useBarnesHut = false;
+	this.useBarnesHut = true;
 
 	if(this.simulatedAnnealing)
 		this.charge=300;

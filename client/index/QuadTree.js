@@ -212,7 +212,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	//If is a leaf
 	if(this.isLeaf()) {
 		for(var i = 0; i < this.points.length; i++) {
-			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
+			if(this.objects[i] == object) {
 				this.points[i] = newCenter;
 				this.calculateTheCenterOfGravity();
 				return true;
