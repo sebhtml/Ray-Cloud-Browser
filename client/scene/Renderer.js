@@ -370,6 +370,16 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	} else if(this.m_showCoverage) {
 		this.drawBufferedText(context, (x - radius), (y + radius / 2), text, "", fillStyle, font, 30);
 	}
+
+	if(this.screen.getDebugMode()){
+
+		var pointA = new Point(x, y);
+		var pointB = pointA.copy();
+		pointB.add(vertex.getForce().copy().multiplyBy(50));
+		//pointB.multiplyBy();
+		var theColor = 'blue';
+		this.drawBufferedLineWithTwoPoints(context, pointA, pointB, lineWidth, theColor, 100);
+	}
 }
 
 Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillStyle, font, layer) {
@@ -473,12 +483,12 @@ Renderer.prototype.drawQuadTree = function(context) {
 	var screenWidth = this.screen.getWidth() / zoomValue;
 	var screenHeight = this.screen.getHeight() / zoomValue;
 	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(originX + screenWidth / 2, originY + screenHeight / 2),  screenWidth, screenHeight);
-	var gravityCenter = this.quadTree.getGravityCenter();
 	var numberOfElements = this.quadTree.getSize();
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
 		var currentQuadTree = listOfQuadTrees[k];
 
+		theColor = "black";
 		var width = currentQuadTree.getWidth();
 		var height = currentQuadTree.getHeight();
 		var centerX = currentQuadTree.getCenter().getX();
@@ -489,12 +499,12 @@ Renderer.prototype.drawQuadTree = function(context) {
 		var pointC = new Point(((centerX - width / 2) - originX) * zoomValue, ((centerY + height / 2) - originY) * zoomValue);
 		var pointD = new Point(((centerX - width / 2) - originX) * zoomValue, ((centerY - height / 2) - originY) * zoomValue);
 
-		this.drawBufferedTwoPoint(context, pointA, pointB, lineWidth, theColor, 100);
-		this.drawBufferedTwoPoint(context, pointA, pointC, lineWidth, theColor, 100);
-		this.drawBufferedTwoPoint(context, pointA, pointD, lineWidth, theColor, 100);
-		this.drawBufferedTwoPoint(context, pointB, pointC, lineWidth, theColor, 100);
-		this.drawBufferedTwoPoint(context, pointB, pointD, lineWidth, theColor, 100);
-		this.drawBufferedTwoPoint(context, pointC, pointD, lineWidth, theColor, 100);
+		this.drawBufferedLineWithTwoPoints(context, pointA, pointB, lineWidth, theColor, 100);
+		this.drawBufferedLineWithTwoPoints(context, pointA, pointC, lineWidth, theColor, 100);
+		this.drawBufferedLineWithTwoPoints(context, pointA, pointD, lineWidth, theColor, 100);
+		this.drawBufferedLineWithTwoPoints(context, pointB, pointC, lineWidth, theColor, 100);
+		this.drawBufferedLineWithTwoPoints(context, pointB, pointD, lineWidth, theColor, 100);
+		this.drawBufferedLineWithTwoPoints(context, pointC, pointD, lineWidth, theColor, 100);
 
 		var textX = (centerX - originX) * zoomValue;
 		var textY = ((centerY - (height - 30) / 2) - originY) * zoomValue;
@@ -502,12 +512,13 @@ Renderer.prototype.drawQuadTree = function(context) {
 			console.log(currentQuadTree.getObjects());
 		this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf(), "center", "red", "arial", 100);
 
-		/*
-		var radius = 1 * zoomValue;
+		var gravityCenter = currentQuadTree.getGravityCenter();
+		var radius = 4 * zoomValue;
 		var x = (gravityCenter.getX() - originX) * zoomValue;
 		var y = (gravityCenter.getY() - originY) * zoomValue;
-		var theColor = "black";
-		this.drawBufferedCircle(context, x, y, radius, theColor, lineWidth, theColor, 20);*/
+		//console.log("[debug] " + currentQuadTree.getCenter().toString() + " gravityCenter: " +
+		theColor = "red";
+		this.drawBufferedCircle(context, x, y, radius, theColor, lineWidth, theColor, 1000);
 	}
 }
 
@@ -515,6 +526,6 @@ Renderer.prototype.setQuadTree = function(quadTree) {
 	this.quadTree = quadTree;
 }
 
-Renderer.prototype.drawBufferedTwoPoint = function(context, pointA, pointB, lineWidth, theColor, layer) {
+Renderer.prototype.drawBufferedLineWithTwoPoints = function(context, pointA, pointB, lineWidth, theColor, layer) {
 	this.drawBufferedLine(context, pointA.getX(), pointA.getY(), pointB.getX(), pointB.getY(), lineWidth, theColor, layer);
 }

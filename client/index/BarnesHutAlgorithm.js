@@ -34,7 +34,6 @@
 function BarnesHutAlgorithm(teta) {
 	this.gravitationalForce = -10;
 	this.teta = teta;
-	this.force = null;
 }
 
 

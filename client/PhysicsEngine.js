@@ -61,6 +61,7 @@ function PhysicsEngine(screen){
  */
 
 	this.massForBarnesHut = 20;
+	this.tetaForBarnesHut = 0.0;
 
 /*
  * Hooke's law
@@ -87,7 +88,7 @@ function PhysicsEngine(screen){
 					this.height,
 					0);
 
-	this.barnesHut = new BarnesHutAlgorithm(0.5);
+	this.barnesHut = new BarnesHutAlgorithm(this.tetaForBarnesHut);
 	this.useBarnesHut = false;
 
 	if(this.simulatedAnnealing)
@@ -212,20 +213,6 @@ PhysicsEngine.prototype.getAttractionForce = function(vertex1, vertex2){
 }
 
 /**
- * TODO: Not sure how to that since we don't have access to all the
- * data at once.
- */
-PhysicsEngine.prototype.getChargeFromCoverage=function(vertex){
-
-	var value=vertex.getCoverageValue();
-
-	if(value<this.charge)
-		return this.charge;
-
-	return this.charge;
-}
-
-/**
  * \see http://en.wikipedia.org/wiki/Coulomb's_law
  */
 PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
@@ -248,12 +235,6 @@ PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
 
 	var charge1=this.charge;
 	var charge2=this.charge;
-
-	if(vertex1.isColored())
-		charge1=this.getChargeFromCoverage(vertex1);
-
-	if(vertex2.isColored())
-		charge2=this.getChargeFromCoverage(vertex2);
 
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
 	force*=this.forceStep;

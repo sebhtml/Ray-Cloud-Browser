@@ -207,6 +207,10 @@ Vertex.prototype.updateVelocity=function(timeStep, force){
 	this.velocityY = force.getY() * timeStep;
 }
 
+Vertex.prototype.getForce = function() {
+	return new Point(this.velocityX, this.velocityY);
+}
+
 Vertex.prototype.applyDamping=function(damping){
 
 	this.velocityX*=damping;
