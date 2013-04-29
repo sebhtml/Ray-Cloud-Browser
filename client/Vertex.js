@@ -203,8 +203,8 @@ Vertex.prototype.updatePower=function(){
 }
 
 Vertex.prototype.updateVelocity=function(timeStep, force){
-	this.velocityX += force.getX() * timeStep;
-	this.velocityY += force.getY() * timeStep;
+	this.velocityX = force.getX() * timeStep;
+	this.velocityY = force.getY() * timeStep;
 }
 
 Vertex.prototype.applyDamping=function(damping){

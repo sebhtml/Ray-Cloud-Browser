@@ -60,7 +60,7 @@ function PhysicsEngine(screen){
  * Barnes-Hut algorithm
  */
 
-	this.massForBarnesHut = 24;
+	this.massForBarnesHut = 20;
 
 /*
  * Hooke's law
@@ -88,7 +88,7 @@ function PhysicsEngine(screen){
 					0);
 
 	this.barnesHut = new BarnesHutAlgorithm(0.5);
-	this.useBarnesHut = true;
+	this.useBarnesHut = false;
 
 	if(this.simulatedAnnealing)
 		this.charge=300;
@@ -133,7 +133,7 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 	i=0;
 	var processed=0;
 
-	while(this.activeIndex<vertices.length && processed++<this.maximumActiveObjectsToProcess){
+	while(this.activeIndex < vertices.length && processed++ < this.maximumActiveObjectsToProcess) {
 
 		if(this.forceConstant==0)
 			break;
@@ -146,22 +146,16 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 		}
 
 		//Actually, hits should be obtained with the quadTree.
+		if(this.useBarnesHut) {
+			force = this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, this.massForBarnesHut, this.quadTree);
+			//console.log("BARNES HUT = " + force);
+		} else {
+			force = this.computeRepulsionForceFirstVersion(vertex1, vertices, index);
+			//console.log("QUERY = " + force2);
+			//console.log("");
+		}
 
-
-		var force = new Point(0, 0);
-
-		if(this.useBarnesHut)
-			this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, this.massForBarnesHut, this.quadTree, force);
-		else
-			force = this.computeRepulsionForceFirstVersion(vertex1, vertex2, vertices, index);
-
-		/*console.log("BARNES HUT = " + force.toString());
-		console.log("QUERY CIRCLE = " + force3.toString());
-		console.log("");*/
-		//console.log(this.quadTree.getGravityCenter().toString());
-
-		var arcs=vertex1.getLinkedObjects();
-
+		var arcs = vertex1.getLinkedObjects();
 		for(var j in arcs){
 			var vertex2 = arcs[j];
 			if(vertex1.getSequence() == vertex2.getSequence()) {
@@ -339,7 +333,7 @@ PhysicsEngine.prototype.getQuadTree = function() {
 	return this.quadTree;
 }
 
-PhysicsEngine.prototype.computeRepulsionForceFirstVersion = function(vertex1, vertex2, vertices, index) {
+PhysicsEngine.prototype.computeRepulsionForceFirstVersion = function(vertex1, vertices, index) {
 	var force = new Point(0, 0);
 	var force2 = new Point(0, 0);
 	var hits = new Array();

@@ -61,24 +61,19 @@ function QuadTree(numberMaxElementsPerNode, center, width, height, depth) {
  * @return (Boolean) TRUE if the object was inserted, FALSE otherwise
  */
 QuadTree.prototype.insert = function(centerObject, object) {
-
 	if(this.isLeaf()) {
 		if(!this.checkOverlapBetweenPointAndRectangle(centerObject, this.center, this.width, this.height)) {
 			return false;
 		}
 		this.points.push(centerObject);
 		this.objects.push(object);
-		this.numberOfElements ++;
-		this.checkIfItIsTooBig();
 		this.calculateTheCenterOfGravity();
-
+		this.checkIfItIsTooBig();
 		return true;
 	} else {
 		var tree = this.classify(centerObject, true);
 		var result = tree.insert(centerObject, object);
 		if(result) {
-
-			this.numberOfElements ++;
 			this.calculateTheCenterOfGravity();
 		}
 
@@ -87,8 +82,8 @@ QuadTree.prototype.insert = function(centerObject, object) {
 }
 
 QuadTree.prototype.calculateTheCenterOfGravity = function() {
-
 	this.gravityCenter = new Point(0, 0);
+	this.numberOfElements = 0;
 	if(this.isLeaf()) {
 		if(this.points.length == 0) {
 			return;
@@ -96,6 +91,7 @@ QuadTree.prototype.calculateTheCenterOfGravity = function() {
 		for(var i = 0; i < this.points.length; i++) {
 			this.gravityCenter.add(this.points[i]);
 		}
+		this.numberOfElements = this.points.length;
 		this.gravityCenter.divideBy(this.numberOfElements);
 
 	} else {
@@ -103,21 +99,25 @@ QuadTree.prototype.calculateTheCenterOfGravity = function() {
 			var currentPoint = this.southEast.getGravityCenter().copy();
 			currentPoint.multiplyBy(this.southEast.getSize());
 			this.gravityCenter.add(currentPoint);
+			this.numberOfElements += this.southEast.getSize();
 		}
 		if(this.northEast != null) {
 			var currentPoint = this.northEast.getGravityCenter().copy();
 			currentPoint.multiplyBy(this.northEast.getSize());
 			this.gravityCenter.add(currentPoint);
+			this.numberOfElements += this.northEast.getSize();
 		}
 		if(this.southWest != null) {
 			var currentPoint = this.southWest.getGravityCenter().copy();
 			currentPoint.multiplyBy(this.southWest.getSize());
 			this.gravityCenter.add(currentPoint);
+			this.numberOfElements += this.southWest.getSize();
 		}
 		if(this.northWest != null) {
 			var currentPoint = this.northWest.getGravityCenter().copy();
 			currentPoint.multiplyBy(this.northWest.getSize());
 			this.gravityCenter.add(currentPoint);
+			this.numberOfElements += this.northWest.getSize();
 		}
 		this.gravityCenter.divideBy(this.numberOfElements);
 	}
@@ -159,7 +159,6 @@ QuadTree.prototype.remove = function(centerObject, object) {
 
 		var removed = position != -1;
 		if(removed) {
-			this.numberOfElements--;
 			this.checkIfChildrenAreEmpty();
 			this.calculateTheCenterOfGravity();
 		}
@@ -171,7 +170,6 @@ QuadTree.prototype.remove = function(centerObject, object) {
 		}
 		var remove = tree.remove(centerObject, object);
 		if(remove) {
-			this.numberOfElements--;
 			this.checkIfChildrenAreEmpty();
 			this.calculateTheCenterOfGravity();
 		}
@@ -212,7 +210,7 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	//If is a leaf
 	if(this.isLeaf()) {
 		for(var i = 0; i < this.points.length; i++) {
-			if(this.objects[i] == object) {
+			if(this.objects[i] == object && this.points[i].equals(oldCenter)) {
 				this.points[i] = newCenter;
 				this.calculateTheCenterOfGravity();
 				return true;
@@ -557,6 +555,7 @@ QuadTree.prototype.isLeaf = function() {
  *
  * @return (int) Number of elements
  */
+
 QuadTree.prototype.getSize = function() {
 	return this.numberOfElements;
 }

@@ -34,6 +34,7 @@
 function BarnesHutAlgorithm(teta) {
 	this.gravitationalForce = -10;
 	this.teta = teta;
+	this.force = null;
 }
 
 
@@ -48,13 +49,16 @@ function BarnesHutAlgorithm(teta) {
  * @return (Point)
  */
 BarnesHutAlgorithm.prototype.computeNewtonForce = function(pointA, massA, pointB, massB) {
+	var vector = pointB.copy();
 	if(pointA.equals(pointB)) {
 		return new Point(0, 0);
 	}
-	var vector = new Point(pointB.getX(), pointB.getY());
+	var vector = pointB.copy();
 	var vectorNorm = Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2));
+	if(vectorNorm < 5) {
+		vectorNorm = 5;
+	}
 	var force = -this.gravitationalForce * massA * massB / Math.pow(vectorNorm, 2);
-
 	vector.substract(pointA);
 	vector.divideBy(vectorNorm);
 	vector.multiplyBy(force);
@@ -70,15 +74,14 @@ BarnesHutAlgorithm.prototype.computeNewtonForce = function(pointA, massA, pointB
  * @param point (Point)
  * @param mass (int)
  * @param quadTree (QuadTree)
- * @param force (Point)
+ * 
+ * @return (Point)
  */
-BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, quadTree, force) {
+BarnesHutAlgorithm.prototype.approximate = function(object, point, mass, quadTree, force) {
 	var widthOfQuadTree = quadTree.getWidth();
 	var distance = Math.sqrt(Math.pow(quadTree.getGravityCenter().getX() - point.getX(), 2) + Math.pow(quadTree.getGravityCenter().getY() - point.getY(), 2));
-	var widthTimesWidth = widthOfQuadTree;
-
 	//We can approximate because the node sufficiently far from the center
-	if(widthTimesWidth / distance < this.teta) {
+	if(widthOfQuadTree / distance < this.teta) {
 		var newForce = this.computeNewtonForce(point, mass, quadTree.getGravityCenter(), quadTree.getSize() * mass);
 		force.add(newForce);
 
@@ -97,18 +100,22 @@ BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, qu
 	//We can't approximate and the QuadTree is not a leaf
 	} else {
 		if(quadTree.getSouthEast() != null) {
-			this.approximateForce(object, point, mass, quadTree.getSouthEast(), force);
+			this.approximate(object, point, mass, quadTree.getSouthEast(), force);
 		}
 		if(quadTree.getNorthEast() != null) {
-			this.approximateForce(object, point, mass, quadTree.getNorthEast(), force);
+			this.approximate(object, point, mass, quadTree.getNorthEast(), force);
 		}
 		if(quadTree.getSouthWest() != null) {
-			this.approximateForce(object, point, mass, quadTree.getSouthWest(), force);
+			this.approximate(object, point, mass, quadTree.getSouthWest(), force);
 		}
 		if(quadTree.getNorthWest() != null) {
-			this.approximateForce(object, point, mass, quadTree.getNorthWest(), force);
+			this.approximate(object, point, mass, quadTree.getNorthWest(), force);
 		}
 	}
 }
 
-
+BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, quadTree) {
+	var force = new Point(0, 0);
+	this.approximate(object, point, mass, quadTree, force);
+	return force;
+}
