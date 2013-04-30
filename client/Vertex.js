@@ -158,15 +158,21 @@ Vertex.prototype.setPosition=function(){
 	this.positionIsSet=true;
 }
 
+Vertex.prototype.updateCenter = function(x, y) {
+	this.oldCenter = new Point(this.x, this.y);
+
+	this.x = x;
+	this.y = y;
+
+	this.center= new Point(this.x, this.y);
+}
+
 Vertex.prototype.update=function(timeStep,timeState){
 	if(!this.followMouse && timeState){
 
-		this.oldCenter = new Point(this.x, this.y);
+		this.updateCenter(this.x+this.velocityX*timeStep,
+				this.y+this.velocityY*timeStep);
 
-		this.x = this.x+this.velocityX*timeStep;
-		this.y = this.y+this.velocityY*timeStep;
-
-		this.center= new Point(this.x, this.y);
 	}
 
 	this.updatePower();
@@ -333,8 +339,7 @@ Vertex.prototype.handleMouseMove=function(x,y){
 		var velocityX=x-this.x;
 		var velocityY=y-this.y;
 
-		this.x=x;
-		this.y=y;
+		this.updateCenter(x, y);
 
 		this.updated=false;
 
