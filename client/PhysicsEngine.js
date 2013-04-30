@@ -68,8 +68,8 @@ function PhysicsEngine(screen){
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
-	this.springConstant = 0.5;
-	this.springLength = 24;
+	this.springConstant = 0.1;
+	this.springLength = 1;
 	//this.maximumAttraction = 8;
 	this.enableHookLaw = true;
 

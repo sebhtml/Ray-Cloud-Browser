@@ -33,7 +33,7 @@
  */
 function BarnesHutAlgorithm(teta) {
 	// http://en.wikipedia.org/wiki/Gravitational_constant
-	this.gravitationalForce = 10;
+	this.gravitationalForce = 5;
 	this.teta = teta;
 }
 
