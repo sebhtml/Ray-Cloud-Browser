@@ -28,7 +28,7 @@ LayoutEngine.prototype.applyGoodLayout=function(vertex1,vertex2){
 
 	if(!vertex1.hasPosition()){
 		vertex1.setX(vertex2.getX()-yRange);
-		vertex1.setY(vertex2.getY()+Math.random()*yRange-yRange/2);
+		vertex1.setY(vertex2.getY() + Math.random()*yRange-yRange/2 + 1);
 
 		vertex1.setPosition();
 	}
@@ -36,7 +36,7 @@ LayoutEngine.prototype.applyGoodLayout=function(vertex1,vertex2){
 
 	if(!vertex2.hasPosition()){
 		vertex2.setX(vertex1.getX()+yRange);
-		vertex2.setY(vertex1.getY()+Math.random()*yRange-yRange/2);
+		vertex2.setY(vertex1.getY() +Math.random()*yRange-yRange/2 + 1);
 
 		vertex2.setPosition();
 	}

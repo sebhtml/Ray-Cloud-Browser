@@ -59,8 +59,8 @@ Point.prototype.add = function(point) {
 }
 
 Point.prototype.substract = function(point) {
-	this.x += point.getX();
-	this.y += point.getY();
+	this.x -= point.getX();
+	this.y -= point.getY();
 	return this;
 }
 
@@ -101,4 +101,16 @@ Point.prototype.toString = function() {
 
 Point.prototype.copy = function() {
 	return new Point(this.getX(), this.getY());
+}
+
+Point.prototype.getNorm = function() {
+
+	var x = this.getX();
+	var y = this.getY();
+	var vectorNorm = Math.sqrt(x*x + y*y);
+	return vectorNorm;
+}
+
+Point.prototype.normalize = function(){
+	this.divideBy(this.getNorm());
 }

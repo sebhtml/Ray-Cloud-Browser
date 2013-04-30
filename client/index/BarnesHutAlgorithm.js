@@ -32,7 +32,8 @@
  * @param teta (float)
  */
 function BarnesHutAlgorithm(teta) {
-	this.gravitationalForce = -10;
+	// http://en.wikipedia.org/wiki/Gravitational_constant
+	this.gravitationalForce = 10;
 	this.teta = teta;
 }
 
@@ -48,23 +49,24 @@ function BarnesHutAlgorithm(teta) {
  * @return (Point)
  */
 BarnesHutAlgorithm.prototype.computeNewtonForce = function(pointA, massA, pointB, massB) {
+
 	var vector = pointB.copy();
-	if(pointA.equals(pointB)) {
-		return new Point(0, 0);
-	}
-	var vector = pointB.copy();
-	var vectorNorm = Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2));
-	if(vectorNorm < 5) {
-		vectorNorm = 5;
-	}
-	var force = -this.gravitationalForce * massA * massB / Math.pow(vectorNorm, 2);
 	vector.substract(pointA);
-	vector.divideBy(vectorNorm);
+	var vectorNorm = vector.getNorm();
+
+	if(pointA.equals(pointB)) {
+		var value=8;
+		return new Point(Math.random()*value - value,Math.random()*value - value);
+	}
+
+	vector.normalize();
+
+	var force = - (this.gravitationalForce * massA * massB ) / (vectorNorm * vectorNorm);
+
 	vector.multiplyBy(force);
 
 	return vector;
 }
-
 
 /**
  * Compute the approximation of Barnes Hut
@@ -113,7 +115,24 @@ BarnesHutAlgorithm.prototype.approximate = function(object, point, mass, quadTre
 	}
 }
 
+BarnesHutAlgorithm.prototype.approximateForceWithQueryCircle = function(object, point, mass, quadTree, radius) {
+	var points = quadTree.queryPointsWithCircle(point, radius);
+
+	var force = new Point(0, 0);
+
+	for(var i = 0; i < points.length; i++) {
+		var newForce = this.computeNewtonForce(point, mass, points[i], mass);
+		force.add(newForce);
+	}
+
+	//console.log("Points at " + point.toString() + " " + points.length + " force -> " + force.toString());
+
+	return force;
+}
+
 BarnesHutAlgorithm.prototype.approximateForce = function(object, point, mass, quadTree) {
+	//return this.approximateForceWithQueryCircle(object, point, mass, quadTree, 150);
+
 	var force = new Point(0, 0);
 	this.approximate(object, point, mass, quadTree, force);
 	return force;

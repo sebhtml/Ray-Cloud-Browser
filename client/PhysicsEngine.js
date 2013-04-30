@@ -51,7 +51,6 @@ function PhysicsEngine(screen){
  * Coulomb's law
  * This is for the repulsion.
  */
-	this.forceStep=0.6;
 	this.charge=128;
 	this.forceConstant=0.1;
 	this.maximumRepulsion=64;
@@ -60,18 +59,19 @@ function PhysicsEngine(screen){
  * Barnes-Hut algorithm
  */
 
-	this.massForBarnesHut = 20;
-	this.tetaForBarnesHut = 0.0;
+	this.massForBarnesHut = 9;
+	this.tetaForBarnesHut = 0.5;
+	this.maximumNorm = 16;
 
 /*
  * Hooke's law
  * This is for the springs, they keep everything together.
  * if it is too weak, the repulsion may win.
  */
-	this.sprintStep=0.6;
-	this.springConstant=0.3;
-	this.springLength=25;
-	this.maximumAttraction=64;
+	this.springConstant = 0.5;
+	this.springLength = 24;
+	//this.maximumAttraction = 8;
+	this.enableHookLaw = true;
 
 	/* velocity update */
 	this.timeStep=1;
@@ -79,9 +79,11 @@ function PhysicsEngine(screen){
 
 	/* QuadTree initialisation */
 	this.numberOfElementsPerNode = 16;
+
+	// 200 M by 200 M
 	this.width = 200000000;
 	this.height = 200000000;
-	this.centerOfQuadTree = new Point(1000, 1000);
+	this.centerOfQuadTree = new Point(0, 0);
 	this.quadTree = new QuadTree(	this.numberOfElementsPerNode,
 					this.centerOfQuadTree,
 					this.width,
@@ -90,9 +92,6 @@ function PhysicsEngine(screen){
 
 	this.barnesHut = new BarnesHutAlgorithm(this.tetaForBarnesHut);
 	this.useBarnesHut = true;
-
-	if(this.simulatedAnnealing)
-		this.charge=300;
 }
 
 PhysicsEngine.prototype.checkBounds=function(force, maximum){
@@ -146,14 +145,17 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 			continue;
 		}
 
-		//Actually, hits should be obtained with the quadTree.
+		var force = new Point(0, 0);
+
 		if(this.useBarnesHut) {
-			force = this.barnesHut.approximateForce(vertex1.getSequence(), vertex1, this.massForBarnesHut, this.quadTree);
+			force = this.barnesHut.approximateForce(vertex1.getSequence(), vertex1.getCenter(),
+				this.massForBarnesHut, this.quadTree);
+
+
 			//console.log("BARNES HUT = " + force);
+			//console.log("QUERY = " + force2);
 		} else {
 			force = this.computeRepulsionForceFirstVersion(vertex1, vertices, index);
-			//console.log("QUERY = " + force2);
-			//console.log("");
 		}
 
 		var arcs = vertex1.getLinkedObjects();
@@ -163,8 +165,16 @@ PhysicsEngine.prototype.applyForces=function(vertices){
 				continue;
 			}
 			force2 = this.getAttractionForce(vertex1, vertex2);
-			force.add(force2);
+
+			if(this.enableHookLaw)
+				force.add(force2);
 		}
+
+		if(force.getNorm() >= this.maximumNorm) {
+			force.normalize();
+			force.multiplyBy(this.maximumNorm);
+		}
+
 		vertex1.updateVelocity(this.timeStep, force);
 	}
 
@@ -198,9 +208,8 @@ PhysicsEngine.prototype.getAttractionForce = function(vertex1, vertex2){
 	var displacement=distance-this.springLength;
 
 	var force=this.springConstant*displacement;
-	force*=this.sprintStep;
 
-	force=this.checkBounds(force,this.maximumAttraction);
+	//force=this.checkBounds(force,this.maximumAttraction);
 
 	// get a unit vector
 	dx=dx/distance;
@@ -213,61 +222,36 @@ PhysicsEngine.prototype.getAttractionForce = function(vertex1, vertex2){
 }
 
 /**
+ *
+ * Actually, this is the Newton's law because the value in the
+ * Coulomb law is divided by a cubic length 
+ *
  * \see http://en.wikipedia.org/wiki/Coulomb's_law
+ * \see Newton's law
  */
-PhysicsEngine.prototype.getRepulsionForce=function(vertex1,vertex2){
+PhysicsEngine.prototype.getRepulsionForce=function(vertex1, charge1, vertex2, charge2){
 
 	var dx=(vertex1.getX() - vertex2.getX());
 	var dy=(vertex1.getY() - vertex2.getY());
 
 	if(dx==0 && dy==0){
+		//return new Point(0, 0);
 		var value=30;
-		return [Math.random()*value,Math.random()*value];
+		return new Point(Math.random()*value - value,Math.random()*value - value);
 	}
 
 	var length=Math.sqrt(dx*dx+dy*dy);
 
-	if(length<5)
-		length=5;
-
 	dx=dx/length;
 	dy=dy/length;
 
-	var charge1=this.charge;
-	var charge2=this.charge;
-
 	var force=(this.forceConstant*charge1*charge2)/(length*length);
-	force*=this.forceStep;
-
-	force=this.checkBounds(force,this.maximumRepulsion);
-
-	if(this.simulatedAnnealing && vertex1.isColored() && vertex2.isColored()){
-		var nucleotide1=vertex1.getLabel();
-		var nucleotide2=vertex2.getLabel();
-
-		var force2=force;
-		force=0;
-
-		if(nucleotide1=="A" && nucleotide2=="T")
-			force=-force2;
-
-		if(nucleotide1=="T" && nucleotide2=="A")
-			force=-force2;
-
-		if(nucleotide1=="G" && nucleotide2=="C")
-			force=-force2;
-
-		if(nucleotide1=="C" && nucleotide2=="G")
-			force=-force2;
-	}
 
 	dx=dx*force;
 	dy=dy*force;
 
 	return new Point(dx, dy);
 }
-
-
 
 PhysicsEngine.prototype.addForces = function(force, force2){
 	return new Point(force.getX() + force2.getX(), force.getY() + force2.getY())
@@ -318,10 +302,9 @@ PhysicsEngine.prototype.computeRepulsionForceFirstVersion = function(vertex1, ve
 	var force = new Point(0, 0);
 	var force2 = new Point(0, 0);
 	var hits = new Array();
-	var vertexRadius = vertex1.getRadius();
 
 	if(this.useQuadTree) {
-		var keys = this.quadTree.queryCircle(vertex1.getCenter(), 50);
+		var keys = this.quadTree.queryCircle(vertex1.getCenter(), 150);
 		var keyNumber = 0;
 		while(keyNumber < keys.length){
 			var keyValue=keys[keyNumber];
@@ -347,7 +330,12 @@ PhysicsEngine.prototype.computeRepulsionForceFirstVersion = function(vertex1, ve
 		if(vertex1.getSequence() == vertex2.getSequence()) {
 			continue;
 		}
-		force2 = this.getRepulsionForce(vertex1, vertex2);
+		//force2 = this.getRepulsionForce(vertex1.getCenter(), this.charge, vertex2.getCenter(), this.charge);
+		force2 = this.barnesHut.computeNewtonForce(vertex1.getCenter(), this.charge, vertex2.getCenter(), this.charge);
+
+		/*
+		force2=this.checkBounds(force2,this.maximumRepulsion);
+		*/
 		force = this.addForces(force,force2);
 	}
 	return force;

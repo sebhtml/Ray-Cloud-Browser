@@ -398,6 +398,12 @@ QuadTree.prototype.queryCircle = function(center, radius) {
 	return elements;
 }
 
+QuadTree.prototype.queryPointsWithCircle = function(center, radius) {
+	var elements = new Array();
+	this.queryPointsWithCircleRecursively(center, radius, elements);
+	return elements;
+}
+
 /**
  * Return a list of objects corresponding at the query "Circle"
  *
@@ -423,6 +429,30 @@ QuadTree.prototype.queryCircleRecursive = function(center, radius, elements) {
 	}
 	if(this.northWest != null && this.northWest.checkOverlap(center, radius, radius)) {
 		this.northWest.queryCircleRecursive(center, radius, elements);
+	}
+}
+
+QuadTree.prototype.queryPointsWithCircleRecursively= function(center, radius, elements) {
+	if(this.isLeaf()) {
+		for(var i = 0; i < this.points.length; i++) {
+			if(this.checkOverlapBetweenPointAndCircle(this.points[i], center, radius)) {
+				if(this.points[i].equals(center))
+					continue;
+				elements.push(this.points[i]);
+			}
+		}
+		return;
+	}
+
+	var trees = this.getTrees();
+
+	for(var i = 0; i< trees.length; i++) {
+		var tree = trees[i];
+		if(tree == null)
+			continue;
+		if(!tree.checkOverlap(center, radius, radius))
+			continue;
+		tree.queryPointsWithCircleRecursively(center, radius, elements);
 	}
 }
 

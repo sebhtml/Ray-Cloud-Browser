@@ -286,8 +286,9 @@ function testBarnesHutAlgorithm(tests) {
 	point = new Point(100, 100);
 	tree.insert(point, 10667788);
 
-	force = new Point(0, 0);
-	barnesHut.approximateForce(10, point, 150, tree, force);
+	var force = null;
+
+	force = barnesHut.approximateForce(10, point, 150, tree);
 
 	//console.log(force.toString());
 
@@ -297,8 +298,10 @@ function testBarnesHutAlgorithm(tests) {
 	point = new Point(1000, 100);
 	tree.insert(point, 100);
 
-	force = new Point(0, 0);
-	barnesHut.approximateForce(100, point, 150, tree, force);
+	var theObject = 10;
+	var mass = 20;
+	var testPoint = new Point(0, 0);
+	force = barnesHut.approximateForce(theObject, testPoint, mass, tree);
 
 	//console.log(force.toString());
 
@@ -342,7 +345,32 @@ function testGravityCenters(tests) {
 	bigQuadTree.testRecursivelyGravityCenters(tests);
 }
 
+function testBarnesHutAlgorithmWithMorePoints(tests) {
+	var width = 200000000;
+	var height = 200000000;
+	var treeCenter = new Point(0, 0);
+	var maximumNumberOfObjectsPerCell = 16;
+	var depth = 0;
+	var tree = new QuadTree(maximumNumberOfObjectsPerCell, treeCenter, width, height, depth);
 
+	var barnesHut = new BarnesHutAlgorithm(0.5);
+
+	var x = 0;
+	var y = 0;
+
+	for(var i = 0; i < 10000; i++) {
+		var point = new Point(x, y);
+		tree.insert(point, 0);
+		x+=31;
+	}
+
+	var testPoint = new Point(50, 0);
+	var theObject = 10;
+	var mass = 20;
+	var force = barnesHut.approximateForce(theObject, testPoint, mass, tree);
+
+	//console.log(force.toString());
+}
 
 testsInsert(tests);
 testOverlap(tests);
@@ -356,6 +384,8 @@ testAddAndDividePoints(tests);
 
 testBarnesHutAlgorithm(tests);
 testGravityCenters(tests);
+
+testBarnesHutAlgorithmWithMorePoints(tests);
 
 tests.showResults();
 
