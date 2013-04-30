@@ -256,6 +256,10 @@ QuadTree.prototype.update = function(oldCenter, newCenter, object, forceInsertio
 	oldTree.remove(oldCenter, object);
 	newTree.insert(newCenter, object);
 
+	// finally, we also need to compute the gravity center at the end too.
+	this.checkIfChildrenAreEmpty();
+	this.calculateTheCenterOfGravity();
+
 	return true;
 }
 
@@ -634,4 +638,54 @@ QuadTree.prototype.toString = function() {
 		this.southWest + "-" +
 		this.northWest + " sum : " +
 		this.gravityCenter.toString();
+}
+
+/**
+ * Test gravity centers
+ *
+ * @author Sébastien Boisvert
+ */
+QuadTree.prototype.testRecursivelyGravityCenters = function(tests) {
+	var points = new Array();
+	this.queryAllPoints(points);
+
+	tests.assertEquals("QuadTree/testRecursivelyGravityCenters 00987", this.getSize(), points.length);
+
+	var center = new Point(0, 0);
+	for(var i = 0; i < points.length; i++)
+		center.add(points[i]);
+	center.divideBy(points.length);
+
+	tests.assertEquals("QuadTree/testRecursivelyGravityCenters 1918 depth= " + this.getDepth(), center.getX(), this.getGravityCenter().getX());
+	tests.assertEquals("QuadTree/testRecursivelyGravityCenters 1928 depth= " + this.getDepth(), center.getY(), this.getGravityCenter().getY());
+
+	var trees = this.getTrees();
+
+	for(var i = 0; i < trees.length; i++) {
+		if(trees[i] == null)
+			continue;
+		trees[i].testRecursivelyGravityCenters(tests);
+	}
+}
+
+QuadTree.prototype.getTrees = function() {
+	return [ this.getNorthWest(), this.getNorthEast(), this.getSouthWest(), this.getSouthEast() ];
+}
+
+QuadTree.prototype.queryAllPoints = function(points) {
+	if(this.isLeaf()) {
+		var thePoints = this.getPoints();
+		for(var i = 0; i < thePoints.length; i++) {
+			points.push(thePoints[i]);
+		}
+	} else {
+		var elements = this.getTrees();
+
+		for(var i = 0; i < elements.length; i++) {
+			var tree = elements[i];
+			if(tree == null)
+				continue
+			tree.queryAllPoints(points);
+		}
+	}
 }

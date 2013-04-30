@@ -306,6 +306,44 @@ function testBarnesHutAlgorithm(tests) {
 	tests.assertEquals("904 : Test if the sum of masses is correct", 5, tree.getSize());
 }
 
+function testGravityCenters(tests) {
+	var width = 20000;
+	var height = 20000;
+	var stepping = 100;
+	var center = new Point(width / 2, height/ 2);
+	var maximumNumberOfObjectsPerCell = 5;
+	var depth = 0;
+	var bigQuadTree = new QuadTree(maximumNumberOfObjectsPerCell, center, width, height, depth);
+
+	var expectedNumberOfObjects = 0;
+	for(var i = 0; i < width; i += stepping) {
+		for(var j = 0; j < height; j += stepping) {
+			if(bigQuadTree.insert(new Point(i, j), i + j))
+				expectedNumberOfObjects ++;
+		}
+	}
+
+	tests.assertEquals("testGravityCenters 0001", expectedNumberOfObjects, bigQuadTree.getSize());
+	tests.assertEquals("testGravityCenters 0010", expectedNumberOfObjects, bigQuadTree.queryAll().length);
+
+	bigQuadTree.testRecursivelyGravityCenters(tests);
+
+	for(var i = 0; i < width; i += stepping) {
+		for(var j = 0; j < height; j += stepping) {
+			var updated = bigQuadTree.update(new Point(i, j), new Point(i / 2, j / 2), i + j);
+
+			tests.assertEquals("testGravityCenters 0021", true, updated);
+		}
+	}
+
+	tests.assertEquals("testGravityCenters 0001", expectedNumberOfObjects, bigQuadTree.getSize());
+	tests.assertEquals("testGravityCenters 0010", expectedNumberOfObjects, bigQuadTree.queryAll().length);
+
+	bigQuadTree.testRecursivelyGravityCenters(tests);
+}
+
+
+
 testsInsert(tests);
 testOverlap(tests);
 testSmallTree(tests);
@@ -317,5 +355,7 @@ testNumberOfElements(tests);
 testAddAndDividePoints(tests);
 
 testBarnesHutAlgorithm(tests);
+testGravityCenters(tests);
+
 tests.showResults();
 
