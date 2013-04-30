@@ -425,8 +425,8 @@ Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,v
 
 		var radius2=this.pathMultiplierForVertex*zoomValue*(radius+extra);
 
-		if(!withDetails)
-			radius2*=this.pathMultiplierMacro;
+		//if(!withDetails)
+		//	radius2*=this.pathMultiplierMacro;
 
 		var layer = -(colors.length - i - 1);
 		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2, "", 0, pathColor, layer);
@@ -476,6 +476,7 @@ Renderer.prototype.draw = function(objects) {
 
 Renderer.prototype.drawQuadTree = function(context) {
 	var zoomValue = this.screen.getZoomValue();
+	var withDetails =! (zoomValue <= this.zoomForLevelOfDetails);
 	var lineWidth = 1 * zoomValue;
 	var theColor = "black";
 	var originX = this.screen.getOriginX();
@@ -509,18 +510,16 @@ Renderer.prototype.drawQuadTree = function(context) {
 		var textX = (centerX - originX) * zoomValue;
 		var textY = ((centerY - (height - 30) / 2) - originY) * zoomValue;
 
-		/*
-		if(currentQuadTree.getNumberOfElementsInLeaf() == 20)
-			console.log(currentQuadTree.getObjects());
-			*/
-		this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf(), "center", "red", "arial", 100);
+		console.log(withDetails);
+		if(withDetails) {
+			this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf()
+			, "center", "red", "arial", 100);
+		}
 
 		var gravityCenter = currentQuadTree.getGravityCenter();
 		var radius = 4 * zoomValue;
 		var x = (gravityCenter.getX() - originX) * zoomValue;
 		var y = (gravityCenter.getY() - originY) * zoomValue;
-		//console.log("[debug] " + currentQuadTree.getCenter().toString() + " gravityCenter: " +
-		theColor = "red";
 		this.drawBufferedCircle(context, x, y, radius, theColor, lineWidth, theColor, 1000);
 	}
 }
