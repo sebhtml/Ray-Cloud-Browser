@@ -371,7 +371,7 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 		this.drawBufferedText(context, (x - radius), (y + radius / 2), text, "", fillStyle, font, 30);
 	}
 
-	if(this.screen.getDebugMode()){
+	if(this.screen.getDebugMode() == CONFIG_DEBUG_FORCES){
 
 		var pointA = new Point(x, y);
 		var pointB = pointA.copy();
@@ -461,7 +461,7 @@ Renderer.prototype.draw = function(objects) {
 	this.drawArcs(objects);
 	this.m_showCoverage = this.screen.getHumanInterface().getInventory().showCoverageForRendering();
 	this.drawVertices(objects);
-	if(this.screen.getDebugMode()) {
+	if(this.screen.getDebugMode() == CONFIG_DEBUG_QUADTREE) {
 		this.drawQuadTree();
 	}
 	this.drawBufferedOperations(context);

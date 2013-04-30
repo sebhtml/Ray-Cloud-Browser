@@ -30,7 +30,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.canControlScreen=false;
 	this.periodForControl=1000;
 
-	this.debugMode=false;
+	this.debugMode = 0;
 /*
  * Turn on the physics engine.
  */
@@ -67,7 +67,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.webDocument=new WebDocument();
 	this.canvas=this.webDocument.getCanvas();
 	this.renderingCanvas=this.webDocument.getRenderingCanvas();
-	
+
 	this.renderer=new Renderer(this);
 
 /*
@@ -178,7 +178,7 @@ Screen.prototype.getOriginYSpeed=function(){
 }
 
 Screen.prototype.start=function(){
-	
+
 
 	this.vertexSelected=null;
 	this.lastUpdate=this.getMilliseconds();
@@ -277,7 +277,7 @@ Screen.prototype.handleMouseDown=function(eventObject){
 		var candidate=this.buttons[i];
 		if(candidate.handleMouseDown(position[0],position[1])){
 
-		
+
 			this.vertexSelected=null;
 
 			// only one of them can be active
@@ -579,7 +579,7 @@ Screen.prototype.iterate=function(){
  * To the crazy sliding thing.
  */
 	if(!this.moveOrigin){
-		
+
 		this.originX=this.originX+this.originXSpeed/this.originMoveSlices;
 		this.originY=this.originY+this.originYSpeed/this.originMoveSlices;
 
@@ -731,53 +731,57 @@ Screen.prototype.drawControlPanel=function(){
 	var offsetY=115;
 	var stepping=15;
 
-	if(!this.debugMode)
-		return;
-
 	context.textAlign="left";
 	context.fillStyle    = '#000000';
 	context.font         = 'bold 12px Arial';
-	context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
-		offsetX,this.canvas.height-offsetY);
-	offsetY-=stepping;
 
-	context.fillText("HTTP GET requests: "+this.graphOperator.getDataStore().getHTTPRequests(),
-		offsetX,this.canvas.height-offsetY);
-	offsetY-=stepping;
+	if(this.debugMode == CONFIG_DEBUG_FPS_SIMPLE) {
+		context.fillText(this.actualRenderingFrequency + " FPS (Game : " + this.actualGameFrameLength + " ms; Rendering : " 
+			+ this.actualRenderingFrameLength + " ms)", 100, 25);
 
-	var printableZoom=this.roundNumber(this.zoomValue,4);
+	} else if(this.debugMode == CONFIG_DEBUG_FPS_FULL) {
+		context.fillText("Registered objects: "+this.graph.getVertices().length+" active: "+this.activeObjects.length,
+			offsetX,this.canvas.height-offsetY);
+		offsetY-=stepping;
 
-	context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
-		this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
-		"zoom: "+printableZoom,
-		offsetX,this.canvas.height-offsetY);
-	offsetY-=stepping;
+		context.fillText("HTTP GET requests: "+this.graphOperator.getDataStore().getHTTPRequests(),
+			offsetX,this.canvas.height-offsetY);
+		offsetY-=stepping;
 
-	context.fillText("Game (expected): frequency: "+this.gameFrequency+" Hz, frame length: "+this.gameFrameLength+" ms",
-		offsetX,this.canvas.height-offsetY);
-	offsetY-=stepping;
+		var printableZoom=this.roundNumber(this.zoomValue,4);
 
-	var warning="";
+		context.fillText("Display: resolution: "+this.canvas.width+"x"+this.canvas.height+" origin: ("+
+			this.roundNumber(this.originX,2)+","+this.roundNumber(this.originY,2)+") "+
+			"zoom: "+printableZoom,
+			offsetX,this.canvas.height-offsetY);
+		offsetY-=stepping;
 
-	if(this.actualGameFrameLength>this.gameFrameLength)
-		warning=" EXCEEDED!";
+		context.fillText("Game (expected): frequency: "+this.gameFrequency+" Hz, frame length: "+this.gameFrameLength+" ms",
+			offsetX,this.canvas.height-offsetY);
+		offsetY-=stepping;
 
-	context.fillText("Game (actual): frequency: "+this.actualGameFrequency+" Hz, frame length: "+this.actualGameFrameLength+
-		" ms"+warning,offsetX, this.canvas.height-offsetY);
-	offsetY-=stepping;
+		var warning="";
 
-	context.fillText("Rendering (expected): frequency: "+this.renderingFrequency+" Hz, frame length: "+this.renderingFrameLength+" ms",
-		offsetX,this.canvas.height-offsetY);
-	offsetY-=stepping;
+		if(this.actualGameFrameLength>this.gameFrameLength)
+			warning=" EXCEEDED!";
 
-	warning="";
+		context.fillText("Game (actual): frequency: "+this.actualGameFrequency+" Hz, frame length: "+this.actualGameFrameLength+
+			" ms"+warning,offsetX, this.canvas.height-offsetY);
+		offsetY-=stepping;
 
-	if(this.actualRenderingFrameLength>this.renderingFrameLength)
-		warning=" EXCEEDED!";
+		context.fillText("Rendering (expected): frequency: "+this.renderingFrequency+" Hz, frame length: "
+			+ this.renderingFrameLength+" ms", offsetX,this.canvas.height-offsetY);
+		offsetY-=stepping;
 
-	context.fillText("Rendering (actual): frequency: "+this.actualRenderingFrequency+" Hz, frame length: "+this.actualRenderingFrameLength+
-		" ms"+warning,offsetX, this.canvas.height-offsetY);
-	offsetY-=stepping;
+		warning="";
+
+		if(this.actualRenderingFrameLength>this.renderingFrameLength)
+			warning=" EXCEEDED!";
+
+		context.fillText("Rendering (actual): frequency: "+this.actualRenderingFrequency+" Hz, frame length: "
+			+ this.actualRenderingFrameLength + " ms"+warning,offsetX, this.canvas.height-offsetY);
+		offsetY-=stepping;
+	}
 }
 
 /*
@@ -987,7 +991,12 @@ Screen.prototype.setZoomValue=function(zoomValue){
 }
 
 Screen.prototype.toggleDebugMode=function(){
-	this.debugMode=!this.debugMode;
+	this.debugMode ++;
+	if(this.debugMode > CONFIG_DEBUG_REQUEST) {
+		this.debugMode = 0;
+	}
+
+	//this.debugMode = !this.debugMode;
 
 	this.graphOperator.getDataStore().setDebugMode(this.debugMode);
 }

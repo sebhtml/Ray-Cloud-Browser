@@ -39,6 +39,16 @@ var CONFIG_WEB_SERVER="../server/";
 //var CONFIG_WEB_SERVER="http://genome.ulaval.ca:10090/server/";
 
 
+/**
+ * Debug level
+ */
+var CONFIG_DEBUG_NONE = 0;
+var CONFIG_DEBUG_FPS_SIMPLE = 1;
+var CONFIG_DEBUG_FPS_FULL = 2;
+var CONFIG_DEBUG_QUADTREE = 3;
+var CONFIG_DEBUG_FORCES = 4;
+var CONFIG_DEBUG_REQUEST = 5;
+
 // messaging service configuration
 
 var messageValue=0;

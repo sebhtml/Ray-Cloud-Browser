@@ -101,7 +101,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 	var debug=this.debugMode;
 	var query=this.httpRequests;
 
-	if(debug){
+	if(debug == CONFIG_DEBUG_REQUEST){
 		console.log("HTTP Request # "+query+" "+address);
 	}
 
@@ -117,7 +117,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 
 			source.pendingRequests--;
 
-			if(debug){
+			if(debug == CONFIG_DEBUG_REQUEST){
 				console.log("HTTP Response # "+query+" "+address);
 			}
 
