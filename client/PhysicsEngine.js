@@ -59,7 +59,7 @@ function PhysicsEngine(screen){
  * Barnes-Hut algorithm
  */
 
-	this.massForBarnesHut = 9;
+	this.massForBarnesHut = 15;
 	this.tetaForBarnesHut = 0.5;
 	this.maximumNorm = 16;
 
