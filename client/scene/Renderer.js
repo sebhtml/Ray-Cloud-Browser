@@ -108,9 +108,6 @@ Renderer.prototype.drawPaths=function(vertices){
 
 	var fullDetails=true;
 
-	if(zoomValue<=this.zoomForLevelOfDetails)
-		fullDetails=false;
-
 	// draw arcs
 	for(var i in vertices){
 		var vertex=vertices[i];
