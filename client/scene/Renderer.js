@@ -510,7 +510,6 @@ Renderer.prototype.drawQuadTree = function(context) {
 		var textX = (centerX - originX) * zoomValue;
 		var textY = ((centerY - (height - 30) / 2) - originY) * zoomValue;
 
-		console.log(withDetails);
 		if(withDetails) {
 			this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf()
 			, "center", "red", "arial", 100);
