@@ -189,7 +189,7 @@ Inventory.prototype.draw=function(context){
 
 	this.overlay.draw(context,null);
 	this.closeButton.draw(context,null);
-	
+
 	if(this.closeButton.getState()){
 
 		context.beginPath();
@@ -215,8 +215,12 @@ Inventory.prototype.draw=function(context){
 
 		this.animatedRing.draw(context);
 
-		if(this.warpButton.getState())
+		if(this.warpButton.getState()) {
 			this.selector.draw(context);
+			if(this.selector.getDepth()) {
+				this.minimumCoverage = this.selector.getDepth();
+			}
+		}
 
 		if(!this.warpButton.getState() && this.pathOperator.hasSelectedRegion()){
 
@@ -320,7 +324,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		return true;
 */
 	}else if(this.warpButton.handleMouseDown(x,y)){
-	
+
 		if(this.warpButton.getState())
 			this.pushSelector();
 
@@ -553,13 +557,14 @@ Inventory.prototype.setPathOperator=function(value){
 Inventory.prototype.getAddress=function(){
 
 	var address=this.address.getAddressWithoutQueryString();
-
 	var region=this.pathOperator.getSelectedRegion();
+
 	address+="?";
 	address+="map="+region.getMap();
 	address+="&section="+region.getSection();
 	address+="&region="+region.getRegion();
 	address+="&location="+region.getLocation();
+	address+="&depth="+this.minimumCoverage;
 
 	return address;
 }

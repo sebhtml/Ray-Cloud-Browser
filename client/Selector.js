@@ -25,7 +25,7 @@
  * \author Sébastien Boisvert
  */
 function Selector(x,y,width,height,dataStore,useAddress){
-
+	this.depth = 0;
 	this.useAddress=useAddress;
 	this.fontSize=12;
 
@@ -57,12 +57,14 @@ function Selector(x,y,width,height,dataStore,useAddress){
 
 	this.requestedMaps=false;
 }
+Selector.prototype.getDepth = function(){
+	return this.depth;
+}
 
 Selector.prototype.pumpAddressTokens=function(){
 
 	if(!this.useAddress)
 		return;
-
 	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.address.hasToken("map")){
 
 		var map=this.address.getTokenValueAsInteger("map");
@@ -81,8 +83,10 @@ Selector.prototype.pumpAddressTokens=function(){
 	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.address.hasToken("location")){
 
 		var index=this.address.getTokenValueAsInteger("location");
-
 		this.selectLocationIndex(index);
+	}
+	if(this.address.hasToken("depth")){
+		this.depth = this.address.getTokenValueAsInteger("depth");
 	}
 }
 

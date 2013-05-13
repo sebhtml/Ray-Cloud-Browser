@@ -363,7 +363,7 @@ PathOperator.prototype.pull=function(region){
 /*
  * It is impossible to pull after LENGTH-1
  */
-	}else if(position > region.getRightPosition()-buffer 
+	}else if(position > region.getRightPosition()-buffer
 		&& region.getRightPosition() !=region.getRegionLength()-1){
 
 		this.active=true;

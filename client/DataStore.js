@@ -69,7 +69,7 @@ DataStore.prototype.sendMessageOnTheWeb=function(message){
 	var xmlHttp=null;
 
 	var cgiProgram=CONFIG_WEB_SERVER;
-	
+
 	var processed=new Object();
 
 	var queryString="action="+messageActions[messageTag];
@@ -163,7 +163,7 @@ DataStore.prototype.finishConstruction=function(){
 			break;
 		}
 	}
-	
+
 	//this.kmerLength=this.firstKmer.length;
 }
 
@@ -193,7 +193,7 @@ DataStore.prototype.processMessage=function(message){
 	var tag=message.getTag();
 
 	if(tag==RAY_MESSAGE_TAG_GET_FIRST_KMER_FROM_STORE){
-	
+
 /* message ordering stuff */
 		if(!this.firstKmerReceived){
 			this.receiveMessage(message);
