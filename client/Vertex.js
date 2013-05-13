@@ -35,7 +35,7 @@ function Vertex(name,colored){
 	this.hasPositionValue=false;
 	this.x=0;
 	this.y=0;
-	this.oldCenter = new Point(this.x, this.y);
+	this.updateOldCenter();
 	this.center = new Point(this.x, this.y);
 	this.positionIsSet=false;
 	this.lastGridUpdateX=-9999;
@@ -106,7 +106,7 @@ Vertex.prototype.getColor=function(){
 		return "rgb(255,255,255)";
 	}
 */
-	
+
 	if(!this.canChangeColor){
 		return "rgb(235,225,240)";
 	}
@@ -159,12 +159,14 @@ Vertex.prototype.setPosition=function(){
 }
 
 Vertex.prototype.updateCenter = function(x, y) {
-	this.oldCenter = new Point(this.x, this.y);
-
 	this.x = x;
 	this.y = y;
 
 	this.center= new Point(this.x, this.y);
+}
+
+Vertex.prototype.updateOldCenter = function() {
+	this.oldCenter = new Point(this.x, this.y);
 }
 
 Vertex.prototype.update=function(timeStep,timeState){
@@ -280,7 +282,7 @@ Vertex.prototype.isInside=function(x,y){
 
 	var dx=x-this.x;
 	var dy=y-this.y;
-	
+
 	return (dx*dx+dy*dy <= this.radius*this.radius);
 }
 
@@ -320,7 +322,7 @@ Vertex.prototype.handleMouseUp=function(x,y){
 
 		return true;
 	}
-	
+
 	return false;
 }
 

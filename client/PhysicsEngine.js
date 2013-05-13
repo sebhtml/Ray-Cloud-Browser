@@ -224,7 +224,7 @@ PhysicsEngine.prototype.getAttractionForce = function(vertex1, vertex2){
 /**
  *
  * Actually, this is the Newton's law because the value in the
- * Coulomb law is divided by a cubic length 
+ * Coulomb law is divided by a cubic length
  *
  * \see http://en.wikipedia.org/wiki/Coulomb's_law
  * \see Newton's law
@@ -282,6 +282,7 @@ PhysicsEngine.prototype.moveObjects=function(vertices){
 
 		if(this.useQuadTree){
 			this.quadTree.update(vertex.getOldCenter(), vertex.getCenter(), vertex.getSequence(), true);
+			vertex.updateOldCenter();
 		}
 
 		this.lastIndex++;
