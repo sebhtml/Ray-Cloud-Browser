@@ -220,7 +220,7 @@ Screen.prototype.handleMouseMove=function(eventObject){
 
 	for(i in this.graph.getVertices()){
 		var vertexToCheck=this.graph.getVertices()[i];
-		if(vertexToCheck.isFollower() || 
+		if(vertexToCheck.isFollower() ||
 			vertexToCheck.isInside(this.translateX(position[0]),
 			this.translateY(position[1]))){
 
@@ -231,7 +231,7 @@ Screen.prototype.handleMouseMove=function(eventObject){
 	for(i in this.graph.getVertices()){
 		if(this.graph.getVertices()[i].handleMouseMove(this.translateX(position[0]),
 			this.translateY(position[1]))){
-/* 
+/*
  * If we handle a object, we can not move the screen too.
  */
 			return;
@@ -522,7 +522,7 @@ Screen.prototype.iterate=function(){
  * == TODO ==
  * This system of control (canControlScreen) does not work at scale because
  * at 256 obj. / 1000 iterations, the period is around ~4 iterations.
- * For at least 1000 obj. / 1000 iterations, that's ~1 iteration and anything above 
+ * For at least 1000 obj. / 1000 iterations, that's ~1 iteration and anything above
  * is the same.
  *
  */
@@ -736,7 +736,7 @@ Screen.prototype.drawControlPanel=function(){
 	context.font         = 'bold 12px Arial';
 
 	if(this.debugMode == CONFIG_DEBUG_FPS_SIMPLE) {
-		context.fillText(this.actualRenderingFrequency + " FPS (Game : " + this.actualGameFrameLength + " ms; Rendering : " 
+		context.fillText(this.actualRenderingFrequency + " FPS (Game : " + this.actualGameFrameLength + " ms; Rendering : "
 			+ this.actualRenderingFrameLength + " ms)", 100, 25);
 
 	} else if(this.debugMode == CONFIG_DEBUG_FPS_FULL) {
