@@ -21,6 +21,13 @@
  * \author Sébastien Boisvert
  */
 function IntegerSelectionWidget(x,y,width,height,title,minimum,maximum){
+	this.minBlink = 160;
+	this.maxBlink = 255;
+	this.colorIndex = this.minBlink;
+	this.increment = true;
+	this.blink = false;
+	this.theColor = "#FFF8F9";
+
 	this.x=x;
 	this.y=y;
 	this.title=title;
@@ -211,13 +218,44 @@ IntegerSelectionWidget.prototype.updateBoundaries=function(){
 	}
 }
 
+IntegerSelectionWidget.prototype.enableBlink = function() {
+	this.blink = true;
+	this.colorIndex = this.minBlink;
+}
+
+IntegerSelectionWidget.prototype.disableBlink = function() {
+	this.blink = false;
+	this.theColor = "#FFF8F9";
+}
+
+IntegerSelectionWidget.prototype.getBlink = function() {
+	return this.blink;
+}
+
+
+IntegerSelectionWidget.prototype.blinkBox = function(context){
+	if(this.increment) {
+		this.colorIndex += 3;
+		if(this.colorIndex >= this.maxBlink) {
+			this.increment = false;
+		}
+	} else {
+		this.colorIndex -= 3;
+		if(this.colorIndex <= this.minBlink) {
+			this.increment = true;
+		}
+	}
+	this.theColor = "rgb(" + (this.colorIndex - 100) + ", " + (this.colorIndex - 50) + ", " + this.colorIndex + ")";
+}
+
 IntegerSelectionWidget.prototype.draw=function(context){
 
 	this.updateBoundaries();
 
 	context.beginPath();
 	context.rect(this.x, this.y, this.width, this.height );
-	context.fillStyle = '#FFF8F9';
+	context.fillStyle = this.theColor;
+
 	context.fill();
 	context.lineWidth = 1;
 	context.strokeStyle = 'black';
@@ -244,7 +282,7 @@ IntegerSelectionWidget.prototype.draw=function(context){
 	if(this.finished){
 
 		context.fillText(this.finalChoice, this.x+this.width/9,this.y+40);
-		
+
 		return;
 	}
 

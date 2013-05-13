@@ -99,7 +99,7 @@ Selector.prototype.draw=function(context){
 	this.pumpAddressTokens();
 
 // some granularity
-	if(this.state==this.SLAVE_MODE_PULL_MAPS){
+	if(this.state == this.SLAVE_MODE_PULL_MAPS){
 
 		if(!this.requestedMaps){
 
@@ -118,16 +118,7 @@ Selector.prototype.draw=function(context){
 			this.requestedRegions=false;
 		}
 
-	}else if(this.state==this.SLAVE_MODE_SELECT_MAP){
-
-		this.mapWidget.draw(context);
-
-	}else if(this.state==this.SLAVE_MODE_SELECT_SECTION){
-
-		this.mapWidget.draw(context);
-		this.sectionWidget.draw(context);
-
-	}else if(this.state==this.SLAVE_MODE_PULL_REGIONS){
+	} else if(this.state == this.SLAVE_MODE_PULL_REGIONS){
 
 		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
@@ -162,24 +153,8 @@ Selector.prototype.draw=function(context){
 			this.state=this.SLAVE_MODE_SELECT_REGION;
 		}
 
-	}else if(this.state==this.SLAVE_MODE_SELECT_REGION){
-
-		this.mapWidget.draw(context);
-		this.sectionWidget.draw(context);
-		this.regionWidget.draw(context);
-
-	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION){
-
-		this.mapWidget.draw(context);
-		this.sectionWidget.draw(context);
-		this.regionWidget.draw(context);
-		this.locationWidget.draw(context);
-	}else if(this.state==this.SLAVE_MODE_FINISHED){
-
-		this.mapWidget.draw(context);
-		this.sectionWidget.draw(context);
-		this.regionWidget.draw(context);
-		this.locationWidget.draw(context);
+	} else {
+		this.applyState(this.state, context);
 	}
 
 // show extra information
@@ -193,6 +168,66 @@ Selector.prototype.draw=function(context){
 		context.fillText("Sequence length: "+this.mapFileData["sequenceLength"], this.x+10,this.y+55);
 		context.fillText("Sequences: "+this.mapFileData["sequences"], this.x+140,this.y+55);
 		context.closePath();
+	}
+}
+
+Selector.prototype.applyState = function(state, context) {
+	switch(state) {
+		case this.SLAVE_MODE_SELECT_MAP:
+			if(!this.mapWidget.getBlink()) {
+				this.mapWidget.enableBlink();
+			}
+
+			this.mapWidget.draw(context);
+			break;
+
+		case this.SLAVE_MODE_SELECT_SECTION:
+			if(!this.sectionWidget.getBlink()) {
+				this.mapWidget.disableBlink();
+				this.sectionWidget.enableBlink();
+			}
+
+			this.mapWidget.draw(context);
+			this.sectionWidget.draw(context);
+			break;
+
+		case this.SLAVE_MODE_SELECT_REGION:
+			if(!this.regionWidget.getBlink()) {
+				this.mapWidget.disableBlink();
+				this.sectionWidget.disableBlink();
+				this.regionWidget.enableBlink();
+			}
+
+			this.mapWidget.draw(context);
+			this.sectionWidget.draw(context);
+			this.regionWidget.draw(context);
+			break;
+
+		case this.SLAVE_MODE_SELECT_LOCATION:
+			if(!this.locationWidget.getBlink()) {
+				this.mapWidget.disableBlink();
+				this.sectionWidget.disableBlink();
+				this.regionWidget.disableBlink();
+				this.locationWidget.enableBlink();
+			}
+
+			this.mapWidget.draw(context);
+			this.sectionWidget.draw(context);
+			this.regionWidget.draw(context);
+			this.locationWidget.draw(context);
+			break;
+
+		case this.SLAVE_MODE_FINISHED:
+			if(this.locationWidget.getBlink()) {
+				this.mapWidget.disableBlink();
+				this.sectionWidget.disableBlink();
+				this.regionWidget.disableBlink();
+				this.locationWidget.disableBlink();
+			}
+			this.mapWidget.draw(context);
+			this.sectionWidget.draw(context);
+			this.regionWidget.draw(context);
+			this.locationWidget.draw(context);
 	}
 }
 
@@ -422,4 +457,19 @@ Selector.prototype.selectLocationIndex=function(index){
 
 Selector.prototype.setAddressManager=function(address){
 	this.address=address;
+}
+
+Selector.prototype.iterate = function() {
+	if(this.mapWidget != null && this.mapWidget.getBlink()) {
+		this.mapWidget.blinkBox();
+	}
+	if(this.sectionWidget != null && this.sectionWidget.getBlink()) {
+		this.sectionWidget.blinkBox();
+	}
+	if(this.regionWidget != null && this.regionWidget.getBlink()) {
+		this.regionWidget.blinkBox();
+	}
+	if(this.locationWidget != null && this.locationWidget.getBlink()) {
+		this.locationWidget.blinkBox();
+	}
 }

@@ -483,6 +483,7 @@ Inventory.prototype.getNextButton=function(){
 Inventory.prototype.iterate=function(){
 
 	this.animatedRing.iterate();
+	this.selector.iterate();
 
 	if(this.regionGateAnimation!=null)
 		this.regionGateAnimation.iterate();
