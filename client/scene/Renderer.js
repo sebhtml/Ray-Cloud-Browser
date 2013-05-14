@@ -21,7 +21,8 @@
 
 var RENDERER_LINE = 0;
 var RENDERER_CIRCLE = 1;
-var RENDERER_TEXT = 2
+var RENDERER_TEXT = 2;
+var RENDERER_RECTANGLE = 3;
 
 /**
  * The renderer draws objects in a canvas.
@@ -66,11 +67,8 @@ Renderer.prototype.drawVertices = function(vertices){
 	while(i<vertices.length){
 		var vertex=vertices[i];
 
-		if(vertex.isEnabled()
-			&& !this.screen.isOutside(vertex,this.renderingBuffer)){
-
-			this.drawVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
-				zoomValue,vertex);
+		if(vertex.isEnabled() && !this.screen.isOutside(vertex,this.renderingBuffer)) {
+			this.drawVertex(this.screen.getContext(), this.screen.getOriginX(), this.screen.getOriginY(), zoomValue,vertex);
 		}
 
 		i++;
@@ -183,6 +181,8 @@ Renderer.prototype.drawBufferedOperations=function(context){
 					operation.drawCircle(context);
 				} else if(operation.getType() == RENDERER_TEXT) {
 					operation.drawText(context);
+				} else if(operation.getType() == RENDERER_RECTANGLE) {
+					operation.drawRectangle(context);
 				}
 			}
 			material.stopRendering(context);
@@ -199,9 +199,6 @@ Renderer.prototype.drawArcs=function(vertices){
 	var zoomValue=this.screen.getZoomValue();
 
 	var fullDetails=true;
-
-	if(zoomValue<=this.zoomForLevelOfDetails)
-		fullDetails=false;
 
 	// draw arcs
 	for(var i in vertices){
@@ -363,9 +360,12 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 
 	if(vertex.isColored()) {
 		this.drawBufferedText(context, x, (y + radius / 2), text, align, fillStyle, font, 30);
+		if(this.m_showCoverage) {
+			this.drawHealtBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
+		}
 
 	} else if(this.m_showCoverage) {
-		this.drawBufferedText(context, (x - radius), (y + radius / 2), text, "", fillStyle, font, 30);
+		this.drawHealtBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
 	}
 
 	if(this.screen.getDebugMode() == CONFIG_DEBUG_FORCES){
@@ -377,6 +377,61 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 		var theColor = 'blue';
 		this.drawBufferedLineWithTwoPoints(context, pointA, pointB, lineWidth, theColor, 100);
 	}
+}
+
+Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, depth, zoomValue,layer) {
+	var yCoverage = (y - originY - 40) * zoomValue;
+	var xCoverage = (x - originX) * zoomValue;
+	var yHealtBar = (y - originY - 34) * zoomValue;
+	var xHealtBar;
+
+	var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+	var fillStyle = 'black';
+	var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+	var align = "center";
+	var localLayer;
+	var color;
+	var length;
+
+	if(depth <= 50) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer;
+		color = "rgb(255,0,0)";
+		length = 5;
+	} else if(depth <= 100) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 1;
+		color = "rgb(255,200,0)";
+		length = 10;
+	} else if(depth <= 200) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 2;
+		color = "rgb(255,255,0)";
+		length = 15;
+	} else {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 3;
+		color = "rgb(0,255,0)";
+		length = 20;
+	}
+	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, 20 * zoomValue, 'black', 2, "rgb(255,255,255)", localLayer);
+	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, length * zoomValue, '', 0, color, localLayer);
+	this.drawBufferedText(context, xCoverage, yCoverage, depth, align, fillStyle, font, localLayer);
+}
+
+Renderer.prototype.drawBufferedRectangle = function(context, x, y, height, width, strokeStyle, lineWidth, fillStyle, layer) {
+	if(!(layer in this.bufferedOperations)) {
+		this.bufferedOperations[layer] = new Object();
+	}
+
+	var material = new Material(strokeStyle, lineWidth, fillStyle, "", "");
+	var materialKey = material.toString();
+
+	if(!(materialKey in this.bufferedOperations[layer])) {
+		this.bufferedOperations[layer][materialKey] = new Array();
+	}
+
+	this.bufferedOperations[layer][materialKey].push(new RenderedRectangle(new Point(x, y), height, width, material));
 }
 
 Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillStyle, font, layer) {
@@ -452,15 +507,18 @@ Renderer.prototype.draw = function(objects) {
 	var context = this.screen.getContext();
 	this.drawVertexPowers(objects);
 
-	if(this.screen.getHumanInterface().getInventory().useColorsForRendering())
+	if(this.screen.getHumanInterface().getInventory().useColorsForRendering()) {
 		this.drawPaths(objects);
+	}
 
 	this.drawArcs(objects);
 	this.m_showCoverage = this.screen.getHumanInterface().getInventory().showCoverageForRendering();
 	this.drawVertices(objects);
+
 	if(this.screen.getDebugMode() == CONFIG_DEBUG_QUADTREE) {
 		this.drawQuadTree();
 	}
+
 	this.drawBufferedOperations(context);
 
 /*

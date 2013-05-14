@@ -57,23 +57,13 @@ Graph.prototype.getVertex=function(sequence){
 	return null;
 }
 
-Graph.prototype.addCoverage=function(sequence,coverage){
-
-	if(sequence in this.objectsWithCoverage)
+Graph.prototype.addVertexWithCoverage=function(sequence, coverage){
+	if(sequence in this.objectsWithCoverage) {
 		return;
+	}
+	var vertex1 = this.addVertex(sequence);
 
-	var vertex1=this.addVertex(sequence);
-	var coverageVertex=new Vertex(coverage,false);
-	this.layout.applyGoodLayout(vertex1,coverageVertex);
-
-	vertex1.addLinkedObject(coverageVertex);
-	coverageVertex.addLinkedObject(vertex1);
-
-	this.vertices.push(coverageVertex);
-
-	this.objectsWithCoverage[sequence]=true;
-
-	vertex1.addChild(coverageVertex);
+	this.objectsWithCoverage[sequence] = true;
 	vertex1.setCoverageValue(coverage);
 
 	delete this.objectsWithoutCoverage[sequence];

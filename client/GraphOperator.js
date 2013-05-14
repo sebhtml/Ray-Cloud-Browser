@@ -177,16 +177,16 @@ GraphOperator.prototype.pullObjects=function(){
 	var maximumElements=128;
 	var added=0;
 	for(key in objectsWithoutData){
-		
+
 		if(added==maximumElements)
 			break;
 
 		var vertex=this.graph.getVertex(key);
-	
+
 /* Ignore off-screen objects */
 		if(this.screen.isOutside(vertex,this.bufferForCommunicationOperations))
 			continue;
-		
+
 		this.productionQueue.push(key);
 		added++;
 	}
@@ -295,10 +295,10 @@ GraphOperator.prototype.receiveObject=function(kmerData){
 
 	}
 
-	if(vertex!=null){
-		if(kmerData.getCoverage()>=this.minimumCoverageAccepted){
-			this.graph.addCoverage(kmerObject,kmerData.getCoverage());
-		}else{
+	if(vertex!=null) {
+		if(kmerData.getCoverage() >= this.minimumCoverageAccepted) {
+			this.graph.addVertexWithCoverage(kmerObject,kmerData.getCoverage());
+		} else {
 			vertex.disable();
 		}
 	}
