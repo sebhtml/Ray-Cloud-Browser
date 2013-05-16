@@ -1,6 +1,6 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
- *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2012, 2013 Sébastien Boisvert Jean-François Erdelyi
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@
  *
  * \author Sébastien Boisvert
  */
-function Inventory(x,y,width,height,visible,screen,dataStore){
-
+function Inventory(x,y,width,height,visible,screen,dataStore) {
+	this.distributionGraph = screen.getGraph().getDistributionGraph();
+	this.showDistributionGraph = false;
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
 	this.dataStore=dataStore;
@@ -107,6 +108,10 @@ function Inventory(x,y,width,height,visible,screen,dataStore){
 
 	this.getLinkButton=new Button(this.x+this.width-this.buttonWidth-5,
 		this.y+this.height+145,this.buttonWidth*2,this.buttonWidth,"Link",false);
+
+	this.distributionGraphButton = new Button((this.x + this.buttonWidth + 19 * this.buttonWidth / 2) - 75,
+		this.y + this.regionsOffset + 100,
+		2.2 * this.buttonWidth, this.buttonWidth, "Graph", false);
 
 	this.pushSelector();
 
@@ -299,11 +304,15 @@ Inventory.prototype.draw=function(context){
 			context.fillStyle="black";
 			context.fillText("Play", this.x+50,this.y+this.height+150);
 			context.fillText("Speed", this.x+170,this.y+this.height+150);
-
+			if(this.showDistributionGraph) {
+				this.distributionGraph.draw(context, this.x - 420, this.y + 5, 200, 400, this.screen.getRenderer());
+			}
 			this.nextButton.draw(context,null);
 			this.previousButton.draw(context,null);
 			this.increaseButton.draw(context,null);
 			this.decreaseButton.draw(context,null);
+			this.distributionGraphButton.draw(context, null);
+
 		}
 	}
 }
@@ -425,6 +434,10 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		}
 
 	}
+	if(this.distributionGraphButton.handleMouseDown(x, y)){
+		this.showDistributionGraph = !this.showDistributionGraph;
+		return true;
+	}
 
 	return false;
 }
@@ -453,8 +466,8 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.nextButton.move(deltaX,deltaY);
 		this.previousButton.move(deltaX,deltaY);
 		this.getLinkButton.move(deltaX,deltaY);
-
 		this.regionSelector.move(deltaX,deltaY);
+		this.distributionGraphButton.move(deltaX, deltaY);
 
 		this.x+=deltaX;
 		this.y+=deltaY;
