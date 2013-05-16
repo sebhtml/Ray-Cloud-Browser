@@ -156,20 +156,22 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 
 	context.beginPath();
 	context.fillStyle = "black";
-	context.font = "arial";
+	context.font = "10px arial";
+	context.fillText("Coverage depth", originX + (width / 2), originY + height + 60);
 	context.fillText(scaleX, currentXScale, originY + height + 30);
 	for(var i = 0; i < numberOfScaletoWriteX - 1; i++) {
 		currentXScale += steppingX;
-		scaleX = Math.floor((scaleX + this.steppingOfScaleX) * 100) / 100;
+		scaleX =parseInt(scaleX + this.steppingOfScaleX);
 		context.fillText(scaleX, currentXScale, originY + height + 30);
 		renderer.drawBufferedLineWithTwoPoints(context, new Point(currentXScale, originY + height), new Point(currentXScale, originY), 1, "grey", 201);
 	}
 	context.fillText(this.maxX, width + originX, originY + height + 30);
 
+	context.fillText("Observed frequency", originX - 110, originY + (height / 2));
 	context.fillText(scaleY, originX - 30, currentYScale);
 	for(var i = numberOfScaletoWriteY; i > 1; i--) {
 		currentYScale -= steppingY;
-		scaleY = Math.floor((scaleY + this.steppingOfScaleY) * 100) / 100;
+		scaleY = parseInt(scaleY + this.steppingOfScaleY);
 		context.fillText(scaleY, originX - 30, currentYScale);
 		renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentYScale), new Point(originX + width, currentYScale), 1, "grey", 201);
 	}
@@ -178,7 +180,6 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 
 	for(x in this.objects) {
 		var y = this.objects[x];
-		console.log(x + " - " + y);
 		var currentX = ((x - this.minX) / (this.maxX - this.minX)) * width + originX;
 		var yRatio = (y - this.minY) / (this.maxY - this.minY);
 		var currentY = originY + (1 - yRatio) * height;

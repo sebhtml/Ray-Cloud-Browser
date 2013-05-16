@@ -1,6 +1,7 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
  *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013  Jean-François Erdelyi
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +37,7 @@ var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=10;
  * The server to use for all web services.
  */
 var CONFIG_WEB_SERVER="../server/";
-//var CONFIG_WEB_SERVER="http://genome.ulaval.ca:10090/server/";
+//var CONFIG_WEB_SERVER="http://genome.ulaval.ca:10001/server/"
 
 
 /**
