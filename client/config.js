@@ -37,7 +37,7 @@ var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=10;
  * The server to use for all web services.
  */
 var CONFIG_WEB_SERVER="../server/";
-//var CONFIG_WEB_SERVER="http://genome.ulaval.ca:10001/server/"
+//var CONFIG_WEB_SERVER="http://browser.cloud.raytrek.com/server/"
 
 
 /**

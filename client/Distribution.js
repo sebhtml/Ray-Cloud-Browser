@@ -156,12 +156,12 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 
 	context.beginPath();
 	context.fillStyle = "black";
-	context.font = "10px arial";
+	context.font = "12px arial";
 	context.fillText("Coverage depth", originX + (width / 2), originY + height + 60);
 	context.fillText(scaleX, currentXScale, originY + height + 30);
 	for(var i = 0; i < numberOfScaletoWriteX - 1; i++) {
 		currentXScale += steppingX;
-		scaleX =parseInt(scaleX + this.steppingOfScaleX);
+		scaleX = parseInt(scaleX + this.steppingOfScaleX);
 		context.fillText(scaleX, currentXScale, originY + height + 30);
 		renderer.drawBufferedLineWithTwoPoints(context, new Point(currentXScale, originY + height), new Point(currentXScale, originY), 1, "grey", 201);
 	}
@@ -193,3 +193,37 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 	}
 }
 
+
+/**
+ * Split the graph in "splitIndex" part
+ *
+ * @param splitIndex Divided the graph by
+ *
+ * @return Array<Object> List of part
+ */
+Distribution.prototype.splitGraph = function(splitIndex) {
+	var result = new Array();
+	var length = this.size;
+	var stepping = Math.floor(length / splitIndex);
+	var partOfGraph = new Object();
+	var i = 0;
+	var j = 0;
+// 	console.log("*** [DEBUG] : " + stepping + " - " + length + "***");
+	for(x in this.objects) {
+		if(j == stepping) {
+			result[i] = partOfGraph;
+			partOfGraph = new Object();
+			i++;
+			j = 0;
+		}
+// 		console.log("*** [DEBUG] : " + x + " - " + this.objects[x] + "***");
+		if(i == splitIndex) {
+			stepping = length - (stepping * i);
+		}
+		partOfGraph[x] = this.objects[x];
+		j++;
+// 		console.log("*** [DEBUG] : " + i + " - " + j + "***");
+	}
+// 	console.log("*** [DEBUG] : " + result.length + "***");
+	return result;
+}

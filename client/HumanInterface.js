@@ -395,8 +395,7 @@ HumanInterface.prototype.processButtons=function(){
 }
 */
 
-HumanInterface.prototype.draw=function(){
-
+HumanInterface.prototype.draw=function() {
 	var context=this.screen.getContext();
 	this.getInventory().drawDistributionGraph();
 	this.sampleInventory.draw(context);
@@ -505,11 +504,9 @@ HumanInterface.prototype.getInventory=function(){
 }
 
 HumanInterface.prototype.iterate=function(){
-
 	this.getInventory().iterate();
-
-	if(!this.hasLocation && this.getInventory().getSelector().hasChoices()){
-		this.locationData=this.getInventory().getSelector().getLocationData();
+	if(!this.hasLocation && this.getInventory().getSelector().hasChoices()) {
+		this.locationData = this.getInventory().getSelector().getLocationData();
 
 		this.hasLocation=true;
 	}

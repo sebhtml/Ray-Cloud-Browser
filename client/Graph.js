@@ -22,9 +22,11 @@
  * \author Sébastien Boisvert
  */
 function Graph(width, height){
+	this.distributionGraph = new Distribution();
 	this.layout=new LayoutEngine();
 	this.width=width;
 	this.height=height;
+
 	this.clear();
 }
 
@@ -145,5 +147,4 @@ Graph.prototype.clear=function(){
 // TODO remove objectsWithCoverage, instead use this.vertices to store this information
 	this.objectsWithCoverage=new Object();
 	this.objectsWithoutCoverage=new Object();
-	this.distributionGraph = new Distribution();
 }

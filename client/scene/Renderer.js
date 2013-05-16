@@ -31,6 +31,7 @@ var RENDERER_RECTANGLE = 3;
  * \author Sébastien Boisvert
  */
 function Renderer(screen){
+	this.distributionGraph = screen.getGraph().getDistributionGraph();
 	this.pathMultiplierForVertex=1.5;
 	this.pathMultiplierForArc=2;
 	this.zoomForLevelOfDetails=0.12;
@@ -379,7 +380,8 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	}
 }
 
-Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, depth, zoomValue,layer) {
+Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, depth, zoomValue, layer) {
+	var listOfSubGraph = this.distributionGraph.splitGraph(3);
 	var yCoverage = (y - originY - 40) * zoomValue;
 	var xCoverage = (x - originX) * zoomValue;
 	var yHealtBar = (y - originY - 34) * zoomValue;
@@ -393,17 +395,52 @@ Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, dept
 	var color;
 	var length;
 
-	if(depth <= 50) {
+	var firstPart = listOfSubGraph[0];
+	var secondPart = listOfSubGraph[1];
+	var thirdPart = listOfSubGraph[2];
+
+	var coverageMaxOtherPart = 0;
+	var frequencyOtherPart = 0;
+
+	var coverageMaxFirstPart = 0;
+	var frequencyFirstPart = 0;
+
+	for(var coverage in firstPart) {
+		if(frequencyFirstPart < firstPart[coverage]) {
+			coverageMaxFirstPart = parseInt(coverage);
+			frequencyFirstPart = firstPart[coverage];
+		}
+	}
+	for(var coverage in secondPart) {
+		if(frequencyOtherPart < secondPart[coverage]) {
+			coverageMaxOtherPart = parseInt(coverage);
+			frequencyOtherPart = secondPart[coverage];
+		}
+	}
+	for(var coverage in thirdPart) {
+		if(frequencyOtherPart < thirdPart[coverage]) {
+			coverageMaxOtherPart = parseInt(coverage);
+			frequencyOtherPart = thirdPart[coverage];
+		}
+	}
+	var gap = coverageMaxOtherPart - coverageMaxFirstPart;
+	var stepping = parseInt(gap / 4);
+	var halfStepping = parseInt(stepping / 2);
+	var stepOne = coverageMaxFirstPart + halfStepping;
+	var stepTwo = stepOne + stepping;
+	var stepThree = stepTwo + stepping;
+
+	if (depth < stepOne) {
 		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer;
 		color = "rgb(255,0,0)";
 		length = 5;
-	} else if(depth <= 100) {
+	} else if(depth < stepTwo) {
 		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer + 1;
 		color = "rgb(255,200,0)";
 		length = 10;
-	} else if(depth <= 200) {
+	} else if(depth < stepThree) {
 		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer + 2;
 		color = "rgb(255,255,0)";
