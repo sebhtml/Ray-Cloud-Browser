@@ -330,6 +330,10 @@ IntegerSelectionWidget.prototype.move=function(x,y){
 	}
 }
 
+IntegerSelectionWidget.prototype.handleMouseDoubleClick = function(x, y) {
+	return false;
+}
+
 IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 
 	var result=false;
