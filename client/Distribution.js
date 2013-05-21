@@ -138,51 +138,29 @@ Distribution.prototype.getMinX = function() {
 Distribution.prototype.draw = function(context, originX, originY, height, width, renderer) {
 	var pointA = null;
 	var pointB = null;
+	this.minY = 0;
 
 	renderer.drawBufferedRectangle(context, originX, originY, height, width, "black", 5, "white", 200);
-	var numberOfScaletoWriteX = width / 50;
-	this.steppingOfScaleX = (this.maxX - this.minX) / numberOfScaletoWriteX;
-	var numberOfScaletoWriteY = height / 50;
-	this.steppingOfScaleY = (this.maxY - this.minY) / numberOfScaletoWriteY;
-
-	var steppingX = width / numberOfScaletoWriteX;
-	var steppingY = height / numberOfScaletoWriteY;
-
-	var scaleX = this.minX;
-	var scaleY = this.minY;
-
-	var currentXScale = originX;
-	var currentYScale = originY + height;
-
 	context.beginPath();
 	context.fillStyle = "black";
 	context.font = "12px arial";
 	context.fillText("Coverage depth", originX + (width / 2), originY + height + 60);
-	context.fillText(scaleX, currentXScale, originY + height + 30);
-	for(var i = 0; i < numberOfScaletoWriteX - 1; i++) {
-		currentXScale += steppingX;
-		scaleX = parseInt(scaleX + this.steppingOfScaleX);
-		context.fillText(scaleX, currentXScale, originY + height + 30);
-		renderer.drawBufferedLineWithTwoPoints(context, new Point(currentXScale, originY + height), new Point(currentXScale, originY), 1, "grey", 201);
-	}
-	context.fillText(this.maxX, width + originX, originY + height + 30);
-
 	context.fillText("Observed frequency", originX - 110, originY + (height / 2));
-	context.fillText(scaleY, originX - 30, currentYScale);
-	for(var i = numberOfScaletoWriteY; i > 1; i--) {
-		currentYScale -= steppingY;
-		scaleY = parseInt(scaleY + this.steppingOfScaleY);
-		context.fillText(scaleY, originX - 30, currentYScale);
-		renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentYScale), new Point(originX + width, currentYScale), 1, "grey", 201);
-	}
-	context.fillText(this.maxY, originX - 30, originY);
-	context.closePath();
+	context.fillText(this.minX, originX, originY + height + 30);
 
-	for(x in this.objects) {
-		var y = this.objects[x];
+	for(var x = this.minX; x <= this.maxX; x++) {
+		if(x % 50 == 0 && x > this.minX + 25) {
+			context.fillText(x, currentX, originY + height + 30);
+			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
+		}
+		var y = 0;
+		if(this.objects[x]) {
+			var y = this.objects[x];
+		}
 		var currentX = ((x - this.minX) / (this.maxX - this.minX)) * width + originX;
 		var yRatio = (y - this.minY) / (this.maxY - this.minY);
 		var currentY = originY + (1 - yRatio) * height;
+
 		if(pointB == null) {
 			pointB = new Point(currentX, currentY);
 			continue;
@@ -191,6 +169,15 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 		pointB = new Point(currentX, currentY);
 		renderer.drawBufferedLineWithTwoPoints(context, pointA, pointB, 1, "red", 202);
 	}
+	for(var y = this.minY; y <= this.maxY; y++) {
+		if(y % 5 == 0) {
+			var yRatio = (y - this.minY) / (this.maxY - this.minY);
+			var currentY = originY + (1 - yRatio) * height;
+			context.fillText(y, originX - 30, currentY);
+			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
+		}
+	}
+	context.closePath();
 }
 
 
@@ -208,7 +195,6 @@ Distribution.prototype.splitGraph = function(splitIndex) {
 	var partOfGraph = new Object();
 	var i = 0;
 	var j = 0;
-// 	console.log("*** [DEBUG] : " + stepping + " - " + length + "***");
 	for(x in this.objects) {
 		if(j == stepping) {
 			result[i] = partOfGraph;
@@ -216,14 +202,11 @@ Distribution.prototype.splitGraph = function(splitIndex) {
 			i++;
 			j = 0;
 		}
-// 		console.log("*** [DEBUG] : " + x + " - " + this.objects[x] + "***");
 		if(i == splitIndex) {
 			stepping = length - (stepping * i);
 		}
 		partOfGraph[x] = this.objects[x];
 		j++;
-// 		console.log("*** [DEBUG] : " + i + " - " + j + "***");
 	}
-// 	console.log("*** [DEBUG] : " + result.length + "***");
 	return result;
 }
