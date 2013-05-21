@@ -224,17 +224,36 @@ SelectionWidget.prototype.move=function(x,y){
 	}
 }
 
+SelectionWidget.prototype.handleMouseDoubleClick = function(x,y) {
+	var selected = -1;
+	for(var i = 0; i < this.choiceButtons.length; i++) {
+		this.choiceButtons[i].handleMouseDoubleClick(x, y);
+
+	}
+	for(var i = 0; i < this.choiceButtons.length; i++) {
+		if(this.choiceButtons[i].getState()) {
+			selected = i;
+			this.gotFinalChoice = true;
+			break;
+		}
+	}
+	if(selected == -1) {
+		return false;
+	}
+	this.finalChoice = selected;
+	return true;
+}
+
 SelectionWidget.prototype.handleMouseDown=function(x,y){
+	var result = false;
 
-	var result=false;
-
-	var selected=-1;
+	var selected = -1;
 
 // check if a choice button is down already
 	var i=0;
 	while(i<this.choiceButtons.length){
 		if(this.choiceButtons[i].getState()){
-			selected=i;
+			selected = i;
 			break;
 		}
 		i++;
@@ -242,7 +261,7 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 
 	for(var i in this.choiceButtons){
 		if(this.choiceButtons[i].handleMouseDown(x,y)){
-			result=true;
+			result = true;
 			break;
 		}
 	}
@@ -251,7 +270,7 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 		if(result)
 			break;
 		if(this.buttons[i].handleMouseDown(x,y)){
-			result=true;
+			result = true;
 			break;
 		}
 	}
@@ -310,7 +329,7 @@ SelectionWidget.prototype.hasChoice=function(){
 	return this.gotFinalChoice;
 }
 
-SelectionWidget.prototype.getChoice=function(){
+SelectionWidget.prototype.getChoice=function() {
 	return this.finalChoice;
 }
 

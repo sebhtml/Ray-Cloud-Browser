@@ -22,7 +22,6 @@
  * \author Sébastien Boisvert
  */
 function Inventory(x,y,width,height,visible,screen,dataStore) {
-	this.distributionGraph = screen.getGraph().getDistributionGraph();
 	this.showDistributionGraph = false;
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
@@ -590,6 +589,7 @@ Inventory.prototype.showCoverageForRendering=function(){
 
 Inventory.prototype.drawDistributionGraph = function() {
 	if(this.showDistributionGraph) {
+		this.distributionGraph = this.screen.getGraph().getDistributionGraph();
 		this.distributionGraph.draw(this.screen.getContext(), this.x - 420, this.y + 5, 200, 400, this.screen.getRenderer());
 	}
 }

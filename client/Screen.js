@@ -973,7 +973,6 @@ Screen.prototype.processKeyboardEvent=function(e){
 
 Screen.prototype.handleMouseDoubleClick=function(e){
 	var point=this.getMousePosition(e);
-
 	this.humanInterface.handleMouseDoubleClick(point[0],point[1]);
 }
 

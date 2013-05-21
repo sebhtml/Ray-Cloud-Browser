@@ -22,7 +22,6 @@
  * \author Sébastien Boisvert
  */
 function Graph(width, height){
-	this.distributionGraph = new Distribution();
 	this.layout=new LayoutEngine();
 	this.width=width;
 	this.height=height;
@@ -143,6 +142,7 @@ Graph.prototype.getDistributionGraph = function(){
 Graph.prototype.clear=function(){
 	this.vertices=new Array();
 	this.index=new Object();
+	this.distributionGraph = new Distribution();
 
 // TODO remove objectsWithCoverage, instead use this.vertices to store this information
 	this.objectsWithCoverage=new Object();

@@ -65,9 +65,16 @@ Button.prototype.handleMouseDown=function(x,y){
 	}
 
 	this.state=!this.state;
-	
 	this.activateColor();
 
+	return true;
+}
+
+Button.prototype.handleMouseDoubleClick = function(x, y) {
+	if(!(x>=this.x1 && x<= this.x2 && y >= this.y1 && y <= this.y4)) {
+		return false;
+	}
+	this.state = true;
 	return true;
 }
 
@@ -125,7 +132,7 @@ Button.prototype.draw=function(context,blitter){
 
 	if(this.clickedTicks>0)
 		context2.fillStyle = this.mouseDownColor;
-	
+
 	var width=this.width;
 	var height=this.height;
 

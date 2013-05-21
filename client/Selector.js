@@ -275,6 +275,26 @@ Selector.prototype.handleMouseDown=function(x,y){
 	return result;
 }
 
+Selector.prototype.handleMouseDoubleClick = function(x, y) {
+	var result = false;
+	if(this.mapWidget) {
+		result = this.mapWidget.handleMouseDoubleClick();
+	}
+	if(this.sectionWidget && !result) {
+		result = this.sectionWidget.handleMouseDoubleClick();
+	}
+	if(this.regionWidget && !result) {
+		result = this.regionWidget.handleMouseDoubleClick();
+	}
+	if(this.locationWidget && !result) {
+		result = this.locationWidget.handleMouseDoubleClick();
+	}
+	if(result) {
+		this.handleMouseDown(x, y);
+	}
+	return result;
+}
+
 Selector.prototype.handleMouseMove=function(x,y){
 
 	this.mouseX=x;
