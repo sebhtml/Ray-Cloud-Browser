@@ -31,7 +31,7 @@ var RENDERER_RECTANGLE = 3;
  * \author Sébastien Boisvert
  */
 function Renderer(screen){
-	this.distributionGraph = screen.getGraph().getDistributionGraph();
+	this.distributionGraph = screen.getPathOperator().getDistributionGraph();
 	this.pathMultiplierForVertex=1.5;
 	this.pathMultiplierForArc=2;
 	this.zoomForLevelOfDetails=0.12;
@@ -381,8 +381,8 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 }
 
 Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, depth, zoomValue, layer) {
-	this.distributionGraph = this.screen.getGraph().getDistributionGraph();
-	var listOfSubGraph = this.distributionGraph.getSplitGraph();
+	this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
+	var listOfSubGraph = this.distributionGraph.splitGraph(4);
 
 	var yCoverage = (y - originY - 40) * zoomValue;
 	var xCoverage = (x - originX) * zoomValue;
@@ -397,34 +397,31 @@ Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, dept
 	var color;
 	var length;
 
-	var firstPart = listOfSubGraph[0];
-	var secondPart = listOfSubGraph[1];
-	var thirdPart = listOfSubGraph[2];
-
 	var coverageMaxOtherPart = 0;
 	var frequencyOtherPart = 0;
 
 	var coverageMaxFirstPart = 0;
 	var frequencyFirstPart = 0;
 
+	var firstPart = listOfSubGraph[0];
 	for(var coverage in firstPart) {
 		if(frequencyFirstPart < firstPart[coverage]) {
 			coverageMaxFirstPart = parseInt(coverage);
 			frequencyFirstPart = firstPart[coverage];
 		}
 	}
-	for(var coverage in secondPart) {
-		if(frequencyOtherPart < secondPart[coverage]) {
-			coverageMaxOtherPart = parseInt(coverage);
-			frequencyOtherPart = secondPart[coverage];
+
+	for(var i = 1; i < listOfSubGraph.length; i++) {
+		var secondPart = listOfSubGraph[i];
+		for(var coverage in secondPart) {
+			if(frequencyOtherPart < secondPart[coverage]) {
+				coverageMaxOtherPart = parseInt(coverage);
+				frequencyOtherPart = secondPart[coverage];
+			}
 		}
 	}
-	for(var coverage in thirdPart) {
-		if(frequencyOtherPart < thirdPart[coverage]) {
-			coverageMaxOtherPart = parseInt(coverage);
-			frequencyOtherPart = thirdPart[coverage];
-		}
-	}
+
+// 	console.log(coverageMaxOtherPart + " - " + coverageMaxFirstPart);
 	var gap = coverageMaxOtherPart - coverageMaxFirstPart;
 	var stepping = parseInt(gap / 4);
 	var halfStepping = parseInt(stepping / 2);

@@ -70,7 +70,7 @@ function Screen(gameFrequency,renderingFrequency){
 	this.renderingCanvas=this.webDocument.getRenderingCanvas();
 
 	this.graph=new Graph(this.getWidth(),this.getHeight());
-	this.renderer=new Renderer(this);
+
 
 /*
  * Resolution.
@@ -107,7 +107,7 @@ function Screen(gameFrequency,renderingFrequency){
 
 	this.humanInterface=new HumanInterface(this,this.graphOperator.getDataStore());
 	this.pathOperator=new PathOperator(this.graphOperator.getDataStore(),this.graphOperator);
-
+	this.renderer=new Renderer(this);
 	this.renderer.setPathOperator(this.pathOperator);
 	this.graphOperator.setPathOperator(this.pathOperator);
 	this.humanInterface.getInventory().setPathOperator(this.pathOperator);
@@ -1026,8 +1026,8 @@ Screen.prototype.getDebugMode = function(){
 	return this.debugMode;
 }
 
-Screen.prototype.getGraph = function(){
-	return this.graph;
+Screen.prototype.getPathOperator = function(){
+	return this.pathOperator;
 }
 
 Screen.prototype.getRenderer = function(){

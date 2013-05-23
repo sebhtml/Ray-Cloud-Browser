@@ -25,7 +25,6 @@
  * \author Sébastien Boisvert
  */
 function GraphOperator(screen){
-
 	this.screen=screen;
 	this.dataStore=new DataStore();
 

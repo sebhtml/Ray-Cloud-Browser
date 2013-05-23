@@ -30,7 +30,6 @@
  */
 function Distribution() {
 	this.objects = new Object();
-	this.listOfSubGraph = new Array();
 	this.size = 0;
 	this.minY = 0;
 	this.minX = 0;
@@ -44,7 +43,7 @@ function Distribution() {
  * @param object (int) Object to insert into the graph
  */
 Distribution.prototype.insert = function(object) {
-	var x = object;
+	var x = parseInt(object);
 	var y = this.objects[x];
 
 	numberOfElements = 0;
@@ -151,7 +150,7 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 
 	for(var x = this.minX; x <= this.maxX; x++) {
 		if((this.maxX - this.minX) < 100) {
-			if(x % 10 == 0 && x > this.minX + 25) {
+			if(x % 10 == 0 ) {
 				context.fillText(x, currentX, originY + height + 30);
 				renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 			}
@@ -188,26 +187,17 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 				context.fillText(y, originX - 30, currentY);
 				renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 			}
-		} else if((this.maxY - this.minY) < 100) {
-			if(y % 10 == 0) {
+		} else if((this.maxY - this.minY) < 50) {
+			if(y % 5 == 0) {
 				context.fillText(y, originX - 30, currentY);
 				renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 			}
-		} else if(y % 20 == 0) {
+		} else if(y % 10 == 0) {
 			context.fillText(y, originX - 30, currentY);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 		}
 	}
 	context.closePath();
-}
-
-/**
- * Return list of split
- *
- * @return Array<Object> List of part
- */
-Distribution.prototype.getSplitGraph = function() {
-	return this.listOfSubGraph;
 }
 
 
@@ -235,5 +225,5 @@ Distribution.prototype.splitGraph = function(splitIndex) {
 		begin = j;
 	}
 
-	this.listOfSubGraph = result;
+	return result;
 }

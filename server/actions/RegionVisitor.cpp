@@ -30,6 +30,7 @@ using namespace std;
  * Required QUERY_STRING parameters: tag, section.
  */
 bool RegionVisitor::call(const char* queryString) {
+
 	bool foundDepth = getTokenExist(queryString, "depth");
 
 	int mapIndex=0;
@@ -46,7 +47,12 @@ bool RegionVisitor::call(const char* queryString) {
 
 	Configuration configuration;
 	configuration.open(CONFIG_FILE);
+
 	const char*buffer=configuration.getSectionFile(mapIndex,sectionIndex);
+	GraphDatabase database;
+	const char* dataFile = configuration.getMapFile(mapIndex);
+	database.openFile(dataFile);
+	VertexObject vertex;
 
 	if(buffer==NULL)
 		return false;
@@ -148,12 +154,7 @@ bool RegionVisitor::call(const char* queryString) {
 			cout<<","<<endl;
 
 		if(foundDepth) {
-			GraphDatabase database;
-			const char* dataFile = configuration.getMapFile(mapIndex);
-			database.openFile(dataFile);
-			VertexObject vertex;
-			database.getObjectAtIndex(startingPlace, &vertex);
-
+			database.getObject(kmerSequence, &vertex);
 			cout << "{"<<endl;
 			cout << "\"position\": \"" << startingPlace << "\" ,"<< endl;
 			cout << "\"sequence\": \"" << kmerSequence << "\" ,"<< endl;

@@ -1,6 +1,7 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
  *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013 Jean-François Erdelyi
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
  * \author Sébastien Boisvert
  */
 function PathOperator(dataStore,graphOperator){
+	this.distributionGraph = new Distribution();
 	this.dataStore=dataStore;
 	this.graphOperator=graphOperator;
 
@@ -40,6 +42,13 @@ PathOperator.prototype.getSelectedRegion=function(){
 	return null;
 }
 
+PathOperator.prototype.getRegions=function(){
+	return this.regions;
+}
+
+PathOperator.prototype.getDistributionGraph = function(){
+	return this.distributionGraph;
+}
 PathOperator.prototype.getRegions=function(){
 	return this.regions;
 }
@@ -149,6 +158,7 @@ PathOperator.prototype.startOnPath=function(mapIndex,mapName,
 	parameters["region"]=regionIndex;
 	parameters["location"]=locationIndex;
 	parameters["count"]=512;
+	parameters["depth"] = true;
 
 	var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
@@ -209,7 +219,6 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGIONS_REPLY=function(message){
 }
 
 PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=function(message){
-
 	this.active=false;
 
 	var content=message.getContent();
@@ -233,8 +242,11 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 	var i=0;
 	while(i<vertices.length){
 
-		var sequence=vertices[i]["sequence"];
-		var position=vertices[i]["position"];
+		var sequence = vertices[i]["sequence"];
+		var position = vertices[i]["position"];
+		if(vertices[i]["coverage"]) {
+			this.distributionGraph.insert(vertices[i]["coverage"]);
+		}
 
 		regionEntry.addVertexAtPosition(position,sequence);
 
@@ -303,6 +315,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 	parameters["map"]=this.dataStore.getMapIndex();
 	parameters["sequence"]=kmerSequence;
 	parameters["count"]=this.dataStore.getDefaultDepth();
+	parameters["depth"] = true;
 
 	var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
 	this.dataStore.sendMessageOnTheWeb(theMessage);

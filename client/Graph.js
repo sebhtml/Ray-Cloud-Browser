@@ -67,7 +67,6 @@ Graph.prototype.addVertexWithCoverage=function(sequence, coverage){
 	var vertex1 = this.addVertex(sequence);
 	this.objectsWithCoverage[sequence] = true;
 	vertex1.setCoverageValue(coverage);
-	this.distributionGraph.insert(coverage);
 	delete this.objectsWithoutCoverage[sequence];
 }
 
@@ -135,15 +134,9 @@ Graph.prototype.getObjectsWithoutData=function(){
 	return this.objectsWithoutCoverage;
 }
 
-Graph.prototype.getDistributionGraph = function(){
-	return this.distributionGraph;
-}
-
 Graph.prototype.clear=function(){
 	this.vertices=new Array();
 	this.index=new Object();
-	this.distributionGraph = new Distribution();
-
 // TODO remove objectsWithCoverage, instead use this.vertices to store this information
 	this.objectsWithCoverage=new Object();
 	this.objectsWithoutCoverage=new Object();
