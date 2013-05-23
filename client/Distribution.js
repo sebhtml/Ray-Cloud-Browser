@@ -30,6 +30,7 @@
  */
 function Distribution() {
 	this.objects = new Object();
+	this.listOfSubGraph = new Array();
 	this.size = 0;
 	this.minY = 0;
 	this.minX = 0;
@@ -200,33 +201,39 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 	context.closePath();
 }
 
+/**
+ * Return list of split
+ *
+ * @return Array<Object> List of part
+ */
+Distribution.prototype.getSplitGraph = function() {
+	return this.listOfSubGraph;
+}
+
 
 /**
  * Split the graph in "splitIndex" part
  *
  * @param splitIndex Divided the graph by
- *
- * @return Array<Object> List of part
  */
 Distribution.prototype.splitGraph = function(splitIndex) {
 	var result = new Array();
-	var length = this.size;
-	var stepping = Math.floor(length / splitIndex);
+	var stepping = (this.maxX - this.minX) / splitIndex;
 	var partOfGraph = new Object();
-	var i = 0;
-	var j = 0;
-	for(x in this.objects) {
-		if(j == stepping) {
-			result[i] = partOfGraph;
-			partOfGraph = new Object();
-			i++;
-			j = 0;
+	var begin = this.minX;
+	var j = begin;
+	for(var i = 0; i < splitIndex; i++) {
+		for(j = begin; j < begin + stepping; j++) {
+			if(this.objects[j]) {
+				partOfGraph[j] = this.objects[j];
+			} else {
+				partOfGraph[j] = 0;
+			}
 		}
-		if(i == splitIndex) {
-			stepping = length - (stepping * i);
-		}
-		partOfGraph[x] = this.objects[x];
-		j++;
+		result[i] = partOfGraph;
+		partOfGraph = new Object();
+		begin = j;
 	}
-	return result;
+
+	this.listOfSubGraph = result;
 }

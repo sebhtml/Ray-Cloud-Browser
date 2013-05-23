@@ -588,8 +588,9 @@ Inventory.prototype.showCoverageForRendering=function(){
 }
 
 Inventory.prototype.drawDistributionGraph = function() {
+	this.distributionGraph = this.screen.getGraph().getDistributionGraph();
+	this.distributionGraph.splitGraph(3);
 	if(this.showDistributionGraph) {
-		this.distributionGraph = this.screen.getGraph().getDistributionGraph();
 		this.distributionGraph.draw(this.screen.getContext(), this.x - 420, this.y + 5, 200, 400, this.screen.getRenderer());
 	}
 }
