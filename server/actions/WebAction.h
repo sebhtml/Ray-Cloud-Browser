@@ -37,6 +37,7 @@ public:
 	bool getValue(const char*query,const char*name,char*value,int maximumValueLength)const;
 	bool getValueAsInteger(const char*query,const char*name,int*value)const;
 	bool isAllowedFile(const char*file)const;
+	bool getTokenExist(const char* query, const char* name) const;
 
 	virtual bool call(const char*queryString)=0;
 };

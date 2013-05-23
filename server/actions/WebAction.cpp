@@ -61,7 +61,7 @@ bool WebAction::getValue(const char*query,const char*name,char*value,int maximum
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -84,7 +84,7 @@ bool WebAction::isAllowedFile(const char*file)const{
 /* we don't care for the next two rules */
 #if 0
 // must be something + .dat
-	if(length<=4) 
+	if(length<=4)
 		return false;
 
 // must end with .dat
@@ -96,7 +96,7 @@ bool WebAction::isAllowedFile(const char*file)const{
 
 		return false;
 	}
-	
+
 	return true;
 #endif
 }
@@ -113,4 +113,9 @@ bool WebAction::getValueAsInteger(const char*query,const char*name,int*value)con
 	(*value)=result;
 
 	return true;
+}
+
+bool WebAction::getTokenExist(const char* query, const char* name) const {
+	char buffer[CONFIG_MAXIMUM_VALUE_LENGTH];
+	return getValue(query, name, buffer, CONFIG_MAXIMUM_VALUE_LENGTH);
 }

@@ -29,7 +29,8 @@ using namespace std;
 /**
  * Required QUERY_STRING parameters: tag, section.
  */
-bool RegionVisitor::call(const char*queryString){
+bool RegionVisitor::call(const char* queryString) {
+	bool foundDepth = getTokenExist(queryString, "depth");
 
 	int mapIndex=0;
 	bool foundMap=getValueAsInteger(queryString,"map",&mapIndex);
@@ -66,7 +67,7 @@ bool RegionVisitor::call(const char*queryString){
 	mock.openFile(buffer);
 
 	//mock.debug();
-	
+
 	int entries=mock.getEntries();
 
 // invalid region
@@ -124,7 +125,6 @@ bool RegionVisitor::call(const char*queryString){
 	cout<<"\"location\": "<<location<<","<<endl;
 	cout<<"\"name\":\""<<name<<"\","<<endl;
 	cout<<"\"nucleotides\":"<<nucleotides<<","<<endl;
-
 	cout<<"\"vertices\": ["<<endl;
 
 	int printed=0;
@@ -147,7 +147,21 @@ bool RegionVisitor::call(const char*queryString){
 		else
 			cout<<","<<endl;
 
-		cout<<"{\"position\": "<<startingPlace<<", \"sequence\": \""<<kmerSequence<<"\"}";
+		if(foundDepth) {
+			GraphDatabase database;
+			const char* dataFile = configuration.getMapFile(mapIndex);
+			database.openFile(dataFile);
+			VertexObject vertex;
+			database.getObjectAtIndex(startingPlace, &vertex);
+
+			cout << "{"<<endl;
+			cout << "\"position\": \"" << startingPlace << "\" ,"<< endl;
+			cout << "\"sequence\": \"" << kmerSequence << "\" ,"<< endl;
+			cout << "\"coverage\": \"" << vertex.getCoverage() << "\"" << endl;
+			cout << "}" << endl;
+		} else {
+			cout<<"{\"position\": "<<startingPlace<<", \"sequence\": \""<<kmerSequence<<"\"}";
+		}
 
 		startingPlace++;
 		printed++;
