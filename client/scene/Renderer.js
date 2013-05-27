@@ -68,7 +68,7 @@ Renderer.prototype.drawVertices = function(vertices){
 	while(i<vertices.length){
 		var vertex=vertices[i];
 
-		if(vertex.isEnabled() && !this.screen.isOutside(vertex,this.renderingBuffer)) {
+		if(vertex.isEnabled() && !this.screen.isOutside(vertex, this.renderingBuffer)) {
 			this.drawVertex(this.screen.getContext(), this.screen.getOriginX(), this.screen.getOriginY(), zoomValue,vertex);
 		}
 
@@ -362,11 +362,11 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	if(vertex.isColored()) {
 		this.drawBufferedText(context, x, (y + radius / 2), text, align, fillStyle, font, 30);
 		if(this.m_showCoverage) {
-			this.drawHealtBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
+			this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
 		}
 
 	} else if(this.m_showCoverage) {
-		this.drawHealtBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
+		this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
 	}
 
 	if(this.screen.getDebugMode() == CONFIG_DEBUG_FORCES){
@@ -380,9 +380,9 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	}
 }
 
-Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, depth, zoomValue, layer) {
+Renderer.prototype.drawHealthBar = function(context, x, y, originX, originY, depth, zoomValue, layer) {
 	this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
-	var listOfSubGraph = this.distributionGraph.splitGraph(3);
+	var coverageMax = this.distributionGraph.getMaxY();
 
 	var yCoverage = (y - originY - 40) * zoomValue;
 	var xCoverage = (x - originX) * zoomValue;
@@ -397,58 +397,38 @@ Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, dept
 	var color;
 	var length;
 
-	var coverageMaxOtherPart = 0;
-	var frequencyOtherPart = 0;
+	var stepping = (this.distributionGraph.getMaxX() - this.distributionGraph.getMinX()) / 4;
+	var halfStepping = stepping / 2;
 
-	var coverageMaxFirstPart = 0;
-	var frequencyFirstPart = 0;
+	var stepOnePositive = coverageMax + halfStepping;
+	var stepOneNegative = coverageMax - halfStepping;
 
-	var firstPart = listOfSubGraph[0];
-	for(var coverage in firstPart) {
-		if(frequencyFirstPart < firstPart[coverage]) {
-			coverageMaxFirstPart = parseInt(coverage);
-			frequencyFirstPart = firstPart[coverage];
-		}
-	}
+	var stepTwoPositive = stepOnePositive + stepping;
+	var stepTwoNegative = stepOneNegative - stepping;
 
-	for(var i = 1; i < listOfSubGraph.length; i++) {
-		var secondPart = listOfSubGraph[i];
-		for(var coverage in secondPart) {
-			if(frequencyOtherPart < secondPart[coverage]) {
-				coverageMaxOtherPart = parseInt(coverage);
-				frequencyOtherPart = secondPart[coverage];
-			}
-		}
-	}
+	var stepThreePositive = stepTwoPositive + stepping;
+	var stepThreeNegative = stepTwoNegative - stepping;
 
-// 	console.log(coverageMaxOtherPart + " - " + coverageMaxFirstPart);
-	var gap = coverageMaxOtherPart - coverageMaxFirstPart;
-	var stepping = parseInt(gap / 4);
-	var halfStepping = parseInt(stepping / 2);
-	var stepOne = coverageMaxFirstPart + halfStepping;
-	var stepTwo = stepOne + stepping;
-	var stepThree = stepTwo + stepping;
-
-	if (depth < stepOne) {
-		xHealtBar = (x - originX - 10) * zoomValue;
-		localLayer = layer;
-		color = "rgb(255,0,0)";
-		length = 5;
-	} else if(depth < stepTwo) {
-		xHealtBar = (x - originX - 10) * zoomValue;
-		localLayer = layer + 1;
-		color = "rgb(255,200,0)";
-		length = 10;
-	} else if(depth < stepThree) {
-		xHealtBar = (x - originX - 10) * zoomValue;
-		localLayer = layer + 2;
-		color = "rgb(255,255,0)";
-		length = 15;
-	} else {
+	if (depth <= stepOnePositive && depth >= stepOneNegative) {
 		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer + 3;
 		color = "rgb(0,255,0)";
 		length = 20;
+	} else if(depth <= stepTwoPositive && depth >= stepTwoNegative) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 2;
+		color = "rgb(255,255,0)";
+		length = 15;
+	} else if(depth <= stepThreePositive && depth >= stepThreeNegative) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 1;
+		color = "rgb(255,200,0)";
+		length = 10;
+	} else {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer;
+		color = "rgb(255,0,0)";
+		length = 5;
 	}
 	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, 20 * zoomValue, 'black', 2, "rgb(255,255,255)", localLayer);
 	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, length * zoomValue, '', 0, color, localLayer);

@@ -201,10 +201,14 @@ Region.prototype.getVertex=function(){
 	return this.vertexAtPosition[currentLocation];
 }
 
-Region.prototype.addVertexAtPosition=function(position, sequence, coverage){
+Region.prototype.addVertexAtPosition=function(position, sequence) {
 	this.vertexAtPosition[position] = sequence;
+}
+
+Region.prototype.addCoverage = function(coverage) {
 	this.distributionGraph.insert(coverage);
 }
+
 
 Region.prototype.hasVertex=function(){
 	if(!(this.locationIndex<this.regionLength))

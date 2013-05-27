@@ -48,8 +48,6 @@ PathOperator.prototype.getRegions=function(){
 PathOperator.prototype.getDistributionGraph = function() {
 	if(this.hasSelectedRegion()) {
 		return this.regions[this.selectedRegionIndex].getDistributionGraph();
-	} else {
-		return new Distribution();
 	}
 }
 
@@ -180,7 +178,6 @@ PathOperator.prototype.getParametersForRegion=function(region){
 	parameters["location"]=region.getLocation();
 	parameters["count"]=this.readaheadConfiguration;
 	parameters["depth"] = true;
-
 	return parameters;
 }
 
@@ -232,7 +229,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 	var sectionIndex=content["section"];
 	var regionIndex=content["region"];
 
-	var key = this.getKey(mapIndex,sectionIndex,regionIndex);
+	var key = this.getKey(mapIndex, sectionIndex, regionIndex);
 
 /*
 	if(!(key in this.index)){
@@ -249,11 +246,12 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 
 		var sequence = vertices[i]["sequence"];
 		var position = vertices[i]["position"];
-// 		if(vertices[i]["coverage"]) {
-// 			this.distributionGraph.insert();
-// 		}
+		var parameters=new Object();
 
-		regionEntry.addVertexAtPosition(position, sequence, vertices[i]["coverage"]);
+		if(vertices[i]["coverage"]) {
+			regionEntry.addCoverage(vertices[i]["coverage"]);
+		}
+		regionEntry.addVertexAtPosition(position, sequence);
 
 		if(!regionEntry.hasLeftPosition() || position<regionEntry.getLeftPosition()){
 			regionEntry.setLeftPosition(position);
@@ -316,11 +314,10 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 		i++;
 	}
 
-	var parameters=new Object();
+
 	parameters["map"]=this.dataStore.getMapIndex();
 	parameters["sequence"]=kmerSequence;
 	parameters["count"]=this.dataStore.getDefaultDepth();
-	parameters["depth"] = true;
 
 	var theMessage=new Message(RAY_MESSAGE_TAG_GET_KMER_FROM_STORE,this.dataStore,this.dataStore,parameters);
 	this.dataStore.sendMessageOnTheWeb(theMessage);
@@ -352,7 +349,8 @@ PathOperator.prototype.doReadahead=function(){
 	this.selector%=this.regions.length;
 }
 
-PathOperator.prototype.pull=function(region){
+PathOperator.prototype.pull=function(region) {
+	var parameters=this.getParametersForRegion(region);
 
 	if(!(region.hasLeftPosition() && region.hasRightPosition()))
 		return;
@@ -368,7 +366,6 @@ PathOperator.prototype.pull=function(region){
 
 		this.active=true;
 
-		var parameters=this.getParametersForRegion(region);
 		parameters["location"]=region.getLeftPosition()-this.readaheadConfiguration;
 		if(parameters["location"]<0)
 			parameters["location"]=0;
@@ -386,7 +383,6 @@ PathOperator.prototype.pull=function(region){
 
 		this.active=true;
 
-		var parameters=this.getParametersForRegion(region);
 		parameters["location"]=region.getRightPosition()
 
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,

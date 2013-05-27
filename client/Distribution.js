@@ -141,20 +141,18 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 	this.minY = 0;
 
 	renderer.drawBufferedRectangle(context, originX, originY, height, width, "black", 5, "white", 200);
-	context.beginPath();
-	context.fillStyle = "black";
-	context.font = "12px arial";
-	context.fillText("Coverage depth", originX + (width / 2), originY + height + 60);
-	context.fillText("Observed frequency", originX - 110, originY + (height / 2));
+	renderer.drawBufferedText(context, originX + (width / 2), originY + height + 60, "Coverage depth", "center", "black", "12px arial", 202);
+	renderer.drawBufferedText(context, originX - 110, originY + (height / 2), "Observed frequency", "center", "black", "12px arial", 202);
+
 	if((this.maxX - this.minX) > 10) {
-		context.fillText(this.minX, originX, originY + height + 30);
+		renderer.drawBufferedText(context, originX, originY + height + 30, this.minX, "center", "black", "12px arial", 202);
 	}
 	for(var x = this.minX; x <= this.maxX; x++) {
 		if(x % (Math.round((this.maxX - this.minX) / 5)) == 0) {
-			context.fillText(x, currentX, originY + height + 30);
+			renderer.drawBufferedText(context, currentX, originY + height + 30, x, "center", "black", "12px arial", 202);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 		} else if((this.maxX - this.minX) < 5) {
-			context.fillText(x, currentX, originY + height + 30);
+			renderer.drawBufferedText(context, currentX, originY + height + 30, x, "center", "black", "12px arial", 202);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 		}
 		var y = 0;
@@ -177,40 +175,11 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 		var yRatio = (y - this.minY) / (this.maxY - this.minY);
 		var currentY = originY + (1 - yRatio) * height;
 		if(y % (Math.round((this.maxY - this.minY) / 5)) == 0) {
-			context.fillText(y, originX - 30, currentY);
+			renderer.drawBufferedText(context, originX - 30, currentY, y, "center", "black", "12px arial", 202);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
-		} else if ((this.maxY - this.minY) < 5) {
-			context.fillText(y, originX - 30, currentY);
+		} else if((this.maxY - this.minY) < 5) {
+			renderer.drawBufferedText(context, originX - 30, currentY, y, "center", "black", "12px arial", 202);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 		}
 	}
-	context.closePath();
-}
-
-
-/**
- * Split the graph in "splitIndex" part
- *
- * @param splitIndex Divided the graph by
- */
-Distribution.prototype.splitGraph = function(splitIndex) {
-	var result = new Array();
-	var stepping = (this.maxX - this.minX) / splitIndex;
-	var partOfGraph = new Object();
-	var begin = this.minX;
-	var j = begin;
-	for(var i = 0; i < splitIndex; i++) {
-		for(j = begin; j < begin + stepping; j++) {
-			if(this.objects[j]) {
-				partOfGraph[j] = this.objects[j];
-			} else {
-				partOfGraph[j] = 0;
-			}
-		}
-		result[i] = partOfGraph;
-		partOfGraph = new Object();
-		begin = j;
-	}
-
-	return result;
 }
