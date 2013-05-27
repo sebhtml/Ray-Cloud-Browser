@@ -1,6 +1,7 @@
 /*
  *  Ray Cloud Browser: interactively skim processed genomics data with energy
  *  Copyright (C) 2012, 2013 Sébastien Boisvert
+ *  Copyright (C) 2013 Jean-François Erdelyi
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,8 +30,9 @@
  * \author Sébastien Boisvert
  */
 function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,
-	regionLength,color){
+	regionLength,color) {
 
+	this.distributionGraph = new Distribution();
 	this.mapName=mapName;
 	this.sectionName=sectionName;
 	this.regionName=regionName;
@@ -199,8 +201,9 @@ Region.prototype.getVertex=function(){
 	return this.vertexAtPosition[currentLocation];
 }
 
-Region.prototype.addVertexAtPosition=function(position,sequence){
-	this.vertexAtPosition[position]=sequence;
+Region.prototype.addVertexAtPosition=function(position, sequence, coverage){
+	this.vertexAtPosition[position] = sequence;
+	this.distributionGraph.insert(coverage);
 }
 
 Region.prototype.hasVertex=function(){
@@ -214,6 +217,10 @@ Region.prototype.hasVertex=function(){
 		return false;
 
 	return true;
+}
+
+Region.prototype.getDistributionGraph = function() {
+	return this.distributionGraph;
 }
 
 Region.prototype.print=function(){

@@ -22,7 +22,6 @@
  * \author Sébastien Boisvert
  */
 function PathOperator(dataStore,graphOperator){
-	this.distributionGraph = new Distribution();
 	this.dataStore=dataStore;
 	this.graphOperator=graphOperator;
 
@@ -46,9 +45,14 @@ PathOperator.prototype.getRegions=function(){
 	return this.regions;
 }
 
-PathOperator.prototype.getDistributionGraph = function(){
-	return this.distributionGraph;
+PathOperator.prototype.getDistributionGraph = function() {
+	if(this.hasSelectedRegion()) {
+		return this.regions[this.selectedRegionIndex].getDistributionGraph();
+	} else {
+		return new Distribution();
+	}
 }
+
 PathOperator.prototype.getRegions=function(){
 	return this.regions;
 }
@@ -175,6 +179,7 @@ PathOperator.prototype.getParametersForRegion=function(region){
 	parameters["region"]=region.getRegion();
 	parameters["location"]=region.getLocation();
 	parameters["count"]=this.readaheadConfiguration;
+	parameters["depth"] = true;
 
 	return parameters;
 }
@@ -227,7 +232,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 	var sectionIndex=content["section"];
 	var regionIndex=content["region"];
 
-	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
+	var key = this.getKey(mapIndex,sectionIndex,regionIndex);
 
 /*
 	if(!(key in this.index)){
@@ -235,7 +240,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 	}
 */
 
-	var regionEntry=this.index[key];
+	var regionEntry = this.index[key];
 
 	var vertices=content["vertices"];
 
@@ -244,11 +249,11 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 
 		var sequence = vertices[i]["sequence"];
 		var position = vertices[i]["position"];
-		if(vertices[i]["coverage"]) {
-			this.distributionGraph.insert(vertices[i]["coverage"]);
-		}
+// 		if(vertices[i]["coverage"]) {
+// 			this.distributionGraph.insert();
+// 		}
 
-		regionEntry.addVertexAtPosition(position,sequence);
+		regionEntry.addVertexAtPosition(position, sequence, vertices[i]["coverage"]);
 
 		if(!regionEntry.hasLeftPosition() || position<regionEntry.getLeftPosition()){
 			regionEntry.setLeftPosition(position);

@@ -382,7 +382,7 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 
 Renderer.prototype.drawHealtBar = function(context, x, y, originX, originY, depth, zoomValue, layer) {
 	this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
-	var listOfSubGraph = this.distributionGraph.splitGraph(4);
+	var listOfSubGraph = this.distributionGraph.splitGraph(3);
 
 	var yCoverage = (y - originY - 40) * zoomValue;
 	var xCoverage = (x - originX) * zoomValue;

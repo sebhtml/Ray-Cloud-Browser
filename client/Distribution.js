@@ -146,20 +146,14 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 	context.font = "12px arial";
 	context.fillText("Coverage depth", originX + (width / 2), originY + height + 60);
 	context.fillText("Observed frequency", originX - 110, originY + (height / 2));
-	context.fillText(this.minX, originX, originY + height + 30);
-
+	if((this.maxX - this.minX) > 10) {
+		context.fillText(this.minX, originX, originY + height + 30);
+	}
 	for(var x = this.minX; x <= this.maxX; x++) {
-		if((this.maxX - this.minX) < 100) {
-			if(x % 10 == 0 ) {
-				context.fillText(x, currentX, originY + height + 30);
-				renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
-			}
-		} else if((this.maxX - this.minX) < 1000) {
-			if(x % 100 == 0 && x > this.minX + 25) {
-				context.fillText(x, currentX, originY + height + 30);
-				renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
-			}
-		} else if(x % 500 == 0 && x > this.minX + 25) {
+		if(x % (Math.round((this.maxX - this.minX) / 5)) == 0) {
+			context.fillText(x, currentX, originY + height + 30);
+			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
+		} else if((this.maxX - this.minX) < 5) {
 			context.fillText(x, currentX, originY + height + 30);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 		}
@@ -182,17 +176,10 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 	for(var y = this.minY; y <= this.maxY; y++) {
 		var yRatio = (y - this.minY) / (this.maxY - this.minY);
 		var currentY = originY + (1 - yRatio) * height;
-		if((this.maxY - this.minY) < 10) {
-			if(y % 1 == 0) {
-				context.fillText(y, originX - 30, currentY);
-				renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
-			}
-		} else if((this.maxY - this.minY) < 50) {
-			if(y % 5 == 0) {
-				context.fillText(y, originX - 30, currentY);
-				renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
-			}
-		} else if(y % 10 == 0) {
+		if(y % (Math.round((this.maxY - this.minY) / 5)) == 0) {
+			context.fillText(y, originX - 30, currentY);
+			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
+		} else if ((this.maxY - this.minY) < 5) {
 			context.fillText(y, originX - 30, currentY);
 			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 		}
