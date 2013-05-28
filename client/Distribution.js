@@ -29,12 +29,17 @@
  * @constructor
  */
 function Distribution() {
+	this.canvas = document.createElement("canvas");
+	this.contextLocal = this.canvas.getContext("2d");
 	this.objects = new Object();
 	this.size = 0;
 	this.minY = 0;
 	this.minX = 0;
 	this.maxY = 0;
 	this.maxX = 0;
+	this.lastUpdate = 0
+	this.start = new Date() * 1;
+	this.period = 5000;
 }
 
 /**
@@ -140,20 +145,20 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 	var pointB = null;
 	this.minY = 0;
 
-	renderer.drawBufferedRectangle(context, originX, originY, height, width, "black", 5, "white", 200);
-	renderer.drawBufferedText(context, originX + (width / 2), originY + height + 60, "Coverage depth", "center", "black", "12px arial", 202);
-	renderer.drawBufferedText(context, originX - 110, originY + (height / 2), "Observed frequency", "center", "black", "12px arial", 202);
+	renderer.drawBufferedRectangle(this.contextLocal, originX, originY, height, width, "black", 5, "white", 200);
+	renderer.drawBufferedText(this.contextLocal, originX + (width / 2), originY + height + 60, "Coverage depth", "center", "black", "12px arial", 202);
+	renderer.drawBufferedText(this.contextLocal, originX - 110, originY + (height / 2), "Observed frequency", "center", "black", "12px arial", 202);
 
 	if((this.maxX - this.minX) > 10) {
-		renderer.drawBufferedText(context, originX, originY + height + 30, this.minX, "center", "black", "12px arial", 202);
+		renderer.drawBufferedText(this.contextLocal, originX, originY + height + 30, this.minX, "center", "black", "12px arial", 202);
 	}
 	for(var x = this.minX; x <= this.maxX; x++) {
 		if(x % (Math.round((this.maxX - this.minX) / 5)) == 0) {
-			renderer.drawBufferedText(context, currentX, originY + height + 30, x, "center", "black", "12px arial", 202);
-			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
+			renderer.drawBufferedText(this.contextLocal, currentX, originY + height + 30, x, "center", "black", "12px arial", 202);
+			renderer.drawBufferedLineWithTwoPoints(this.contextLocal, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 		} else if((this.maxX - this.minX) < 5) {
-			renderer.drawBufferedText(context, currentX, originY + height + 30, x, "center", "black", "12px arial", 202);
-			renderer.drawBufferedLineWithTwoPoints(context, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
+			renderer.drawBufferedText(this.contextLocal, currentX, originY + height + 30, x, "center", "black", "12px arial", 202);
+			renderer.drawBufferedLineWithTwoPoints(this.contextLocal, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 		}
 		var y = 0;
 		if(this.objects[x]) {
@@ -169,17 +174,22 @@ Distribution.prototype.draw = function(context, originX, originY, height, width,
 		}
 		pointA = pointB.copy();
 		pointB = new Point(currentX, currentY);
-		renderer.drawBufferedLineWithTwoPoints(context, pointA, pointB, 1, "red", 202);
+		renderer.drawBufferedLineWithTwoPoints(this.contextLocal, pointA, pointB, 1, "red", 202);
 	}
 	for(var y = this.minY; y <= this.maxY; y++) {
 		var yRatio = (y - this.minY) / (this.maxY - this.minY);
 		var currentY = originY + (1 - yRatio) * height;
 		if(y % (Math.round((this.maxY - this.minY) / 5)) == 0) {
-			renderer.drawBufferedText(context, originX - 30, currentY, y, "center", "black", "12px arial", 202);
-			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
+			renderer.drawBufferedText(this.contextLocal, originX - 30, currentY, y, "center", "black", "12px arial", 202);
+			renderer.drawBufferedLineWithTwoPoints(this.contextLocal, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 		} else if((this.maxY - this.minY) < 5) {
-			renderer.drawBufferedText(context, originX - 30, currentY, y, "center", "black", "12px arial", 202);
-			renderer.drawBufferedLineWithTwoPoints(context, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
+			renderer.drawBufferedText(this.contextLocal, originX - 30, currentY, y, "center", "black", "12px arial", 202);
+			renderer.drawBufferedLineWithTwoPoints(this.contextLocal, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
 		}
+	}
+	this.start = new Date() * 1;
+	if(this.start >= this.lastUpdate + this.period) {
+		this.lastUpdate = this.start;
+		context.drawImage(this.canvas, originX, originY, width, height);
 	}
 }
