@@ -408,8 +408,8 @@ HumanInterface.prototype.draw=function() {
 }
 
 HumanInterface.prototype.handleMouseDoubleClick=function(x,y) {
-	this.doubleClick = true;
 	if(this.handleMouseDown(x, y)) {
+		this.getInventory().getSelector().handleMouseDoubleClick(x, y);
 		return true;
 	}
 
@@ -422,11 +422,6 @@ HumanInterface.prototype.handleMouseDoubleClick=function(x,y) {
 HumanInterface.prototype.handleMouseDown=function(x,y){
 
 	if(this.sampleInventory.handleMouseDown(x,y)) {
-		if(this.doubleClick && this.getInventory().getSelector().handleMouseDoubleClick(x, y)) {
-			this.doubleClick = false;
-			return true;
-		}
-
 		if(this.getInventory().getSelector().hasChoices()) {
 			this.locationData=this.getInventory().getSelector().getLocationData();
 		}
