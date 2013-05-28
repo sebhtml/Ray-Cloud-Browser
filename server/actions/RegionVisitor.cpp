@@ -154,8 +154,11 @@ bool RegionVisitor::call(const char* queryString) {
 			cout<<","<<endl;
 
 		if(foundDepth) {
-			database.getObject(kmerSequence, &vertex);
-			cout << "{"<< "\"position\": " << startingPlace << ", " << "\"sequence\": \"" << kmerSequence << "\", "<< "\"coverage\": " << vertex.getCoverage() << "}";
+			uint32_t coverage = 0;
+			if(database.getObject(kmerSequence, &vertex)) {
+				coverage = vertex.getCoverage();
+			}
+			cout << "{"<< "\"position\": " << startingPlace << ", " << "\"sequence\": \"" << kmerSequence << "\", "<< "\"coverage\": " << coverage << "}";
 		} else {
 			cout<<"{\"position\": "<<startingPlace<<", \"sequence\": \""<<kmerSequence<<"\"}";
 		}
@@ -168,6 +171,6 @@ bool RegionVisitor::call(const char* queryString) {
 
 	mock.closeFile();
 	configuration.close();
-
+	database.closeFile();
 	return true;
 }
