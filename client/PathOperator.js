@@ -178,6 +178,7 @@ PathOperator.prototype.getParametersForRegion=function(region){
 	parameters["location"]=region.getLocation();
 	parameters["count"]=this.readaheadConfiguration;
 	parameters["depth"] = true;
+
 	return parameters;
 }
 
@@ -246,12 +247,12 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 
 		var sequence = vertices[i]["sequence"];
 		var position = vertices[i]["position"];
-		var parameters=new Object();
+
+		regionEntry.addVertexAtPosition(position, sequence);
 
 		if(vertices[i]["coverage"]) {
 			regionEntry.addCoverage(vertices[i]["coverage"]);
 		}
-		regionEntry.addVertexAtPosition(position, sequence);
 
 		if(!regionEntry.hasLeftPosition() || position<regionEntry.getLeftPosition()){
 			regionEntry.setLeftPosition(position);
@@ -314,7 +315,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 		i++;
 	}
 
-
+	var parameters = new Object();
 	parameters["map"]=this.dataStore.getMapIndex();
 	parameters["sequence"]=kmerSequence;
 	parameters["count"]=this.dataStore.getDefaultDepth();
@@ -350,7 +351,6 @@ PathOperator.prototype.doReadahead=function(){
 }
 
 PathOperator.prototype.pull=function(region) {
-	var parameters=this.getParametersForRegion(region);
 
 	if(!(region.hasLeftPosition() && region.hasRightPosition()))
 		return;
@@ -362,17 +362,16 @@ PathOperator.prototype.pull=function(region) {
 /*
  * We can not pull before 0.
  */
-	if(position<region.getLeftPosition()+buffer && region.getLeftPosition()!=0){
+	if(position<region.getLeftPosition()+buffer && region.getLeftPosition()!=0) {
 
 		this.active=true;
-
+		var parameters=this.getParametersForRegion(region);
 		parameters["location"]=region.getLeftPosition()-this.readaheadConfiguration;
-		if(parameters["location"]<0)
+		if(parameters["location"]<0) {
 			parameters["location"]=0;
-
+		}
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
-
 		this.dataStore.forwardMessageOnTheWeb(message);
 
 /*
@@ -382,12 +381,10 @@ PathOperator.prototype.pull=function(region) {
 		&& region.getRightPosition() !=region.getRegionLength()-1){
 
 		this.active=true;
-
-		parameters["location"]=region.getRightPosition()
-
+		var parameters=this.getParametersForRegion(region);
+		parameters["location"]=region.getRightPosition();
 		var message=new Message(RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION,
 				this,this.dataStore,parameters);
-
 		this.dataStore.forwardMessageOnTheWeb(message);
 	}
 }

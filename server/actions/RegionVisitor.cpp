@@ -155,11 +155,7 @@ bool RegionVisitor::call(const char* queryString) {
 
 		if(foundDepth) {
 			database.getObject(kmerSequence, &vertex);
-			cout << "{"<<endl;
-			cout << "\"position\": \"" << startingPlace << "\" ,"<< endl;
-			cout << "\"sequence\": \"" << kmerSequence << "\" ,"<< endl;
-			cout << "\"coverage\": \"" << vertex.getCoverage() << "\"" << endl;
-			cout << "}" << endl;
+			cout << "{"<< "\"position\": " << startingPlace << ", " << "\"sequence\": \"" << kmerSequence << "\", "<< "\"coverage\": " << vertex.getCoverage() << "}";
 		} else {
 			cout<<"{\"position\": "<<startingPlace<<", \"sequence\": \""<<kmerSequence<<"\"}";
 		}

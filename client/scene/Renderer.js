@@ -397,38 +397,33 @@ Renderer.prototype.drawHealthBar = function(context, x, y, originX, originY, dep
 	var color;
 	var length;
 
-	var stepping = (this.distributionGraph.getMaxX() - this.distributionGraph.getMinX()) / 4;
+	var stepping = (coverageMax - this.distributionGraph.getMinX()) / 4;
 	var halfStepping = stepping / 2;
 
-	var stepOnePositive = coverageMax + halfStepping;
-	var stepOneNegative = coverageMax - halfStepping;
+	var stepOnePositive = coverageMax - halfStepping;
+	var stepTwoPositive = stepOnePositive - stepping;
+	var stepThreePositive = stepTwoPositive - stepping;
 
-	var stepTwoPositive = stepOnePositive + stepping;
-	var stepTwoNegative = stepOneNegative - stepping;
-
-	var stepThreePositive = stepTwoPositive + stepping;
-	var stepThreeNegative = stepTwoNegative - stepping;
-
-	if (depth <= stepOnePositive && depth >= stepOneNegative) {
-		xHealtBar = (x - originX - 10) * zoomValue;
-		localLayer = layer + 3;
-		color = "rgb(0,255,0)";
-		length = 20;
-	} else if(depth <= stepTwoPositive && depth >= stepTwoNegative) {
-		xHealtBar = (x - originX - 10) * zoomValue;
-		localLayer = layer + 2;
-		color = "rgb(255,255,0)";
-		length = 15;
-	} else if(depth <= stepThreePositive && depth >= stepThreeNegative) {
-		xHealtBar = (x - originX - 10) * zoomValue;
-		localLayer = layer + 1;
-		color = "rgb(255,200,0)";
-		length = 10;
-	} else {
+	if (depth <= stepThreePositive) {
 		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer;
 		color = "rgb(255,0,0)";
 		length = 5;
+	} else if(depth <= stepTwoPositive) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 1;
+		color = "rgb(255,200,0)";
+		length = 10;
+	} else if(depth <= stepOnePositive) {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 2;
+		color = "rgb(255,255,0)";
+		length = 15;
+	} else {
+		xHealtBar = (x - originX - 10) * zoomValue;
+		localLayer = layer + 3;
+		color = "rgb(0,255,0)";
+		length = 20;
 	}
 	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, 20 * zoomValue, 'black', 2, "rgb(255,255,255)", localLayer);
 	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, length * zoomValue, '', 0, color, localLayer);
