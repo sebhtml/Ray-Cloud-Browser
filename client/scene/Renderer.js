@@ -117,8 +117,10 @@ Renderer.prototype.drawPaths=function(vertices){
 		if(this.screen.isOutside(vertex,this.renderingBuffer))
 			continue;
 
-		this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
+		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
+			this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
 			zoomValue,vertex);
+		}
 
 		var arcs=vertex.getArcs();
 		for(var j in arcs){
@@ -307,11 +309,12 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 }
 
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
+	if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
+		var lineWidth=(this.lineWidthForPath+extra)*this.pathMultiplierForArc;
+		this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,
+			lineWidth*zoomValue,pathColor,layer);
+	}
 
-	var lineWidth=(this.lineWidthForPath+extra)*this.pathMultiplierForArc;
-
-	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,
-		lineWidth*zoomValue,pathColor,layer);
 }
 
 Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,vertex){
@@ -353,30 +356,30 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	if(vertex.isColored()) {
 		this.drawBufferedCircle(context, x, y, radius, "black", lineWidth, theColor, 20);
 	}
+	if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
+		var fillStyle = 'black';
+		var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+		var align = "center";
+		var text = vertex.getLabel();
+		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage && vertex.isColored()) {
+			this.drawBufferedText(context, x, (y + radius / 2), text, align, fillStyle, font, 30);
+			if(this.m_showCoverage) {
+				this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
+			}
 
-	var fillStyle = 'black';
-	var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
-	var align = "center";
-	var text = vertex.getLabel();
-
-	if(vertex.isColored()) {
-		this.drawBufferedText(context, x, (y + radius / 2), text, align, fillStyle, font, 30);
-		if(this.m_showCoverage) {
+		} else if(this.m_showCoverage) {
 			this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
 		}
 
-	} else if(this.m_showCoverage) {
-		this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
-	}
+		if(this.screen.getDebugMode() == CONFIG_DEBUG_FORCES){
 
-	if(this.screen.getDebugMode() == CONFIG_DEBUG_FORCES){
-
-		var pointA = new Point(x, y);
-		var pointB = pointA.copy();
-		pointB.add(vertex.getForce().copy().multiplyBy(50));
-		//pointB.multiplyBy();
-		var theColor = 'blue';
-		this.drawBufferedLineWithTwoPoints(context, pointA, pointB, lineWidth, theColor, 100);
+			var pointA = new Point(x, y);
+			var pointB = pointA.copy();
+			pointB.add(vertex.getForce().copy().multiplyBy(50));
+			//pointB.multiplyBy();
+			var theColor = 'blue';
+			this.drawBufferedLineWithTwoPoints(context, pointA, pointB, lineWidth, theColor, 100);
+		}
 	}
 }
 

@@ -32,17 +32,17 @@ function Client(){
  	*/
 	var renderingFrequency=CONFIG_RENDERING_FREQUENCY;
 	var gameFrequency=CONFIG_GAME_FREQUENCY;
-	
+
 	/*
  	* The variable can not be called screen because
  	* of a bug in Microsoft Internet Explorer 9.
  	*/
 	var programScreen=new Screen(gameFrequency,renderingFrequency);
-	
+
 	/*
  	* Start the rendering.
  	*/
-	
+
 	/**
  	* \see http://www.html5canvastutorials.com/advanced/html5-canvas-animation-stage/
  	*/
@@ -56,27 +56,27 @@ function Client(){
         	window.setTimeout(callback, 1000 / renderingFrequency);
     	};
 	})();
-	
+
 	function renderScene(){
 		requestAnimFrame(renderScene);
-	
+
 		programScreen.draw();
 	}
-	
+
 	window.onload=renderScene;
-	
+
 	/*
  	* Start the game engine.
  	*/
-	
+
 	var iterateGame=function(){
 		programScreen.iterate();
 	}
-	
+
 	var periodInMilliSeconds=1000 / gameFrequency;
-	
+
 	setInterval(iterateGame,periodInMilliSeconds);
-	
+
 	// Bind keyboard events.
 	document.onkeydown=function(e){
 		programScreen.processKeyboardEvent(e);
