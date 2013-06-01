@@ -51,6 +51,12 @@ PathOperator.prototype.getDistributionGraph = function() {
 	}
 }
 
+PathOperator.prototype.getCoverageByPositionGraph = function() {
+	if(this.hasSelectedRegion()) {
+		return this.regions[this.selectedRegionIndex].getCoverageByPositionGraph();
+	}
+}
+
 PathOperator.prototype.getRegions=function(){
 	return this.regions;
 }
@@ -251,7 +257,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 		regionEntry.addVertexAtPosition(position, sequence);
 
 		if(vertices[i]["coverage"]) {
-			regionEntry.addCoverage(vertices[i]["coverage"]);
+			regionEntry.addInformationsForGraphs(vertices[i]["coverage"], position);
 		}
 
 		if(!regionEntry.hasLeftPosition() || position<regionEntry.getLeftPosition()){

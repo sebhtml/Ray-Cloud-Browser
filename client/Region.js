@@ -32,7 +32,8 @@
 function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,
 	regionLength,color) {
 
-	this.distributionGraph = new Distribution();
+	this.distributionGraph = new Distribution(5000);
+	this.coverageByPositionGraph = new Graphic(5000);
 	this.mapName=mapName;
 	this.sectionName=sectionName;
 	this.regionName=regionName;
@@ -205,8 +206,9 @@ Region.prototype.addVertexAtPosition=function(position, sequence) {
 	this.vertexAtPosition[position] = sequence;
 }
 
-Region.prototype.addCoverage = function(coverage) {
+Region.prototype.addInformationsForGraphs = function(coverage, location) {
 	this.distributionGraph.insert(coverage);
+	this.coverageByPositionGraph.insert(new Point(location, coverage));
 }
 
 
@@ -226,6 +228,11 @@ Region.prototype.hasVertex=function(){
 Region.prototype.getDistributionGraph = function() {
 	return this.distributionGraph;
 }
+
+Region.prototype.getCoverageByPositionGraph = function() {
+	return this.coverageByPositionGraph;
+}
+
 
 Region.prototype.print=function(){
 	console.log("Current: "+this.locationIndex+" Left: "+this.lastLeft+" Right: "+this.lastRight);

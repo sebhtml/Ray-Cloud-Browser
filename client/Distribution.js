@@ -28,7 +28,7 @@
  *
  * @constructor
  */
-function Distribution() {
+function Distribution(period) {
 	this.canvas = document.createElement("canvas");
 	this.contextLocal = this.canvas.getContext("2d");
 	this.objects = new Object();
@@ -39,7 +39,7 @@ function Distribution() {
 	this.maxX = 0;
 	this.lastUpdate = 0
 	this.start = new Date() * 1;
-	this.period = 5000;
+	this.period = period;
 }
 
 /**

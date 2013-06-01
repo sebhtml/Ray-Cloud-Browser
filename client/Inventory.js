@@ -111,7 +111,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 
 	this.distributionGraphButton = new Button((this.x + this.buttonWidth + 19 * this.buttonWidth / 2) - 75,
 		this.y + this.regionsOffset + 100,
-		2.2 * this.buttonWidth, this.buttonWidth, "Graph", false);
+		2.2 * this.buttonWidth, this.buttonWidth, "Graphs", false);
 
 	this.pushSelector();
 
@@ -590,7 +590,13 @@ Inventory.prototype.showCoverageForRendering=function(){
 Inventory.prototype.drawDistributionGraph = function() {
 
 	if(this.showDistributionGraph) {
+		var coverageByPositionGraphX = 100;
+		var coverageByPositionGraphY = this.screen.getHeight() - 150;
 		this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
 		this.distributionGraph.draw(this.screen.getContext(), this.x - 420, this.y + 5, 200, 400, this.screen.getRenderer());
+		this.coverageByPositionGraph = this.screen.getPathOperator().getCoverageByPositionGraph();
+		this.coverageByPositionGraph.draw(this.screen.getContext(), coverageByPositionGraphX, coverageByPositionGraphY, 100, this.screen.getWidth() - 200, this.screen.getRenderer(), "Location", "Depth");
 	}
+
+
 }
