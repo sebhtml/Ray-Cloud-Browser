@@ -587,15 +587,18 @@ Inventory.prototype.showCoverageForRendering=function(){
 	return this.useCoverage.getState();
 }
 
-Inventory.prototype.drawDistributionGraph = function() {
+Inventory.prototype.drawGraphs = function() {
 
 	if(this.showDistributionGraph) {
 		var coverageByPositionGraphX = 100;
 		var coverageByPositionGraphY = this.screen.getHeight() - 150;
 		this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
+		var locationInSelectedRegion = this.screen.getPathOperator().getPositionInSelectedRegion();
 		this.distributionGraph.draw(this.screen.getContext(), this.x - 420, this.y + 5, 200, 400, this.screen.getRenderer());
 		this.coverageByPositionGraph = this.screen.getPathOperator().getCoverageByPositionGraph();
-		this.coverageByPositionGraph.draw(this.screen.getContext(), coverageByPositionGraphX, coverageByPositionGraphY, 100, this.screen.getWidth() - 200, this.screen.getRenderer(), "Location", "Depth");
+		this.coverageByPositionGraph.draw(this.screen.getContext(), coverageByPositionGraphX, coverageByPositionGraphY, 100,
+							this.screen.getWidth() - 200, this.screen.getRenderer(), "Location", "Depth",
+							locationInSelectedRegion, 2000);
 	}
 
 

@@ -208,7 +208,7 @@ Region.prototype.addVertexAtPosition=function(position, sequence) {
 
 Region.prototype.addInformationsForGraphs = function(coverage, location) {
 	this.distributionGraph.insert(coverage);
-	this.coverageByPositionGraph.insert(new Point(location, coverage));
+	this.coverageByPositionGraph.insert(location, coverage);
 }
 
 
@@ -232,7 +232,6 @@ Region.prototype.getDistributionGraph = function() {
 Region.prototype.getCoverageByPositionGraph = function() {
 	return this.coverageByPositionGraph;
 }
-
 
 Region.prototype.print=function(){
 	console.log("Current: "+this.locationIndex+" Left: "+this.lastLeft+" Right: "+this.lastRight);

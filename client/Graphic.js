@@ -30,8 +30,8 @@
  */
 function Graphic(period) {
 	this.canvas = document.createElement("canvas");
-	this.contextLocal = this.canvas.getContext("2d");
-	this.listOfPoints = new Array();
+	this.localContext = this.canvas.getContext("2d");
+	this.listOfPoints = new Object();
 	this.size = 0;
 	this.lastUpdate = 0
 	this.start = new Date() * 1;
@@ -40,6 +40,11 @@ function Graphic(period) {
 	this.maxY = 0;
 	this.minX = 0;
 	this.maxX = 0;
+	this.graphMinimumYPosition = 0;
+	this.init = true;
+	this.change = false;
+	this.newEnd = 0;
+	this.index = 0;
 }
 
 /**
@@ -47,11 +52,11 @@ function Graphic(period) {
  *
  * @param point (Point) A point
  */
-Graphic.prototype.insert = function(point) {
-	var x = point.getX();
-	var y = point.getY();
+Graphic.prototype.insert = function(valueX, valueY) {
+	var x = valueX;
+	var y = valueY;
 
-	this.listOfPoints.push(point);
+	this.listOfPoints[x] = y;
 
 	if(this.minY > y || this.minY == 0) {
 		this.minY = y;
@@ -65,7 +70,6 @@ Graphic.prototype.insert = function(point) {
 	if(this.maxX < x) {
 		this.maxX = x;
 	}
-	this.size++;
 }
 
 /**
@@ -86,6 +90,7 @@ Graphic.prototype.getSize = function() {
 	return this.size;
 }
 
+
 /**
  * Draw this graph
  *
@@ -96,49 +101,109 @@ Graphic.prototype.getSize = function() {
  * @param width Width of graph
  * @param renderer For buffered opperations
  */
-Graphic.prototype.draw = function(context, originX, originY, height, width, renderer, nameX, nameY) {
+Graphic.prototype.draw = function(context, originX, originY, height, width, renderer, nameX, nameY, actualLocation, window) {
 	var pointA = null;
 	var pointB = null;
-	if(this.minX < 100) {
-		this.minX = 0;
+	var gap = this.begin - this.end;
+	if(this.init) {
+		this.begin = actualLocation - window / 4;
+		this.end = actualLocation + 3 * (window / 4);
+		this.init = false;
 	}
-	this.minY = 0;
-
-	renderer.drawBufferedRectangle(this.contextLocal, originX, originY, height, width, "black", 5, "white", 200);
-	renderer.drawBufferedText(this.contextLocal, originX + (width / 2), originY + height + 40, nameX, "center", "black", "12px arial", 202);
-	renderer.drawBufferedText(this.contextLocal, originX - 75, originY + (height / 2), nameY, "center", "black", "12px arial", 202);
-	for(var i = 0; i < this.listOfPoints.length; i++) {
-		var x = this.listOfPoints[i].getX();
-		var y = this.listOfPoints[i].getY();
-		var currentX = ((x - this.minX) / (this.maxX - this.minX)) * width + originX;
-		var yRatio = (y - this.minY) / (this.maxY - this.minY);
-		var currentY = originY + (1 - yRatio) * height;
-		if(pointB == null) {
+	if(this.changeRight) {
+		if(this.index < 50) {
+			this.index += 50;
+		} else {
+			this.index -= 10;
+		}
+		this.begin += this.index;
+		this.end += this.index;
+		if(this.end >= this.newEnd) {
+			this.begin = actualLocation - window / 4;
+			this.end = actualLocation + 3 * (window / 4);
+			this.changeRight = false;
+		}
+	} else if(this.changeLeft) {
+		if(this.index < 50) {
+			this.index += 50;
+		} else {
+			this.index -= 10;
+		}
+		this.begin -= this.index;
+		this.end -= this.index;
+		if(this.end <= this.newEnd) {
+			this.begin = actualLocation - 3 * (window / 4);
+			this.end = actualLocation + window / 4;
+			this.changeLeft = false;
+		}
+	} else {
+		if(actualLocation > this.end + (gap / 4)) {
+			this.init = false;
+			this.changeRight = true;
+			this.newEnd = this.end + (window / 2);
+		} else if (actualLocation < this.begin - (gap / 4)) {
+			this.changeLeft = true;
+			this.newEnd = this.end - (window / 2);
+		}
+		this.index = 0;
+	}
+	if(this.begin <= 0) {
+		this.begin = 0;
+		this.end = window;
+		if(actualLocation < this.end + (window / 2)) {
+			this.changeLeft = false;
+		}
+	}
+	if(this.end >= this.listOfPoints.length) {
+		this.begin = this.listOfPoints.length - window;
+		this.end = this.listOfPoints.length;
+		if(actualLocation < this.end + (window / 2)) {
+			this.changeRight = false;
+		}
+	}
+	renderer.drawBufferedRectangle(this.localContext, originX, originY, height, width, "black", 5, "white", 200);
+	renderer.drawBufferedText(this.localContext, originX + (width / 2), originY + height + 40, nameX, "center", "black", "12px arial", 202);
+	renderer.drawBufferedText(this.localContext, originX - 75, originY + (height / 2), nameY, "center", "black", "12px arial", 202);
+	this.graphMinimumXPosition = this.begin;
+	this.graphMaximumXPosition = this.end;
+	this.graphMaximumYPosition = 0;
+	for(var x = this.begin; x < this.end; x++) {
+		var y = this.listOfPoints[x];
+		if(y > this.graphMaximumYPosition) {
+			this.graphMaximumYPosition = y;
+		}
+	}
+		for(var x = this.begin; x < this.end; x++) {
+			var y = this.listOfPoints[x];
+			var currentX = ((x - this.graphMinimumXPosition) / (this.graphMaximumXPosition - this.graphMinimumXPosition)) * width + originX;
+			var yRatio = (y - this.graphMinimumYPosition) / (this.graphMaximumYPosition - this.graphMinimumYPosition);
+			var currentY = originY + (1 - yRatio) * height;
+			if(pointB == null) {
+				pointB = new Point(currentX, currentY);
+				continue;
+			}
+			pointA = pointB;
 			pointB = new Point(currentX, currentY);
-			continue;
+			renderer.drawBufferedLineWithTwoPoints(this.localContext, pointA, pointB, 1, "red", 202);
+			if(x % (Math.round((this.graphMaximumXPosition - this.graphMinimumXPosition) / 15)) == 0) {
+				renderer.drawBufferedText(this.localContext, currentX, originY + height + 20, x, "center", "black", "12px arial", 202);
+				renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
+			}
 		}
-		pointA = pointB;
-		pointB = new Point(currentX, currentY);
-		if(pointB.getX() < pointA.getX() || (pointB.getX() - pointA.getX()) > 100) {
-			continue;
+		for(var y = 0; y <= this.graphMaximumYPosition; y++) {
+			var yRatio = (y - this.graphMinimumYPosition) / (this.graphMaximumYPosition - this.graphMinimumYPosition);
+			var currentY = originY + (1 - yRatio) * height;
+			if(y % (Math.round((this.graphMaximumYPosition - this.graphMinimumYPosition) / 3)) == 0) {
+				renderer.drawBufferedText(this.localContext, originX - 20, currentY, y, "center", "black", "12px arial", 202);
+				renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
+			}
 		}
-		renderer.drawBufferedLineWithTwoPoints(this.contextLocal, pointA, pointB, 1, "red", 202);
-		if(x % (Math.round((this.maxX - this.minX) / 10)) == 0) {
-			renderer.drawBufferedText(this.contextLocal, currentX, originY + height + 20, x, "center", "black", "12px arial", 202);
-			renderer.drawBufferedLineWithTwoPoints(this.contextLocal, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
-		}
-	}
-	for(var y = 0; y <= this.maxY; y++) {
-		var yRatio = (y - this.minY) / (this.maxY - this.minY);
-		var currentY = originY + (1 - yRatio) * height;
-		if(y % (Math.round((this.maxY - this.minY) / 3)) == 0) {
-			renderer.drawBufferedText(this.contextLocal, originX - 20, currentY, y, "center", "black", "12px arial", 202);
-			renderer.drawBufferedLineWithTwoPoints(this.contextLocal, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
-		}
-	}
 	this.start = new Date() * 1;
 	if(this.start >= this.lastUpdate + this.period) {
 		this.lastUpdate = this.start;
 		context.drawImage(this.canvas, originX, originY, width, height);
 	}
+	var actualLocationX = ((actualLocation - this.graphMinimumXPosition) / (this.graphMaximumXPosition - this.graphMinimumXPosition)) * width + originX;
+	renderer.drawBufferedText(this.localContext, actualLocationX, originY - 20, actualLocation, "center", "black", "12px arial", 202);
+	renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(actualLocationX, originY + height), new Point(actualLocationX, originY), 2, "rgb(0,255,0)", 201);
 }

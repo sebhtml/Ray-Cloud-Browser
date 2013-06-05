@@ -397,7 +397,7 @@ HumanInterface.prototype.processButtons=function(){
 
 HumanInterface.prototype.draw=function() {
 	var context=this.screen.getContext();
-	this.getInventory().drawDistributionGraph();
+	this.getInventory().drawGraphs();
 	this.sampleInventory.draw(context);
 	this.goUp.draw(context,null);
 	this.goDown.draw(context,null);

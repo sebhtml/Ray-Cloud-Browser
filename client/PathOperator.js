@@ -57,6 +57,13 @@ PathOperator.prototype.getCoverageByPositionGraph = function() {
 	}
 }
 
+PathOperator.prototype.getPositionInSelectedRegion = function() {
+	if(this.hasSelectedRegion()) {
+		return this.regions[this.selectedRegionIndex].getLocation();
+	}
+	return -1;
+}
+
 PathOperator.prototype.getRegions=function(){
 	return this.regions;
 }
@@ -244,7 +251,7 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 	}
 */
 
-	var regionEntry = this.index[key];
+	this.regionEntry = this.index[key];
 
 	var vertices=content["vertices"];
 
@@ -254,17 +261,17 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 		var sequence = vertices[i]["sequence"];
 		var position = vertices[i]["position"];
 
-		regionEntry.addVertexAtPosition(position, sequence);
+		this.regionEntry.addVertexAtPosition(position, sequence, vertices[i]["coverage"]);
 
 		if(vertices[i]["coverage"]) {
-			regionEntry.addInformationsForGraphs(vertices[i]["coverage"], position);
+			this.regionEntry.addInformationsForGraphs(vertices[i]["coverage"], position);
 		}
 
-		if(!regionEntry.hasLeftPosition() || position<regionEntry.getLeftPosition()){
-			regionEntry.setLeftPosition(position);
+		if(!this.regionEntry.hasLeftPosition() || position<this.regionEntry.getLeftPosition()){
+			this.regionEntry.setLeftPosition(position);
 		}
 
-		var pathPositions=regionEntry.getPathPositions();
+		var pathPositions=this.regionEntry.getPathPositions();
 
 		if(!(sequence in pathPositions)){
 			pathPositions[sequence]=new Array();
@@ -285,8 +292,8 @@ PathOperator.prototype.call_RAY_MESSAGE_TAG_GET_REGION_KMER_AT_LOCATION_REPLY=fu
 			this.graphOperator.addPositionForVertex(sequence,position);
 		}
 
-		if(!regionEntry.hasRightPosition() || position>regionEntry.getRightPosition()){
-			regionEntry.setRightPosition(position);
+		if(!this.regionEntry.hasRightPosition() || position>this.regionEntry.getRightPosition()){
+			this.regionEntry.setRightPosition(position);
 		}
 
 		i++;
@@ -357,7 +364,6 @@ PathOperator.prototype.doReadahead=function(){
 }
 
 PathOperator.prototype.pull=function(region) {
-
 	if(!(region.hasLeftPosition() && region.hasRightPosition()))
 		return;
 
@@ -400,11 +406,10 @@ PathOperator.prototype.isVertexInPath=function(vertex){
 	return this.getSelectedRegion().isVertexInPath(vertex);
 }
 
-PathOperator.prototype.reset=function(){
+PathOperator.prototype.reset=function() {
 
 	this.centered=false;
 	this.active=false;
-
 	this.started=false;
 	this.hasLocation=false;
 	this.index=new Object();
