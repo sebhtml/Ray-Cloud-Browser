@@ -37,7 +37,8 @@ function Client() {
 	* The variable can not be called screen because
 	* of a bug in Microsoft Internet Explorer 9.
 	*/
-	var programScreen = new Screen(gameFrequency,renderingFrequency);
+	var programScreen = new Screen(gameFrequency, renderingFrequency);
+	window.onload = renderScene;
 	/**
 	* \see http://www.html5canvastutorials.com/advanced/html5-canvas-animation-stage/
 	*/
@@ -58,18 +59,20 @@ function Client() {
 		requestAnimFrame(renderScene);
 		programScreen.draw();
 		if(!init) {
-			var periodInMilliSeconds = 1000 / gameFrequency;
-			/*
-			* Start the game engine.
-			*/
+			var periodInMilliSeconds = 1000 / 32;
 			iterateGameEngine(periodInMilliSeconds);
 			init = true;
 		}
 	}
-	window.onload = renderScene;
+	/*
+	* Start the game engine.
+	*/
 	var iterateGameEngine = function(period) {
+		setTimeout(iterateGameEngine, this.period);
+		if(!this.period) {
+			this.period = period;
+		}
 		programScreen.iterate();
-		setTimeout(iterateGameEngine, period);
 	}
 	/*
 	* Bind keyboard events.
