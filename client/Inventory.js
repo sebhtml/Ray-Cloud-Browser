@@ -71,11 +71,11 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 		this.y+3.4*this.buttonWidth,
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
-	this.useColors=new Button(this.x+this.buttonWidth+19*this.buttonWidth/2,
+	this.useColors=new Button(this.x+this.buttonWidth+19*this.buttonWidth/2  - 80,
 		this.y+this.regionsOffset+100,
 		2.2*this.buttonWidth,this.buttonWidth,"Colors",false);
 
-	this.graphsButton = new Button((this.x + this.buttonWidth + 19 * this.buttonWidth / 2) - 75,
+	this.graphsButton = new Button((this.x + this.buttonWidth + 19 * this.buttonWidth / 2) - 140,
 		this.y + this.regionsOffset + 100,
 		2.2 * this.buttonWidth, this.buttonWidth, "Graphs", false);
 
@@ -301,6 +301,16 @@ Inventory.prototype.draw=function(context){
 			context.fillStyle="black";
 			context.fillText("Play", this.x+50,this.y+this.height+150);
 			context.fillText("Speed", this.x+170,this.y+this.height+150);
+			switch(this.useColorsForRenderingLevel) {
+				case 0:
+					context.fillText("No colors", this.x + 255, this.y + 275);
+					break;
+				case 1:
+					context.fillText("Regions", this.x + 255, this.y + 275);
+					break;
+				case 2:
+					context.fillText("Sections", this.x + 255, this.y + 275);
+			}
 			this.nextButton.draw(context,null);
 			this.previousButton.draw(context,null);
 			this.increaseButton.draw(context,null);
@@ -433,6 +443,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		if(this.useColorsForRenderingLevel == 3) {
 			this.useColorsForRenderingLevel = 0;
 		}
+		this.useColors.resetState();
 		return true;
 	}
 
@@ -504,20 +515,6 @@ Inventory.prototype.iterate=function(){
 		&& this.pathOperator.getRegions().length != this.regionSelector.getNumberOfChoices()){
 
 		this.createRegionSelector();
-	}
-
-	var renderer = this.screen.getRenderer();
-	var context = this.screen.getContext();
-	renderer.drawBufferedRectangle(context, 95, 32, 25, 100, "black", "5px", "rgb(82,150,228)", 99);
-	switch(this.useColorsForRenderingLevel) {
-		case 0:
-			renderer.drawBufferedText(context, 145, 50, "No colors", "center", "black", "12px arial", 100);
-			break;
-		case 1:
-			renderer.drawBufferedText(context, 145, 50, "Colors of regions", "center", "black", "12px arial", 100);
-			break;
-		case 2:
-			renderer.drawBufferedText(context, 145, 50, "Colors of sections", "center", "black", "12px arial", 100);
 	}
 }
 
@@ -598,7 +595,7 @@ Inventory.prototype.useColorsForRendering=function(){
 }
 
 Inventory.prototype.showCoverageForRendering=function(){
-	return this.showCoverage;
+	return this.useCoverage.getState();
 }
 
 Inventory.prototype.drawGraphs = function() {

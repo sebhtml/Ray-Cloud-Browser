@@ -140,7 +140,12 @@ Renderer.prototype.drawPaths=function(vertices, section){
 
 			var colors1 = this.pathOperator.getColorsForPair(vertex, vertex2, section);
 
-			var extra=(colors1.length-1)*this.extraMultiplier;
+			if(section) {
+				var extra = (colors1.length - 1) * 1;
+			} else {
+				var extra=(colors1.length-1)*this.extraMultiplier;
+			}
+
 
 			var k=0;
 
@@ -489,8 +494,11 @@ Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,v
 
 		var pathColor=colors[i];
 
-		var radius2=this.pathMultiplierForVertex*zoomValue*(radius+extra);
-
+		if(section) {
+			var radius2 = this.pathMultiplierForVertex * zoomValue * (radius);
+		} else {
+			var radius2 = this.pathMultiplierForVertex*zoomValue*(radius+extra);
+		}
 		//if(!withDetails)
 		//	radius2*=this.pathMultiplierMacro;
 

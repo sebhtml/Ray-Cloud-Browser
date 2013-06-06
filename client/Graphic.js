@@ -104,10 +104,16 @@ Graphic.prototype.getSize = function() {
 Graphic.prototype.draw = function(context, originX, originY, height, width, renderer, nameX, nameY, actualLocation, window) {
 	var pointA = null;
 	var pointB = null;
+	if(this.maxX - this.minX < window) {
+		this.begin = this.minX;
+		this.end = this.maxX;
+		this.changeLeft = false;
+		this.changeRight = false;
+	}
 	var gap = this.begin - this.end;
 	if(this.init) {
-		this.begin = actualLocation - window / 4;
-		this.end = actualLocation + 3 * (window / 4);
+		this.begin = actualLocation - window / 2;
+		this.end = actualLocation + window / 2;
 		this.init = false;
 	}
 	if(this.changeRight) {

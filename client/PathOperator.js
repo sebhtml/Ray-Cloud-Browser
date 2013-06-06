@@ -32,7 +32,6 @@ function PathOperator(dataStore,graphOperator){
 	this.defineColors();
 
 	this.readaheadConfiguration=4096;
-	this.colorOfRegion = new Object();
 }
 
 PathOperator.prototype.getSelectedRegion=function(){
@@ -122,11 +121,7 @@ PathOperator.prototype.allocateColor=function(){
 }
 
 PathOperator.prototype.allocateColorOfRegion = function(index){
-	if(!this.colorOfRegion[index]) {
-		this.colorOfRegion[index] = this.availableColors[this.colorIndex++];
-		this.colorIndex %= this.availableColors.length;
-	}
-	return this.colorOfRegion[index];
+	return this.availableColors[index];
 }
 
 PathOperator.prototype.hasSelectedRegion=function(){
