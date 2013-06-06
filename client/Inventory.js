@@ -27,6 +27,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 	this.originHeight=height;
 	this.dataStore=dataStore;
 	this.fontSize=12;
+	this.useColorsForRenderingLevel = 1;
 
 	this.useAddress=true;
 	this.usedAddressForSpeed=false;
@@ -74,7 +75,9 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 		this.y+this.regionsOffset+100,
 		2.2*this.buttonWidth,this.buttonWidth,"Colors",false);
 
-	this.useColors.activateState();
+	this.graphsButton = new Button((this.x + this.buttonWidth + 19 * this.buttonWidth / 2) - 75,
+		this.y + this.regionsOffset + 100,
+		2.2 * this.buttonWidth, this.buttonWidth, "Graphs", false);
 
 	this.useCoverage=new Button(this.x+30,
 		this.y+3.4*this.buttonWidth,
@@ -108,10 +111,6 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 
 	this.getLinkButton=new Button(this.x+this.width-this.buttonWidth-5,
 		this.y+this.height+145,this.buttonWidth*2,this.buttonWidth,"Link",false);
-
-	this.distributionGraphButton = new Button((this.x + this.buttonWidth + 19 * this.buttonWidth / 2) - 75,
-		this.y + this.regionsOffset + 100,
-		2.2 * this.buttonWidth, this.buttonWidth, "Graphs", false);
 
 	this.pushSelector();
 
@@ -180,8 +179,6 @@ Inventory.prototype.draw=function(context){
 	if(this.closeButton.getState() && !this.warpButton.getState())
 		if(this.regionSelector.getNumberOfChoices()>=1){
 			this.regionSelector.draw(context);
-
-			this.useColors.draw(context,null);
 		}
 
 	context.beginPath();
@@ -308,8 +305,8 @@ Inventory.prototype.draw=function(context){
 			this.previousButton.draw(context,null);
 			this.increaseButton.draw(context,null);
 			this.decreaseButton.draw(context,null);
-			this.distributionGraphButton.draw(context, null);
-
+			this.graphsButton.draw(context, null);
+			this.useColors.draw(context, null);
 		}
 	}
 }
@@ -365,11 +362,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		}
 
 	}else if(this.closeButton.getState() && !this.warpButton.getState()){
-		if(this.useColors.handleMouseDown(x,y)){
-
-			return true;
-
-		}else if(this.nextButton.handleMouseDown(x,y)){
+		if(this.nextButton.handleMouseDown(x,y)){
 
 			if(this.nextButton.getState())
 				this.previousButton.resetState();
@@ -431,8 +424,15 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		}
 
 	}
-	if(this.distributionGraphButton.handleMouseDown(x, y)){
+	if(this.graphsButton.handleMouseDown(x, y)){
 		this.showDistributionGraph = !this.showDistributionGraph;
+		return true;
+	}
+	if(this.useColors.handleMouseDown(x, y)) {
+		this.useColorsForRenderingLevel++;
+		if(this.useColorsForRenderingLevel == 3) {
+			this.useColorsForRenderingLevel = 0;
+		}
 		return true;
 	}
 
@@ -464,8 +464,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.previousButton.move(deltaX,deltaY);
 		this.getLinkButton.move(deltaX,deltaY);
 		this.regionSelector.move(deltaX,deltaY);
-		this.distributionGraphButton.move(deltaX, deltaY);
-
+		this.graphsButton.move(deltaX, deltaY);
 		this.x+=deltaX;
 		this.y+=deltaY;
 	}
@@ -491,6 +490,7 @@ Inventory.prototype.getNextButton=function(){
 }
 
 Inventory.prototype.iterate=function(){
+
 	this.animatedRing.iterate();
 	this.selector.iterate();
 
@@ -504,6 +504,20 @@ Inventory.prototype.iterate=function(){
 		&& this.pathOperator.getRegions().length != this.regionSelector.getNumberOfChoices()){
 
 		this.createRegionSelector();
+	}
+
+	var renderer = this.screen.getRenderer();
+	var context = this.screen.getContext();
+	renderer.drawBufferedRectangle(context, 95, 32, 25, 100, "black", "5px", "rgb(82,150,228)", 99);
+	switch(this.useColorsForRenderingLevel) {
+		case 0:
+			renderer.drawBufferedText(context, 145, 50, "No colors", "center", "black", "12px arial", 100);
+			break;
+		case 1:
+			renderer.drawBufferedText(context, 145, 50, "Colors of regions", "center", "black", "12px arial", 100);
+			break;
+		case 2:
+			renderer.drawBufferedText(context, 145, 50, "Colors of sections", "center", "black", "12px arial", 100);
 	}
 }
 
@@ -580,11 +594,11 @@ Inventory.prototype.getAddress=function(){
 }
 
 Inventory.prototype.useColorsForRendering=function(){
-	return this.useColors.getState();
+	return this.useColorsForRenderingLevel;
 }
 
 Inventory.prototype.showCoverageForRendering=function(){
-	return this.useCoverage.getState();
+	return this.showCoverage;
 }
 
 Inventory.prototype.drawGraphs = function() {

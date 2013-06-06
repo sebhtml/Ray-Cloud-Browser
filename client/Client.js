@@ -38,7 +38,6 @@ function Client() {
 	* of a bug in Microsoft Internet Explorer 9.
 	*/
 	var programScreen = new Screen(gameFrequency, renderingFrequency);
-	window.onload = renderScene;
 	/**
 	* \see http://www.html5canvastutorials.com/advanced/html5-canvas-animation-stage/
 	*/
@@ -52,28 +51,37 @@ function Client() {
 				window.setTimeout(callback, 1000 / renderingFrequency);
 			};
 	})();
-	/*
-	* Start the rendering.
-	*/
 	function renderScene() {
-		requestAnimFrame(renderScene);
-		programScreen.draw();
 		if(!init) {
-			var periodInMilliSeconds = 1000 / 32;
+			var periodInMilliSeconds = 1000 / gameFrequency;
 			iterateGameEngine(periodInMilliSeconds);
+			periodInMilliSeconds = 1000 / renderingFrequency;
+			iterateRendering(periodInMilliSeconds);
 			init = true;
 		}
+		requestAnimFrame(renderScene);
 	}
 	/*
 	* Start the game engine.
 	*/
 	var iterateGameEngine = function(period) {
-		setTimeout(iterateGameEngine, this.period);
-		if(!this.period) {
-			this.period = period;
+		if(!this.gamePeriod) {
+			this.gamePeriod = period;
 		}
+		setTimeout(iterateGameEngine, this.gamePeriod);
 		programScreen.iterate();
 	}
+	/*
+	* Start the rendering.
+	*/
+	var iterateRendering = function(period) {
+		if(!this.renderingPeriod) {
+			this.renderingPeriod = period;
+		}
+		setTimeout(iterateRendering, this.renderingPeriod);
+		programScreen.draw();
+	}
+	window.onload = renderScene;
 	/*
 	* Bind keyboard events.
 	*/

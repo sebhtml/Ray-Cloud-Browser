@@ -99,7 +99,7 @@ Renderer.prototype.drawVertexPowers=function(vertices){
 	}
 }
 
-Renderer.prototype.drawPaths=function(vertices){
+Renderer.prototype.drawPaths=function(vertices, section){
 	var context=this.screen.getContext();
 	context.lineWidth=this.lineWidth;
 
@@ -119,7 +119,7 @@ Renderer.prototype.drawPaths=function(vertices){
 
 		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
 			this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
-			zoomValue,vertex);
+			zoomValue,vertex, section);
 		}
 
 		var arcs=vertex.getArcs();
@@ -138,7 +138,7 @@ Renderer.prototype.drawPaths=function(vertices){
 			var originX=this.screen.getOriginX();
 			var originY=this.screen.getOriginY();
 
-			var colors1=this.pathOperator.getColorsForPair(vertex,vertex2);
+			var colors1 = this.pathOperator.getColorsForPair(vertex, vertex2, section);
 
 			var extra=(colors1.length-1)*this.extraMultiplier;
 
@@ -463,7 +463,7 @@ Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillS
 	this.bufferedOperations[layer][materialKey].push(new RenderedText(new Point(x, y), text, material));
 }
 
-Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,vertex){
+Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,vertex, section){
 
 	if(!vertex.isColored())
 		return;
@@ -476,7 +476,7 @@ Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,v
 	var x=vertex.getX()-originX;
 	var y=vertex.getY()-originY;
 
-	var colors=this.pathOperator.getColors(vertex);
+	var colors=this.pathOperator.getColors(vertex, section);
 
 	if(colors.length==0)
 		return;
@@ -519,10 +519,13 @@ Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, strokeSt
 
 Renderer.prototype.draw = function(objects) {
 	var context = this.screen.getContext();
+	var colorSectionLevel = this.screen.getHumanInterface().getInventory().useColorsForRendering();
 	this.drawVertexPowers(objects);
 
-	if(this.screen.getHumanInterface().getInventory().useColorsForRendering()) {
-		this.drawPaths(objects);
+	if(colorSectionLevel == 1) {
+		this.drawPaths(objects, false);
+	} else if (colorSectionLevel == 2) {
+		this.drawPaths(objects, true);
 	}
 	this.drawArcs(objects);
 	this.m_showCoverage = this.screen.getHumanInterface().getInventory().showCoverageForRendering();

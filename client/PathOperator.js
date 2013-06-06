@@ -32,6 +32,7 @@ function PathOperator(dataStore,graphOperator){
 	this.defineColors();
 
 	this.readaheadConfiguration=4096;
+	this.colorOfRegion = new Object();
 }
 
 PathOperator.prototype.getSelectedRegion=function(){
@@ -62,10 +63,6 @@ PathOperator.prototype.getPositionInSelectedRegion = function() {
 		return this.regions[this.selectedRegionIndex].getLocation();
 	}
 	return -1;
-}
-
-PathOperator.prototype.getRegions=function(){
-	return this.regions;
 }
 
 PathOperator.prototype.getRegion=function(index){
@@ -119,9 +116,17 @@ PathOperator.prototype.allocateColor=function(){
 
 	var color=this.availableColors[this.colorIndex++];
 
-	this.colorIndex%=this.availableColors.length;
+	this.colorIndex %= this.availableColors.length;
 
 	return color;
+}
+
+PathOperator.prototype.allocateColorOfRegion = function(index){
+	if(!this.colorOfRegion[index]) {
+		this.colorOfRegion[index] = this.availableColors[this.colorIndex++];
+		this.colorIndex %= this.availableColors.length;
+	}
+	return this.colorOfRegion[index];
 }
 
 PathOperator.prototype.hasSelectedRegion=function(){
@@ -143,14 +148,15 @@ PathOperator.prototype.startOnPath=function(mapIndex,mapName,
 	var key=this.getKey(mapIndex,sectionIndex,regionIndex);
 
 	var color=this.allocateColor();
+	var colorOfRegion = this.allocateColorOfRegion(sectionIndex);
 
 	var region=new Region(mapIndex,mapName,
 			sectionIndex,sectionName,
 			regionIndex,regionName,
 			locationIndex,locationName,
 			regionLength,
-			color
-			);
+			color,
+			colorOfRegion);
 
 	if(isANewStart){
 		this.reset();
@@ -509,7 +515,7 @@ PathOperator.prototype.addRegion=function(mapIndex,sectionIndex,regionIndex,loca
 /**
  * TODO: perform caching for this.
  */
-PathOperator.prototype.getColors=function(vertex){
+PathOperator.prototype.getColors=function(vertex, section){
 	var regions=this.getRegions();
 
 	var i=0;
@@ -525,7 +531,11 @@ PathOperator.prototype.getColors=function(vertex){
 		if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
 			continue;
 
-		var pathColor=region.getColor();
+		if(section) {
+			var pathColor=region.getColorOfSection();
+		} else {
+			var pathColor=region.getColor();
+		}
 
 		colors.push(pathColor);
 	}
@@ -538,7 +548,7 @@ PathOperator.prototype.getColors=function(vertex){
 	return colors;
 }
 
-PathOperator.prototype.getColorsForPair=function(vertex,vertex2){
+PathOperator.prototype.getColorsForPair=function(vertex, vertex2, section){
 	var regions=this.getRegions();
 
 	var i=0;
@@ -558,8 +568,11 @@ PathOperator.prototype.getColorsForPair=function(vertex,vertex2){
 
 		if(!region.isVertexInPath(sequence2) && !region.isVertexInPath(reverse2))
 			continue;
-
-		var pathColor=region.getColor();
+		if(section) {
+			var pathColor=region.getColorOfSection();
+		} else {
+			var pathColor=region.getColor();
+		}
 
 		colors.push(pathColor);
 	}

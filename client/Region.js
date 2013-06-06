@@ -30,7 +30,7 @@
  * \author Sébastien Boisvert
  */
 function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName,locationIndex,locationName,
-	regionLength,color) {
+	regionLength,color, colorOfSection) {
 
 	this.distributionGraph = new Distribution(5000);
 	this.coverageByPositionGraph = new Graphic(5000);
@@ -45,6 +45,7 @@ function Region(mapIndex,mapName,sectionIndex,sectionName,regionIndex,regionName
 	this.locationIndex=locationIndex;
 
 	this.pathColor=color;
+	this.colorOfSection = colorOfSection;
 	this.regionLength=regionLength;
 
 	this.lastLeft=0;
@@ -89,6 +90,10 @@ Region.prototype.getRegionLength=function(){
 
 Region.prototype.getColor=function(){
 	return this.pathColor;
+}
+
+Region.prototype.getColorOfSection=function(){
+	return this.colorOfSection;
 }
 
 Region.prototype.getName=function(){
