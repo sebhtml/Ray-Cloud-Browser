@@ -32,6 +32,8 @@ function PathOperator(dataStore,graphOperator){
 	this.defineColors();
 
 	this.readaheadConfiguration=4096;
+
+	this.availableColorsOfSections = new Array();
 }
 
 PathOperator.prototype.getSelectedRegion=function(){
@@ -121,7 +123,15 @@ PathOperator.prototype.allocateColor=function(){
 }
 
 PathOperator.prototype.allocateColorOfRegion = function(index){
-	return this.availableColors[index];
+	if(!this.availableColorsOfSections[index]) {
+		if(!this.availableColors[index]) {
+			this.availableColorsOfSections[index] = this.allocateColor();
+		} else {
+			this.availableColorsOfSections[index] = this.availableColors[index];
+		}
+	}
+	console.log(this.availableColorsOfSections.length);
+	return this.availableColorsOfSections[index];
 }
 
 PathOperator.prototype.hasSelectedRegion=function(){
@@ -518,23 +528,21 @@ PathOperator.prototype.getColors=function(vertex, section){
 	var reverse=this.graphOperator.getReverseComplement(sequence);
 
 	var colors=new Array();
-
-	while(i<regions.length){
-		var region=regions[i++];
-
-
-		if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
-			continue;
-
-		if(section) {
-			var pathColor=region.getColorOfSection();
-		} else {
-			var pathColor=region.getColor();
+	if(section) {
+		for(var i = 0; i < this.availableColorsOfSections.length; i++) {
+			var pathColor = this.availableColorsOfSections[i];
+			colors.push(pathColor);
 		}
+	} else {
+		while(i<regions.length){
+			var region=regions[i++];
+			if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
+				continue;
 
-		colors.push(pathColor);
+			var pathColor=region.getColor();
+			colors.push(pathColor);
+		}
 	}
-
 /*
  * The ordering must always be the same.
  */
@@ -555,21 +563,28 @@ PathOperator.prototype.getColorsForPair=function(vertex, vertex2, section){
 
 	var colors=new Array();
 
-	while(i<regions.length){
-		var region=regions[i++];
-
-		if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
-			continue;
-
-		if(!region.isVertexInPath(sequence2) && !region.isVertexInPath(reverse2))
-			continue;
-		if(section) {
-			var pathColor=region.getColorOfSection();
-		} else {
-			var pathColor=region.getColor();
+	if(section) {
+		for(var i = 0; i < this.availableColorsOfSections.length; i++) {
+			var pathColor = this.availableColorsOfSections[i];
+			colors.push(pathColor);
 		}
+	} else {
+		while(i<regions.length){
+			var region=regions[i++];
 
-		colors.push(pathColor);
+			if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
+				continue;
+
+			if(!region.isVertexInPath(sequence2) && !region.isVertexInPath(reverse2))
+				continue;
+			if(section) {
+				var pathColor=region.getColorOfSection();
+			} else {
+				var pathColor=region.getColor();
+			}
+
+			colors.push(pathColor);
+		}
 	}
 
 /*
