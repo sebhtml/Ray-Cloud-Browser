@@ -133,9 +133,15 @@ Inventory.prototype.createRegionSelector=function(){
 	var colors=[];
 
 	var i=0;
+
+
 	while(i<regions.length){
 		registeredRegions.push(regions[i].getName());
-		colors.push(regions[i].getColor());
+		if(this.useColorsForRenderingLevel == 2) {
+			colors.push(regions[i].getColorOfSection());
+		} else {
+			colors.push(regions[i].getColor());
+		}
 		i++;
 	}
 
@@ -444,6 +450,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 			this.useColorsForRenderingLevel = 0;
 		}
 		this.useColors.resetState();
+		this.createRegionSelector();
 		return true;
 	}
 

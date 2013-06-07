@@ -130,7 +130,6 @@ PathOperator.prototype.allocateColorOfRegion = function(index){
 			this.availableColorsOfSections[index] = this.availableColors[index];
 		}
 	}
-	console.log(this.availableColorsOfSections.length);
 	return this.availableColorsOfSections[index];
 }
 
