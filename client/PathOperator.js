@@ -530,6 +530,17 @@ PathOperator.prototype.getColors=function(vertex, section){
 	var colors=new Array();
 	if(section) {
 		for(var i = 0; i < this.availableColorsOfSections.length; i++) {
+			var skip = true;
+			var j = 0;
+			while(j < regions.length){
+				var region = regions[j++];
+				if(this.relationExist(region, sequence, reverse)) {
+					skip = false;
+				}
+			}
+			if(skip) {
+				continue;
+			}
 			var pathColor = this.availableColorsOfSections[i];
 			colors.push(pathColor);
 		}
@@ -565,24 +576,30 @@ PathOperator.prototype.getColorsForPair=function(vertex, vertex2, section){
 
 	if(section) {
 		for(var i = 0; i < this.availableColorsOfSections.length; i++) {
+			var skip = true;
+			var j = 0;
+			while(j < regions.length){
+				var region = regions[j++];
+				if(this.relationExist(region, sequence, reverse) && this.relationExist(region, sequence2, reverse2)) {
+					skip = false;
+				}
+			}
+			if(skip) {
+				continue;
+			}
 			var pathColor = this.availableColorsOfSections[i];
 			colors.push(pathColor);
 		}
 	} else {
 		while(i<regions.length){
 			var region=regions[i++];
-
-			if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse))
+			if(!this.relationExist(region, sequence, reverse)) {
 				continue;
-
-			if(!region.isVertexInPath(sequence2) && !region.isVertexInPath(reverse2))
-				continue;
-			if(section) {
-				var pathColor=region.getColorOfSection();
-			} else {
-				var pathColor=region.getColor();
 			}
-
+			if(!this.relationExist(region, sequence2, reverse2)) {
+				continue;
+			}
+			var pathColor=region.getColor();
 			colors.push(pathColor);
 		}
 	}
@@ -593,6 +610,13 @@ PathOperator.prototype.getColorsForPair=function(vertex, vertex2, section){
 	//colors.sort();
 
 	return colors;
+}
+
+PathOperator.prototype.relationExist = function(region, sequence, reverse){
+	if(!region.isVertexInPath(sequence) && !region.isVertexInPath(reverse)) {
+		return false;
+	}
+	return true;
 }
 
 PathOperator.prototype.setCurrentVertex=function(sequence){
