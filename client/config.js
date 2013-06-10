@@ -16,16 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * The frequency at which the canvas is rendered.
- * This is not used if requestAnimationFrame is available.
- */
-var CONFIG_RENDERING_FREQUENCY=24;
-
-/**
- * The frequency at which the game runs.
- */
-var CONFIG_GAME_FREQUENCY=32;
 
 /**
  * Minimum coverage to display

@@ -27,12 +27,23 @@
 * \author Sébastien Boisvert
 */
 function Client() {
+/**
+ * The frequency at which the canvas is rendered.
+ * This is not used if requestAnimationFrame is available.
+ */
+	var CONFIG_RENDERING_FREQUENCY=24;
+
+/**
+ * The frequency at which the game runs.
+ */
+	var CONFIG_GAME_FREQUENCY=32;
+
+
 	/*
 	* Global settings for game and rendering frequencies.
 	*/
 	var renderingFrequency = CONFIG_RENDERING_FREQUENCY;
 	var gameFrequency = CONFIG_GAME_FREQUENCY;
-	var init = false;
 	/*
 	* The variable can not be called screen because
 	* of a bug in Microsoft Internet Explorer 9.
@@ -41,7 +52,7 @@ function Client() {
 	/**
 	* \see http://www.html5canvastutorials.com/advanced/html5-canvas-animation-stage/
 	*/
-	window.requestAnimFrame = (function(callback) {
+	var requestAnimFrame = (function() {
 		return window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||
 			window.mozRequestAnimationFrame ||
@@ -51,37 +62,41 @@ function Client() {
 				window.setTimeout(callback, 1000 / renderingFrequency);
 			};
 	})();
-	function renderScene() {
-		if(!init) {
-			var periodInMilliSeconds = 1000 / gameFrequency;
-			iterateGameEngine(periodInMilliSeconds);
-			periodInMilliSeconds = 1000 / renderingFrequency;
-			iterateRendering(periodInMilliSeconds);
-			init = true;
-		}
-		requestAnimFrame(renderScene);
-	}
+
 	/*
 	* Start the game engine.
 	*/
-	var iterateGameEngine = function(period) {
-		if(!this.gamePeriod) {
-			this.gamePeriod = period;
-		}
-		setTimeout(iterateGameEngine, this.gamePeriod);
+	var iterateGameEngine = function() {
+		var period = 1000 / gameFrequency;
 		programScreen.iterate();
+		setTimeout(iterateGameEngine, period);
 	}
+
 	/*
 	* Start the rendering.
 	*/
-	var iterateRendering = function(period) {
-		if(!this.renderingPeriod) {
-			this.renderingPeriod = period;
-		}
-		setTimeout(iterateRendering, this.renderingPeriod);
+	var iterateRendering = function() {
 		programScreen.draw();
+		requestAnimFrame(iterateRendering);
 	}
-	window.onload = renderScene;
+
+	function startGameThread () {
+
+		iterateGameEngine();
+	}
+
+	function startRenderingThread (){
+
+		requestAnimFrame(iterateRendering);
+	}
+
+	function startClient() {
+		startGameThread();
+		startRenderingThread();
+	}
+
+	window.onload = startClient;
+
 	/*
 	* Bind keyboard events.
 	*/
