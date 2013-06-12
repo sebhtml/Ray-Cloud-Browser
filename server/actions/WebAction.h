@@ -19,7 +19,7 @@
 #define _WebAction_h
 
 #define CONFIG_MAXIMUM_VALUE_LENGTH 256
-#define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 4096
+#define CONFIG_MAXIMUM_OBJECTS_TO_PROCESS 500000
 
 /**
  * This is the virtual interface for implementing actions

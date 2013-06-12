@@ -134,23 +134,6 @@ IntegerSelectionWidget.prototype.getDigits=function(digits,inputValue){
 	return value;
 }
 
-IntegerSelectionWidget.prototype.getValue=function(){
-	var base=10;
-	var i=0;
-	var value=0;
-	while(i < this.digits){
-		var toAdd = 1;
-		var j = 0;
-		while(j < i) {
-			toAdd *= base;
-			j++;
-		}
-		value += toAdd * this.symbols[i];
-		i++;
-	}
-	return value;
-}
-
 IntegerSelectionWidget.prototype.createButtons=function(){
 
 	this.buttons=new Array();
@@ -185,6 +168,14 @@ IntegerSelectionWidget.prototype.createButtons=function(){
 
 IntegerSelectionWidget.prototype.updateBoundaries=function(){
 	var i=0;
+	var minimums = new Array();
+	var maximums = new Array();
+	for(var i = 0; i < this.digits; i++) {
+		minimums[i] = this.minimums[i];
+	}
+	for(var i = 0; i < this.digits; i++) {
+		maximums[i] = this.maximums[i];
+	}
 
 // reset boundaries
 	while(i<this.digits){
@@ -219,7 +210,12 @@ IntegerSelectionWidget.prototype.updateBoundaries=function(){
 		i--;
 	}
 
-	var minimum = this.minimums[0];
+	for(var i = 0; i < this.digits; i++) {
+		this.minimums[i] = 0;
+	}
+	for(var i = 0; i < this.digits; i++) {
+		this.maximums[i] = 9;
+	}
 	if(canHaveZero){
 		this.minimums[0]=0;
 	}
@@ -234,7 +230,12 @@ IntegerSelectionWidget.prototype.updateBoundaries=function(){
 			this.symbols[i]=this.minimums[i];
 		i++;
 	}
-	this.minimums[0] = minimum
+	for(var i = 0; i < this.digits; i++) {
+		this.minimums[i] = minimums[i];
+	}
+	for(var i = 0; i < this.digits; i++) {
+		this.maximums[i] = maximums[i];
+	}
 }
 
 IntegerSelectionWidget.prototype.enableBlink = function() {
@@ -310,32 +311,39 @@ IntegerSelectionWidget.prototype.draw=function(context){
 		this.buttons[i++].draw(context,null);
 	}
 
-	var first = true;
-	i=1;
+	i=0;
 	while(i<this.downButtons.length){
-
-		if(this.symbols[i]!=this.minimums[i]) {
-			this.downButtons[i].draw(context,null);
-			first = false;
+		var minimum = this.minimums[i];
+		var first = true;
+		for(var j = this.downButtons.length; j > i; j--) {
+			if(this.symbols[j] != this.minimums[j]) {
+				first = false;
+			}
 		}
+		if(!first) {
+			minimum = 0;
+		}
+		if(this.symbols[i]!=minimum)
+			this.downButtons[i].draw(context,null);
 
 		i++;
-	}
-	if(first) {
-		if(this.symbols[0] != this.minimums[0]) {
-			this.downButtons[0].draw(context,null);
-		}
-	} else {
-		if(this.symbols[0] != 0) {
-			this.downButtons[0].draw(context,null);
-		}
 	}
 
 	i=0;
 	while(i<this.upButtons.length){
-
-		if(this.symbols[i]!=this.maximums[i])
+		var maximum = this.maximums[i];
+		var last = true;
+		for(var j = this.upButtons.length; j > i; j--) {
+			if(this.symbols[j] != this.maximums[j]) {
+				last = false;
+			}
+		}
+		if(!last) {
+			maximum = 9;
+		}
+		if(this.symbols[i]!=maximum) {
 			this.upButtons[i].draw(context,null);
+		}
 
 		i++;
 	}
@@ -422,15 +430,24 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 		return result;
 
 	i=0;
+	var click = false;
 	while(i<this.digits){
 		if(this.upButtons[i].handleMouseDown(x,y)){
 			this.symbols[i]++;
 
 			this.upButtons[i].resetState();
-			return true;
+			click = true;
 		}
 		i++;
 	}
+	console.log("DEBUG : " + this.getValue() + " - " + this.maximum);
+	if(this.getValue() > this.maximum) {
+
+		for(var i = 0; i < this.digits; i++) {
+			this.symbols[i] = this.maximums[i];
+		}
+	}
+
 
 	i=0;
 	while(i<this.digits){
@@ -438,12 +455,18 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 			this.symbols[i]--;
 
 			this.downButtons[i].resetState();
-			return true;
+			click = true;
 		}
 		i++;
 	}
+	if(this.getValue() < this.minimum) {
 
-	return false;
+		for(var i = 0; i < this.digits; i++) {
+			this.symbols[i] = this.minimums[i];
+		}
+	}
+
+	return click;
 }
 
 IntegerSelectionWidget.prototype.hasChoice=function(){
@@ -460,4 +483,22 @@ IntegerSelectionWidget.prototype.getChoice=function(){
 IntegerSelectionWidget.prototype.resetState=function(){
 	this.gotFinalChoice=false;
 	this.finished=true;
+}
+
+
+IntegerSelectionWidget.prototype.getValue = function() {
+	var base = 10;
+	var i = 0;
+	var value = 0;
+	while(i < this.digits) {
+		var toAdd = 1;
+		var j = 0;
+		while(j < i) {
+			toAdd *= base;
+			j++;
+		}
+		value += toAdd * this.symbols[i];
+		i++;
+	}
+	return value;
 }
