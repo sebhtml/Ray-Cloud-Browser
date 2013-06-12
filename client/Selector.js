@@ -29,6 +29,8 @@ function Selector(x,y,width,height,dataStore,useAddress){
 	this.depth = 0;
 	this.useAddress=useAddress;
 	this.fontSize=12;
+	this.tableOfIndex = new Object();
+	this.tableOfNameOfRegions = new Array();
 
 	this.displaySearchWidget = false;
 	this.maxNucleotides = 0;
@@ -148,9 +150,11 @@ Selector.prototype.draw=function(context){
 				if(this.nucleotidesSelected != -1) {
 					if(this.nucleotidesSelected == entry["nucleotides"]) {
 						choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
+						this.tableOfNameOfRegions.push(entry["name"]+" ("+entry["nucleotides"]+")");
 					}
 				} else {
 					choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
+					this.tableOfIndex[entry["name"]+" ("+entry["nucleotides"]+")"] = i;
 				}
 				if(this.maxNucleotides < entry["nucleotides"]) {
 					this.maxNucleotides = entry["nucleotides"];
@@ -283,8 +287,11 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice() && this.receivedMapFileData){
 		var index=this.regionWidget.getChoice();
-
-		this.selectRegionIndex(index);
+		if(this.nucleotidesSelected != -1) {
+			this.selectRegionIndex(this.tableOfIndex[this.tableOfNameOfRegions[index]]);
+		} else {
+			this.selectRegionIndex(index);
+		}
 
 
 
