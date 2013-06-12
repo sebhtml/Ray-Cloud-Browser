@@ -440,7 +440,6 @@ IntegerSelectionWidget.prototype.handleMouseDown=function(x,y){
 		}
 		i++;
 	}
-	console.log("DEBUG : " + this.getValue() + " - " + this.maximum);
 	if(this.getValue() > this.maximum) {
 
 		for(var i = 0; i < this.digits; i++) {

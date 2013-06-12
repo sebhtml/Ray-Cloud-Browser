@@ -130,7 +130,7 @@ Selector.prototype.draw=function(context){
 			parameters["map"]=this.mapIndex;
 			parameters["section"]=this.sectionIndex;
 			parameters["start"]=0;
-			parameters["count"]=4096;
+			parameters["count"]=500000;
 
 			var message=new Message(RAY_MESSAGE_TAG_GET_REGIONS,this,this.dataStore,parameters);
 
