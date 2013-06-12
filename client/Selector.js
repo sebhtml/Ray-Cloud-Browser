@@ -25,9 +25,14 @@
  * \author Sébastien Boisvert
  */
 function Selector(x,y,width,height,dataStore,useAddress){
+	this.nucleotidesSelected = -1;
 	this.depth = 0;
 	this.useAddress=useAddress;
 	this.fontSize=12;
+
+	this.displaySearchWidget = false;
+	this.maxNucleotides = 0;
+	this.minNucleotides = 0;
 
 	this.dataStore=dataStore;
 	this.consumed=false;
@@ -95,10 +100,9 @@ Selector.prototype.pumpAddressTokens=function(){
  * we'll use it as a progress thread.
  */
 Selector.prototype.draw=function(context){
-
 	this.pumpAddressTokens();
 
-// some granularity
+	// some granularity
 	if(this.state == this.SLAVE_MODE_PULL_MAPS){
 
 		if(!this.requestedMaps){
@@ -118,11 +122,9 @@ Selector.prototype.draw=function(context){
 			this.requestedRegions=false;
 		}
 
-	} else if(this.state == this.SLAVE_MODE_PULL_REGIONS){
-
+	} else if(this.state == this.SLAVE_MODE_PULL_REGIONS) {
 		this.mapWidget.draw(context);
 		this.sectionWidget.draw(context);
-
 		if(!this.requestedRegions){
 			var parameters=new Object();
 			parameters["map"]=this.mapIndex;
@@ -138,23 +140,42 @@ Selector.prototype.draw=function(context){
 			this.dataStore.receiveAndProcessMessage(message);
 
 		}else if(this.receivedRegions){
-
 			var choices=new Array();
 			var i=0;
-
+			this.objects=new Array();
 			while(i<this.regionData["regions"].length){
 				var entry=this.regionData["regions"][i++];
-				choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
+				if(this.nucleotidesSelected != -1) {
+					if(this.nucleotidesSelected == entry["nucleotides"]) {
+						choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
+					}
+				} else {
+					choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
+				}
+				if(this.maxNucleotides < entry["nucleotides"]) {
+					this.maxNucleotides = entry["nucleotides"];
+				}
+				if(this.minNucleotides == 0 || this.minNucleotides > entry["nucleotides"]) {
+					this.minNucleotides = entry["nucleotides"];
+				}
 			}
-
-			this.regionWidget=new SelectionWidget(this.x,this.y+115,this.width*1.0,this.height,"(3/4) Select region",choices);
-			this.objects=new Array();
+			this.integerSelection = new IntegerSelectionWidget(this.x - this.width - 5, this.y + 115, this.width * 1.0, this.width - 70, "Search region with number of nucleotides", this.minNucleotides, this.maxNucleotides);
+			this.objects.push(this.integerSelection);
+			if(!this.searchButton) {
+				this.searchButton = new Button(this.x + 200, this.y + 135, 50, 25, "Search", false);
+				this.resetButton = new Button(this.x + 260, this.y + 135, 50, 25, "Reset", false);
+			}
+			this.regionWidget=new SelectionWidget(this.x,this.y+115,this.width*1.0, this.width - 70,"(3/4) Select region",choices);
 			this.objects.push(this.regionWidget);
 			this.state=this.SLAVE_MODE_SELECT_REGION;
 		}
 
 	} else {
 		this.applyState(this.state, context);
+		if(this.searchButton && this.resetButton) {
+			this.searchButton.draw(context);
+			this.resetButton.draw(context);
+		}
 	}
 
 // show extra information
@@ -177,7 +198,6 @@ Selector.prototype.applyState = function(state, context) {
 			if(!this.mapWidget.getBlink()) {
 				this.mapWidget.enableBlink();
 			}
-
 			this.mapWidget.draw(context);
 			break;
 
@@ -197,7 +217,9 @@ Selector.prototype.applyState = function(state, context) {
 				this.sectionWidget.disableBlink();
 				this.regionWidget.enableBlink();
 			}
-
+			if(this.displaySearchWidget) {
+				this.integerSelection.draw(context);
+			}
 			this.mapWidget.draw(context);
 			this.sectionWidget.draw(context);
 			this.regionWidget.draw(context);
@@ -210,7 +232,8 @@ Selector.prototype.applyState = function(state, context) {
 				this.regionWidget.disableBlink();
 				this.locationWidget.enableBlink();
 			}
-
+			this.searchButton = null;
+			this.resetButton = null
 			this.mapWidget.draw(context);
 			this.sectionWidget.draw(context);
 			this.regionWidget.draw(context);
@@ -246,7 +269,6 @@ Selector.prototype.handleMouseDown=function(x,y){
 		}
 		i++;
 	}
-
 	if(this.state==this.SLAVE_MODE_SELECT_MAP && this.mapWidget.hasChoice()){
 
 		var index=this.mapWidget.getChoice();
@@ -260,16 +282,28 @@ Selector.prototype.handleMouseDown=function(x,y){
 		this.selectSectionIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice() && this.receivedMapFileData){
-
 		var index=this.regionWidget.getChoice();
 
 		this.selectRegionIndex(index);
 
-	}else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.locationWidget.hasChoice()){
+
+
+	} else if(this.state == this.SLAVE_MODE_SELECT_REGION && this.integerSelection.hasChoice()) {
+		if(this.integerSelection && this.nucleotidesSelected != this.integerSelection.getValue()) {
+			this.nucleotidesSelected = this.integerSelection.getValue();
+			this.state = this.SLAVE_MODE_PULL_REGIONS;
+		}
+	} else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.locationWidget.hasChoice()) {
 
 		var index=this.locationWidget.getChoice()-1;
 
 		this.selectLocationIndex(index);
+	} else if(this.state == this.SLAVE_MODE_SELECT_REGION && this.searchButton.handleMouseDown(x, y)) {
+		this.displaySearchWidget = this.searchButton.getState();
+	} else if(this.state == this.SLAVE_MODE_SELECT_REGION && this.resetButton.handleMouseDown(x, y)) {
+		this.nucleotidesSelected = -1;
+		this.resetButton.resetState();
+		this.state = this.SLAVE_MODE_PULL_REGIONS;
 	}
 
 	return result;
@@ -317,6 +351,12 @@ Selector.prototype.move=function(x,y){
 
 	for(var item in this.deadObjects){
 		this.deadObjects[item].move(x,y);
+	}
+	if(this.searchButton) {
+		this.searchButton.move(x, y);
+	}
+	if(this.resetButton) {
+		this.resetButton.move(x, y);
 	}
 }
 

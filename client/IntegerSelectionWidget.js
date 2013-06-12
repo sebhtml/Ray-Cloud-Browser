@@ -134,6 +134,23 @@ IntegerSelectionWidget.prototype.getDigits=function(digits,inputValue){
 	return value;
 }
 
+IntegerSelectionWidget.prototype.getValue=function(){
+	var base=10;
+	var i=0;
+	var value=0;
+	while(i < this.digits){
+		var toAdd = 1;
+		var j = 0;
+		while(j < i) {
+			toAdd *= base;
+			j++;
+		}
+		value += toAdd * this.symbols[i];
+		i++;
+	}
+	return value;
+}
+
 IntegerSelectionWidget.prototype.createButtons=function(){
 
 	this.buttons=new Array();
@@ -202,6 +219,7 @@ IntegerSelectionWidget.prototype.updateBoundaries=function(){
 		i--;
 	}
 
+	var minimum = this.minimums[0];
 	if(canHaveZero){
 		this.minimums[0]=0;
 	}
@@ -216,6 +234,7 @@ IntegerSelectionWidget.prototype.updateBoundaries=function(){
 			this.symbols[i]=this.minimums[i];
 		i++;
 	}
+	this.minimums[0] = minimum
 }
 
 IntegerSelectionWidget.prototype.enableBlink = function() {
@@ -291,13 +310,25 @@ IntegerSelectionWidget.prototype.draw=function(context){
 		this.buttons[i++].draw(context,null);
 	}
 
-	i=0;
+	var first = true;
+	i=1;
 	while(i<this.downButtons.length){
 
-		if(this.symbols[i]!=this.minimums[i])
+		if(this.symbols[i]!=this.minimums[i]) {
 			this.downButtons[i].draw(context,null);
+			first = false;
+		}
 
 		i++;
+	}
+	if(first) {
+		if(this.symbols[0] != this.minimums[0]) {
+			this.downButtons[0].draw(context,null);
+		}
+	} else {
+		if(this.symbols[0] != 0) {
+			this.downButtons[0].draw(context,null);
+		}
 	}
 
 	i=0;

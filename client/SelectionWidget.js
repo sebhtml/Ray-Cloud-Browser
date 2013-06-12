@@ -112,10 +112,6 @@ SelectionWidget.prototype.createButtons=function(offset){
 	this.buttons.push(this.okButton);
 }
 
-SelectionWidget.prototype.resetColors=function(colors){
-	this.colors = new Array();
-}
-
 SelectionWidget.prototype.setColors=function(colors){
 	if(this.colors.length==colors.length)
 		this.colors=colors;

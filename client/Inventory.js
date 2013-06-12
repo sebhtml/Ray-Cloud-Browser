@@ -28,6 +28,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 	this.dataStore=dataStore;
 	this.fontSize=12;
 	this.useColorsForRenderingLevel = 1;
+	this.oldLevel = 1;
 
 	this.useAddress=true;
 	this.usedAddressForSpeed=false;
@@ -163,7 +164,7 @@ Inventory.prototype.pushSelector=function(){
 	this.useAddress=false;
 }
 
-Inventory.prototype.draw=function(context){
+Inventory.prototype.draw=function(context) {
 
 	var height=this.height-5;
 	var drawingY=this.y;
@@ -262,14 +263,19 @@ Inventory.prototype.draw=function(context){
 
 			var region=this.pathOperator.getSelectedRegion();
 
-			if(this.regionGateAnimation==null || region!=this.currentRegion){
+			if(this.regionGateAnimation==null || region!=this.currentRegion || this.oldLevel != this.useColorsForRenderingLevel){
+				this.oldLevel = this.useColorsForRenderingLevel;
 				var radius=24;
-				this.regionGateAnimation=new RegionGateAnimation(this.x+this.width-radius-10,this.y+this.height+radius+40,
+				if(this.useColorsForRenderingLevel == 2) {
+					this.regionGateAnimation=new RegionGateAnimation(this.x+this.width-radius-10,this.y+this.height+radius+40,
+					radius,region.getColorOfSection());
+				} else {
+					this.regionGateAnimation=new RegionGateAnimation(this.x+this.width-radius-10,this.y+this.height+radius+40,
 					radius,region.getColor());
+				}
 
 				this.currentRegion=region;
 			}
-
 			index=1;
 			context.fillText(region.getMapName(),this.x+40,startingY+index++*jump);
 			context.fillText(this.dataStore.getKmerLength(), this.x+120,startingY+index++*jump);
@@ -280,7 +286,12 @@ Inventory.prototype.draw=function(context){
 			context.fillText(region.getRegionLength(),this.x+210,startingY+index*jump);
 
 			context.beginPath();
-			context.fillStyle = region.getColor();
+
+			if(this.useColorsForRenderingLevel == 2) {
+				context.fillStyle = region.getColorOfSection();
+			} else {
+				context.fillStyle = region.getColor();
+			}
 
 			this.regionGateAnimation.draw(context);
 

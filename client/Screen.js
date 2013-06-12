@@ -632,7 +632,6 @@ Screen.prototype.processHumanControls=function(){
 			locationData["regionLength"],true);
 
 		this.humanInterface.getInventory().createRegionSelector();
-
 		this.humanInterface.getInventory().getWarpButton().resetState();
 	}
 
