@@ -297,8 +297,11 @@ Selector.prototype.handleMouseDown=function(x,y){
 
 	} else if(this.state == this.SLAVE_MODE_SELECT_REGION && this.integerSelection.hasChoice()) {
 		if(this.integerSelection && this.nucleotidesSelected != this.integerSelection.getValue()) {
+			this.displaySearchWidget = false;
+			this.searchButton.resetState();
 			this.nucleotidesSelected = this.integerSelection.getValue();
 			this.state = this.SLAVE_MODE_PULL_REGIONS;
+
 		}
 	} else if(this.state==this.SLAVE_MODE_SELECT_LOCATION && this.locationWidget.hasChoice()) {
 
