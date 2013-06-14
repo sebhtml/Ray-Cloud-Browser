@@ -22,6 +22,9 @@
  * \author Sébastien Boisvert
  */
 function Inventory(x,y,width,height,visible,screen,dataStore) {
+	this.textWidgets = new Array();
+	this.testBoxSelected = new Array();
+
 	this.showDistributionGraph = false;
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
 	this.originHeight=height;
@@ -165,7 +168,15 @@ Inventory.prototype.pushSelector=function(){
 }
 
 Inventory.prototype.draw=function(context) {
+// 	if(!this.console) {
+// 		this.console = new TextWidget(100, 100, 500, 500, "Ray Cloud Browser Console", false);
+// 		this.console.setContent("Type Help for commands");
+// 		this.textWidgets.push(this.console);
+// 	}
 
+	for(var i = 0; i < this.textWidgets.length; i++) {
+		this.textWidgets[i].draw(context);
+	}
 	var height=this.height-5;
 	var drawingY=this.y;
 	if(!this.closeButton.getState()){
@@ -343,6 +354,26 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	this.mouseX=x;
 	this.mouseY=y;
 
+	for(var i = 0; i < this.textWidgets.length; i++) {
+		if(this.textWidgets[i].handleMouseDownMoveBox(x, y)) {
+			this.testBoxSelected[i] = true;
+			return true;
+		} else if(this.textWidgets[i].handleMouseDownCloseButton(x, y)) {
+			if(this.linkWidget && this.textWidgets[i].toString() == this.linkWidget.toString()) {
+				this.linkWidget = null;
+			}
+			this.textWidgets.splice(i, 1);
+			return true;
+		} else if(this.textWidgets[i].handleMouseDown(x, y)) {
+			return true;
+		}
+// 		if(this.textWidgets[i].getHasChoice() && this.console && this.textWidgets[i].toString() == this.console.toString()) {
+// 			if(this.textWidgets[i].getContent() == "Help") {
+// 				this.textWidgets[i].setContent("Sana\nSunu\nSansa\0");
+// 			}
+// 			//this.textWidgets[i].resetState();
+// 		}
+	}
 	if(this.closeButton.handleMouseDown(x,y)){
 		return true;
 	}else if(this.overlay.handleMouseDown(x,y)){
@@ -353,7 +384,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 		this.screen.toggleDebugMode();
 		return true;
 */
-	}else if(this.warpButton.handleMouseDown(x,y)){
+	} else if(this.warpButton.handleMouseDown(x,y)){
 
 		if(this.warpButton.getState())
 			this.pushSelector();
@@ -444,8 +475,11 @@ Inventory.prototype.handleMouseDown=function(x,y){
 				address+="&play=forward";
 				address+="&speed="+this.getSpeed();
 			}
-
-			alert(address);
+			if(!this.linkWidget) {
+				this.linkWidget = new TextWidget(70, 10, 730, 80, "Link", true);
+				this.textWidgets.push(this.linkWidget);
+			}
+			this.linkWidget.setContent(address);
 
 			this.getLinkButton.resetState();
 		}
@@ -469,10 +503,9 @@ Inventory.prototype.handleMouseDown=function(x,y){
 }
 
 Inventory.prototype.handleMouseMove=function(x,y){
+	var deltaX = x - this.mouseX;
+	var deltaY = y - this.mouseY;
 	if(this.selected){
-		var deltaX=x-this.mouseX;
-		var deltaY=y-this.mouseY;
-
 		this.closeButton.move(deltaX,deltaY);
 		this.overlay.move(deltaX,deltaY);
 		this.animatedRing.move(deltaX,deltaY);
@@ -498,13 +531,23 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.y+=deltaY;
 	}
 
+	for(var i = 0; i < this.textWidgets.length; i++) {
+		if(this.testBoxSelected[i]) {
+			this.textWidgets[i].move(deltaX, deltaY);
+		}
+	}
+
 	this.mouseX=x;
 	this.mouseY=y;
 }
 
 Inventory.prototype.handleMouseUp=function(x,y){
 	this.selected=false;
+	for(var i = 0; i < this.textWidgets.length; i++) {
+		this.testBoxSelected[i] = false;
+	}
 }
+
 
 Inventory.prototype.hasChoices=function(){
 	return this.selector.hasChoices();
