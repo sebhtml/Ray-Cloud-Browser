@@ -26,10 +26,13 @@
  *
  * \author Sébastien Boisvert
  */
-function Screen(gameFrequency,renderingFrequency){
-
+function Screen(gameFrequency,renderingFrequency) {
+	this.listOfSelectedVertex = new Array();
+	this.mode = MODE_MOVE;
 	this.canControlScreen=false;
 	this.periodForControl=1000;
+	this.numberOfSelection = 0;
+	this.selection = "";
 
 	this.debugMode = 0;
 /*
@@ -211,67 +214,114 @@ Screen.prototype.start=function(){
 Screen.prototype.handleMouseMove=function(eventObject){
 	var position=this.getMousePosition(eventObject);
 
+	if(this.mode == MODE_SELECT && !this.humanInterface.getInventory().getTextWidgetClicked()) {
+		if(this.renderer.getSelectionBeginning()) {
+			this.renderer.setSelectionEnd(new Point(position[0], position[1]));
+			this.selection = "";
+			var end = this.translatePoint(new Point(position[0], position[1]));
+			var begin = this.translatePoint(this.renderer.getBeginPoint());
+			if(end.getX() < begin.getX()) {
+				var buffer = begin.getX();
+				begin.setX(end.getX());
+				end.setX(buffer);
+			}
+			if(end.getY() < begin.getY()) {
+				var buffer = begin.getY();
+				begin.setY(end.getY());
+				end.setY(buffer);
+			}
+			var width = end.getX() - begin.getX();
+			var height = end.getY() - begin.getY();
+			var quadTreePoint = new Point(begin.getX() + width / 2, begin.getY() + height / 2)
+			var result = this.engine.getQuadTree().query(quadTreePoint, width, height);
+			var subGraph = new Object();
+			this.listOfSelectedVertex = [];
+			for(var i = 0; i < result.length; i++) {
+				var vertex = this.graph.getVertex(result[i]);
+				if(this.pathOperator.getSelectedRegion().getVertexPosition(result[i]) != -1) {
+					this.listOfSelectedVertex.push(vertex);
+					subGraph[this.pathOperator.getSelectedRegion().getVertexPosition(result[i])] = result[i];
+				}
+			}
+			var first = true;
+			for(var i in subGraph) {
+				if(first) {
+					this.selection = this.selection + subGraph[i];
+					first = false;
+				} else {
+					this.selection = this.selection + subGraph[i][this.graphOperator.getDataStore().getKmerLength() - 1];
+				}
+			}
+		}
+	}
 	this.humanInterface.handleMouseMove(position[0],position[1]);
 
 	this.selectedVertex=null;
 /*
  * Highlight the equipment.
  */
+	if(this.mode == MODE_MOVE) {
+		for(i in this.graph.getVertices()){
+			var vertexToCheck=this.graph.getVertices()[i];
+			if(vertexToCheck.isFollower() ||
+				vertexToCheck.isInside(this.translateX(position[0]),
+				this.translateY(position[1]))){
 
-	for(i in this.graph.getVertices()){
-		var vertexToCheck=this.graph.getVertices()[i];
-		if(vertexToCheck.isFollower() ||
-			vertexToCheck.isInside(this.translateX(position[0]),
-			this.translateY(position[1]))){
-
-			this.selectedVertex=vertexToCheck;
-		}
-	}
-
-	for(i in this.graph.getVertices()){
-		if(this.graph.getVertices()[i].handleMouseMove(this.translateX(position[0]),
-			this.translateY(position[1]))){
-/*
- * If we handle a object, we can not move the screen too.
- */
-			return;
-		}
-	}
-
-// This computes the force with which the slide will happen
-	if(this.moveOrigin){
-
-		var dx=this.lastMouseX-position[0];
-		var dy=this.lastMouseY-position[1];
-
-		var softModifier=0.3;
-
-		dx*=softModifier;
-		dy*=softModifier;
-
-		dx/=this.zoomValue;
-		dy/=this.zoomValue;
-
-		if(dx!=0 || dy!=0){
-			this.lastMouseGameFrame=this.globalGameFrameNumber;
-			//console.log("Last move: "+this.lastMouseGameFrame);
+				this.selectedVertex=vertexToCheck;
+			}
 		}
 
-		this.originXSpeed=dx;
-		this.originYSpeed=dy;
+		for(i in this.graph.getVertices()){
+			if(this.graph.getVertices()[i].handleMouseMove(this.translateX(position[0]),
+				this.translateY(position[1]))){
+	/*
+	* If we handle a object, we can not move the screen too.
+	*/
+				return;
+			}
+		}
 
-		this.originX=this.lastOriginX+dx;
-		this.originY=this.lastOriginY+dy;
+	// This computes the force with which the slide will happen
+		if(this.moveOrigin){
+
+			var dx=this.lastMouseX-position[0];
+			var dy=this.lastMouseY-position[1];
+
+			var softModifier=0.3;
+
+			dx*=softModifier;
+			dy*=softModifier;
+
+			dx/=this.zoomValue;
+			dy/=this.zoomValue;
+
+			if(dx!=0 || dy!=0){
+				this.lastMouseGameFrame=this.globalGameFrameNumber;
+				//console.log("Last move: "+this.lastMouseGameFrame);
+			}
+
+			this.originXSpeed=dx;
+			this.originYSpeed=dy;
+
+			this.originX=this.lastOriginX+dx;
+			this.originY=this.lastOriginY+dy;
+		}
 	}
 }
 
 Screen.prototype.handleMouseDown=function(eventObject){
 	var position=this.getMousePosition(eventObject);
-
 	if(this.humanInterface.handleMouseDown(position[0],position[1])){
-
 		return true;
 	}
+
+	if(!this.humanInterface.getInventory().getTextWidgetClicked()) {
+		if(this.mode == MODE_SELECT) {
+			this.renderer.setSelectionBeginning(new Point(position[0], position[1]));
+		}
+	}
+
+
 
 	for(i in this.buttons){
 		var candidate=this.buttons[i];
@@ -387,17 +437,18 @@ Screen.prototype.handleMouseDown=function(eventObject){
 		}
 	}
 
+	if(this.mode == MODE_MOVE) {
+		for(var i in this.graph.getVertices()){
 
-	for(i in this.graph.getVertices()){
+			var vertex=this.graph.getVertices()[i];
+			if(vertex.handleMouseDown(this.translateX(position[0]),
+				this.translateY(position[1]))){
 
-		var vertex=this.graph.getVertices()[i];
-		if(vertex.handleMouseDown(this.translateX(position[0]),
-			this.translateY(position[1]))){
+				// select this vertex
+				this.pathOperator.setCurrentVertex(vertex.getSequence());
 
-// select this vertex
-			this.pathOperator.setCurrentVertex(vertex.getSequence());
-
-			return;
+				return;
+			}
 		}
 	}
 
@@ -432,6 +483,16 @@ Screen.prototype.getMousePosition=function(e){
 
 Screen.prototype.handleMouseUp=function(eventObject){
 	var position=this.getMousePosition(eventObject);
+
+	if(this.mode == MODE_SELECT && !this.humanInterface.getInventory().getTextWidgetClicked()) {
+		this.renderer.stopSelection();
+		if(this.selection != "") {
+			this.numberOfSelection++;
+			this.humanInterface.getInventory().pushTextWidget(position[0] - 150, position[1] - 20, 300, 300, "Selection #" + this.numberOfSelection, true, this.selection);
+			this.selection = "";
+			this.listOfSelectedVertex = [];
+		}
+	}
 
 	if(this.humanInterface.handleMouseUp(position[0],position[1]))
 		return;
@@ -473,6 +534,12 @@ Screen.prototype.iterate=function(){
 	this.graphOperator.iterate();
 	this.humanInterface.iterate();
 	this.pathOperator.iterate();
+
+	if(this.humanInterface.getInventory().getSelectMode()) {
+		this.mode = MODE_SELECT;
+	} else {
+		this.mode = MODE_MOVE;
+	}
 
 	if(this.pathOperator.hasVertex()){
 
@@ -788,7 +855,14 @@ Screen.prototype.drawControlPanel=function(){
  */
 Screen.prototype.draw=function(){
 
-
+	if(this.mode == MODE_SELECT && this.renderer.getSelectionBeginning()) {
+		for(var i = 0; i < this.listOfSelectedVertex.length; i++) {
+			var vertex = this.listOfSelectedVertex[i];
+			var x = (vertex.getCenter().getX() - this.originX) * this.zoomValue ;
+			var y = (vertex.getCenter().getY() - this.originY) * this.zoomValue;
+			this.renderer.drawBufferedRectangle(this.context, x - (50 * this.zoomValue) / 2, y - (50 * this.zoomValue) / 2, 50 * this.zoomValue, 50 * this.zoomValue, "rgba(0,175,255)", 1, "rgba(0,175,255,0.3)", 5000);
+		}
+	}
 /*
  * Setting dimensions clear the content.
  * 2012-11-13: IE9 does not support that.
@@ -829,7 +903,6 @@ Screen.prototype.draw=function(){
 	var end=this.getMilliseconds();
 	this.drawingMilliseconds+=(end-start);
 	this.drawingFrames++;
-
 }
 
 Screen.prototype.getRandomX=function(){
@@ -956,6 +1029,12 @@ Screen.prototype.translateX=function(x){
 
 Screen.prototype.translateY=function(y){
 	return (y/this.zoomValue+this.originY);
+}
+
+Screen.prototype.translatePoint = function(point) {
+	var x = point.getX();
+	var y = point.getY();
+	return (new Point(this.translateX(x), this.translateY(y)));
 }
 
 Screen.prototype.getZoomValue=function(){

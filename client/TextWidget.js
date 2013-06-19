@@ -48,7 +48,24 @@ function TextWidget(x, y, width, height, title, readOnly) {
 	this.resetButton = new Button(x + 50 , y + height - 17, 50, 25, "Reset", false);
 	this.submitButton = new Button(x + width - 50, y + height - 17, 50, 25, "Submit", false);
 	var textWidgetBox = document.getElementById("textWidgetBox");
+
+	var inner = textWidgetBox.innerHTML;
+	var subString = inner.substring(4);
+	var splitOfSubString = subString.split('"');
+	this.listOfDiv = new Array();
+	for(var i = 0; i < splitOfSubString.length; i++) {
+		if(splitOfSubString[i] == " id=") {
+			this.listOfDiv.push(splitOfSubString[i + 1]);
+		}
+	}
+	this.contents = new Array();
+	for(var i = 0; i < this.listOfDiv.length; i++) {
+		this.contents.push(document.getElementById(this.listOfDiv[i]).value);
+	}
 	textWidgetBox.innerHTML = textWidgetBox.innerHTML + '<div id="' + title + '"><form><' + type + ' id="' + title + "TextArea" + '"></textarea></form></div>';
+	for(var i = 0; i < this.listOfDiv.length; i++) {
+		document.getElementById(this.listOfDiv[i]).value = this.contents[i];
+	}
 	this.div = document.getElementById(title);
 	this.div.style.position = "absolute";
 	this.div.style.left = (x + 10) + 'px';

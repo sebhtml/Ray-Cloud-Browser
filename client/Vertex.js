@@ -25,7 +25,7 @@
  * \author Sébastien Boisvert
  */
 function Vertex(name,colored){
-
+	this.selected = false;
 	this.annotations=new Object();
 	this.resetPower();
 	this.children=[];
@@ -489,4 +489,12 @@ Vertex.prototype.getPathColor=function(){
 
 Vertex.prototype.equals = function(vertex) {
 	return this.getX() == vertex.getX() && this.getY() == vertex.getY();
+}
+
+Vertex.prototype.setSelect = function(state) {
+	return this.selected = state;
+}
+
+Vertex.prototype.isSelected = function() {
+	return this.selected;
 }

@@ -52,6 +52,13 @@ Point.prototype.getY=function(){
 	return this.y;
 }
 
+Point.prototype.setX=function(x){
+	return this.x = x;
+}
+
+Point.prototype.setY=function(y){
+	return this.y = y;
+}
 Point.prototype.add = function(point) {
 	this.x += point.getX();
 	this.y += point.getY();

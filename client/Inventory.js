@@ -24,6 +24,8 @@
 function Inventory(x,y,width,height,visible,screen,dataStore) {
 	this.textWidgets = new Array();
 	this.testBoxSelected = new Array();
+	this.textWidgetClicked = false;
+	this.selectMode = false;
 
 	this.showDistributionGraph = false;
 	this.minimumCoverage=CONFIG_MINIMUM_COVERAGE_TO_DISPLAY;
@@ -70,8 +72,10 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 		this.y+2*this.buttonWidth,
 		6*this.buttonWidth,this.buttonWidth,"Display map location",false);
 */
+	this.modeButton = new Button(this.x + 145, this.y + 3.4 * this.buttonWidth,
+		3.5 * this.buttonWidth, this.buttonWidth, "Selection mode", false);
 
-	this.warpButton=new Button(this.x+110,
+	this.warpButton=new Button(this.x+52,
 		this.y+3.4*this.buttonWidth,
 		3.5*this.buttonWidth,this.buttonWidth,"Go to location",false);
 
@@ -83,8 +87,8 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 		this.y + this.regionsOffset + 100,
 		2.2 * this.buttonWidth, this.buttonWidth, "Graphs", false);
 
-	this.useCoverage=new Button(this.x+30,
-		this.y+3.4*this.buttonWidth,
+	this.useCoverage=new Button(this.x+185,
+		this.y+1.9*this.buttonWidth,
 		1.9*this.buttonWidth,this.buttonWidth,"Depth",false);
 
 	this.useCoverage.activateState();
@@ -121,7 +125,7 @@ function Inventory(x,y,width,height,visible,screen,dataStore) {
 	this.pathOperator=null;
 	this.registeredRegions=[];
 
-	this.animatedRing=new AnimatedRing(x+this.width-50,y+70);
+	this.animatedRing=new AnimatedRing(x+this.width-40,y+70);
 
 	this.regionGateAnimation=null;
 }
@@ -223,6 +227,7 @@ Inventory.prototype.draw=function(context) {
 
 		//this.debugButton.draw(context,null);
 		this.warpButton.draw(context,null);
+		this.modeButton.draw(context, null);
 		this.useCoverage.draw(context,null);
 		this.increaseCoverageButton.draw(context,null);
 		this.decreaseCoverageButton.draw(context,null);
@@ -345,6 +350,7 @@ Inventory.prototype.draw=function(context) {
 			this.decreaseButton.draw(context,null);
 			this.graphsButton.draw(context, null);
 			this.useColors.draw(context, null);
+
 		}
 	}
 }
@@ -357,6 +363,7 @@ Inventory.prototype.handleMouseDown=function(x,y){
 	for(var i = 0; i < this.textWidgets.length; i++) {
 		if(this.textWidgets[i].handleMouseDownMoveBox(x, y)) {
 			this.testBoxSelected[i] = true;
+			this.textWidgetClicked = true;
 			return true;
 		} else if(this.textWidgets[i].handleMouseDownCloseButton(x, y)) {
 			if(this.linkWidget && this.textWidgets[i].toString() == this.linkWidget.toString()) {
@@ -365,19 +372,17 @@ Inventory.prototype.handleMouseDown=function(x,y){
 			this.textWidgets.splice(i, 1);
 			return true;
 		} else if(this.textWidgets[i].handleMouseDown(x, y)) {
+			this.textWidgetClicked = true;
 			return true;
 		}
-// 		if(this.textWidgets[i].getHasChoice() && this.console && this.textWidgets[i].toString() == this.console.toString()) {
-// 			if(this.textWidgets[i].getContent() == "Help") {
-// 				this.textWidgets[i].setContent("Sana\nSunu\nSansa\0");
-// 			}
-// 			//this.textWidgets[i].resetState();
-// 		}
 	}
 	if(this.closeButton.handleMouseDown(x,y)){
 		return true;
 	}else if(this.overlay.handleMouseDown(x,y)){
 		this.selected=true;
+		return true;
+	}else if(this.modeButton.handleMouseDown(x, y)) {
+		this.selectMode = this.modeButton.getState();
 		return true;
 /*
 	}else if(this.debugButton.handleMouseDown(x,y)){
@@ -527,6 +532,7 @@ Inventory.prototype.handleMouseMove=function(x,y){
 		this.getLinkButton.move(deltaX,deltaY);
 		this.regionSelector.move(deltaX,deltaY);
 		this.graphsButton.move(deltaX, deltaY);
+		this.modeButton.move(deltaX, deltaY);
 		this.x+=deltaX;
 		this.y+=deltaY;
 	}
@@ -546,6 +552,7 @@ Inventory.prototype.handleMouseUp=function(x,y){
 	for(var i = 0; i < this.textWidgets.length; i++) {
 		this.testBoxSelected[i] = false;
 	}
+	this.textWidgetClicked = false;
 }
 
 
@@ -672,6 +679,17 @@ Inventory.prototype.drawGraphs = function() {
 							this.screen.getWidth() - 200, this.screen.getRenderer(), "Location", "Depth",
 							locationInSelectedRegion, 2000);
 	}
+}
 
+Inventory.prototype.pushTextWidget = function(x, y, width, height, title, readOnly, content) {
+	this.textWidgets.push(new TextWidget(x, y, width, height, title, readOnly));
+	this.textWidgets[this.textWidgets.length - 1].setContent(content);
+}
 
+Inventory.prototype.getTextWidgetClicked = function() {
+	return this.textWidgetClicked;
+}
+
+Inventory.prototype.getSelectMode = function() {
+	return this.selectMode;
 }

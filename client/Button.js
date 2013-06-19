@@ -37,7 +37,7 @@ function Button(x,y,width,height,name,defaultState){
 	this.height=height;
 
 	this.state=defaultState;
-	this.fontSize=12;
+	this.fontSize=10;
 
 	this.computeVertices();
 	this.center=true;

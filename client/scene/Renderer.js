@@ -31,6 +31,9 @@ var RENDERER_RECTANGLE = 3;
  * \author Sébastien Boisvert
  */
 function Renderer(screen){
+	this.selectionIsEnable = false;
+	this.selectionBeginning = false;
+
 	this.distributionGraph = screen.getPathOperator().getDistributionGraph();
 	this.pathMultiplierForVertex=1.5;
 	this.pathMultiplierForArc=2;
@@ -354,6 +357,9 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 
 	if(vertex.isColored()) {
 		this.drawBufferedCircle(context, x, y, radius, "black", lineWidth, theColor, 20);
+		if(vertex.isSelected()) {
+			this.drawBufferedRectangle(context, x, y, 20, 20, "black", lineWidth, "", 21);
+		}
 	}
 	if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
 		var fillStyle = 'black';
@@ -532,6 +538,9 @@ Renderer.prototype.draw = function(objects) {
 	if(this.screen.getDebugMode() == CONFIG_DEBUG_QUADTREE) {
 		this.drawQuadTree();
 	}
+	if(this.selectionIsEnable) {
+		this.drawRectangleSelection(context, objects);
+	}
 	this.drawBufferedOperations(context);
 
 /*
@@ -597,4 +606,50 @@ Renderer.prototype.setQuadTree = function(quadTree) {
 
 Renderer.prototype.drawBufferedLineWithTwoPoints = function(context, pointA, pointB, lineWidth, theColor, layer) {
 	this.drawBufferedLine(context, pointA.getX(), pointA.getY(), pointB.getX(), pointB.getY(), lineWidth, theColor, layer);
+}
+
+Renderer.prototype.drawRectangleSelection = function(context, vertices) {
+	var width = this.selectionEndPoint.getX() - this.selectionOrigin.getX();
+	var height = this.selectionEndPoint.getY() - this.selectionOrigin.getY();
+	var x = this.selectionOrigin.getX();
+	var y = this.selectionOrigin.getY();
+	this.drawBufferedRectangle(context, x, y, height, width, "rgb(0,175,255)", 1, "rgba(0,175,255,0.1)", 500);
+}
+
+Renderer.prototype.setSelectionBeginning = function(point) {
+	this.selectionOrigin = point;
+	this.selectionBeginning = true;
+}
+
+Renderer.prototype.setSelectionEnd = function(point) {
+	this.selectionEndPoint = point;
+	this.selectionIsEnable = true;
+}
+
+Renderer.prototype.stopSelection = function() {
+	this.selectionIsEnable = false;
+	this.selectionBeginning = false;
+}
+
+Renderer.prototype.getSelectionBeginning = function() {
+	return this.selectionBeginning;
+}
+
+Renderer.prototype.getBeginPoint = function() {
+	return this.selectionOrigin;
+}
+
+
+Renderer.prototype.translateX = function(x) {
+	return (x / this.screen.getZoomValue() + this.screen.getOriginX());
+}
+
+Renderer.prototype.translateY = function(y) {
+	return (y / this.screen.getZoomValue() + this.screen.getOriginY());
+}
+
+Renderer.prototype.translatePoint = function(point) {
+	var x = point.getX();
+	var y = point.getY();
+	return (new Point(this.translateX(x), this.translateY(y)));
 }

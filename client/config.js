@@ -40,6 +40,12 @@ var CONFIG_DEBUG_QUADTREE = 3;
 var CONFIG_DEBUG_FORCES = 4;
 var CONFIG_DEBUG_REQUEST = 5;
 
+/**
+ * Mode
+ */
+var MODE_MOVE = 0;
+var MODE_SELECT = 1;
+
 // messaging service configuration
 
 var messageValue=0;
