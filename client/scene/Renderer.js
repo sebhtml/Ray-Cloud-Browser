@@ -272,7 +272,7 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var color = 'black';
 	var layer = 10;
 // only draw the small line if it won't be done later on
-	this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,zoomValue*lineWidth,color, layer);
+	this.drawBufferedLine(context, ax, ay, bx, by, lineWidth, color, layer);
 	if(!fullDetails)
 		return;
 
@@ -306,15 +306,15 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	var ex=gx+ge_x;
 	var ey=gy+ge_y;
 
-	this.drawBufferedLine(context,zoomValue*cx,zoomValue*cy,zoomValue*dx,zoomValue*dy,zoomValue*lineWidth,color, layer);
-	this.drawBufferedLine(context,zoomValue*cx,zoomValue*cy,zoomValue*ex,zoomValue*ey,zoomValue*lineWidth,color, layer);
+	this.drawBufferedLine(context, cx, cy, dx, dy, lineWidth, color, layer);
+	this.drawBufferedLine(context, cx, cy, ex, ey, lineWidth, color, layer);
 }
 
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
 	if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
 		var lineWidth=(this.lineWidthForPath+extra)*this.pathMultiplierForArc;
-		this.drawBufferedLine(context,zoomValue*ax,zoomValue*ay,zoomValue*bx,zoomValue*by,
-			lineWidth*zoomValue,pathColor,layer);
+		this.drawBufferedLine(context, ax, ay, bx, by,
+			lineWidth, pathColor,layer);
 	}
 
 }
@@ -331,13 +331,14 @@ Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,ve
 	var y=vertex.getY()-originY;
 
 	var power=vertex.getPower();
+
 	if(power>0){
 		context.beginPath();
 		context.fillStyle = "rgb(255,40,40)";
 		context.strokeStyle = "rgb(0,0,0)";
-		context.lineWidth=this.lineWidth*zoomValue;
-		context.arc((x)*zoomValue,
-				(y)*zoomValue,zoomValue*radius*power, 0, Math.PI*2, true);
+		context.lineWidth=this.lineWidth;
+		context.arc((x),
+				(y), radius*power, 0, Math.PI*2, true);
 
 		context.fill();
 		context.closePath();
@@ -349,10 +350,10 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	if(zoomValue <= this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
 		return;
 
-	var lineWidth = this.lineWidth * zoomValue
-	var radius = vertex.getRadius() * zoomValue;
-	var x = (vertex.getX() - originX) * zoomValue;
-	var y = (vertex.getY() - originY) * zoomValue;
+	var lineWidth = this.lineWidth;
+	var radius = vertex.getRadius();
+	var x = (vertex.getX() - originX);
+	var y = (vertex.getY() - originY);
 	var theColor = vertex.getColor();
 
 	if(vertex.isColored()) {
@@ -363,7 +364,7 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	}
 	if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
 		var fillStyle = 'black';
-		var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+		var font = 'bold ' + Math.floor(12) + 'px Arial';
 		var align = "center";
 		var text = vertex.getLabel();
 		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage && vertex.isColored()) {
@@ -392,14 +393,14 @@ Renderer.prototype.drawHealthBar = function(context, x, y, originX, originY, dep
 	this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
 	var coverageMax = this.distributionGraph.getMaxY();
 
-	var yCoverage = (y - originY - 40) * zoomValue;
-	var xCoverage = (x - originX) * zoomValue;
-	var yHealtBar = (y - originY - 34) * zoomValue;
+	var yCoverage = (y - originY - 40);
+	var xCoverage = (x - originX);
+	var yHealtBar = (y - originY - 34);
 	var xHealtBar;
 
-	var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+	var font = 'bold ' + Math.floor(12) + 'px Arial';
 	var fillStyle = 'black';
-	var font = 'bold ' + Math.floor(12 * zoomValue) + 'px Arial';
+	var font = 'bold ' + Math.floor(12) + 'px Arial';
 	var align = "center";
 	var localLayer;
 	var color;
@@ -412,29 +413,28 @@ Renderer.prototype.drawHealthBar = function(context, x, y, originX, originY, dep
 	var stepTwoPositive = stepOnePositive - stepping;
 	var stepThreePositive = stepTwoPositive - stepping;
 
+	xHealtBar = (x - originX - 10);
+
 	if (depth <= stepThreePositive) {
-		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer;
 		color = "rgb(255,0,0)";
 		length = 5;
 	} else if(depth <= stepTwoPositive) {
-		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer + 1;
 		color = "rgb(255,200,0)";
 		length = 10;
 	} else if(depth <= stepOnePositive) {
-		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer + 2;
 		color = "rgb(255,255,0)";
 		length = 15;
 	} else {
-		xHealtBar = (x - originX - 10) * zoomValue;
 		localLayer = layer + 3;
 		color = "rgb(0,255,0)";
 		length = 20;
 	}
-	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, 20 * zoomValue, 'black', 2, "rgb(255,255,255)", localLayer);
-	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5 * zoomValue, length * zoomValue, '', 0, color, localLayer);
+
+	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5, 20, 'black', 2, "rgb(255,255,255)", localLayer);
+	this.drawBufferedRectangle(context, xHealtBar, yHealtBar, 5, length, '', 0, color, localLayer);
 	this.drawBufferedText(context, xCoverage, yCoverage, depth, align, fillStyle, font, localLayer);
 }
 
@@ -494,13 +494,13 @@ Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,v
 
 		var pathColor=colors[i];
 
-		var radius2 = this.pathMultiplierForVertex*zoomValue*(radius+extra);
+		var radius2 = this.pathMultiplierForVertex*(radius+extra);
 
 		//if(!withDetails)
 		//	radius2*=this.pathMultiplierMacro;
 
 		var layer = -(colors.length - i - 1);
-		this.drawBufferedCircle(context,x*zoomValue,y*zoomValue,radius2, "", 0, pathColor, layer);
+		this.drawBufferedCircle(context,x,y,radius2, "", 0, pathColor, layer);
 
 		i++;
 		extra-=this.extraMultiplier;
@@ -524,6 +524,12 @@ Renderer.prototype.drawBufferedCircle = function(context, x, y, radius, strokeSt
 
 Renderer.prototype.draw = function(objects) {
 	var context = this.screen.getContext();
+	var zoomValue = this.screen.getZoomValue();
+
+	context.save();
+	//context.transform(1, 0, 0, 1, 0, 0);
+	context.scale(zoomValue, zoomValue);
+
 	var colorSectionLevel = this.screen.getHumanInterface().getInventory().useColorsForRendering();
 	this.drawVertexPowers(objects);
 
@@ -543,6 +549,8 @@ Renderer.prototype.draw = function(objects) {
 	}
 	this.drawBufferedOperations(context);
 
+	context.restore();
+	//context.setTransform(1, 0, 0, 1, 0, 0);
 /*
  * Only stroke once.
  * \see http://gamedev.stackexchange.com/questions/5314/how-does-one-optimize-an-html5-canvas-and-javascript-web-application-for-mobile
