@@ -855,14 +855,6 @@ Screen.prototype.drawControlPanel=function(){
  */
 Screen.prototype.draw=function(){
 
-	if(this.mode == MODE_SELECT && this.renderer.getSelectionBeginning()) {
-		for(var i = 0; i < this.listOfSelectedVertex.length; i++) {
-			var vertex = this.listOfSelectedVertex[i];
-			var x = (vertex.getCenter().getX() - this.originX) * this.zoomValue ;
-			var y = (vertex.getCenter().getY() - this.originY) * this.zoomValue;
-			this.renderer.drawBufferedRectangle(this.context, x - (50 * this.zoomValue) / 2, y - (50 * this.zoomValue) / 2, 50 * this.zoomValue, 50 * this.zoomValue, "rgba(0,175,255)", 1, "rgba(0,175,255,0.3)", 5000);
-		}
-	}
 /*
  * Setting dimensions clear the content.
  * 2012-11-13: IE9 does not support that.
@@ -1034,6 +1026,8 @@ Screen.prototype.translateY=function(y){
 Screen.prototype.translatePoint = function(point) {
 	var x = point.getX();
 	var y = point.getY();
+
+	//return new Point(x, y);
 	return (new Point(this.translateX(x), this.translateY(y)));
 }
 
@@ -1110,4 +1104,16 @@ Screen.prototype.getPathOperator = function(){
 
 Screen.prototype.getRenderer = function(){
 	return this.renderer;
+}
+
+Screen.prototype.getMode = function() {
+	return this.mode;
+}
+
+Screen.prototype.getListOfSelectedVertices = function(){
+	return this.listOfSelectedVertex;
+}
+
+Screen.prototype.isInSelectionMode = function() {
+	return this.getMode() == MODE_SELECT;
 }

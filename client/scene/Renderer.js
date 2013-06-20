@@ -33,6 +33,10 @@ var RENDERER_RECTANGLE = 3;
 function Renderer(screen){
 	this.selectionIsEnable = false;
 	this.selectionBeginning = false;
+	this.selectionBoxStrokeStyle = "rgba(0,175,255, 0.5)";
+	this.selectionBoxFillStyle = "rgba(0,175,255,0.1)";
+	this.selectionBoxFillStyleForLargeBox = "rgba(0,175,255,0.1)";
+	this.selectionBoxWidth = 50;
 
 	this.distributionGraph = screen.getPathOperator().getDistributionGraph();
 	this.pathMultiplierForVertex=1.5;
@@ -72,7 +76,7 @@ Renderer.prototype.drawVertices = function(vertices){
 		var vertex=vertices[i];
 
 		if(vertex.isEnabled() && !this.screen.isOutside(vertex, this.renderingBuffer)) {
-			this.drawVertex(this.screen.getContext(), this.screen.getOriginX(), this.screen.getOriginY(), zoomValue,vertex);
+			this.drawVertex(this.screen.getContext(), zoomValue,vertex);
 		}
 
 		i++;
@@ -121,7 +125,7 @@ Renderer.prototype.drawPaths=function(vertices, section){
 			continue;
 
 		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
-			this.drawPathVertex(this.screen.getContext(),this.screen.getOriginX(),this.screen.getOriginY(),
+			this.drawPathVertex(this.screen.getContext(),
 			zoomValue,vertex, section);
 		}
 
@@ -148,8 +152,8 @@ Renderer.prototype.drawPaths=function(vertices, section){
 
 			while(k<colors1.length && fullDetails){
 				var layer = -(colors1.length-k-1);
-				this.drawPathArc(context,vertex.getX()-originX,vertex.getY()-originY,
-					vertex2.getX()-originX,vertex2.getY()-originY,
+				this.drawPathArc(context, vertex.getX(), vertex.getY(),
+					vertex2.getX(), vertex2.getY(),
 					this.screen.getZoomValue(),
 					vertex2.getRadius(),fullDetails,colors1[k],extra,layer);
 
@@ -225,16 +229,13 @@ Renderer.prototype.drawArcs=function(vertices){
 			if(!vertex2.isEnabled())
 				continue;
 
-			var originX=this.screen.getOriginX();
-			var originY=this.screen.getOriginY();
-
 			var importantArc=false;
 
 			if(vertex.isInPath() && vertex2.isInPath())
 				importantArc=true;
 
-			this.drawArc(context,vertex.getX()-originX,vertex.getY()-originY,
-				vertex2.getX()-originX,vertex2.getY()-originY,
+			this.drawArc(context,vertex.getX(), vertex.getY(),
+				vertex2.getX(), vertex2.getY(),
 				this.screen.getZoomValue(),
 				vertex2.getRadius(),fullDetails);
 		}
@@ -327,8 +328,8 @@ Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,ve
 	var radius=vertex.getRadius();
 	var theColor= vertex.getColor();
 
-	var x=vertex.getX()-originX;
-	var y=vertex.getY()-originY;
+	var x=vertex.getX();
+	var y=vertex.getY();
 
 	var power=vertex.getPower();
 
@@ -345,15 +346,15 @@ Renderer.prototype.drawVertexPower=function(context,originX,originY,zoomValue,ve
 	}
 }
 
-Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, vertex){
+Renderer.prototype.drawVertex = function(context, zoomValue, vertex){
 
 	if(zoomValue <= this.zoomForLevelOfDetailsForCoverage && !vertex.isColored())
 		return;
 
 	var lineWidth = this.lineWidth;
 	var radius = vertex.getRadius();
-	var x = (vertex.getX() - originX);
-	var y = (vertex.getY() - originY);
+	var x = (vertex.getX());
+	var y = (vertex.getY());
 	var theColor = vertex.getColor();
 
 	if(vertex.isColored()) {
@@ -370,11 +371,11 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage && vertex.isColored()) {
 			this.drawBufferedText(context, x, (y + radius / 2), text, align, fillStyle, font, 30);
 			if(this.m_showCoverage) {
-				this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
+				this.drawHealthBar(context, vertex.getX(), vertex.getY(), vertex.getCoverageValue(), zoomValue, 40);
 			}
 
 		} else if(this.m_showCoverage) {
-			this.drawHealthBar(context, vertex.getX(), vertex.getY(), originX, originY, vertex.getCoverageValue(), zoomValue, 40);
+			this.drawHealthBar(context, vertex.getX(), vertex.getY(), vertex.getCoverageValue(), zoomValue, 40);
 		}
 
 		if(this.screen.getDebugMode() == CONFIG_DEBUG_FORCES){
@@ -389,13 +390,13 @@ Renderer.prototype.drawVertex = function(context, originX, originY, zoomValue, v
 	}
 }
 
-Renderer.prototype.drawHealthBar = function(context, x, y, originX, originY, depth, zoomValue, layer) {
+Renderer.prototype.drawHealthBar = function(context, x, y, depth, zoomValue, layer) {
 	this.distributionGraph = this.screen.getPathOperator().getDistributionGraph();
 	var coverageMax = this.distributionGraph.getMaxY();
 
-	var yCoverage = (y - originY - 40);
-	var xCoverage = (x - originX);
-	var yHealtBar = (y - originY - 34);
+	var yCoverage = (y - 40);
+	var xCoverage = (x);
+	var yHealtBar = (y- 34);
 	var xHealtBar;
 
 	var font = 'bold ' + Math.floor(12) + 'px Arial';
@@ -413,7 +414,7 @@ Renderer.prototype.drawHealthBar = function(context, x, y, originX, originY, dep
 	var stepTwoPositive = stepOnePositive - stepping;
 	var stepThreePositive = stepTwoPositive - stepping;
 
-	xHealtBar = (x - originX - 10);
+	xHealtBar = (x - 10);
 
 	if (depth <= stepThreePositive) {
 		localLayer = layer;
@@ -468,7 +469,7 @@ Renderer.prototype.drawBufferedText = function(context, x, y, text, align, fillS
 	this.bufferedOperations[layer][materialKey].push(new RenderedText(new Point(x, y), text, material));
 }
 
-Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,vertex, section){
+Renderer.prototype.drawPathVertex = function(context,zoomValue,vertex, section){
 
 	if(!vertex.isColored())
 		return;
@@ -478,8 +479,8 @@ Renderer.prototype.drawPathVertex = function(context,originX,originY,zoomValue,v
 	var radius=vertex.getRadius();
 	var theColor= vertex.getColor();
 	var key=vertex.getLabel()+"-"+theColor+"-"+radius+"-"+this.lineWidth;
-	var x=vertex.getX()-originX;
-	var y=vertex.getY()-originY;
+	var x=vertex.getX();
+	var y=vertex.getY();
 
 	var colors=this.pathOperator.getColors(vertex, section);
 
@@ -529,6 +530,7 @@ Renderer.prototype.draw = function(objects) {
 	context.save();
 	//context.transform(1, 0, 0, 1, 0, 0);
 	context.scale(zoomValue, zoomValue);
+	context.translate(-this.screen.getOriginX(), -this.screen.getOriginY());
 
 	var colorSectionLevel = this.screen.getHumanInterface().getInventory().useColorsForRendering();
 	this.drawVertexPowers(objects);
@@ -543,13 +545,32 @@ Renderer.prototype.draw = function(objects) {
 	this.drawVertices(objects);
 	if(this.screen.getDebugMode() == CONFIG_DEBUG_QUADTREE) {
 		this.drawQuadTree();
+}
+
+	if(this.screen.isInSelectionMode() && this.getSelectionBeginning()) {
+		var selectedVertices = this.screen.getListOfSelectedVertices();
+
+		for(var i = 0; i < selectedVertices.length; i++) {
+			var vertex = selectedVertices[i];
+			var x = (vertex.getCenter().getX());
+			var y = (vertex.getCenter().getY());
+
+			this.drawBufferedRectangle(this.context, x - this.selectionBoxWidth / 2, y - this.selectionBoxWidth / 2,
+				this.selectionBoxWidth, this.selectionBoxWidth, this.selectionBoxStrokeStyle,
+				1, this.selectionBoxFillStyle, 5000);
+		}
 	}
-	if(this.selectionIsEnable) {
-		this.drawRectangleSelection(context, objects);
-	}
+
 	this.drawBufferedOperations(context);
 
 	context.restore();
+
+	if(this.selectionIsEnable) {
+		this.drawRectangleSelection(context, objects);
+	}
+
+	this.drawBufferedOperations(context);
+
 	//context.setTransform(1, 0, 0, 1, 0, 0);
 /*
  * Only stroke once.
@@ -564,11 +585,9 @@ Renderer.prototype.drawQuadTree = function(context) {
 	var withDetails =! (zoomValue <= this.zoomForLevelOfDetails);
 	var lineWidth = 1 * zoomValue;
 	var theColor = "black";
-	var originX = this.screen.getOriginX();
-	var originY = this.screen.getOriginY();
 	var screenWidth = this.screen.getWidth() / zoomValue;
 	var screenHeight = this.screen.getHeight() / zoomValue;
-	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(originX + screenWidth / 2, originY + screenHeight / 2),  screenWidth, screenHeight);
+	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(screenWidth / 2, screenHeight / 2),  screenWidth, screenHeight);
 	var numberOfElements = this.quadTree.getSize();
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
@@ -580,10 +599,10 @@ Renderer.prototype.drawQuadTree = function(context) {
 		var centerX = currentQuadTree.getCenter().getX();
 		var centerY = currentQuadTree.getCenter().getY();
 
-		var pointA = new Point(((centerX + width / 2) - originX) * zoomValue, ((centerY + height / 2) - originY) * zoomValue);
-		var pointB = new Point(((centerX + width / 2) - originX) * zoomValue, ((centerY - height / 2) - originY) * zoomValue);
-		var pointC = new Point(((centerX - width / 2) - originX) * zoomValue, ((centerY + height / 2) - originY) * zoomValue);
-		var pointD = new Point(((centerX - width / 2) - originX) * zoomValue, ((centerY - height / 2) - originY) * zoomValue);
+		var pointA = new Point(((centerX + width / 2)), ((centerY + height / 2)));
+		var pointB = new Point(((centerX + width / 2)), ((centerY - height / 2)));
+		var pointC = new Point(((centerX - width / 2)), ((centerY + height / 2)));
+		var pointD = new Point(((centerX - width / 2)), ((centerY - height / 2)));
 
 		this.drawBufferedLineWithTwoPoints(context, pointA, pointB, lineWidth, theColor, 100);
 		this.drawBufferedLineWithTwoPoints(context, pointA, pointC, lineWidth, theColor, 100);
@@ -592,8 +611,8 @@ Renderer.prototype.drawQuadTree = function(context) {
 		this.drawBufferedLineWithTwoPoints(context, pointB, pointD, lineWidth, theColor, 100);
 		this.drawBufferedLineWithTwoPoints(context, pointC, pointD, lineWidth, theColor, 100);
 
-		var textX = (centerX - originX) * zoomValue;
-		var textY = ((centerY - (height - 30) / 2) - originY) * zoomValue;
+		var textX = (centerX);
+		var textY = ((centerY - (height - 30) / 2));
 
 		if(withDetails) {
 			this.drawBufferedText(context, textX, textY, currentQuadTree.getNumberOfElementsInLeaf()
@@ -602,8 +621,8 @@ Renderer.prototype.drawQuadTree = function(context) {
 
 		var gravityCenter = currentQuadTree.getGravityCenter();
 		var radius = 4 * zoomValue;
-		var x = (gravityCenter.getX() - originX) * zoomValue;
-		var y = (gravityCenter.getY() - originY) * zoomValue;
+		var x = (gravityCenter.getX());
+		var y = (gravityCenter.getY());
 		this.drawBufferedCircle(context, x, y, radius, theColor, lineWidth, theColor, 1000);
 	}
 }
@@ -621,7 +640,7 @@ Renderer.prototype.drawRectangleSelection = function(context, vertices) {
 	var height = this.selectionEndPoint.getY() - this.selectionOrigin.getY();
 	var x = this.selectionOrigin.getX();
 	var y = this.selectionOrigin.getY();
-	this.drawBufferedRectangle(context, x, y, height, width, "rgb(0,175,255)", 1, "rgba(0,175,255,0.1)", 500);
+	this.drawBufferedRectangle(context, x, y, height, width, this.selectionBoxStrokeStyle, 1, this.selectionBoxFillStyleForLargeBox, 500);
 }
 
 Renderer.prototype.setSelectionBeginning = function(point) {
