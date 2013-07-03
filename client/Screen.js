@@ -130,26 +130,53 @@ function Screen(gameFrequency,renderingFrequency) {
 
 	var screenObject=this;
 
+/**
+ * \see http://stackoverflow.com/questions/3558537/preventdefault-not-working-in-google-chrome-5
+ * \see http://stackoverflow.com/questions/8838635/event-preventdefault-working-in-chrome-not-firefox-for-a-submit-button
+ * \see http://stackoverflow.com/questions/7059039/how-to-prevent-accidental-select-drag-highlight-on-webpage-when-drawing-off-html
+ * \see https://developer.mozilla.org/en-US/docs/Web/API/event.preventDefault
+ */
 	function handleMouseDown(e){
 		screenObject.handleMouseDown.call(screenObject,e);
+
+		return false;
 	}
 
 	function handleMouseUp(e){
 		screenObject.handleMouseUp.call(screenObject,e);
+
+		return false;
 	}
 
 	function handleMouseMove(e){
 		screenObject.handleMouseMove.call(screenObject,e);
+
+		return false;
 	}
 
 	function handleMouseDoubleClick(e){
 		screenObject.handleMouseDoubleClick.call(screenObject,e);
+
+		return false;
 	}
 
 	this.canvas.addEventListener("mousedown",handleMouseDown,false);
 	this.canvas.addEventListener("mouseup",handleMouseUp,false);
 	this.canvas.addEventListener("mousemove",handleMouseMove,false);
 	this.canvas.addEventListener("dblclick",handleMouseDoubleClick,false);
+
+	/*
+	 * fixes a problem where double clicking causes text to get selected on the canvas
+	 * \see http://css.dzone.com/articles/gentle-introduction-making
+	 */
+
+	function handleStart(e) {
+		e.preventDefault();
+
+		return false;
+	}
+
+	this.canvas.addEventListener('selectstart', handleStart, false);
 
 	//this.createButtons();
 

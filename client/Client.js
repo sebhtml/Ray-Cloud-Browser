@@ -102,5 +102,16 @@ function Client() {
 	*/
 	document.onkeydown = function(e) {
 		programScreen.processKeyboardEvent(e);
+
+		return false;
+	}
+
+	/**
+	 * Apple products have touch events too
+	 * \see http://stackoverflow.com/questions/9975352/javascript-html5-canvas-drawing-instead-of-dragging-scrolling-on-mobile-devic
+	 */
+	document.onclick = function(theEvent) {
+
+		return false;
 	}
 }
