@@ -585,9 +585,14 @@ Renderer.prototype.drawQuadTree = function(context) {
 	var withDetails =! (zoomValue <= this.zoomForLevelOfDetails);
 	var lineWidth = 1 ;
 	var theColor = "black";
-	var screenWidth = this.screen.getWidth();
-	var screenHeight = this.screen.getHeight();
-	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(screenWidth / 2, screenHeight / 2),  screenWidth, screenHeight);
+	var screenWidth = this.screen.getWidth() / zoomValue;
+	var screenHeight = this.screen.getHeight() / zoomValue;
+	var originX = this.screen.getOriginX();
+	var originY = this.screen.getOriginY();
+
+	var theCenter = new Point(originX + screenWidth / 2, originY + screenHeight / 2);
+
+	var listOfQuadTrees = this.quadTree.queryAllLeaves(theCenter,  screenWidth, screenHeight);
 	var numberOfElements = this.quadTree.getSize();
 
 	for(var k = 0 ; k < listOfQuadTrees.length; k++) {
