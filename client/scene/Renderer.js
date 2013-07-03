@@ -583,10 +583,10 @@ Renderer.prototype.draw = function(objects) {
 Renderer.prototype.drawQuadTree = function(context) {
 	var zoomValue = this.screen.getZoomValue();
 	var withDetails =! (zoomValue <= this.zoomForLevelOfDetails);
-	var lineWidth = 1 * zoomValue;
+	var lineWidth = 1 ;
 	var theColor = "black";
-	var screenWidth = this.screen.getWidth() / zoomValue;
-	var screenHeight = this.screen.getHeight() / zoomValue;
+	var screenWidth = this.screen.getWidth();
+	var screenHeight = this.screen.getHeight();
 	var listOfQuadTrees = this.quadTree.queryAllLeaves(new Point(screenWidth / 2, screenHeight / 2),  screenWidth, screenHeight);
 	var numberOfElements = this.quadTree.getSize();
 
