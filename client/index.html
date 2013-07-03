@@ -14,54 +14,16 @@ Ray Cloud Browser: interactively skim processed genomics data with energy
 
 <body>
 
-<script type="text/javascript" charset="UTF-8" src="config.js"></script>
+	<script type="text/javascript" charset="UTF-8" src="AssetManager.js"> </script>
 
-<script type="text/javascript" charset="UTF-8" src="index/QuadTree.js"></script>
-<script type="text/javascript" charset="UTF-8" src="index/BarnesHutAlgorithm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
 
-<script type="text/javascript" charset="UTF-8" src="scene/RenderedLine.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/RenderedCircle.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/RenderedText.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/RenderedRectangle.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/Material.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/Renderer.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/Blit.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/Blitter.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/LoadingAnimation.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/AnimatedRing.js"></script>
-<script type="text/javascript" charset="UTF-8" src="scene/RegionGateAnimation.js"></script>
+	var assetManager = new AssetManager();
+	assetManager.streamContent("boot");
+	assetManager.installContent();
 
-<script type="text/javascript" charset="UTF-8" src="PhysicsEngine.js"></script>
+	</script>
 
-<script type="text/javascript" charset="UTF-8" src="Distribution.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Graphic.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Region.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Message.js"></script>
-<script type="text/javascript" charset="UTF-8" src="MessageQueue.js"></script>
-<script type="text/javascript" charset="UTF-8" src="DataStore.js"></script>
-<script type="text/javascript" charset="UTF-8" src="GraphOperator.js"></script>
-<script type="text/javascript" charset="UTF-8" src="PathOperator.js"></script>
-<script type="text/javascript" charset="UTF-8" src="LayoutEngine.js"></script>
-
-<script type="text/javascript" charset="UTF-8" src="Kmer.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Graph.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Vertex.js"></script>
-
-<script type="text/javascript" charset="UTF-8" src="Point.js"></script>
-
-<script type="text/javascript" charset="UTF-8" src="Inventory.js"></script>
-<script type="text/javascript" charset="UTF-8" src="IntegerSelectionWidget.js"></script>
-<script type="text/javascript" charset="UTF-8" src="TextWidget.js"></script>
-<script type="text/javascript" charset="UTF-8" src="SelectionWidget.js"></script>
-<script type="text/javascript" charset="UTF-8" src="AddressManager.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Selector.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Button.js"></script>
-<script type="text/javascript" charset="UTF-8" src="HumanInterface.js"></script>
-
-<script type="text/javascript" charset="UTF-8" src="WebDocument.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Screen.js"></script>
-<script type="text/javascript" charset="UTF-8" src="Client.js"></script>
-<script type="text/javascript" charset="UTF-8" src="main.js"></script>
 <div id="textWidgetBox"></div>
 
 </body>
