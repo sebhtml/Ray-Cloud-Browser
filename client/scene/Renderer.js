@@ -570,7 +570,6 @@ Renderer.prototype.draw = function(objects) {
 		this.drawRectangleSelection(context, objects);
 	}
 
-	this.drawBufferedOperations(context);
 
 	//context.setTransform(1, 0, 0, 1, 0, 0);
 /*

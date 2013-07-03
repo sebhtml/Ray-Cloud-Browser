@@ -882,6 +882,7 @@ Screen.prototype.drawControlPanel=function(){
  */
 Screen.prototype.draw=function(){
 
+	var context=this.getContext();
 /*
  * Setting dimensions clear the content.
  * 2012-11-13: IE9 does not support that.
@@ -895,7 +896,6 @@ Screen.prototype.draw=function(){
 
 	this.renderer.draw(this.getActiveObjects());
 
-
 /*
  * \see http://www.w3schools.com/tags/canvas_drawimage.asp
  */
@@ -903,13 +903,16 @@ Screen.prototype.draw=function(){
 
 	this.humanInterface.draw();
 
+// draw a second round or buffered operations for not-transformed operations
+
+	this.renderer.drawBufferedOperations(context);
+
 	this.drawControlPanel();
 /*
  * Everything below won't be processed because
  * of double-buffering
  */
 
-	var context=this.getContext();
 	this.loadingAnimation.draw(context);
 
 	this.context.clearRect(0,0,this.width,this.height);
