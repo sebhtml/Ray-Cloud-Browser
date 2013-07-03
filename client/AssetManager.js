@@ -19,6 +19,8 @@ function AssetManager() {
 	this.cache = new Object();
 	this.assetNames = new Array();
 	this.pending = 0;
+
+	this.debug = false;
 }
 
 AssetManager.prototype.streamContent = function(asset) {
@@ -40,7 +42,9 @@ AssetManager.prototype.streamContent = function(asset) {
 	xmlHttpRequest.send();
 
 	this.pending ++;
-	console.log("Requesting asset " + asset);
+
+	if(this.debug)
+		console.log("Requesting asset " + asset);
 
 	//if(xmlHttpRequest.status == 200) {
 
@@ -53,7 +57,8 @@ AssetManager.prototype.streamContent = function(asset) {
 				var content = xmlHttpRequest.responseText;
 				thisIsMe.cache[asset] = content;
 
-				console.log("Received asset " + asset);
+				if(this.debug)
+					console.log("Received asset " + asset);
 
 				thisIsMe.pending --;
 			}
@@ -63,7 +68,8 @@ AssetManager.prototype.streamContent = function(asset) {
 		var content = xmlHttpRequest.responseText;
 		thisIsMe.cache[asset] = content;
 
-		console.log("Received asset " + asset);
+		if(this.debug)
+			console.log("Received asset " + asset);
 
 		thisIsMe.pending --;
 	}
@@ -79,14 +85,17 @@ AssetManager.prototype.installContent = function() {
 
 	while(this.pending) {
 
-		console.log("Pending: " + this.pending);
+		if(this.debug)
+			console.log("Pending: " + this.pending);
 
 		setTimeout(handlerForInstallation, 5);
 		return;
 	}
 
-	console.log("Pending: " + this.pending);
-	console.log("[AssetManager] installing " + this.assetNames.length + " assets");
+	if(this.debug) {
+		console.log("Pending: " + this.pending);
+		console.log("[AssetManager] installing " + this.assetNames.length + " assets");
+	}
 
 	var i = 0;
 
@@ -97,17 +106,22 @@ AssetManager.prototype.installContent = function() {
 		var asset = this.assetNames[i];
 		var content = this.cache[asset];
 		code += content;
-		console.log("[AssetManager] processing asset " + asset + ", " + content.length + " characters");
+
+		if(this.debug)
+			console.log("[AssetManager] processing asset " + asset + ", " + content.length + " characters");
+
 		i ++;
 	}
 
 	this.cache = new Object();
 	this.assetNames = new Array();
 
-	console.log("[AssetManager] installing code, " + code.length + " characters");
+	if(this.debug)
+		console.log("[AssetManager] installing code, " + code.length + " characters");
 
 	eval(code);
 
-	console.log("[AssetManager] installed " + numberOfAssets + " assets");
+	if(this.debug)
+		console.log("[AssetManager] installed " + numberOfAssets + " assets");
 }
 
