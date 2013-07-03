@@ -527,8 +527,9 @@ Renderer.prototype.draw = function(objects) {
 	var context = this.screen.getContext();
 	var zoomValue = this.screen.getZoomValue();
 
-	context.save();
 	//context.transform(1, 0, 0, 1, 0, 0);
+
+	context.save();
 	context.scale(zoomValue, zoomValue);
 	context.translate(-this.screen.getOriginX(), -this.screen.getOriginY());
 

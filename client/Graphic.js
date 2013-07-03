@@ -101,10 +101,10 @@ Graphic.prototype.getSize = function() {
  * @param width Width of graph
  * @param renderer For buffered opperations
  */
-Graphic.prototype.draw = function(context, originX, originY, height, width, renderer, nameX, nameY, actualLocation, window) {
+Graphic.prototype.draw = function(context, originX, originY, height, width, renderer, nameX, nameY, actualLocation, windowSize) {
 	var pointA = null;
 	var pointB = null;
-	if(this.maxX - this.minX < window) {
+	if(this.maxX - this.minX < windowSize) {
 		this.begin = this.minX;
 		this.end = this.maxX;
 		this.changeLeft = false;
@@ -112,8 +112,8 @@ Graphic.prototype.draw = function(context, originX, originY, height, width, rend
 	}
 	var gap = this.begin - this.end;
 	if(this.init) {
-		this.begin = actualLocation - window / 2;
-		this.end = actualLocation + window / 2;
+		this.begin = actualLocation - windowSize / 2;
+		this.end = actualLocation + windowSize / 2;
 		this.init = false;
 	}
 	if(this.changeRight) {
@@ -125,8 +125,8 @@ Graphic.prototype.draw = function(context, originX, originY, height, width, rend
 		this.begin += this.index;
 		this.end += this.index;
 		if(this.end >= this.newEnd) {
-			this.begin = actualLocation - window / 4;
-			this.end = actualLocation + 3 * (window / 4);
+			this.begin = actualLocation - windowSize / 4;
+			this.end = actualLocation + 3 * (windowSize / 4);
 			this.changeRight = false;
 		}
 	} else if(this.changeLeft) {
@@ -138,72 +138,79 @@ Graphic.prototype.draw = function(context, originX, originY, height, width, rend
 		this.begin -= this.index;
 		this.end -= this.index;
 		if(this.end <= this.newEnd) {
-			this.begin = actualLocation - 3 * (window / 4);
-			this.end = actualLocation + window / 4;
+			this.begin = actualLocation - 3 * (windowSize / 4);
+			this.end = actualLocation + windowSize / 4;
 			this.changeLeft = false;
 		}
 	} else {
 		if(actualLocation > this.end + (gap / 4)) {
 			this.init = false;
 			this.changeRight = true;
-			this.newEnd = this.end + (window / 2);
+			this.newEnd = this.end + (windowSize / 2);
 		} else if (actualLocation < this.begin - (gap / 4)) {
 			this.changeLeft = true;
-			this.newEnd = this.end - (window / 2);
+			this.newEnd = this.end - (windowSize / 2);
 		}
 		this.index = 0;
 	}
 	if(this.begin <= 0) {
 		this.begin = 0;
-		this.end = window;
-		if(actualLocation < this.end + (window / 2)) {
+		this.end = windowSize;
+		if(actualLocation < this.end + (windowSize / 2)) {
 			this.changeLeft = false;
 		}
 	}
 	if(this.end >= this.listOfPoints.length) {
-		this.begin = this.listOfPoints.length - window;
+		this.begin = this.listOfPoints.length - windowSize;
 		this.end = this.listOfPoints.length;
-		if(actualLocation < this.end + (window / 2)) {
+		if(actualLocation < this.end + (windowSize / 2)) {
 			this.changeRight = false;
 		}
 	}
+
 	renderer.drawBufferedRectangle(this.localContext, originX, originY, height, width, "black", 5, "white", 200);
+
 	renderer.drawBufferedText(this.localContext, originX + (width / 2), originY + height + 40, nameX, "center", "black", "12px arial", 202);
 	renderer.drawBufferedText(this.localContext, originX - 75, originY + (height / 2), nameY, "center", "black", "12px arial", 202);
+
 	this.graphMinimumXPosition = this.begin;
 	this.graphMaximumXPosition = this.end;
 	this.graphMaximumYPosition = 0;
+
 	for(var x = this.begin; x < this.end; x++) {
 		var y = this.listOfPoints[x];
 		if(y > this.graphMaximumYPosition) {
 			this.graphMaximumYPosition = y;
 		}
 	}
-		for(var x = this.begin; x < this.end; x++) {
-			var y = this.listOfPoints[x];
-			var currentX = ((x - this.graphMinimumXPosition) / (this.graphMaximumXPosition - this.graphMinimumXPosition)) * width + originX;
-			var yRatio = (y - this.graphMinimumYPosition) / (this.graphMaximumYPosition - this.graphMinimumYPosition);
-			var currentY = originY + (1 - yRatio) * height;
-			if(pointB == null) {
-				pointB = new Point(currentX, currentY);
-				continue;
-			}
-			pointA = pointB;
+
+	for(var x = this.begin; x < this.end; x++) {
+		var y = this.listOfPoints[x];
+		var currentX = ((x - this.graphMinimumXPosition) / (this.graphMaximumXPosition - this.graphMinimumXPosition)) * width + originX;
+		var yRatio = (y - this.graphMinimumYPosition) / (this.graphMaximumYPosition - this.graphMinimumYPosition);
+		var currentY = originY + (1 - yRatio) * height;
+		if(pointB == null) {
 			pointB = new Point(currentX, currentY);
-			renderer.drawBufferedLineWithTwoPoints(this.localContext, pointA, pointB, 1, "red", 202);
-			if(x % (Math.round((this.graphMaximumXPosition - this.graphMinimumXPosition) / 15)) == 0) {
-				renderer.drawBufferedText(this.localContext, currentX, originY + height + 20, x, "center", "black", "12px arial", 202);
-				renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
-			}
+			continue;
 		}
-		for(var y = 0; y <= this.graphMaximumYPosition; y++) {
-			var yRatio = (y - this.graphMinimumYPosition) / (this.graphMaximumYPosition - this.graphMinimumYPosition);
-			var currentY = originY + (1 - yRatio) * height;
-			if(y % (Math.round((this.graphMaximumYPosition - this.graphMinimumYPosition) / 3)) == 0) {
-				renderer.drawBufferedText(this.localContext, originX - 20, currentY, y, "center", "black", "12px arial", 202);
-				renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
-			}
+		pointA = pointB;
+		pointB = new Point(currentX, currentY);
+		renderer.drawBufferedLineWithTwoPoints(this.localContext, pointA, pointB, 1, "red", 202);
+		if(x % (Math.round((this.graphMaximumXPosition - this.graphMinimumXPosition) / 15)) == 0) {
+			renderer.drawBufferedText(this.localContext, currentX, originY + height + 20, x, "center", "black", "12px arial", 202);
+			renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(currentX, originY + height), new Point(currentX, originY), 1, "grey", 201);
 		}
+	}
+
+	for(var y = 0; y <= this.graphMaximumYPosition; y++) {
+		var yRatio = (y - this.graphMinimumYPosition) / (this.graphMaximumYPosition - this.graphMinimumYPosition);
+		var currentY = originY + (1 - yRatio) * height;
+		if(y % (Math.round((this.graphMaximumYPosition - this.graphMinimumYPosition) / 3)) == 0) {
+			renderer.drawBufferedText(this.localContext, originX - 20, currentY, y, "center", "black", "12px arial", 202);
+			renderer.drawBufferedLineWithTwoPoints(this.localContext, new Point(originX, currentY), new Point(originX + width, currentY), 1, "grey", 201);
+		}
+	}
+
 	this.start = new Date() * 1;
 	if(this.start >= this.lastUpdate + this.period) {
 		this.lastUpdate = this.start;

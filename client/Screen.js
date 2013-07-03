@@ -892,13 +892,13 @@ Screen.prototype.draw=function(){
 	}
 
 	var start=this.getMilliseconds();
+
 	this.renderer.draw(this.getActiveObjects());
 
 
 /*
  * \see http://www.w3schools.com/tags/canvas_drawimage.asp
  */
-
 
 
 	this.humanInterface.draw();
