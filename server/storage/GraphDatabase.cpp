@@ -103,19 +103,25 @@ bool GraphDatabase::getObjectIndex(const char*key,uint64_t*index)const{
 
 		int comparisonResult=strcmp(key,sequence);
 
-		if(comparisonResult==match){
-			(*index)=middle;
-			found=true;
-			break;
+		bool same = first == last;
 
-		}else if(comparisonResult>match){
+		if (comparisonResult>match) {
 
 			first=middle+1;
 
-		}else if(comparisonResult<match){
+		} else if (comparisonResult<match) {
 
-			last=middle-1;
+			last=middle;
+			if(last)
+				last--;
+		} else if(comparisonResult==match) {
+			(*index)=middle;
+			found=true;
+			break;
 		}
+
+		if(same)
+			break;
 	}
 
 	return found;

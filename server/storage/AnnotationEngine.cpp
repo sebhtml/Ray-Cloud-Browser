@@ -383,11 +383,16 @@ int AnnotationEngine::index(const char*mapFile,const char*sectionFile,int sectio
 	cout<<"Section: "<<sectionIndex<<" "<<pathReader.getFileName()<<" Objects: "<<regions<<endl;
 	cout<<"Annotations: "<<annotationEngine.getFileName()<<endl;
 
-	while(regionIndex<regions){
+	while(regionIndex<regions) {
 
 		int regionLength=pathReader.getSequenceLength(regionIndex)-kmerLength+1;
 
 		char sequence[1024];
+
+		if(regionIndex % 10 == 0) {
+			cout << "\rRegion: " << regionIndex;
+			cout.flush();
+		}
 
 		for(int locationIndex=0;locationIndex<regionLength;locationIndex++){
 
@@ -410,6 +415,8 @@ int AnnotationEngine::index(const char*mapFile,const char*sectionFile,int sectio
 
 		regionIndex++;
 	}
+
+	cout << endl;
 
 	graphReader.closeFile();
 	pathReader.closeFile();
