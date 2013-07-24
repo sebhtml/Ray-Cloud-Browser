@@ -29,8 +29,6 @@ function Selector(x,y,width,height,dataStore,useAddress){
 	this.depth = 0;
 	this.useAddress=useAddress;
 	this.fontSize=12;
-	this.tableOfIndex = new Object();
-	this.tableOfNameOfRegions = new Array();
 
 	this.displaySearchWidget = false;
 	this.maxNucleotides = 0;
@@ -145,23 +143,28 @@ Selector.prototype.draw=function(context){
 			var choices=new Array();
 			var i=0;
 			this.objects=new Array();
+
+			this.mappingForSizeSelection = new Array();
 			while(i<this.regionData["regions"].length){
-				var entry=this.regionData["regions"][i++];
+				var entry=this.regionData["regions"][i];
+
 				if(this.nucleotidesSelected != -1) {
 					if(this.nucleotidesSelected == entry["nucleotides"]) {
 						choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
-						this.tableOfNameOfRegions.push(entry["name"]+" ("+entry["nucleotides"]+")");
+						this.mappingForSizeSelection.push(i);
 					}
 				} else {
 					choices.push(entry["name"]+" ("+entry["nucleotides"]+")");
-					this.tableOfIndex[entry["name"]+" ("+entry["nucleotides"]+")"] = i;
 				}
+
 				if(this.maxNucleotides < entry["nucleotides"]) {
 					this.maxNucleotides = entry["nucleotides"];
 				}
 				if(this.minNucleotides == 0 || this.minNucleotides > entry["nucleotides"]) {
 					this.minNucleotides = entry["nucleotides"];
 				}
+
+				i++;
 			}
 			this.integerSelection = new IntegerSelectionWidget(this.x - this.width - 5, this.y + 115, this.width * 1.0, this.width - 70, "Search region with number of nucleotides", this.minNucleotides, this.maxNucleotides);
 			this.objects.push(this.integerSelection);
@@ -286,14 +289,20 @@ Selector.prototype.handleMouseDown=function(x,y){
 		this.selectSectionIndex(index);
 
 	}else if(this.state==this.SLAVE_MODE_SELECT_REGION && this.regionWidget.hasChoice() && this.receivedMapFileData){
+
+		//console.log("[DEBUG] has region choice");
+
 		var index=this.regionWidget.getChoice();
 		if(this.nucleotidesSelected != -1) {
-			this.selectRegionIndex(this.tableOfIndex[this.tableOfNameOfRegions[index]]);
+
+			//console.log("[DEBUG] using nucleotidesSelected");
+
+			var realIndex = this.mappingForSizeSelection[index];
+
+			this.selectRegionIndex(realIndex);
 		} else {
 			this.selectRegionIndex(index);
 		}
-
-
 
 	} else if(this.state == this.SLAVE_MODE_SELECT_REGION && this.integerSelection.hasChoice()) {
 		if(this.integerSelection && this.nucleotidesSelected != this.integerSelection.getValue()) {
