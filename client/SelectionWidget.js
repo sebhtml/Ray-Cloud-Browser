@@ -21,6 +21,10 @@
  * \author Sébastien Boisvert
  */
 function SelectionWidget(x,y,width,height,title,choices) {
+
+	this.searchBox = null;
+	this.query = "";
+
 	this.minBlink = 160;
 	this.maxBlink = 255;
 	this.colorIndex = this.minBlink;
@@ -31,7 +35,10 @@ function SelectionWidget(x,y,width,height,title,choices) {
 	this.x=x;
 	this.y=y;
 	this.title=title;
+
+	this.allChoices = choices;
 	this.choices=choices;
+	this.mapping = null;
 	this.gotFinalChoice=false;
 
 	this.colors=[];
@@ -70,6 +77,10 @@ function SelectionWidget(x,y,width,height,title,choices) {
 		this.y+this.height-buttonDimension/2-stepping,
 		buttonDimension,buttonDimension,"OK",false);
 
+	this.searchButton=new Button(this.x + this.width / 5,
+		this.y+this.height-buttonDimension/2-stepping,
+		buttonDimension * 4, buttonDimension*1, "Keyword search",false);
+
 	this.finished=false;
 
 	this.createButtons(0);
@@ -85,7 +96,7 @@ SelectionWidget.prototype.createButtons=function(offset){
 	this.choiceButtons=new Array();
 
 	var processed=0;
-	while(i<this.choices.length && processed < this.displayed){
+	while(i < this.choices.length && processed < this.displayed){
 
 		var multiplier=i-this.offset;
 
@@ -110,6 +121,7 @@ SelectionWidget.prototype.createButtons=function(offset){
 		this.buttons.push(this.nextButton);
 
 	this.buttons.push(this.okButton);
+	this.buttons.push(this.searchButton);
 }
 
 SelectionWidget.prototype.setColors=function(colors){
@@ -147,7 +159,7 @@ SelectionWidget.prototype.blinkBox = function(){
 	this.theColor = "rgb(" + (this.colorIndex - 100) + ", " + (this.colorIndex - 50) + ", " + this.colorIndex + ")";
 }
 
-SelectionWidget.prototype.draw = function(context){
+SelectionWidget.prototype.draw = function(context) {
 
 	context.beginPath();
 	context.fillStyle = this.theColor;
@@ -207,6 +219,9 @@ SelectionWidget.prototype.draw = function(context){
 		button.draw(context,null);
 		i++;
 	}
+
+	if(this.searchBox != null)
+		this.searchBox.draw(context);
 }
 
 SelectionWidget.prototype.move=function(x,y){
@@ -248,6 +263,34 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 	var result = false;
 
 	var selected = -1;
+
+	if(this.searchBox != null) {
+
+		if(this.searchBox.handleMouseDown(x, y)) {
+			if(this.searchBox.getHasChoice()) {
+				this.query = this.searchBox.getContent();
+
+				this.searchBox.kill();
+				// garbage collect the widget
+				this.searchBox = null;
+
+				//console.log("query= " + this.query);
+
+				this.choices = new Array();
+				this.mapping = new Array();
+
+				for(var i = 0 ; i < this.allChoices.length ; i ++) {
+					var choice = this.allChoices[i];
+					if(choice.indexOf(this.query) >= 0) {
+						this.choices.push(choice);
+						this.mapping.push(i);
+					}
+				}
+
+				this.createButtons(0);
+			}
+		}
+	}
 
 // check if a choice button is down already
 	var i=0;
@@ -320,6 +363,11 @@ SelectionWidget.prototype.handleMouseDown=function(x,y){
 		this.createButtons(this.offset-this.displayed);
 
 		this.previousButton.resetState();
+
+	} else if(this.searchButton.getState()) {
+
+		this.searchButton.resetState();
+		this.searchBox = new TextWidget(70, 50, 512, 100, "Search", false);
 	}
 
 	return result;
@@ -330,6 +378,10 @@ SelectionWidget.prototype.hasChoice=function(){
 }
 
 SelectionWidget.prototype.getChoice=function() {
+
+	if(this.mapping != null) {
+		return this.mapping[this.finalChoice];
+	}
 	return this.finalChoice;
 }
 

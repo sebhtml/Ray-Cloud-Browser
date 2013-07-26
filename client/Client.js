@@ -103,7 +103,7 @@ function Client() {
 	document.onkeydown = function(e) {
 		programScreen.processKeyboardEvent(e);
 
-		return false;
+		return true;
 	}
 
 	/**

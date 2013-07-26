@@ -16,7 +16,7 @@
  */
 
 /**
- * Créate a text widget for Ray Cloud Browser
+ * Create a text widget for Ray Cloud Browser
  *
  * @author Jean-François Erdelyi
  */
@@ -117,13 +117,21 @@ TextWidget.prototype.move = function(x, y) {
 }
 
 TextWidget.prototype.handleMouseDown = function(x, y) {
+
 	if(this.resetButton.handleMouseDown(x, y)) {
 		this.textArea.value = "";
 		this.resetButton.resetState();
+
+		return true;
 	} else if(this.submitButton.handleMouseDown(x, y)) {
 		this.hasChoice = true;
 		this.submitButton.resetState();
+
+		//console.log
+		return true;
 	}
+
+	return false;
 }
 
 TextWidget.prototype.handleMouseDownMoveBox = function(x, y) {
