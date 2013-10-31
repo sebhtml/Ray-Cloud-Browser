@@ -8,6 +8,7 @@
 #--js ./tests/test_quadtree.js \
 
 java -jar ~/software/closure-javascript/compiler.jar \
+--compilation_level ADVANCED_OPTIMIZATIONS \
 --js ./Point.js \
 --js ./Kmer.js \
 --js ./Grid.js \
