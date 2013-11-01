@@ -26,8 +26,14 @@ var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=10;
 /**
  * The server to use for all web services.
  */
+
+// Use the endpoint associated with the client installation (Should be Online !)
 var CONFIG_WEB_SERVER="../server/";
+
+// old endpoint (Offline)
 //var CONFIG_WEB_SERVER="http://browser.cloud.raytrek.com/server/";
+
+//Demo endpoint (Online)
 //var CONFIG_WEB_SERVER = "http://genome.ulaval.ca:10090/server/";
 
 
