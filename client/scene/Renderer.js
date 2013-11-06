@@ -124,7 +124,7 @@ Renderer.prototype.drawPaths=function(vertices, section){
 		if(this.screen.isOutside(vertex,this.renderingBuffer))
 			continue;
 
-		if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
+		if(this.alwaysDrawPaths() || zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
 			this.drawPathVertex(this.screen.getContext(),
 			zoomValue,vertex, section);
 		}
@@ -311,8 +311,13 @@ Renderer.prototype.drawArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDet
 	this.drawBufferedLine(context, cx, cy, ex, ey, lineWidth, color, layer);
 }
 
+Renderer.prototype.alwaysDrawPaths = function() {
+	return true;
+}
+
 Renderer.prototype.drawPathArc=function(context,ax,ay,bx,by,zoomValue,radius,fullDetails,pathColor,extra,layer){
-	if(zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
+
+	if(this.alwaysDrawPaths() || zoomValue >= this.zoomForLevelOfDetailsForCoverage) {
 		var lineWidth=(this.lineWidthForPath+extra)*this.pathMultiplierForArc;
 		this.drawBufferedLine(context, ax, ay, bx, by,
 			lineWidth, pathColor,layer);
