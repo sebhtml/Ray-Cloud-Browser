@@ -7,7 +7,8 @@ Funding: Canadian Institute of Health Research
 
 ## Demo:
 
-http://genome.ulaval.ca:10090/client/
+- stool sample SRS011134 from the Human Microbiome Project: http://genome.ulaval.ca:10208/client/
+- http://genome.ulaval.ca:10090/client/
 
 ## Motivation
 
