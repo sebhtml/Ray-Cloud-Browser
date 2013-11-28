@@ -46,8 +46,9 @@ http://dx.doi.org/doi:10.1089/cmb.2009.0238
 
 These products can output a file in the Ray Cloud Browser format:
 
-- Ray assembler http://denovoassembler.sourceforge.net/
-- ABySS http://www.bcgsc.ca/platform/bioinfo/software/abyss/
+- Ray assembler http://denovoassembler.sourceforge.net/ (option -write-kmers)
+- ABySS http://www.bcgsc.ca/platform/bioinfo/software/abyss/ (option --ray)
+  see https://github.com/bcgsc/abyss/commit/1e3d2f3bd060fbbff2ae77486f189aad1677b864
 
 For deployment, a web server is needed and clients must have a modern
 web browser supporting HTML5.
