@@ -7,7 +7,9 @@ Funding: Canadian Institute of Health Research
 
 ## Demo:
 
-- http://ray-cloud-browser.genap.ca/client/
+- http://html5-app.qc.to/client
+- ~~http://ray-cloud-browser.genap.ca/client/~~
+- ~~http://genome.ulaval.ca:10090/client/~~
 
 ## Motivation
 
