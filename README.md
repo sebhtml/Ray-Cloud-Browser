@@ -4,6 +4,7 @@ License: GNU General Public License, version 3
 
 ## Demos:
 
+- http://covidgenomes.ddns.net (work in progress)
 - ~~http://html5-app.qc.to/client~~ (dead link)
 - ~~http://ray-cloud-browser.genap.ca/client/~~ (dead link)
 - ~~http://genome.ulaval.ca:10090/client/~~ (dead link)
