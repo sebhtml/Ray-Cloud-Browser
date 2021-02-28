@@ -1,0 +1,9 @@
+FROM alpine:latest
+
+RUN apk add lighttpd
+
+RUN rc-update add lighttpd default
+
+RUN mkdir /var/www/cgi-bin
+
+COPY --from=ray-cloud-browser /Ray-Cloud-Browser/server/RayCloudBrowser.cgi /var/www/cgi-bin

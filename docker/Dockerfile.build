@@ -1,0 +1,12 @@
+FROM alpine:latest
+
+RUN apk add alpine-sdk curl linux-headers
+
+RUN git clone https://github.com/sebhtml/Ray-Cloud-Browser.git
+
+RUN echo "#include <unistd.h>" > /usr/include/sys/unistd.h
+
+WORKDIR Ray-Cloud-Browser/server
+
+RUN make
+ 
