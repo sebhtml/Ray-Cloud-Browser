@@ -1,0 +1,13 @@
+
+# DevOps code
+docker/         @arandr
+
+# Front-end code
+client/         @sebhtml
+
+# Back-end code
+server/         @sebhtml
+
+# Project
+Documentation/  @sebhtml
+*               @sebhtml
