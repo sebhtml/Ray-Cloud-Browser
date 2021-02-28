@@ -2,11 +2,11 @@ Ray Cloud Browser: interactively skim processed genomics data with energy
 
 License: GNU General Public License, version 3
 
-## Demo:
+## Demos:
 
-- http://html5-app.qc.to/client
-- ~~http://ray-cloud-browser.genap.ca/client/~~
-- ~~http://genome.ulaval.ca:10090/client/~~
+- ~~http://html5-app.qc.to/client~~ (dead link)
+- ~~http://ray-cloud-browser.genap.ca/client/~~ (dead link)
+- ~~http://genome.ulaval.ca:10090/client/~~ (dead link)
 
 ## Motivation
 
