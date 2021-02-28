@@ -2,8 +2,6 @@ Ray Cloud Browser: interactively skim processed genomics data with energy
 
 Product manager: Sébastien Boisvert
 License: GNU General Public License, version 3
-Funding: Canadian Institute of Health Research
-     S.B. is recipient of a doctoral award from the Canadian Institutes of Health Research (200910GSD-226209-172830). 
 
 ## Demo:
 
