@@ -1,9 +1,28 @@
 FROM alpine:latest
 
-RUN apk add lighttpd
+RUN apk add alpine-sdk openrc lighttpd esh
+
+COPY --from=ray-cloud-browser /ray/Ray-Cloud-Browser/server/data /ray/Ray-Cloud-Browser/server/data
+
+COPY --from=ray-cloud-browser /Ray-Cloud-Browser/server/RayCloudBrowser.cgi /ray/Ray-Cloud-Browser/server/
+
+COPY --from=ray-cloud-browser /ray/Ray-Cloud-Browser/server/config.json /ray/Ray-Cloud-Browser/server/
+
+COPY --from=ray-cloud-browser /Ray-Cloud-Browser/client /ray/Ray-Cloud-Browser/client
+
+RUN mkdir /ray/logs
+
+COPY lighttpd.conf.esh /etc/lighttpd.conf.esh
+
+ENV BASE_DIR="/ray"
+
+ENV PORT=8080
+
+EXPOSE 8080
 
 RUN rc-update add lighttpd default
 
-RUN mkdir /var/www/cgi-bin
+RUN esh /etc/lighttpd.conf.esh > /etc/lighttpd.conf
 
-COPY --from=ray-cloud-browser /Ray-Cloud-Browser/server/RayCloudBrowser.cgi /var/www/cgi-bin
+ENTRYPOINT ["/usr/sbin/lighttpd","-f","/etc/lighttpd.conf"]
+CMD ["-D"]

@@ -1,0 +1,37 @@
+# start this script with
+#
+# lighttpd -f lighttpd.conf
+
+##############################
+# This is a configuration for a deployment in
+#
+#    $BASE_DIR
+#
+# There are only 3 configuration options
+
+server.port = <%= $PORT %>
+var.instance = "Ray-Cloud-Browser-instance"
+
+##############################
+# Don't change anything below this line
+
+var.basedir = "<%= $BASE_DIR %>"
+server.document-root = var.basedir + "/Ray-Cloud-Browser"
+server.pid-file = var.basedir + "/pid.txt"
+server.errorlog = var.basedir + "/logs/httpd-errorlog"
+accesslog.filename = var.basedir + "/logs/httpd-accesslog"
+index-file.names = ("index.html", "RayCloudBrowser.cgi")
+
+mimetype.assign = (
+  ".html" => "text/html",
+  ".css" => "text/css",
+  ".js" => "application/javascript"
+)
+
+server.modules = (
+"mod_access",
+"mod_accesslog",
+"mod_cgi"
+)
+
+cgi.assign = ( ".cgi" => "" )
