@@ -21,7 +21,7 @@
  * Minimum coverage to display
  * TODO: add this in the user interface instead
  */
-var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=10;
+var CONFIG_MINIMUM_COVERAGE_TO_DISPLAY=1;
 
 /**
  * The server to use for all web services.
