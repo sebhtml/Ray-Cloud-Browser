@@ -1,3 +1,5 @@
+FROM docker-ray AS graph
+FROM ray-covid-sequences AS seq
 FROM alpine:latest
 
 RUN apk add alpine-sdk curl linux-headers
@@ -9,4 +11,27 @@ RUN echo "#include <unistd.h>" > /usr/include/sys/unistd.h
 WORKDIR Ray-Cloud-Browser/server
 
 RUN make
- 
+
+RUN mkdir -p /ray/Ray-Cloud-Browser/server/data/
+
+WORKDIR /ray/Ray-Cloud-Browser/server
+
+COPY --from=graph /Graphs/kmers.txt data/kmers.txt
+
+COPY --from=seq /wuhan.fasta data/wuhan.fasta
+
+COPY --from=seq /NY.fasta data/NY.fasta
+
+RUN cat data/NY.fasta data/wuhan.fasta > data/Contigs.fasta
+
+RUN cp /Ray-Cloud-Browser/server/config.json-EXAMPLE config.json
+
+RUN /Ray-Cloud-Browser/server/RayCloudBrowser-client create-map data/kmers.txt data/kmers.dat
+
+RUN /Ray-Cloud-Browser/server/RayCloudBrowser-client create-section data/Contigs.fasta data/Contigs.dat
+
+RUN /Ray-Cloud-Browser/server/RayCloudBrowser-client add-map config.json "Covid sequences" data/kmers.dat
+
+RUN /Ray-Cloud-Browser/server/RayCloudBrowser-client add-section config.json 0 "all" data/Contigs.dat
+
+RUN /Ray-Cloud-Browser/server/RayCloudBrowser-client create-map-annotations-with-section data/kmers.dat data/Contigs.dat 0
