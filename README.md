@@ -1,15 +1,13 @@
 Ray Cloud Browser: interactively skim processed genomics data with energy
 
-Product manager: Sébastien Boisvert
 License: GNU General Public License, version 3
-Funding: Canadian Institute of Health Research
-     S.B. is recipient of a doctoral award from the Canadian Institutes of Health Research (200910GSD-226209-172830). 
 
-## Demo:
+## Demos:
 
-- http://html5-app.qc.to/client
-- ~~http://ray-cloud-browser.genap.ca/client/~~
-- ~~http://genome.ulaval.ca:10090/client/~~
+- http://covidgenomes.ddns.net (work in progress)
+- ~~http://html5-app.qc.to/client~~ (dead link)
+- ~~http://ray-cloud-browser.genap.ca/client/~~ (dead link)
+- ~~http://genome.ulaval.ca:10090/client/~~ (dead link)
 
 ## Motivation
 
@@ -43,7 +41,7 @@ November 2010, 17(11): 1519-1533.
 http://dx.doi.org/doi:10.1089/cmb.2009.0238
 
 
-## Compatibility and requirements
+## Supported tools for generating the graph files
 
 These products can output a file in the Ray Cloud Browser format:
 
@@ -51,9 +49,12 @@ These products can output a file in the Ray Cloud Browser format:
 - ABySS http://www.bcgsc.ca/platform/bioinfo/software/abyss/ (option --ray)
   see https://github.com/bcgsc/abyss/commit/1e3d2f3bd060fbbff2ae77486f189aad1677b864
 
+## Deployment
+
 For deployment, a web server is needed and clients must have a modern
 web browser supporting HTML5.
 
+See the docker/ directory for a complete deployment solution.
 
 ## Official website
 
@@ -63,13 +64,13 @@ web browser supporting HTML5.
 
 All the code is licensed under the GNU General Public License, version 3, see LICENSE.
 
-The client is a fork of the force-graph project (author: Sébastien Boisvert, license: GPLv3).
+The client in Ray-Cloud-Browser is a fork of the force-graph project (license: GPLv3).
   => https://github.com/sebhtml/force-graph
 
 Ray Cloud Browser does not bundle any external library.
 
 
-## How it works
+## Architecture
 
 It is a client-server application. The client runs in a browser with Javascript and HTML5.
 The server is in C++ and runs with Apache or any web server with CGI support.

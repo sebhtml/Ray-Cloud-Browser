@@ -3,6 +3,7 @@
 docker/         @arandr
 
 # Front-end code
+client/index/   @jferdelyi
 client/         @sebhtml
 
 # Back-end code
