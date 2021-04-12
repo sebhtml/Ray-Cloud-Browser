@@ -1,0 +1,26 @@
+upstream covidgenomes
+{
+	server        covidgenomes.docker:8080;
+}
+
+server
+{
+	listen        80;
+	server_name   covidgenomes.ddns.net;
+
+	location = /
+	{
+		return 301 http://covidgenomes.ddns.net/client/;
+	}
+
+	location /server/
+	{
+		proxy_pass  http://covidgenomes/server/;
+	}
+
+	location /client/
+	{
+		proxy_pass  http://covidgenomes/client/;
+	}
+}
+
