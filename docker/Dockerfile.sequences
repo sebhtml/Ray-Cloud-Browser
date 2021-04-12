@@ -1,7 +1,16 @@
 FROM alpine:latest
 
 RUN apk add curl
+RUN apk add python3 py3-pip alpine-sdk python3-dev
+RUN pip install biopython
+
+COPY prepare_fasta_file.py prepare_fasta_file.py
 
 RUN curl "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&rettype=fasta&retmode=text&id=NC_045512.2" > wuhan.fasta
+RUN ./prepare_fasta_file.py wuhan.fasta NC_045512.2_wuhan.fasta
+RUN cp NC_045512.2_wuhan.fasta wuhan.fasta
 
 RUN curl "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&rettype=fasta&retmode=text&id=MW487270.1" > NY.fasta
+RUN ./prepare_fasta_file.py NY.fasta MW487270.1_NY.fasta
+RUN cp MW487270.1_NY.fasta NY.fasta
+
