@@ -1,0 +1,5 @@
+# Add this to your hosts file
+
+172.17.0.2 covidgenomes.docker
+
+
